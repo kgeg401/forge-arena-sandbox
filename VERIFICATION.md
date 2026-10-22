@@ -55,3 +55,9 @@ support, a complete manual game and multiplayer are not claimed. Test.4 was an
 unpublished installation candidate; test.5 contains the final updater handling
 for private Java. No Arena files or Forge binaries are included in the release
 ZIP: Forge and runtimes are fetched from pinned official downloads by setup.
+
+After publication, the completed full sandbox fetched test.5 from GitHub via
+its normal startup updater. The GitHub asset digest, downloaded archive digest
+and activation receipt matched, and the saved deck file retained its original
+hash. This extends the earlier launcher-only update test to the full installed
+sandbox. Recipient-PC installation remains to be tested.
