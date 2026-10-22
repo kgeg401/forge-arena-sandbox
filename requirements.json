@@ -78,7 +78,7 @@
   "admission": "16 explicitly admitted Arena names plus separately admitted commanders/tokens; no general-card support claim",
   "features": [
     "automatic startup updates",
-    "launcher-only installation",
+    "automatic Forge and runtime setup",
     "normal practice matches",
     "Hare sample",
     "native local deck browser"

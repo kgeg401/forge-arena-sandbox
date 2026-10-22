@@ -13,12 +13,14 @@ Our setup downloads prerequisites directly from their official sources.
 ## Install
 
 1. Install Arena separately and let it finish downloading its game content.
-2. Download the Windows ZIP from test.5 or a newer test release. Extract the
+2. Download the Windows ZIP from test.6 or a newer test release. Extract the
    ENTIRE ZIP, then double-click **Setup.exe** (or Setup.cmd).
 3. Setup reuses working 64-bit Python 3.10+ with Tcl/Tk. If missing, it downloads
    and verifies the official Python 3.13.17 installer, installs it for your
    Windows user, and opens the sandbox setup window automatically.
-4. Select your Arena folder and a sandbox destination. Click **Install sandbox**.
+4. Select your Arena folder and a sandbox destination. **Check Arena** checks
+   compatibility without installing anything. **Install sandbox** performs that
+   check automatically and completes setup. These are the two setup actions.
    No Forge, Java, .NET or loader folders need to be supplied. Setup downloads
    and verifies the fixed official Forge 2.0.15 release, Eclipse Temurin Java 17
    JRE, Microsoft .NET 8 runtime and BepInEx 5.4.23.5, then configures the client.
@@ -93,3 +95,4 @@ Dependencies retain their licenses. Credits: Card-Forge/Forge, Eclipse Adoptium,
 Microsoft .NET, BepInEx, Python Software Foundation and Google Gson. Developed
 with OpenAI Codex assistance. Corresponding authored adapter source is included;
 no decompiled game source or private account data is distributed. See LICENSE.txt.
+

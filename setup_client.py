@@ -1,4 +1,4 @@
-"""First-install window. Launcher-only setup requires no games or accounts."""
+"""First-install window for Arena checks and full sandbox setup."""
 import sys
 sys.dont_write_bytecode=True
 from pathlib import Path
@@ -58,7 +58,7 @@ def show():
             if (p/'MTGA.exe').exists():arena_default=str(p);break
     field('arena','Installed Arena',arena_default)
     field('destination','Sandbox folder',str(installed or Path.home()/'Games/ForgeArenaSandbox-Test'))
-    ttk.Label(panel,text='Forge 2.0.15 is pinned to an official release. Existing launcher-only installs\ncan be completed here; saved decks are backed up and retained.',wraplength=740).pack(anchor='w',pady=12)
+    ttk.Label(panel,text='Forge 2.0.15 is pinned to an official release. Existing launcher installations\ncan be completed here; saved decks are backed up and retained.',wraplength=740).pack(anchor='w',pady=12)
     status=tk.StringVar(value='Ready to check Arena and install the sandbox.');ttk.Label(panel,textvariable=status,wraplength=740).pack(anchor='w',pady=8)
     buttons=ttk.Frame(panel);buttons.pack(anchor='w',pady=8);events=queue.Queue();busy=False
     def work(kind):
@@ -68,13 +68,12 @@ def show():
         status.set('Checking files…')
         def task():
             try:
-                if kind=='launcher':result=install_launcher(HERE,paths['destination'])
-                elif kind=='check':check_arena(paths['arena'],paths['destination'],HERE);result={'checked':True}
+                if kind=='check':check_arena(paths['arena'],paths['destination'],HERE);result={'checked':True}
                 else:result=install_automatic(paths['arena'],paths['destination'],HERE,progress=lambda text:events.put(('progress',text)))
                 events.put((True,result))
             except Exception as e:events.put((False,str(e)))
         threading.Thread(target=task,daemon=True).start()
-    for title,kind in (('Install sandbox','game'),('Check Arena','check'),('Launcher only','launcher')):ttk.Button(buttons,text=title,command=lambda k=kind:work(k)).pack(side='left',padx=(0,8))
+    for title,kind in (('Check Arena','check'),('Install sandbox','game')):ttk.Button(buttons,text=title,command=lambda k=kind:work(k)).pack(side='left',padx=(0,8))
     def poll():
         nonlocal busy
         try:
