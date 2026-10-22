@@ -252,7 +252,125 @@
     "Concentrate",
     "Divination",
     "Harmonize",
-    "Weave Fate"
+    "Weave Fate",
+    "Ambush Viper",
+    "Ankle Biter",
+    "Daggerback Basilisk",
+    "Dragon Sniper",
+    "Feral Abomination",
+    "Gifted Aetherborn",
+    "Gilacorn",
+    "Hired Poisoner",
+    "Hullcarver",
+    "Kraul Stinger",
+    "Midnight Assassin",
+    "Moss Viper",
+    "Needlethorn Drake",
+    "Nightveil Predator",
+    "Noxious Groodion",
+    "Pharika's Chosen",
+    "Sedge Scorpion",
+    "Squirrelanoids",
+    "Tajuru Blightblade",
+    "Thornweald Archer",
+    "Typhoid Rats",
+    "Ukud Cobra",
+    "Underdark Basilisk",
+    "Vampire Champion",
+    "Vampire Nighthawk",
+    "Vampire of the Dire Moon",
+    "Aegis of the Heavens",
+    "Antagonize",
+    "Charging Badger",
+    "Charging Monstrosaur",
+    "Colossadactyl",
+    "Colossal Dreadmaw",
+    "Copper Host Crusher",
+    "Crash of Rhinos",
+    "Dark Remedy",
+    "Elfhame Wurm",
+    "Feral Ferocity",
+    "Fleetfoot Dancer",
+    "Galewind Moose",
+    "Giant Growth",
+    "Havoc Devils",
+    "Highspire Mantis",
+    "Hippo-Cows",
+    "Infuriate",
+    "Iron Giant",
+    "Komodo Rhino",
+    "Moldering Karok",
+    "Pardic Wanderer",
+    "Quaketusk Boar",
+    "Revitalize",
+    "Ritual of Rejuvenation",
+    "Shorecomber Crab",
+    "Show of Valor",
+    "Swiftblade Vindicator",
+    "Tajuru Pathwarden",
+    "Titanic Growth",
+    "Warriors of Wakanda",
+    "Wildwood Patrol",
+    "Wrecking Crew",
+    "Bilbo's Deadly Slice",
+    "Blade Banish",
+    "Bring to Trial",
+    "Collar the Culprit",
+    "Cut Down",
+    "Dark Betrayal",
+    "Defenestrate",
+    "Doom Blade",
+    "Epic Downfall",
+    "Eviscerate",
+    "Fell",
+    "Final Death",
+    "Final Reward",
+    "Go for the Throat",
+    "Grotesque Demise",
+    "Impale",
+    "Legion's Judgment",
+    "Murder",
+    "Plummet",
+    "Power Word Kill",
+    "Reave Soul",
+    "Reaver Ambush",
+    "Smite the Monstrous",
+    "Sungold Barrage",
+    "Ultimate Price",
+    "Vanquish the Weak",
+    "Walk the Plank",
+    "Wander Off",
+    "Bathe in Dragonfire",
+    "Bombard",
+    "Command the Storm",
+    "Concentrated Fire",
+    "Electrify",
+    "Engulfing Eruption",
+    "Explosive Shot",
+    "Fiery Finish",
+    "Flame Slash",
+    "Pierce the Sky",
+    "Ragefire",
+    "Repulsor Rays",
+    "Scorching Shot",
+    "Auger Spree",
+    "Dark Deed",
+    "Disfigure",
+    "Flowstone Infusion",
+    "Grasp of Darkness",
+    "Lash of Malice",
+    "Last Gasp",
+    "Scorpion's Sting",
+    "Stab",
+    "Strangling Spores",
+    "Throttle",
+    "Feed the Clan",
+    "Frantic Inventory",
+    "Life Goes On",
+    "Sphinx's Insight",
+    "Sudden Insight",
+    "Union of the Third Path",
+    "Visions of Beyond"
   ],
   "candidateNames": [
     "Isamaru, Hound of Konda"
@@ -529,7 +647,125 @@
     "Concentrate": 93084,
     "Divination": 67208,
     "Harmonize": 77531,
-    "Weave Fate": 58059
+    "Weave Fate": 58059,
+    "Ambush Viper": 42322,
+    "Ankle Biter": 90499,
+    "Daggerback Basilisk": 68028,
+    "Dragon Sniper": 95661,
+    "Feral Abomination": 67288,
+    "Gifted Aetherborn": 72301,
+    "Gilacorn": 98193,
+    "Hired Poisoner": 68533,
+    "Hullcarver": 96679,
+    "Kraul Stinger": 69616,
+    "Midnight Assassin": 80238,
+    "Moss Viper": 70690,
+    "Needlethorn Drake": 76616,
+    "Nightveil Predator": 68652,
+    "Noxious Groodion": 69206,
+    "Pharika's Chosen": 93025,
+    "Sedge Scorpion": 69977,
+    "Squirrelanoids": 100538,
+    "Tajuru Blightblade": 73417,
+    "Thornweald Archer": 93282,
+    "Typhoid Rats": 75504,
+    "Ukud Cobra": 93049,
+    "Underdark Basilisk": 77313,
+    "Vampire Champion": 67027,
+    "Vampire Nighthawk": 93054,
+    "Vampire of the Dire Moon": 69905,
+    "Aegis of the Heavens": 67682,
+    "Antagonize": 80251,
+    "Charging Badger": 75532,
+    "Charging Monstrosaur": 66241,
+    "Colossadactyl": 87334,
+    "Colossal Dreadmaw": 66327,
+    "Copper Host Crusher": 84466,
+    "Crash of Rhinos": 6873,
+    "Dark Remedy": 70105,
+    "Elfhame Wurm": 82213,
+    "Feral Ferocity": 105577,
+    "Fleetfoot Dancer": 80339,
+    "Galewind Moose": 91709,
+    "Giant Growth": 69613,
+    "Havoc Devils": 67972,
+    "Highspire Mantis": 58291,
+    "Hippo-Cows": 98214,
+    "Infuriate": 69930,
+    "Iron Giant": 96138,
+    "Komodo Rhino": 98203,
+    "Moldering Karok": 76614,
+    "Pardic Wanderer": 67556,
+    "Quaketusk Boar": 91682,
+    "Revitalize": 67750,
+    "Ritual of Rejuvenation": 66025,
+    "Shorecomber Crab": 93138,
+    "Show of Valor": 70095,
+    "Swiftblade Vindicator": 68664,
+    "Tajuru Pathwarden": 79346,
+    "Titanic Growth": 68090,
+    "Warriors of Wakanda": 105582,
+    "Wildwood Patrol": 72061,
+    "Wrecking Crew": 80283,
+    "Bilbo's Deadly Slice": 103436,
+    "Blade Banish": 71071,
+    "Bring to Trial": 69133,
+    "Collar the Culprit": 68466,
+    "Cut Down": 82141,
+    "Dark Betrayal": 94609,
+    "Defenestrate": 78436,
+    "Doom Blade": 54017,
+    "Epic Downfall": 70232,
+    "Eviscerate": 67286,
+    "Fell": 91631,
+    "Final Death": 70606,
+    "Final Reward": 73882,
+    "Go for the Throat": 82586,
+    "Grotesque Demise": 69203,
+    "Impale": 66769,
+    "Legion's Judgment": 66001,
+    "Murder": 67900,
+    "Plummet": 66903,
+    "Power Word Kill": 77219,
+    "Reave Soul": 70250,
+    "Reaver Ambush": 66783,
+    "Smite the Monstrous": 57985,
+    "Sungold Barrage": 78365,
+    "Ultimate Price": 94349,
+    "Vanquish the Weak": 66219,
+    "Walk the Plank": 66225,
+    "Wander Off": 102563,
+    "Bathe in Dragonfire": 72355,
+    "Bombard": 66803,
+    "Command the Storm": 68555,
+    "Concentrated Fire": 105559,
+    "Electrify": 67958,
+    "Engulfing Eruption": 70112,
+    "Explosive Shot": 98198,
+    "Fiery Finish": 67960,
+    "Flame Slash": 56493,
+    "Pierce the Sky": 67456,
+    "Ragefire": 69418,
+    "Repulsor Rays": 105569,
+    "Scorching Shot": 90491,
+    "Auger Spree": 72511,
+    "Dark Deed": 104988,
+    "Disfigure": 69880,
+    "Flowstone Infusion": 82176,
+    "Grasp of Darkness": 71884,
+    "Lash of Malice": 76467,
+    "Last Gasp": 72309,
+    "Scorpion's Sting": 97882,
+    "Stab": 93784,
+    "Strangling Spores": 67924,
+    "Throttle": 58123,
+    "Feed the Clan": 58201,
+    "Frantic Inventory": 71832,
+    "Life Goes On": 71974,
+    "Sphinx's Insight": 69337,
+    "Sudden Insight": 77182,
+    "Union of the Third Path": 82515,
+    "Visions of Beyond": 98636
   },
   "tokens": [
     {
@@ -1256,6 +1492,365 @@
     ],
     "Weave Fate": [
       "U"
+    ],
+    "Ambush Viper": [
+      "G"
+    ],
+    "Ankle Biter": [
+      "G"
+    ],
+    "Daggerback Basilisk": [
+      "G"
+    ],
+    "Dragon Sniper": [
+      "G"
+    ],
+    "Feral Abomination": [
+      "B"
+    ],
+    "Gifted Aetherborn": [
+      "B"
+    ],
+    "Gilacorn": [
+      "B"
+    ],
+    "Hired Poisoner": [
+      "B"
+    ],
+    "Hullcarver": [
+      "B"
+    ],
+    "Kraul Stinger": [
+      "G"
+    ],
+    "Midnight Assassin": [
+      "B"
+    ],
+    "Moss Viper": [
+      "G"
+    ],
+    "Needlethorn Drake": [
+      "G",
+      "U"
+    ],
+    "Nightveil Predator": [
+      "U",
+      "B"
+    ],
+    "Noxious Groodion": [
+      "B"
+    ],
+    "Pharika's Chosen": [
+      "B"
+    ],
+    "Sedge Scorpion": [
+      "G"
+    ],
+    "Squirrelanoids": [
+      "B"
+    ],
+    "Tajuru Blightblade": [
+      "G"
+    ],
+    "Thornweald Archer": [
+      "G"
+    ],
+    "Typhoid Rats": [
+      "B"
+    ],
+    "Ukud Cobra": [
+      "B"
+    ],
+    "Underdark Basilisk": [
+      "G"
+    ],
+    "Vampire Champion": [
+      "B"
+    ],
+    "Vampire Nighthawk": [
+      "B"
+    ],
+    "Vampire of the Dire Moon": [
+      "B"
+    ],
+    "Aegis of the Heavens": [
+      "W"
+    ],
+    "Antagonize": [
+      "R"
+    ],
+    "Charging Badger": [
+      "G"
+    ],
+    "Charging Monstrosaur": [
+      "R"
+    ],
+    "Colossadactyl": [
+      "G"
+    ],
+    "Colossal Dreadmaw": [
+      "G"
+    ],
+    "Copper Host Crusher": [
+      "G"
+    ],
+    "Crash of Rhinos": [
+      "G"
+    ],
+    "Dark Remedy": [
+      "B"
+    ],
+    "Elfhame Wurm": [
+      "G"
+    ],
+    "Feral Ferocity": [
+      "G"
+    ],
+    "Fleetfoot Dancer": [
+      "W",
+      "R",
+      "G"
+    ],
+    "Galewind Moose": [
+      "G"
+    ],
+    "Giant Growth": [
+      "G"
+    ],
+    "Havoc Devils": [
+      "R"
+    ],
+    "Highspire Mantis": [
+      "W",
+      "R"
+    ],
+    "Hippo-Cows": [
+      "G"
+    ],
+    "Infuriate": [
+      "R"
+    ],
+    "Iron Giant": [],
+    "Komodo Rhino": [
+      "R"
+    ],
+    "Moldering Karok": [
+      "B",
+      "G"
+    ],
+    "Pardic Wanderer": [],
+    "Quaketusk Boar": [
+      "R"
+    ],
+    "Revitalize": [
+      "W"
+    ],
+    "Ritual of Rejuvenation": [
+      "W"
+    ],
+    "Shorecomber Crab": [
+      "U"
+    ],
+    "Show of Valor": [
+      "W"
+    ],
+    "Swiftblade Vindicator": [
+      "W",
+      "R"
+    ],
+    "Tajuru Pathwarden": [
+      "G"
+    ],
+    "Titanic Growth": [
+      "G"
+    ],
+    "Warriors of Wakanda": [
+      "G"
+    ],
+    "Wildwood Patrol": [
+      "G"
+    ],
+    "Wrecking Crew": [
+      "R"
+    ],
+    "Bilbo's Deadly Slice": [
+      "B"
+    ],
+    "Blade Banish": [
+      "W"
+    ],
+    "Bring to Trial": [
+      "W"
+    ],
+    "Collar the Culprit": [
+      "W"
+    ],
+    "Cut Down": [
+      "B"
+    ],
+    "Dark Betrayal": [
+      "B"
+    ],
+    "Defenestrate": [
+      "B"
+    ],
+    "Doom Blade": [
+      "B"
+    ],
+    "Epic Downfall": [
+      "B"
+    ],
+    "Eviscerate": [
+      "B"
+    ],
+    "Fell": [
+      "B"
+    ],
+    "Final Death": [
+      "B"
+    ],
+    "Final Reward": [
+      "B"
+    ],
+    "Go for the Throat": [
+      "B"
+    ],
+    "Grotesque Demise": [
+      "B"
+    ],
+    "Impale": [
+      "B"
+    ],
+    "Legion's Judgment": [
+      "W"
+    ],
+    "Murder": [
+      "B"
+    ],
+    "Plummet": [
+      "G"
+    ],
+    "Power Word Kill": [
+      "B"
+    ],
+    "Reave Soul": [
+      "B"
+    ],
+    "Reaver Ambush": [
+      "B"
+    ],
+    "Smite the Monstrous": [
+      "W"
+    ],
+    "Sungold Barrage": [
+      "W"
+    ],
+    "Ultimate Price": [
+      "B"
+    ],
+    "Vanquish the Weak": [
+      "B"
+    ],
+    "Walk the Plank": [
+      "B"
+    ],
+    "Wander Off": [
+      "B"
+    ],
+    "Bathe in Dragonfire": [
+      "R"
+    ],
+    "Bombard": [
+      "R"
+    ],
+    "Command the Storm": [
+      "R"
+    ],
+    "Concentrated Fire": [
+      "R"
+    ],
+    "Electrify": [
+      "R"
+    ],
+    "Engulfing Eruption": [
+      "R"
+    ],
+    "Explosive Shot": [
+      "R"
+    ],
+    "Fiery Finish": [
+      "R"
+    ],
+    "Flame Slash": [
+      "R"
+    ],
+    "Pierce the Sky": [
+      "G"
+    ],
+    "Ragefire": [
+      "R"
+    ],
+    "Repulsor Rays": [
+      "R"
+    ],
+    "Scorching Shot": [
+      "R"
+    ],
+    "Auger Spree": [
+      "B",
+      "R"
+    ],
+    "Dark Deed": [
+      "B"
+    ],
+    "Disfigure": [
+      "B"
+    ],
+    "Flowstone Infusion": [
+      "R"
+    ],
+    "Grasp of Darkness": [
+      "B"
+    ],
+    "Lash of Malice": [
+      "B"
+    ],
+    "Last Gasp": [
+      "B"
+    ],
+    "Scorpion's Sting": [
+      "B"
+    ],
+    "Stab": [
+      "B"
+    ],
+    "Strangling Spores": [
+      "B"
+    ],
+    "Throttle": [
+      "B"
+    ],
+    "Feed the Clan": [
+      "G"
+    ],
+    "Frantic Inventory": [
+      "U"
+    ],
+    "Life Goes On": [
+      "G"
+    ],
+    "Sphinx's Insight": [
+      "U",
+      "W"
+    ],
+    "Sudden Insight": [
+      "U"
+    ],
+    "Union of the Third Path": [
+      "W"
+    ],
+    "Visions of Beyond": [
+      "U"
     ]
   },
   "abilityBindings": {
@@ -1560,6 +2155,412 @@
       "decisions": "no target or modal choice; existing cleanup tested separately",
       "assets": "all four original native models and exact source art; original card and Resolve callbacks",
       "sequences": "two complete shuffled matches and four native draw resolutions; no exhaustive interactions"
+    },
+    {
+      "names": [
+        "Ambush Viper",
+        "Ankle Biter",
+        "Daggerback Basilisk",
+        "Dragon Sniper",
+        "Feral Abomination",
+        "Gifted Aetherborn",
+        "Gilacorn",
+        "Hired Poisoner",
+        "Hullcarver",
+        "Kraul Stinger",
+        "Midnight Assassin",
+        "Moss Viper",
+        "Needlethorn Drake",
+        "Nightveil Predator",
+        "Noxious Groodion",
+        "Pharika's Chosen",
+        "Sedge Scorpion",
+        "Squirrelanoids",
+        "Tajuru Blightblade",
+        "Thornweald Archer",
+        "Typhoid Rats",
+        "Ukud Cobra",
+        "Underdark Basilisk",
+        "Vampire Champion",
+        "Vampire Nighthawk",
+        "Vampire of the Dire Moon"
+      ],
+      "rules": "source-exact deathtouch keyword-only creatures; each casts, pays and resolves in both supported Forge distributions",
+      "decisions": "all candidates: actual multi-block damage; zero vs positive deathtouch; flash, hexproof, first strike and reach interactions",
+      "assets": "all pinned printings: original native models, exact effective artwork and original card/Resolve callbacks",
+      "sequences": "two complete shuffled AI games with each controller playing the family; original damage browser Done, combat deaths and lifelink; bounded support only"
+    },
+    {
+      "id": "simple-creature-cast-v1-delivery-20261022",
+      "names": [
+        "Charging Badger",
+        "Charging Monstrosaur",
+        "Colossadactyl",
+        "Colossal Dreadmaw",
+        "Copper Host Crusher",
+        "Crash of Rhinos",
+        "Elfhame Wurm",
+        "Fleetfoot Dancer",
+        "Galewind Moose",
+        "Havoc Devils",
+        "Highspire Mantis",
+        "Hippo-Cows",
+        "Iron Giant",
+        "Komodo Rhino",
+        "Moldering Karok",
+        "Pardic Wanderer",
+        "Quaketusk Boar",
+        "Shorecomber Crab",
+        "Swiftblade Vindicator",
+        "Tajuru Pathwarden",
+        "Warriors of Wakanda",
+        "Wildwood Patrol",
+        "Wrecking Crew"
+      ],
+      "rules": "Exact native words/costs/stats matched to plain Forge scripts; each card has source-authored gameplay branches",
+      "decisions": "Original native cast/resolve for every card; shared trample allocation or per-pump target/cancel/submit/expiration as applicable",
+      "assets": "Each pinned printing: original model and exact effective artwork",
+      "sequences": "Complete shuffled matches with mechanic representatives: Colossal Dreadmaw, Fleetfoot Dancer, Swiftblade Vindicator, Shorecomber Crab",
+      "scope": "Bounded supported family; not arbitrary interactions, other printings, retail legality or animation parity"
+    },
+    {
+      "id": "fixed-untargeted-draw-life-v1-delivery-20261022",
+      "names": [
+        "Revitalize",
+        "Ritual of Rejuvenation"
+      ],
+      "rules": "Exact native words/costs/stats matched to plain Forge scripts; each card has source-authored gameplay branches",
+      "decisions": "Original native cast/resolve for every card; shared trample allocation or per-pump target/cancel/submit/expiration as applicable",
+      "assets": "Each pinned printing: original model and exact effective artwork",
+      "sequences": "Complete shuffled matches with mechanic representatives: Revitalize, Ritual of Rejuvenation",
+      "scope": "Bounded supported family; not arbitrary interactions, other printings, retail legality or animation parity"
+    },
+    {
+      "id": "fixed-target-pump-v1-delivery-20261022",
+      "names": [
+        "Aegis of the Heavens",
+        "Antagonize",
+        "Dark Remedy",
+        "Feral Ferocity",
+        "Giant Growth",
+        "Infuriate",
+        "Show of Valor",
+        "Titanic Growth"
+      ],
+      "rules": "Exact native words/costs/stats matched to plain Forge scripts; each card has source-authored gameplay branches",
+      "decisions": "Original native cast/resolve for every card; shared trample allocation or per-pump target/cancel/submit/expiration as applicable",
+      "assets": "Each pinned printing: original model and exact effective artwork",
+      "sequences": "Complete shuffled matches with mechanic representatives: Giant Growth, Infuriate",
+      "scope": "Bounded supported family; not arbitrary interactions, other printings, retail legality or animation parity"
+    },
+    {
+      "id": "fixed-creature-removal-v1-delivery-20261022",
+      "names": [
+        "Bilbo's Deadly Slice",
+        "Blade Banish",
+        "Bring to Trial",
+        "Collar the Culprit",
+        "Cut Down",
+        "Dark Betrayal",
+        "Defenestrate",
+        "Doom Blade",
+        "Epic Downfall",
+        "Eviscerate",
+        "Fell",
+        "Final Death",
+        "Final Reward",
+        "Go for the Throat",
+        "Grotesque Demise",
+        "Impale",
+        "Legion's Judgment",
+        "Murder",
+        "Plummet",
+        "Power Word Kill",
+        "Reave Soul",
+        "Reaver Ambush",
+        "Smite the Monstrous",
+        "Sungold Barrage",
+        "Ultimate Price",
+        "Vanquish the Weak",
+        "Walk the Plank",
+        "Wander Off"
+      ],
+      "rules": "Exact native words, costs and pinned Forge definitions; each card has passing authored rules branches",
+      "decisions": "Every added card: original native cast and resolution; relevant target, Cancel, Submit and expiration controls",
+      "assets": "Every pinned printing: original model and exact effective source artwork",
+      "sequences": "Complete input-only shuffled games with successful resolutions for both seats: Doom Blade, Final Death, Murder, Reave Soul",
+      "scope": "Bounded supported mechanics; not every Magic interaction, other printings, retail legality or animation parity"
+    },
+    {
+      "id": "fixed-creature-damage-v1-delivery-20261022",
+      "names": [
+        "Bathe in Dragonfire",
+        "Bombard",
+        "Command the Storm",
+        "Concentrated Fire",
+        "Electrify",
+        "Engulfing Eruption",
+        "Explosive Shot",
+        "Fiery Finish",
+        "Flame Slash",
+        "Pierce the Sky",
+        "Ragefire",
+        "Repulsor Rays",
+        "Scorching Shot"
+      ],
+      "rules": "Exact native words, costs and pinned Forge definitions; each card has passing authored rules branches",
+      "decisions": "Every added card: original native cast and resolution; relevant target, Cancel, Submit and expiration controls",
+      "assets": "Every pinned printing: original model and exact effective source artwork",
+      "sequences": "Complete input-only shuffled games with successful resolutions for both seats: Bathe in Dragonfire, Bombard, Ragefire",
+      "scope": "Bounded supported mechanics; not every Magic interaction, other printings, retail legality or animation parity"
+    },
+    {
+      "id": "fixed-target-signed-pump-v1-delivery-20261022",
+      "names": [
+        "Auger Spree",
+        "Dark Deed",
+        "Disfigure",
+        "Flowstone Infusion",
+        "Grasp of Darkness",
+        "Lash of Malice",
+        "Last Gasp",
+        "Scorpion's Sting",
+        "Stab",
+        "Strangling Spores",
+        "Throttle"
+      ],
+      "rules": "Exact native words, costs and pinned Forge definitions; each card has passing authored rules branches",
+      "decisions": "Every added card: original native cast and resolution; relevant target, Cancel, Submit and expiration controls",
+      "assets": "Every pinned printing: original model and exact effective source artwork",
+      "sequences": "Complete input-only shuffled games with successful resolutions for both seats: Disfigure, Grasp of Darkness, Stab",
+      "scope": "Bounded supported mechanics; not every Magic interaction, other printings, retail legality or animation parity"
+    },
+    {
+      "id": "conditional-untargeted-draw-life-v1-delivery-20261022",
+      "names": [
+        "Feed the Clan",
+        "Frantic Inventory",
+        "Life Goes On",
+        "Sphinx's Insight",
+        "Sudden Insight",
+        "Union of the Third Path",
+        "Visions of Beyond"
+      ],
+      "rules": "Exact native words, costs and pinned Forge definitions; each card has passing authored rules branches",
+      "decisions": "Every added card: original native cast and resolution; relevant target, Cancel, Submit and expiration controls",
+      "assets": "Every pinned printing: original model and exact effective source artwork",
+      "sequences": "Complete input-only shuffled games with successful resolutions for both seats: Feed the Clan, Frantic Inventory, Life Goes On, Sphinx's Insight, Sudden Insight, Union of the Third Path, Visions of Beyond",
+      "scope": "Bounded supported mechanics; not every Magic interaction, other printings, retail legality or animation parity"
     }
-  ]
+  ],
+  "targetPromptBindings": {
+    "Bilbo's Deadly Slice": {
+      "promptId": 1010,
+      "expectedText": "Target a creature."
+    },
+    "Blade Banish": {
+      "promptId": 1125,
+      "expectedText": "Target a creature with power 4 or greater."
+    },
+    "Bring to Trial": {
+      "promptId": 1125,
+      "expectedText": "Target a creature with power 4 or greater."
+    },
+    "Collar the Culprit": {
+      "promptId": 2239,
+      "expectedText": "Target a creature with toughness 4 or greater."
+    },
+    "Cut Down": {
+      "promptId": 11146,
+      "expectedText": "Target a creature with total power and toughness 5 or less."
+    },
+    "Dark Betrayal": {
+      "promptId": 2529,
+      "expectedText": "Target a black creature."
+    },
+    "Defenestrate": {
+      "promptId": 2410,
+      "expectedText": "Target a creature without flying."
+    },
+    "Doom Blade": {
+      "promptId": 1033,
+      "expectedText": "Target a nonblack creature."
+    },
+    "Epic Downfall": {
+      "promptId": 7836,
+      "expectedText": "Target a creature with mana value 3 or greater."
+    },
+    "Eviscerate": {
+      "promptId": 1010,
+      "expectedText": "Target a creature."
+    },
+    "Fell": {
+      "promptId": 1010,
+      "expectedText": "Target a creature."
+    },
+    "Final Death": {
+      "promptId": 1010,
+      "expectedText": "Target a creature."
+    },
+    "Final Reward": {
+      "promptId": 1010,
+      "expectedText": "Target a creature."
+    },
+    "Go for the Throat": {
+      "promptId": 2591,
+      "expectedText": "Target a nonartifact creature."
+    },
+    "Grotesque Demise": {
+      "promptId": 1777,
+      "expectedText": "Target a creature with power 3 or less."
+    },
+    "Impale": {
+      "promptId": 1010,
+      "expectedText": "Target a creature."
+    },
+    "Legion's Judgment": {
+      "promptId": 1125,
+      "expectedText": "Target a creature with power 4 or greater."
+    },
+    "Murder": {
+      "promptId": 1010,
+      "expectedText": "Target a creature."
+    },
+    "Plummet": {
+      "promptId": 1051,
+      "expectedText": "Target a creature with flying."
+    },
+    "Power Word Kill": {
+      "promptId": 7046,
+      "expectedText": "Target a non-Angel, non-Demon, non-Devil, non-Dragon creature."
+    },
+    "Reave Soul": {
+      "promptId": 1777,
+      "expectedText": "Target a creature with power 3 or less."
+    },
+    "Reaver Ambush": {
+      "promptId": 1777,
+      "expectedText": "Target a creature with power 3 or less."
+    },
+    "Smite the Monstrous": {
+      "promptId": 1125,
+      "expectedText": "Target a creature with power 4 or greater."
+    },
+    "Sungold Barrage": {
+      "promptId": 2239,
+      "expectedText": "Target a creature with toughness 4 or greater."
+    },
+    "Ultimate Price": {
+      "promptId": 1320,
+      "expectedText": "Target a monocolored creature."
+    },
+    "Vanquish the Weak": {
+      "promptId": 1777,
+      "expectedText": "Target a creature with power 3 or less."
+    },
+    "Walk the Plank": {
+      "promptId": 5462,
+      "expectedText": "Target a non-Merfolk creature."
+    },
+    "Wander Off": {
+      "promptId": 1010,
+      "expectedText": "Target a creature."
+    },
+    "Bathe in Dragonfire": {
+      "promptId": 1010,
+      "expectedText": "Target a creature."
+    },
+    "Bombard": {
+      "promptId": 1010,
+      "expectedText": "Target a creature."
+    },
+    "Command the Storm": {
+      "promptId": 1010,
+      "expectedText": "Target a creature."
+    },
+    "Concentrated Fire": {
+      "promptId": 1010,
+      "expectedText": "Target a creature."
+    },
+    "Electrify": {
+      "promptId": 1010,
+      "expectedText": "Target a creature."
+    },
+    "Engulfing Eruption": {
+      "promptId": 1010,
+      "expectedText": "Target a creature."
+    },
+    "Explosive Shot": {
+      "promptId": 1010,
+      "expectedText": "Target a creature."
+    },
+    "Fiery Finish": {
+      "promptId": 1010,
+      "expectedText": "Target a creature."
+    },
+    "Flame Slash": {
+      "promptId": 1010,
+      "expectedText": "Target a creature."
+    },
+    "Pierce the Sky": {
+      "promptId": 1051,
+      "expectedText": "Target a creature with flying."
+    },
+    "Ragefire": {
+      "promptId": 1010,
+      "expectedText": "Target a creature."
+    },
+    "Repulsor Rays": {
+      "promptId": 1010,
+      "expectedText": "Target a creature."
+    },
+    "Scorching Shot": {
+      "promptId": 1010,
+      "expectedText": "Target a creature."
+    },
+    "Auger Spree": {
+      "promptId": 1010,
+      "expectedText": "Target a creature."
+    },
+    "Dark Deed": {
+      "promptId": 1010,
+      "expectedText": "Target a creature."
+    },
+    "Disfigure": {
+      "promptId": 1010,
+      "expectedText": "Target a creature."
+    },
+    "Flowstone Infusion": {
+      "promptId": 1010,
+      "expectedText": "Target a creature."
+    },
+    "Grasp of Darkness": {
+      "promptId": 1010,
+      "expectedText": "Target a creature."
+    },
+    "Lash of Malice": {
+      "promptId": 1010,
+      "expectedText": "Target a creature."
+    },
+    "Last Gasp": {
+      "promptId": 1010,
+      "expectedText": "Target a creature."
+    },
+    "Scorpion's Sting": {
+      "promptId": 1010,
+      "expectedText": "Target a creature."
+    },
+    "Stab": {
+      "promptId": 1010,
+      "expectedText": "Target a creature."
+    },
+    "Strangling Spores": {
+      "promptId": 1010,
+      "expectedText": "Target a creature."
+    },
+    "Throttle": {
+      "promptId": 1010,
+      "expectedText": "Target a creature."
+    }
+  }
 }

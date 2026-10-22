@@ -1,0 +1,16 @@
+{
+  "schema": 1,
+  "compiler": "javac 17.0.20.1",
+  "sourceSha256": "be40492fd52ed0753ea1d216a4f4fcf65369beba91fb54544f9f8d6c2a7fb476",
+  "forgeJarSha256": "b17c37b5483b84e0c6bc77a8a191680b6eb5bfa508235475c495acc45a4ad110",
+  "gsonSha256": "dd0ce1b55a3ed2080cb70f9c655850cda86c206862310009dcb5e5c95265a5e0",
+  "classes": {
+    "ForgeLandEngine$1.class": "48e7ffc9a48dae6f2d50bb9ed7e60cb28ce0dd6c6434b89985fc0275724d6214",
+    "ForgeLandEngine$EventRecorder.class": "71d22e27e8207afa0c733a831159d303ecaf29ba0415ffe7979ac9e7bcdc3a44",
+    "ForgeLandEngine$LocalSeat.class": "1a01e163073df566e33b9b8d0c90c748db35895ea97cd1ee12c913abff800dde",
+    "ForgeLandEngine$PassiveController.class": "6202a665e4c98d393257b63d6c6d95a807c4b69a1bed4e94e0b012d098318f00",
+    "ForgeLandEngine$ResearchStrictController.class": "d1b57f2c7295065d3fabae10ee05c903ab887b608897226539fe760aeb60dcfc",
+    "ForgeLandEngine$StopRequested.class": "995725f5e37b5658a94e4ce7f02dde3bcd538c029cbaa95d0a3f853eec8324d9",
+    "ForgeLandEngine.class": "6c59ef56f3ebe0e66d630398cbcb637c7cf9f26e838ce0cc3023e3738a62e018"
+  }
+}

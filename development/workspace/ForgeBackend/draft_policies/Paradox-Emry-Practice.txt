@@ -1,0 +1,8 @@
+# Unrestricted practice fixture: original Emry / Paradox Engine / Crypt loop.
+20 Island
+4 Seat of the Synod
+8 Emry, Lurker of the Loch
+8 Paradox Engine
+8 Tormod's Crypt
+6 Ornithopter
+6 Aether Spellbomb

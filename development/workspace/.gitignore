@@ -1,0 +1,17 @@
+__pycache__/
+*.pyc
+build/
+packages/
+research/
+native-lab/
+forge-runtime/
+tester-smoke/
+local-profile/
+sandbox-install.json
+active-version.json
+.env
+.env.*
+*.dll
+*.exe
+*.jar
+*.pdb

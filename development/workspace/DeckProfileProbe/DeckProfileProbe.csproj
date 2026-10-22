@@ -1,0 +1,7 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework></PropertyGroup>
+  <ItemGroup>
+    <Compile Include="..\NativeHost\LocalDeckLibrary.cs" Link="LocalDeckLibrary.cs" />
+    <Reference Include="Newtonsoft.Json"><HintPath>$(ArenaManagedDir)\Newtonsoft.Json.dll</HintPath></Reference>
+  </ItemGroup>
+</Project>

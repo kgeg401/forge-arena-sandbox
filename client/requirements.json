@@ -75,7 +75,7 @@
     "BepInEx/core/MonoMod.Utils.dll": "9d1495f147ac93c4f81f84538c1a326e8f8a6aefc78d6289d798f3ce1162c5e9",
     "BepInEx/core/MonoMod.Utils.xml": "0577b362023a3432d6e8d7934c5eddc3e08fdbb19e191af083e341562c5ede38"
   },
-  "admission": "252 explicitly admitted Arena names plus separately admitted commanders/tokens; no general-card support claim",
+  "admission": "370 explicitly admitted Arena names plus separately admitted commanders/tokens; no general-card support claim",
   "features": [
     "dedicated Windows client launcher",
     "automatic startup updates",

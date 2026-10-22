@@ -1,0 +1,331 @@
+{
+  "schema": 2,
+  "name": "Explicit graveyard permutations after simultaneous real combat deaths",
+  "cards": {
+    "Grizzly Bears": [
+      "simultaneous-death-order-1",
+      "simultaneous-death-order-2"
+    ]
+  },
+  "cases": [
+    {
+      "id": "graveyard-order-1",
+      "card": "Grizzly Bears",
+      "covers": [
+        "simultaneous-death-order-1"
+      ],
+      "fixture": {
+        "fixtureHand": [],
+        "fixtureLands": [],
+        "fixtureBattlefield": [
+          "Grizzly Bears",
+          "Coral Merfolk"
+        ],
+        "fixtureOpponentBattlefield": [
+          "Ancient Brontodon"
+        ],
+        "fixtureActiveSeat": 2,
+        "fixtureOpponentPolicy": "attack-all"
+      },
+      "steps": [
+        {
+          "op": "advance",
+          "phase": "MAIN2",
+          "activeSeat": 2,
+          "decisions": [
+            {
+              "kind": "blockers",
+              "assignments": [
+                {
+                  "blocker": {
+                    "name": "Grizzly Bears",
+                    "zone": "Battlefield",
+                    "owner": 1
+                  },
+                  "attackers": [
+                    {
+                      "name": "Ancient Brontodon",
+                      "zone": "Battlefield",
+                      "owner": 2
+                    }
+                  ]
+                },
+                {
+                  "blocker": {
+                    "name": "Coral Merfolk",
+                    "zone": "Battlefield",
+                    "owner": 1
+                  },
+                  "attackers": [
+                    {
+                      "name": "Ancient Brontodon",
+                      "zone": "Battlefield",
+                      "owner": 2
+                    }
+                  ]
+                }
+              ],
+              "expectedOptions": [
+                {
+                  "blocker": {
+                    "name": "Grizzly Bears",
+                    "zone": "Battlefield",
+                    "owner": 1
+                  },
+                  "attackers": [
+                    {
+                      "name": "Ancient Brontodon",
+                      "zone": "Battlefield",
+                      "owner": 2
+                    }
+                  ]
+                },
+                {
+                  "blocker": {
+                    "name": "Coral Merfolk",
+                    "zone": "Battlefield",
+                    "owner": 1
+                  },
+                  "attackers": [
+                    {
+                      "name": "Ancient Brontodon",
+                      "zone": "Battlefield",
+                      "owner": 2
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "kind": "order_cards",
+              "expectedOptions": [
+                {
+                  "name": "Grizzly Bears",
+                  "zone": "Battlefield",
+                  "owner": 1
+                },
+                {
+                  "name": "Coral Merfolk",
+                  "zone": "Battlefield",
+                  "owner": 1
+                }
+              ],
+              "choose": [
+                {
+                  "name": "Grizzly Bears",
+                  "zone": "Battlefield",
+                  "owner": 1
+                },
+                {
+                  "name": "Coral Merfolk",
+                  "zone": "Battlefield",
+                  "owner": 1
+                }
+              ],
+              "probeInvalid": true
+            }
+          ]
+        },
+        {
+          "op": "assert",
+          "state": {
+            "life": 20,
+            "opponentLife": 20
+          },
+          "objects": [
+            {
+              "selector": {
+                "name": "Ancient Brontodon",
+                "zone": "Battlefield",
+                "owner": 2
+              },
+              "values": {
+                "power": 9,
+                "toughness": 9,
+                "damage": 4
+              }
+            }
+          ],
+          "zoneOrder": [
+            {
+              "zone": "graveyard",
+              "owner": 1,
+              "objects": [
+                {
+                  "name": "Grizzly Bears",
+                  "zone": "Graveyard",
+                  "owner": 1
+                },
+                {
+                  "name": "Coral Merfolk",
+                  "zone": "Graveyard",
+                  "owner": 1
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "graveyard-order-2",
+      "card": "Grizzly Bears",
+      "covers": [
+        "simultaneous-death-order-2"
+      ],
+      "fixture": {
+        "fixtureHand": [],
+        "fixtureLands": [],
+        "fixtureBattlefield": [
+          "Grizzly Bears",
+          "Coral Merfolk"
+        ],
+        "fixtureOpponentBattlefield": [
+          "Ancient Brontodon"
+        ],
+        "fixtureActiveSeat": 2,
+        "fixtureOpponentPolicy": "attack-all"
+      },
+      "steps": [
+        {
+          "op": "advance",
+          "phase": "MAIN2",
+          "activeSeat": 2,
+          "decisions": [
+            {
+              "kind": "blockers",
+              "assignments": [
+                {
+                  "blocker": {
+                    "name": "Grizzly Bears",
+                    "zone": "Battlefield",
+                    "owner": 1
+                  },
+                  "attackers": [
+                    {
+                      "name": "Ancient Brontodon",
+                      "zone": "Battlefield",
+                      "owner": 2
+                    }
+                  ]
+                },
+                {
+                  "blocker": {
+                    "name": "Coral Merfolk",
+                    "zone": "Battlefield",
+                    "owner": 1
+                  },
+                  "attackers": [
+                    {
+                      "name": "Ancient Brontodon",
+                      "zone": "Battlefield",
+                      "owner": 2
+                    }
+                  ]
+                }
+              ],
+              "expectedOptions": [
+                {
+                  "blocker": {
+                    "name": "Grizzly Bears",
+                    "zone": "Battlefield",
+                    "owner": 1
+                  },
+                  "attackers": [
+                    {
+                      "name": "Ancient Brontodon",
+                      "zone": "Battlefield",
+                      "owner": 2
+                    }
+                  ]
+                },
+                {
+                  "blocker": {
+                    "name": "Coral Merfolk",
+                    "zone": "Battlefield",
+                    "owner": 1
+                  },
+                  "attackers": [
+                    {
+                      "name": "Ancient Brontodon",
+                      "zone": "Battlefield",
+                      "owner": 2
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "kind": "order_cards",
+              "expectedOptions": [
+                {
+                  "name": "Grizzly Bears",
+                  "zone": "Battlefield",
+                  "owner": 1
+                },
+                {
+                  "name": "Coral Merfolk",
+                  "zone": "Battlefield",
+                  "owner": 1
+                }
+              ],
+              "choose": [
+                {
+                  "name": "Coral Merfolk",
+                  "zone": "Battlefield",
+                  "owner": 1
+                },
+                {
+                  "name": "Grizzly Bears",
+                  "zone": "Battlefield",
+                  "owner": 1
+                }
+              ],
+              "probeInvalid": true
+            }
+          ]
+        },
+        {
+          "op": "assert",
+          "state": {
+            "life": 20,
+            "opponentLife": 20
+          },
+          "objects": [
+            {
+              "selector": {
+                "name": "Ancient Brontodon",
+                "zone": "Battlefield",
+                "owner": 2
+              },
+              "values": {
+                "power": 9,
+                "toughness": 9,
+                "damage": 4
+              }
+            }
+          ],
+          "zoneOrder": [
+            {
+              "zone": "graveyard",
+              "owner": 1,
+              "objects": [
+                {
+                  "name": "Coral Merfolk",
+                  "zone": "Graveyard",
+                  "owner": 1
+                },
+                {
+                  "name": "Grizzly Bears",
+                  "zone": "Graveyard",
+                  "owner": 1
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "scope": "Real combat deaths, explicit player permutation, invalid/stale/missing/duplicate rejection and exact resulting graveyard order. No hidden automatic ordering."
+}

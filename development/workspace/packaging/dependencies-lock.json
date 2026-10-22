@@ -1,0 +1,46 @@
+{
+  "schema": 1,
+  "source": "Official Card-Forge, Eclipse Adoptium, Microsoft and BepInEx downloads",
+  "dependencies": {
+    "forge": {
+      "id": "forge",
+      "label": "Forge 2.0.15",
+      "filename": "forge-installer-2.0.15.tar.bz2",
+      "url": "https://github.com/Card-Forge/forge/releases/download/forge-2.0.15/forge-installer-2.0.15.tar.bz2",
+      "digest": "4468f182b60f6ca62d89697baa208981085af744f116781af751c611826db600",
+      "archive": "tar.bz2",
+      "files": {
+        "forge-gui-desktop-2.0.15-jar-with-dependencies.jar": "85a4c31e07d4d5621a84bb03b6d75fd08e9f4ba289e575c870579b49c0033766",
+        "res/cardsfolder/cardsfolder.zip": "ac26ccbe2a9c015bad4851db61d57d421777e10bf96c32d72add618b258bec07",
+        "res/tokenscripts/w_1_1_rabbit.txt": "4ab0f9d0be3ca8fa60e9ccbf121a8eecfdcbc26468e4a3bcaf5878272ad5b5c8"
+      },
+      "maximumBytes": 367001600
+    },
+    "java": {
+      "id": "java",
+      "label": "Eclipse Temurin Java 17 JRE",
+      "filename": "OpenJDK17U-jre_x64_windows_hotspot_17.0.20.1_1.zip",
+      "url": "https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.20.1%2B1/OpenJDK17U-jre_x64_windows_hotspot_17.0.20.1_1.zip",
+      "digest": "bc21a93923103cdaac93ee337b0ae4365e739fde36df823dd456bc67c8a9d352",
+      "archive": "zip",
+      "root": "jdk-17.0.20.1+1-jre"
+    },
+    "dotnet": {
+      "id": "dotnet",
+      "label": "Microsoft .NET 8 runtime",
+      "filename": "dotnet-runtime-8.0.32-win-x64.zip",
+      "url": "https://builds.dotnet.microsoft.com/dotnet/Runtime/8.0.32/dotnet-runtime-8.0.32-win-x64.zip",
+      "algorithm": "sha512",
+      "digest": "f0349e793d8081c682c01d736db695c9c1ec268c6173648913543db219e44cbf2e952c7ef94fc37946b0f2bb95ca1898d972a43591b8e44d5a1659f4911904c0",
+      "archive": "zip"
+    },
+    "loader": {
+      "id": "loader",
+      "label": "BepInEx 5.4.23.5",
+      "filename": "BepInEx_win_x64_5.4.23.5.zip",
+      "url": "https://github.com/BepInEx/BepInEx/releases/download/v5.4.23.5/BepInEx_win_x64_5.4.23.5.zip",
+      "digest": "82f9878551030f54657792c0740d9d51a09500eeae1fba21106b0c441e6732c4",
+      "archive": "zip"
+    }
+  }
+}

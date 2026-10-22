@@ -1,0 +1,12 @@
+Deck
+12 Forest
+12 Mountain
+4 Raging Goblin
+4 Charging Badger
+4 Grizzly Bears
+4 Greenwood Sentinel
+4 Colossal Dreadmaw
+4 Giant Growth
+4 Titanic Growth
+4 Bombard
+4 Ragefire

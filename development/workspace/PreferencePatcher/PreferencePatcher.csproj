@@ -1,0 +1,8 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup><TargetFramework>netstandard2.1</TargetFramework></PropertyGroup>
+  <ItemGroup><Compile Include="..\Shared\IsolationToken.cs" Link="IsolationToken.cs" /></ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\LabPreferences\LabPreferences.csproj" />
+    <Reference Include="Mono.Cecil"><HintPath>$(BepInExRoot)\BepInEx\core\Mono.Cecil.dll</HintPath><Private>false</Private></Reference>
+  </ItemGroup>
+</Project>

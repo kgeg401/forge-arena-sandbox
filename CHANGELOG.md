@@ -1,5 +1,25 @@
 # Changes
 
+## 0.2 alpha — 370 supported cards
+
+Update version: `0.2.0-alpha.5`.
+
+- Expands the previous public252-name policy to370 supported Arena card names:
+  118 additional names. See [the full additions](docs/ADDED-CARDS-0.2.0-alpha.5.md).
+- Adds reviewed trample creatures, removal, fixed creature damage, temporary
+  stat modifiers and draw/life effects, with exact native target prompts.
+- Fixes damage event classification for supported resolving spells; unexpected
+  contexts still report a gap rather than guessing combat/noncombat behavior.
+- Adds Fire and Growth / Trample and Growth practice decks. Existing libraries,
+  collection and preferences are preserved; update and rollback retain profiles.
+- Refreshes support diagnostics and consumer help to match the admitted list.
+- Includes matching development sources, batch generators and QA/evidence tools.
+  Paradox Engine is preserved as disabled research and is not supported.
+- Existing dedicated launcher, native menus, pack openings and Brawl bot queues
+  remain. Full catalogue coverage, multiplayer and complete retail parity are
+  unfinished. Arena is still required separately.
+
+
 ## 0.01 alpha
 
 Internal update version: `0.2.0-alpha.1`.

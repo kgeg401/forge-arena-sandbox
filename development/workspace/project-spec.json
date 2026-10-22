@@ -1,0 +1,79 @@
+{
+  "name": "Forge Arena Sandbox",
+  "status": "Native Forge-backed Plains mana/turns and Savannah Lions cast/stack/resolve verified; full sandbox pending",
+  "format": "1v1",
+  "goal": "Local 1v1 rules-enforced sandbox using the actual MTG Arena client presentation and Forge rules engine",
+  "installedForge": {
+    "path": "C:\\Users\\loula\\Games\\Forge",
+    "version": "2.0.15-SNAPSHOT",
+    "build": "2026-08-31 18:25:38",
+    "running": false
+  },
+  "referenceSource": {
+    "path": "C:\\Users\\loula\\Documents\\FlyMagicLab\\engine-source",
+    "commit": "db4304cc40d08858706f0df3641ab618f987c8a0",
+    "note": "Reference source is newer than the installed binary; match source and binary before patching"
+  },
+  "route": {
+    "rules": "Separate local Forge process; adapter translates Arena choices to Forge actions and Forge state/events to Arena messages",
+    "presentation": "Investigate local match bootstrap and game-state delivery into the installed Arena client; native UI and animation retained where supported",
+    "sandbox": "Separate explicit scenario edits through Forge setup/developer facilities; normal play retains rules enforcement",
+    "assets": "Prefer native client rendering and installed assets; presentation equivalence remains unverified until runtime tests"
+  },
+  "verifiedSourceHooks": [
+    "forge-gui-mobile/src/forge/screens/match/MatchScreen.java",
+    "forge-gui-mobile/src/forge/screens/match/MatchController.java",
+    "forge-gui-mobile/src/forge/screens/match/views/VDevMenu.java",
+    "forge-gui-mobile/src/forge/animation/ForgeAnimation.java",
+    "forge-gui/src/main/java/forge/gui/control/FControlGameEventHandler.java"
+  ],
+  "firstPlayable": {
+    "board": [
+      "Two player avatars and life totals",
+      "Arena-style hand and battlefield arrangement",
+      "Stack, targets, mana and priority prompts"
+    ],
+    "animations": [
+      "Draw to hand",
+      "Cast to stack and resolve to zone",
+      "Tap and untap",
+      "Attack, block and damage"
+    ],
+    "sandbox": [
+      "Choose both decks",
+      "Set initial life, hand and battlefield",
+      "Restart repeatable test scenario"
+    ],
+    "validation": [
+      "Legal choices come from Forge controllers",
+      "Insufficient mana and invalid targets rejected",
+      "Priority and stack resolve correctly",
+      "Combat damage and life totals follow engine events",
+      "UI selection remains correct during animations",
+      "Complete a real 1v1 game"
+    ]
+  },
+  "boundaries": [
+    "Preserve existing Forge install, preferences and decks",
+    "Keep sandbox traffic local and separate from official matchmaking and account state",
+    "No claim of offline native-client feasibility until a runtime proof",
+    "No standalone visual mockup accepted as playable completion"
+  ],
+  "feasibilityGate": [
+    "Load an isolated board state in the real Arena client",
+    "Route one player choice to Forge and render the resulting state",
+    "Verify legal and illegal actions, priority and stack behavior",
+    "Determine remaining startup and content dependencies before claiming offline support"
+  ],
+  "currentEvidence": {
+    "method": "Installed engine APIs, bounded backend checks and native Unity UI round trips",
+    "assembly": "D:\\GAMES\\MTGA\\MTGA_Data\\Managed\\SharedClientCore.dll",
+    "limitations": "Seeded Plains and Savannah Lions only; passive opponent; combat explicitly blocked; native sound incomplete",
+    "sha256": "42f2fb5f062ccc6098182a902d411746070759a404e875b6e0aac44d3b7ccc6e"
+  },
+  "checkpoint": {
+    "date": "2026-10-20",
+    "report": "D:\\GAMES\\CodexAssets\\ForgeArenaSandbox\\research\\mana-spell-checkpoint.json",
+    "next": "Player combat controls, additional card/ability/target translation, opponent zones, normal match startup and complete games"
+  }
+}

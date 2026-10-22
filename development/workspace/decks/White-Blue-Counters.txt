@@ -1,0 +1,10 @@
+# Supported sandbox practice deck, unrestricted copy counts.
+Deck
+12 Plains
+12 Island
+8 Savannah Lions
+8 Oreskos Swiftclaw
+8 Impassioned Orator
+4 Unsummon
+4 Essence Scatter
+4 Divine Arrow

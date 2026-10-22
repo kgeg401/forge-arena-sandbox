@@ -1,0 +1,44 @@
+{
+  "schema": 1,
+  "parentControllerClassSha256": "4b090843fa5bc2e9853a80d153592f90069ebeb975eff2e31625cf2b81108980",
+  "delegators": [
+    {
+      "signature": "public final <T extends forge.game.GameEntity> T forge.game.player.PlayerController.chooseSingleEntityForEffect(forge.util.collect.FCollectionView<T>,forge.game.spellability.SpellAbility,java.lang.String,boolean,java.util.Map<java.lang.String, java.lang.Object>)",
+      "dispatchTarget": "Guarded virtual overload of chooseSingleEntityForEffect"
+    },
+    {
+      "signature": "public final <T extends forge.game.GameEntity> T forge.game.player.PlayerController.chooseSingleEntityForEffect(forge.util.collect.FCollectionView<T>,forge.game.spellability.SpellAbility,java.lang.String,java.util.Map<java.lang.String, java.lang.Object>)",
+      "dispatchTarget": "Guarded virtual overload of chooseSingleEntityForEffect"
+    },
+    {
+      "signature": "public final boolean forge.game.player.PlayerController.chooseBinary(forge.game.spellability.SpellAbility,java.lang.String,forge.game.player.PlayerController$BinaryChoiceType)",
+      "dispatchTarget": "Guarded virtual overload of chooseBinary"
+    },
+    {
+      "signature": "public final boolean forge.game.player.PlayerController.confirmAction(forge.game.spellability.SpellAbility,forge.game.player.PlayerActionConfirmMode,java.lang.String,forge.game.card.Card,java.util.Map<java.lang.String, java.lang.Object>)",
+      "dispatchTarget": "Guarded virtual overload of confirmAction"
+    },
+    {
+      "signature": "public final boolean forge.game.player.PlayerController.confirmAction(forge.game.spellability.SpellAbility,forge.game.player.PlayerActionConfirmMode,java.lang.String,java.util.Map<java.lang.String, java.lang.Object>)",
+      "dispatchTarget": "Guarded virtual overload of confirmAction"
+    },
+    {
+      "signature": "public final boolean forge.game.player.PlayerController.payManaCost(forge.game.cost.CostPartMana,forge.game.spellability.SpellAbility,java.lang.String,forge.game.mana.ManaConversionMatrix,boolean)",
+      "dispatchTarget": "Guarded virtual overload of payManaCost"
+    },
+    {
+      "signature": "public final int forge.game.player.PlayerController.chooseSprocket(forge.game.card.Card)",
+      "dispatchTarget": "Guarded virtual overload of chooseSprocket"
+    },
+    {
+      "signature": "public final java.lang.String forge.game.player.PlayerController.chooseSector(forge.game.card.Card,java.lang.String)",
+      "dispatchTarget": "Guarded virtual overload of chooseSector"
+    },
+    {
+      "signature": "public final java.lang.String forge.game.player.PlayerController.chooseSomeType(java.lang.String,forge.game.spellability.SpellAbility,java.util.Collection<java.lang.String>)",
+      "dispatchTarget": "Guarded virtual overload of chooseSomeType"
+    }
+  ],
+  "review": "All nine final helpers inspected in installed javap output; each forwards to a virtual choice overload guarded by the authored controller. No inherited AI decision is allowed.",
+  "scope": "Exact parent bytecode only; a changed class requires fresh review."
+}

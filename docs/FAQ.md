@@ -2,7 +2,7 @@
 
 ## Which download do I need?
 
-Get **ForgeArenaSandbox-Windows.zip** from the **0.01 alpha** release, extract
+Get **ForgeArenaSandbox-Windows.zip** from the current Windows release, extract
 everything, then open **Setup.exe**. The repository's source ZIP cannot replace
 the Windows release. Setup offers **Check Arena** and **Install sandbox**.
 
@@ -34,7 +34,7 @@ commander, singleton except basic lands, and the commander's color identity.
 Sideboards and companions are not supported. The sandbox does not apply retail
 format banlists. Importing an unsupported deck never silently removes its cards.
 
-Fresh profiles have eight recommended starter decks. Older installations keep
+Fresh profiles include recommended starter decks. Older installations keep
 their existing libraries, including older sample names. Deleting a starter does
 not cause it to be added again every time the client opens.
 
@@ -71,8 +71,8 @@ Rollback pauses automatic updates. The maintenance script can explicitly check,
 install or roll back: `Manage-Updates.ps1 -Action Check`, `Install` or `Rollback`.
 Close the game first. Older adapters may expose fewer cards/features.
 
-The display name **0.01 alpha** corresponds to diagnostic version
-`0.2.0-alpha.1`, which sorts after the earlier public test versions.
+The display name and diagnostic update version are recorded in
+`release-info.json`. Updates use that increasing version number.
 
 ## Where are my files?
 

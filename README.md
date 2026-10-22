@@ -3,7 +3,7 @@
 A local Magic sandbox using your installed Arena's original screens, cards and
 animations. Forge runs the bot and supported rules.
 
-**[Download 0.01 alpha for Windows](https://github.com/kgeg401/forge-arena-sandbox/releases/tag/v0.2.0-alpha.1)**
+**[Download the 370-card alpha for Windows](https://github.com/kgeg401/forge-arena-sandbox/releases/tag/v0.2.0-alpha.5)**
 
 Download **ForgeArenaSandbox-Windows.zip** from that release. GitHub's **Code >
 Download ZIP** contains source code, not the installable client.
@@ -33,6 +33,7 @@ Allow space for an independent Arena copy; setup checks the required space.
   is a straightforward first match.
 - **Home > Play > Brawl:** choose Brawl Bot and **Emry Brawl** or **Isamaru Brawl**.
   These use 99 cards plus a commander, 25 life and a free first mulligan.
+- **New practice decks:** visit Decks for **Fire and Growth** and **Trample and Growth**.
 - **Decks:** create, import Arena deck text, edit, duplicate, export and delete
   local decks. The Brawl editor has the original commander slot.
 - **Packs:** use the original pack carousel, reveal animations and Continue
@@ -47,7 +48,7 @@ Upgraded installations retain their existing deck names and libraries.
 
 ## Alpha limits
 
-**252 main-deck card names are verified**, with **Emry** and **Isamaru** verified
+**370 main-deck card names are verified**, with **Emry** and **Isamaru** verified
 as Brawl commanders. Most Arena cards remain unverified for this bridge. They
 can be searched or stored, but an unsupported deck cannot start a match.
 See [supported cards](docs/SUPPORTED-CARDS.md).
@@ -79,6 +80,7 @@ An older test.3/test.6 launcher may show its old hub once after updating. Choose
 - [What has actually been tested](docs/VERIFICATION.md)
 - [Report a reproducible problem](https://github.com/kgeg401/forge-arena-sandbox/issues/new/choose)
 - [Developer notes and source layout](docs/DEVELOPMENT.md)
+- [Catalogue batch checks and development tools](development/README.md)
 
 Dependencies retain their licenses. Credits include Card-Forge/Forge, BepInEx,
 Eclipse Adoptium, Microsoft .NET, Python and Google Gson. Development is AI

@@ -11,6 +11,9 @@ installable release and contains no Arena assemblies, assets or private profiles
 - `client/decks/` and `client/starter-decks.json`: deck inputs and the recommended
   starter list. Internal regression decks are not all seeded into new profiles.
 - `docs/`: player guide, supported-name policy and validation boundaries.
+- `development/workspace/`: matching authored development sources, batch
+  generators, QA tools and historical notes. Disabled research is marked
+  separately; raw evidence and game assets are excluded.
 - `.github/`: issue forms and headless Windows source checks.
 
 The native game uses an isolated copy of owned files in a zero-network-capability

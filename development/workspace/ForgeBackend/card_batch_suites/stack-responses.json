@@ -1,0 +1,309 @@
+{
+  "schema": 2,
+  "name": "Explicit response windows and target invalidation",
+  "cards": {
+    "Unsummon": [
+      "target-invalidated-fizzles",
+      "cancel-response-preserves-stack"
+    ],
+    "Divination": [
+      "sorcery-denied-response",
+      "instant-resolves-before-original"
+    ]
+  },
+  "cases": [
+    {
+      "id": "target-gone-before-resolution",
+      "card": "Unsummon",
+      "covers": [
+        "target-invalidated-fizzles"
+      ],
+      "fixture": {
+        "fixtureHand": [
+          "Unsummon",
+          "Unsummon"
+        ],
+        "fixtureLands": [
+          "Island",
+          "Island"
+        ],
+        "fixtureBattlefield": [
+          "Yoked Ox"
+        ],
+        "fixtureOpponentBattlefield": [
+          "Grizzly Bears"
+        ]
+      },
+      "steps": [
+        {
+          "op": "cast",
+          "card": "Unsummon",
+          "mana": 1,
+          "draw": 0,
+          "life": 0,
+          "resolve": false,
+          "fizzled": true,
+          "selector": {
+            "name": "Unsummon",
+            "owner": 1,
+            "zone": "Hand",
+            "index": 0
+          },
+          "targetPlan": {
+            "kind": "targets",
+            "expectedOptions": [
+              {
+                "name": "Yoked Ox",
+                "owner": 1,
+                "zone": "Battlefield"
+              },
+              {
+                "name": "Grizzly Bears",
+                "owner": 2,
+                "zone": "Battlefield"
+              }
+            ],
+            "choose": [
+              {
+                "name": "Grizzly Bears",
+                "owner": 2,
+                "zone": "Battlefield"
+              }
+            ],
+            "probeEmpty": true,
+            "probeStale": true
+          }
+        },
+        {
+          "op": "cast",
+          "card": "Unsummon",
+          "mana": 1,
+          "draw": 0,
+          "life": 0,
+          "targetPlan": {
+            "kind": "targets",
+            "expectedOptions": [
+              {
+                "name": "Yoked Ox",
+                "owner": 1,
+                "zone": "Battlefield"
+              },
+              {
+                "name": "Grizzly Bears",
+                "owner": 2,
+                "zone": "Battlefield"
+              }
+            ],
+            "choose": [
+              {
+                "name": "Grizzly Bears",
+                "owner": 2,
+                "zone": "Battlefield"
+              }
+            ],
+            "probeEmpty": true,
+            "probeStale": true
+          },
+          "zoneChanges": [
+            {
+              "selector": {
+                "name": "Grizzly Bears",
+                "owner": 2,
+                "zone": "Battlefield"
+              },
+              "to": "Hand"
+            }
+          ]
+        },
+        {
+          "op": "resolve",
+          "selector": {
+            "name": "Unsummon",
+            "owner": 1,
+            "zone": "Stack"
+          }
+        },
+        {
+          "op": "assert",
+          "state": {
+            "life": 20,
+            "opponentLife": 20
+          },
+          "objects": [
+            {
+              "selector": {
+                "name": "Yoked Ox",
+                "owner": 1,
+                "zone": "Battlefield"
+              },
+              "values": {
+                "power": 0,
+                "toughness": 4
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "cancel-response-preserves-existing-stack",
+      "card": "Unsummon",
+      "covers": [
+        "cancel-response-preserves-stack"
+      ],
+      "fixture": {
+        "fixtureHand": [
+          "Revitalize",
+          "Unsummon"
+        ],
+        "fixtureLands": [
+          "Plains",
+          "Plains",
+          "Island"
+        ],
+        "fixtureBattlefield": [
+          "Yoked Ox"
+        ],
+        "fixtureOpponentBattlefield": [
+          "Grizzly Bears"
+        ]
+      },
+      "steps": [
+        {
+          "op": "cast",
+          "card": "Revitalize",
+          "mana": 2,
+          "draw": 1,
+          "life": 3,
+          "resolve": false,
+          "orderedEffects": [
+            {
+              "kind": "GainLife",
+              "amount": 3
+            },
+            {
+              "kind": "Draw",
+              "amount": 1
+            }
+          ]
+        },
+        {
+          "op": "cast",
+          "card": "Unsummon",
+          "mana": 1,
+          "draw": 0,
+          "life": 0,
+          "targetPlan": {
+            "kind": "targets",
+            "expectedOptions": [
+              {
+                "name": "Yoked Ox",
+                "owner": 1,
+                "zone": "Battlefield"
+              },
+              {
+                "name": "Grizzly Bears",
+                "owner": 2,
+                "zone": "Battlefield"
+              }
+            ],
+            "cancel": true
+          }
+        },
+        {
+          "op": "resolve",
+          "selector": {
+            "name": "Revitalize",
+            "owner": 1,
+            "zone": "Stack"
+          }
+        },
+        {
+          "op": "assert",
+          "state": {
+            "life": 23
+          }
+        }
+      ]
+    },
+    {
+      "id": "instant-response-sorcery-denied",
+      "card": "Divination",
+      "covers": [
+        "sorcery-denied-response",
+        "instant-resolves-before-original"
+      ],
+      "fixture": {
+        "fixtureHand": [
+          "Divination",
+          "Divination",
+          "Weave Fate"
+        ],
+        "fixtureLands": [
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island"
+        ]
+      },
+      "steps": [
+        {
+          "op": "cast",
+          "card": "Divination",
+          "mana": 3,
+          "draw": 2,
+          "life": 0,
+          "resolve": false,
+          "selector": {
+            "name": "Divination",
+            "owner": 1,
+            "zone": "Hand",
+            "index": 0
+          },
+          "orderedEffects": [
+            {
+              "kind": "Draw",
+              "amount": 2
+            }
+          ]
+        },
+        {
+          "op": "deny",
+          "card": "Divination"
+        },
+        {
+          "op": "cast",
+          "card": "Weave Fate",
+          "mana": 4,
+          "draw": 2,
+          "life": 0,
+          "orderedEffects": [
+            {
+              "kind": "Draw",
+              "amount": 2
+            }
+          ]
+        },
+        {
+          "op": "resolve",
+          "selector": {
+            "name": "Divination",
+            "owner": 1,
+            "zone": "Stack"
+          }
+        },
+        {
+          "op": "assert",
+          "state": {
+            "life": 20,
+            "opponentLife": 20
+          }
+        }
+      ]
+    }
+  ],
+  "scope": "Authored response sequences, explicit target choices, actual fizzle events and ordered effects; no automatic admission."
+}

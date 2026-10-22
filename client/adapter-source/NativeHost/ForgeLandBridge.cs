@@ -102,7 +102,19 @@ internal sealed class ForgeLandBridge
     private int UniqueAbility(JToken card,int ability){var ids=(JArray)Definition((string)card["name"]!)["abilityIds"]!;int index=ids.Select((v,i)=>new{v=(int)v,i}).Single(x=>x.v==ability).i;return index==0?50000+(int)card["forgeId"]!:500000+16*(int)card["forgeId"]!+index;}
     private static JArray NativeCost(JToken values)=>new JArray(values.Select(v=>new JObject{["color"]=new JArray("ManaColor_"+(string)v["color"]!),["count"]=(int)v["count"]!}));
     private static string ManaColorName(int forgeColor) => forgeColor switch{0=>"Colorless",1=>"White",2=>"Blue",4=>"Black",8=>"Red",16=>"Green",_=>throw new NotSupportedException("Unmapped Forge mana color "+forgeColor)};
-    private static int TargetPrompt(string name) => name switch{"Divine Arrow"=>1008,"Unsummon"=>1010,"Essence Scatter"=>1077,"Emry, Lurker of the Loch"=>5287,"Aether Spellbomb"=>1010,"Tormod's Crypt"=>1019,_=>throw new NotSupportedException("Unmapped target prompt for "+name)};
+    // Owned Prompts1010/Loc244217 is exactly "Target a creature." These eight
+    // pump definitions were independently qualified as one unrestricted creature
+    // target. Unknown cards still fail explicitly rather than using this prompt.
+    private int TargetPrompt(string name)
+    {
+        // Generated only from an explicit policy binding checked against the
+        // owned prompt database. Unknown sources still fail, never guess.
+        if(_cardManifest[name]?["targetPromptId"] is JToken prompt)
+        {
+            int id=(int)prompt;if(id<=0)throw new InvalidDataException("Invalid source-bound target prompt for "+name);return id;
+        }
+        return name switch{"Divine Arrow"=>1008,"Unsummon" or "Aegis of the Heavens" or "Antagonize" or "Dark Remedy" or "Feral Ferocity" or "Giant Growth" or "Infuriate" or "Show of Valor" or "Titanic Growth"=>1010,"Essence Scatter"=>1077,"Emry, Lurker of the Loch"=>5287,"Aether Spellbomb"=>1010,"Tormod's Crypt"=>1019,_=>throw new NotSupportedException("Unmapped target prompt for "+name)};
+    }
 
     private JObject CardObject(JToken card)
     {
@@ -283,7 +295,7 @@ internal sealed class ForgeLandBridge
         {
             int source=_ids[(int)Decision["sourceForgeId"]!];int total=(int)Decision["totalDamage"]!;
             var assigner=new JObject{["instanceId"]=source,["totalDamage"]=total,
-                ["assignments"]=new JArray(((JArray)Decision["options"]!).Select(o=>new JObject{["instanceId"]=_ids[(int)o["forgeId"]!],["minDamage"]=0,["maxDamage"]=total,["assignedDamage"]=(int)o["assignedDamage"]!})),
+                ["assignments"]=new JArray(((JArray)Decision["options"]!).Select(o=>new JObject{["instanceId"]=TargetId(o),["minDamage"]=(int?)o["lethalDamage"] ?? 0,["maxDamage"]=total,["assignedDamage"]=(int)o["assignedDamage"]!})),
                 ["decisionPrompt"]=new JObject{["promptId"]=8,["parameters"]=new JArray(new JObject{["parameterName"]="CardId",["type"]="ParameterType_Number",["numberValue"]=source})}};
             message=Envelope("GREMessageType_AssignDamageReq",new JObject{["damageAssigners"]=new JArray(assigner)},"assignDamageReq");
         }
@@ -326,6 +338,12 @@ internal sealed class ForgeLandBridge
             message=Envelope("GREMessageType_SelectNReq",new JObject{["minSel"]=count,["maxSel"]=count,["context"]="SelectionContext_Discard",["optionContext"]="OptionContext_TurnBased",["listType"]="SelectionListType_Dynamic",["ids"]=new JArray(((JArray)Decision["options"]!).Select(o=>_ids[(int)o["forgeId"]!])),["idType"]="IdType_InstanceId",["validationType"]="SelectionValidationType_NonRepeatable"},"selectNReq");
         }
         else if(DecisionKind=="legend_rule")message=Envelope("GREMessageType_SelectNReq",new JObject{["minSel"]=1,["maxSel"]=1,["context"]="SelectionContext_None",["optionContext"]="OptionContext_TurnBased",["listType"]="SelectionListType_Dynamic",["ids"]=new JArray(((JArray)Decision["options"]!).Select(o=>_ids[(int)o["forgeId"]!])),["idType"]="IdType_InstanceId",["validationType"]="SelectionValidationType_NonRepeatable"},"selectNReq");
+        else if(DecisionKind=="order_cards")
+        {
+            if((string?)Decision!["destination"]!="Graveyard")throw new NotSupportedException("Unmapped native ordering destination");
+            message=Envelope("GREMessageType_OrderReq",new JObject{["ids"]=new JArray(((JArray)Decision["options"]!).Select(o=>_ids[(int)o["forgeId"]!])),["orderingContext"]="OrderingContext_None"},"orderReq");
+            message["allowCancel"]="AllowCancel_No";
+        }
         else
         {
             string kind=(string)Decision["kind"]!;
@@ -352,6 +370,7 @@ internal sealed class ForgeLandBridge
         if(Decision!=null && (string)Decision["kind"]! == "discard")message["prompt"]!["parameters"]=new JArray(new JObject{["parameterName"]="NumberOfCards",["type"]="ParameterType_Number",["numberValue"]=(int)Decision["count"]!});
         if(DecisionKind=="assign_damage")message.Remove("prompt"); // Native capture uses the assigner's own CardId prompt.
         if(DecisionKind=="legend_rule")message["prompt"]=new JObject{["promptId"]=72};
+        if(DecisionKind=="order_cards")message["prompt"]=new JObject{["promptId"]=85}; // Owned Prompts/LocId 175: graveyard ordering.
         if(DecisionKind=="commander_return")
         {
             string zone=(string?)Decision!["choiceZone"] ?? (string)Decision!["fromZone"]!;
@@ -402,7 +421,7 @@ internal sealed class ForgeLandBridge
         if(!conceding && (_pending!=null || command.GameStateId!=_stateId || (!cancelling && command.RespId!=_requestId)))
             throw new InvalidOperationException("Rejected pending/stale native response.");
         var fields=new JObject();int nativeId=0;_pendingForgeId=0;
-        int ForgeId(int native) => DecisionKind=="targets" && (native==1 || native==2)?(int)((JArray)Decision!["options"]!).Single(o=>(string?)o["targetKind"]=="player" && (int)o["targetSeat"]! == native)["forgeId"]!:_ids.Single(pair=>pair.Value==native).Key;
+        int ForgeId(int native) => (DecisionKind=="targets" || DecisionKind=="assign_damage") && (native==1 || native==2)?(int)((JArray)Decision!["options"]!).Single(o=>(string?)o["targetKind"]=="player" && (int)o["targetSeat"]! == native)["forgeId"]!:_ids.Single(pair=>pair.Value==native).Key;
         if(conceding)_pendingOp="concede";
         else if(Decision!=null)
         {
@@ -448,6 +467,13 @@ internal sealed class ForgeLandBridge
             else if((kind=="discard" || kind=="legend_rule") && command.Type==ClientMessageType.SelectNresp)
             {
                 _pendingOp="submit_"+kind;foreach(var id in command.SelectNResp.Ids)assignments.Add(new JObject{["forgeId"]=ForgeId((int)id)});
+            }
+            else if(kind=="order_cards" && command.Type==ClientMessageType.OrderResp)
+            {
+                if(command.OrderResp.Ordering!=OrderingType.OrderAsIndicated)throw new NotSupportedException("Graveyard order needs the player's explicit permutation");
+                // Shipped OrderRequest.SubmitOrder reverses the displayed list.
+                // Forge consumes movement order, which appends bottom to top.
+                _pendingOp="submit_order_cards";foreach(var id in command.OrderResp.Ids.Reverse())assignments.Add(new JObject{["forgeId"]=ForgeId((int)id)});
             }
             else if(kind=="attackers" && command.Type==ClientMessageType.DeclareAttackersResp)
             {

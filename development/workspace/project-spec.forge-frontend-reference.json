@@ -1,0 +1,62 @@
+{
+  "name": "Forge Arena Sandbox",
+  "status": "Reconnaissance complete; playable mod not yet implemented",
+  "format": "1v1",
+  "goal": "Offline rules-enforced sandbox using Forge with Arena board layout and animation presentation",
+  "installedForge": {
+    "path": "C:\\Users\\loula\\Games\\Forge",
+    "version": "2.0.15-SNAPSHOT",
+    "build": "2026-08-31 18:25:38",
+    "running": false
+  },
+  "referenceSource": {
+    "path": "C:\\Users\\loula\\Documents\\FlyMagicLab\\engine-source",
+    "commit": "db4304cc40d08858706f0df3641ab618f987c8a0",
+    "note": "Reference source is newer than the installed binary; match source and binary before patching"
+  },
+  "route": {
+    "rules": "Existing Forge engine and human-controller input/choice path",
+    "presentation": "Isolated LibGDX frontend fork/patch, initially using existing Forge card renderer and theme-aware components",
+    "sandbox": "Separate explicit scenario edits through Forge setup/developer facilities; normal play retains rules enforcement",
+    "assets": "Inventory local Arena assets and record format/provenance before conversion; exact shader/animation parity remains unverified"
+  },
+  "verifiedSourceHooks": [
+    "forge-gui-mobile/src/forge/screens/match/MatchScreen.java",
+    "forge-gui-mobile/src/forge/screens/match/MatchController.java",
+    "forge-gui-mobile/src/forge/screens/match/views/VDevMenu.java",
+    "forge-gui-mobile/src/forge/animation/ForgeAnimation.java",
+    "forge-gui/src/main/java/forge/gui/control/FControlGameEventHandler.java"
+  ],
+  "firstPlayable": {
+    "board": [
+      "Two player avatars and life totals",
+      "Arena-style hand and battlefield arrangement",
+      "Stack, targets, mana and priority prompts"
+    ],
+    "animations": [
+      "Draw to hand",
+      "Cast to stack and resolve to zone",
+      "Tap and untap",
+      "Attack, block and damage"
+    ],
+    "sandbox": [
+      "Choose both decks",
+      "Set initial life, hand and battlefield",
+      "Restart repeatable test scenario"
+    ],
+    "validation": [
+      "Legal choices come from Forge controllers",
+      "Insufficient mana and invalid targets rejected",
+      "Priority and stack resolve correctly",
+      "Combat damage and life totals follow engine events",
+      "UI selection remains correct during animations",
+      "Complete a real 1v1 game"
+    ]
+  },
+  "boundaries": [
+    "Keep existing Forge install, preferences and decks unchanged while prototyping",
+    "No changes to MTG Arena executable or services",
+    "No claim of 1:1 animation/material parity from appearance alone",
+    "No standalone visual mockup accepted as playable completion"
+  ]
+}

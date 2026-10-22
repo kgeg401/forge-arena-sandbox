@@ -1,0 +1,966 @@
+{
+  "schema": 2,
+  "name": "Explicit trample allocations and original-source UI suggestions",
+  "cards": {
+    "Colossal Dreadmaw": [
+      "trample-excess",
+      "trample-zero-player",
+      "trample-legal-overkill",
+      "trample-two-blockers"
+    ],
+    "Fleetfoot Dancer": [
+      "trample-lifelink"
+    ],
+    "Swiftblade Vindicator": [
+      "trample-double-strike"
+    ]
+  },
+  "cases": [
+    {
+      "id": "trample-excess",
+      "card": "Colossal Dreadmaw",
+      "covers": [
+        "trample-excess"
+      ],
+      "fixture": {
+        "fixtureHand": [],
+        "fixtureLands": [],
+        "fixtureBattlefield": [
+          "Colossal Dreadmaw"
+        ],
+        "fixtureBattlefieldReady": true,
+        "fixtureOpponentBattlefield": [
+          "Grizzly Bears"
+        ],
+        "fixtureOpponentPolicy": "block-all"
+      },
+      "steps": [
+        {
+          "op": "advance",
+          "phase": "MAIN2",
+          "activeSeat": 1,
+          "decisions": [
+            {
+              "kind": "attackers",
+              "choose": [
+                {
+                  "name": "Colossal Dreadmaw",
+                  "zone": "Battlefield",
+                  "owner": 1
+                }
+              ],
+              "expectedOptions": [
+                {
+                  "name": "Colossal Dreadmaw",
+                  "zone": "Battlefield",
+                  "owner": 1
+                }
+              ]
+            },
+            {
+              "kind": "assign_damage",
+              "total": 6,
+              "expectedOptions": [
+                {
+                  "name": "Grizzly Bears",
+                  "zone": "Battlefield",
+                  "owner": 2
+                },
+                {
+                  "targetSeat": 2
+                }
+              ],
+              "allocations": [
+                {
+                  "target": {
+                    "name": "Grizzly Bears",
+                    "zone": "Battlefield",
+                    "owner": 2
+                  },
+                  "amount": 2
+                },
+                {
+                  "target": {
+                    "targetSeat": 2
+                  },
+                  "amount": 4
+                }
+              ],
+              "probeInvalid": true,
+              "expectedLethal": [
+                {
+                  "target": {
+                    "name": "Grizzly Bears",
+                    "zone": "Battlefield",
+                    "owner": 2
+                  },
+                  "amount": 2
+                },
+                {
+                  "target": {
+                    "targetSeat": 2
+                  },
+                  "amount": 0
+                }
+              ],
+              "expectedSuggestions": [
+                {
+                  "target": {
+                    "name": "Grizzly Bears",
+                    "zone": "Battlefield",
+                    "owner": 2
+                  },
+                  "amount": 2
+                },
+                {
+                  "target": {
+                    "targetSeat": 2
+                  },
+                  "amount": 4
+                }
+              ],
+              "reject": [
+                [
+                  {
+                    "target": {
+                      "name": "Grizzly Bears",
+                      "zone": "Battlefield",
+                      "owner": 2
+                    },
+                    "amount": 1
+                  },
+                  {
+                    "target": {
+                      "targetSeat": 2
+                    },
+                    "amount": 5
+                  }
+                ],
+                [
+                  {
+                    "target": {
+                      "name": "Grizzly Bears",
+                      "zone": "Battlefield",
+                      "owner": 2
+                    },
+                    "amount": 2
+                  },
+                  {
+                    "target": {
+                      "targetSeat": 1
+                    },
+                    "amount": 4
+                  }
+                ],
+                [
+                  {
+                    "target": {
+                      "name": "Grizzly Bears",
+                      "zone": "Battlefield",
+                      "owner": 2
+                    },
+                    "amount": -1
+                  },
+                  {
+                    "target": {
+                      "targetSeat": 2
+                    },
+                    "amount": 7
+                  }
+                ],
+                [
+                  {
+                    "target": {
+                      "name": "Grizzly Bears",
+                      "zone": "Battlefield",
+                      "owner": 2
+                    },
+                    "amount": 1.5
+                  },
+                  {
+                    "target": {
+                      "targetSeat": 2
+                    },
+                    "amount": 4.5
+                  }
+                ],
+                [
+                  {
+                    "target": {
+                      "name": "Grizzly Bears",
+                      "zone": "Battlefield",
+                      "owner": 2
+                    },
+                    "amount": 2
+                  },
+                  {
+                    "target": {
+                      "targetSeat": 2
+                    },
+                    "amount": 3
+                  }
+                ]
+              ]
+            }
+          ]
+        },
+        {
+          "op": "assert",
+          "state": {
+            "life": 20,
+            "opponentLife": 16
+          },
+          "objects": [
+            {
+              "selector": {
+                "name": "Colossal Dreadmaw",
+                "zone": "Battlefield",
+                "owner": 1
+              },
+              "values": {
+                "power": 6,
+                "toughness": 6,
+                "damage": 2
+              }
+            },
+            {
+              "selector": {
+                "name": "Grizzly Bears",
+                "zone": "Graveyard",
+                "owner": 2
+              },
+              "values": {
+                "power": 2,
+                "toughness": 2
+              }
+            }
+          ],
+          "damageEvents": [
+            {
+              "source": {
+                "name": "Colossal Dreadmaw",
+                "zone": "Battlefield",
+                "owner": 1
+              },
+              "target": {
+                "name": "Grizzly Bears",
+                "zone": "Graveyard",
+                "owner": 2
+              },
+              "amount": 2
+            },
+            {
+              "source": {
+                "name": "Colossal Dreadmaw",
+                "zone": "Battlefield",
+                "owner": 1
+              },
+              "target": {
+                "targetSeat": 2
+              },
+              "amount": 4
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "trample-zero-player",
+      "card": "Colossal Dreadmaw",
+      "covers": [
+        "trample-zero-player"
+      ],
+      "fixture": {
+        "fixtureHand": [],
+        "fixtureLands": [],
+        "fixtureBattlefield": [
+          "Colossal Dreadmaw"
+        ],
+        "fixtureBattlefieldReady": true,
+        "fixtureOpponentBattlefield": [
+          "Grizzly Bears"
+        ],
+        "fixtureOpponentPolicy": "block-all"
+      },
+      "steps": [
+        {
+          "op": "advance",
+          "phase": "MAIN2",
+          "activeSeat": 1,
+          "decisions": [
+            {
+              "kind": "attackers",
+              "choose": [
+                {
+                  "name": "Colossal Dreadmaw",
+                  "zone": "Battlefield",
+                  "owner": 1
+                }
+              ],
+              "expectedOptions": [
+                {
+                  "name": "Colossal Dreadmaw",
+                  "zone": "Battlefield",
+                  "owner": 1
+                }
+              ]
+            },
+            {
+              "kind": "assign_damage",
+              "total": 6,
+              "expectedOptions": [
+                {
+                  "name": "Grizzly Bears",
+                  "zone": "Battlefield",
+                  "owner": 2
+                },
+                {
+                  "targetSeat": 2
+                }
+              ],
+              "allocations": [
+                {
+                  "target": {
+                    "name": "Grizzly Bears",
+                    "zone": "Battlefield",
+                    "owner": 2
+                  },
+                  "amount": 6
+                },
+                {
+                  "target": {
+                    "targetSeat": 2
+                  },
+                  "amount": 0
+                }
+              ],
+              "probeInvalid": true
+            }
+          ]
+        },
+        {
+          "op": "assert",
+          "state": {
+            "life": 20,
+            "opponentLife": 20
+          },
+          "objects": [
+            {
+              "selector": {
+                "name": "Colossal Dreadmaw",
+                "zone": "Battlefield",
+                "owner": 1
+              },
+              "values": {
+                "power": 6,
+                "toughness": 6,
+                "damage": 2
+              }
+            },
+            {
+              "selector": {
+                "name": "Grizzly Bears",
+                "zone": "Graveyard",
+                "owner": 2
+              },
+              "values": {
+                "power": 2,
+                "toughness": 2
+              }
+            }
+          ],
+          "damageEvents": [
+            {
+              "source": {
+                "name": "Colossal Dreadmaw",
+                "zone": "Battlefield",
+                "owner": 1
+              },
+              "target": {
+                "name": "Grizzly Bears",
+                "zone": "Graveyard",
+                "owner": 2
+              },
+              "amount": 6
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "trample-legal-overkill",
+      "card": "Colossal Dreadmaw",
+      "covers": [
+        "trample-legal-overkill"
+      ],
+      "fixture": {
+        "fixtureHand": [],
+        "fixtureLands": [],
+        "fixtureBattlefield": [
+          "Colossal Dreadmaw"
+        ],
+        "fixtureBattlefieldReady": true,
+        "fixtureOpponentBattlefield": [
+          "Grizzly Bears"
+        ],
+        "fixtureOpponentPolicy": "block-all"
+      },
+      "steps": [
+        {
+          "op": "advance",
+          "phase": "MAIN2",
+          "activeSeat": 1,
+          "decisions": [
+            {
+              "kind": "attackers",
+              "choose": [
+                {
+                  "name": "Colossal Dreadmaw",
+                  "zone": "Battlefield",
+                  "owner": 1
+                }
+              ],
+              "expectedOptions": [
+                {
+                  "name": "Colossal Dreadmaw",
+                  "zone": "Battlefield",
+                  "owner": 1
+                }
+              ]
+            },
+            {
+              "kind": "assign_damage",
+              "total": 6,
+              "expectedOptions": [
+                {
+                  "name": "Grizzly Bears",
+                  "zone": "Battlefield",
+                  "owner": 2
+                },
+                {
+                  "targetSeat": 2
+                }
+              ],
+              "allocations": [
+                {
+                  "target": {
+                    "name": "Grizzly Bears",
+                    "zone": "Battlefield",
+                    "owner": 2
+                  },
+                  "amount": 5
+                },
+                {
+                  "target": {
+                    "targetSeat": 2
+                  },
+                  "amount": 1
+                }
+              ],
+              "probeInvalid": true
+            }
+          ]
+        },
+        {
+          "op": "assert",
+          "state": {
+            "life": 20,
+            "opponentLife": 19
+          },
+          "objects": [
+            {
+              "selector": {
+                "name": "Colossal Dreadmaw",
+                "zone": "Battlefield",
+                "owner": 1
+              },
+              "values": {
+                "power": 6,
+                "toughness": 6,
+                "damage": 2
+              }
+            },
+            {
+              "selector": {
+                "name": "Grizzly Bears",
+                "zone": "Graveyard",
+                "owner": 2
+              },
+              "values": {
+                "power": 2,
+                "toughness": 2
+              }
+            }
+          ],
+          "damageEvents": [
+            {
+              "source": {
+                "name": "Colossal Dreadmaw",
+                "zone": "Battlefield",
+                "owner": 1
+              },
+              "target": {
+                "name": "Grizzly Bears",
+                "zone": "Graveyard",
+                "owner": 2
+              },
+              "amount": 5
+            },
+            {
+              "source": {
+                "name": "Colossal Dreadmaw",
+                "zone": "Battlefield",
+                "owner": 1
+              },
+              "target": {
+                "targetSeat": 2
+              },
+              "amount": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "trample-two-blockers",
+      "card": "Colossal Dreadmaw",
+      "covers": [
+        "trample-two-blockers"
+      ],
+      "fixture": {
+        "fixtureHand": [],
+        "fixtureLands": [],
+        "fixtureBattlefield": [
+          "Colossal Dreadmaw"
+        ],
+        "fixtureBattlefieldReady": true,
+        "fixtureOpponentBattlefield": [
+          "Grizzly Bears",
+          "Canopy Spider"
+        ],
+        "fixtureOpponentPolicy": "block-all"
+      },
+      "steps": [
+        {
+          "op": "advance",
+          "phase": "MAIN2",
+          "activeSeat": 1,
+          "decisions": [
+            {
+              "kind": "attackers",
+              "choose": [
+                {
+                  "name": "Colossal Dreadmaw",
+                  "zone": "Battlefield",
+                  "owner": 1
+                }
+              ],
+              "expectedOptions": [
+                {
+                  "name": "Colossal Dreadmaw",
+                  "zone": "Battlefield",
+                  "owner": 1
+                }
+              ]
+            },
+            {
+              "kind": "assign_damage",
+              "total": 6,
+              "expectedOptions": [
+                {
+                  "name": "Grizzly Bears",
+                  "zone": "Battlefield",
+                  "owner": 2
+                },
+                {
+                  "name": "Canopy Spider",
+                  "zone": "Battlefield",
+                  "owner": 2
+                },
+                {
+                  "targetSeat": 2
+                }
+              ],
+              "allocations": [
+                {
+                  "target": {
+                    "name": "Grizzly Bears",
+                    "zone": "Battlefield",
+                    "owner": 2
+                  },
+                  "amount": 2
+                },
+                {
+                  "target": {
+                    "name": "Canopy Spider",
+                    "zone": "Battlefield",
+                    "owner": 2
+                  },
+                  "amount": 3
+                },
+                {
+                  "target": {
+                    "targetSeat": 2
+                  },
+                  "amount": 1
+                }
+              ],
+              "probeInvalid": true
+            }
+          ]
+        },
+        {
+          "op": "assert",
+          "state": {
+            "life": 20,
+            "opponentLife": 19
+          },
+          "objects": [
+            {
+              "selector": {
+                "name": "Colossal Dreadmaw",
+                "zone": "Battlefield",
+                "owner": 1
+              },
+              "values": {
+                "power": 6,
+                "toughness": 6,
+                "damage": 3
+              }
+            },
+            {
+              "selector": {
+                "name": "Grizzly Bears",
+                "zone": "Graveyard",
+                "owner": 2
+              },
+              "values": {
+                "power": 2,
+                "toughness": 2
+              }
+            },
+            {
+              "selector": {
+                "name": "Canopy Spider",
+                "zone": "Graveyard",
+                "owner": 2
+              },
+              "values": {
+                "power": 1,
+                "toughness": 3
+              }
+            }
+          ],
+          "damageEvents": [
+            {
+              "source": {
+                "name": "Colossal Dreadmaw",
+                "zone": "Battlefield",
+                "owner": 1
+              },
+              "target": {
+                "name": "Grizzly Bears",
+                "zone": "Graveyard",
+                "owner": 2
+              },
+              "amount": 2
+            },
+            {
+              "source": {
+                "name": "Colossal Dreadmaw",
+                "zone": "Battlefield",
+                "owner": 1
+              },
+              "target": {
+                "name": "Canopy Spider",
+                "zone": "Graveyard",
+                "owner": 2
+              },
+              "amount": 3
+            },
+            {
+              "source": {
+                "name": "Colossal Dreadmaw",
+                "zone": "Battlefield",
+                "owner": 1
+              },
+              "target": {
+                "targetSeat": 2
+              },
+              "amount": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "trample-lifelink",
+      "card": "Fleetfoot Dancer",
+      "covers": [
+        "trample-lifelink"
+      ],
+      "fixture": {
+        "fixtureHand": [],
+        "fixtureLands": [],
+        "fixtureBattlefield": [
+          "Fleetfoot Dancer"
+        ],
+        "fixtureBattlefieldReady": true,
+        "fixtureOpponentBattlefield": [
+          "Grizzly Bears"
+        ],
+        "fixtureOpponentPolicy": "block-all"
+      },
+      "steps": [
+        {
+          "op": "advance",
+          "phase": "MAIN2",
+          "activeSeat": 1,
+          "decisions": [
+            {
+              "kind": "attackers",
+              "choose": [
+                {
+                  "name": "Fleetfoot Dancer",
+                  "zone": "Battlefield",
+                  "owner": 1
+                }
+              ],
+              "expectedOptions": [
+                {
+                  "name": "Fleetfoot Dancer",
+                  "zone": "Battlefield",
+                  "owner": 1
+                }
+              ]
+            },
+            {
+              "kind": "assign_damage",
+              "total": 4,
+              "expectedOptions": [
+                {
+                  "name": "Grizzly Bears",
+                  "zone": "Battlefield",
+                  "owner": 2
+                },
+                {
+                  "targetSeat": 2
+                }
+              ],
+              "allocations": [
+                {
+                  "target": {
+                    "name": "Grizzly Bears",
+                    "zone": "Battlefield",
+                    "owner": 2
+                  },
+                  "amount": 2
+                },
+                {
+                  "target": {
+                    "targetSeat": 2
+                  },
+                  "amount": 2
+                }
+              ],
+              "probeInvalid": true
+            }
+          ]
+        },
+        {
+          "op": "assert",
+          "state": {
+            "life": 24,
+            "opponentLife": 18
+          },
+          "objects": [
+            {
+              "selector": {
+                "name": "Fleetfoot Dancer",
+                "zone": "Battlefield",
+                "owner": 1
+              },
+              "values": {
+                "power": 4,
+                "toughness": 4,
+                "damage": 2
+              }
+            },
+            {
+              "selector": {
+                "name": "Grizzly Bears",
+                "zone": "Graveyard",
+                "owner": 2
+              },
+              "values": {
+                "power": 2,
+                "toughness": 2
+              }
+            }
+          ],
+          "damageEvents": [
+            {
+              "source": {
+                "name": "Fleetfoot Dancer",
+                "zone": "Battlefield",
+                "owner": 1
+              },
+              "target": {
+                "name": "Grizzly Bears",
+                "zone": "Graveyard",
+                "owner": 2
+              },
+              "amount": 2
+            },
+            {
+              "source": {
+                "name": "Fleetfoot Dancer",
+                "zone": "Battlefield",
+                "owner": 1
+              },
+              "target": {
+                "targetSeat": 2
+              },
+              "amount": 2
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "trample-double-strike",
+      "card": "Swiftblade Vindicator",
+      "covers": [
+        "trample-double-strike"
+      ],
+      "fixture": {
+        "fixtureHand": [],
+        "fixtureLands": [],
+        "fixtureBattlefield": [
+          "Swiftblade Vindicator"
+        ],
+        "fixtureBattlefieldReady": true,
+        "fixtureOpponentBattlefield": [
+          "Moss Viper"
+        ],
+        "fixtureOpponentPolicy": "block-all"
+      },
+      "steps": [
+        {
+          "op": "advance",
+          "phase": "MAIN2",
+          "activeSeat": 1,
+          "decisions": [
+            {
+              "kind": "attackers",
+              "choose": [
+                {
+                  "name": "Swiftblade Vindicator",
+                  "zone": "Battlefield",
+                  "owner": 1
+                }
+              ],
+              "expectedOptions": [
+                {
+                  "name": "Swiftblade Vindicator",
+                  "zone": "Battlefield",
+                  "owner": 1
+                }
+              ]
+            },
+            {
+              "kind": "assign_damage",
+              "total": 1,
+              "expectedOptions": [
+                {
+                  "name": "Moss Viper",
+                  "zone": "Battlefield",
+                  "owner": 2
+                },
+                {
+                  "targetSeat": 2
+                }
+              ],
+              "allocations": [
+                {
+                  "target": {
+                    "name": "Moss Viper",
+                    "zone": "Battlefield",
+                    "owner": 2
+                  },
+                  "amount": 1
+                },
+                {
+                  "target": {
+                    "targetSeat": 2
+                  },
+                  "amount": 0
+                }
+              ],
+              "probeInvalid": true
+            }
+          ]
+        },
+        {
+          "op": "assert",
+          "state": {
+            "life": 20,
+            "opponentLife": 19
+          },
+          "objects": [
+            {
+              "selector": {
+                "name": "Swiftblade Vindicator",
+                "zone": "Battlefield",
+                "owner": 1
+              },
+              "values": {
+                "power": 1,
+                "toughness": 1,
+                "damage": 0
+              }
+            },
+            {
+              "selector": {
+                "name": "Moss Viper",
+                "zone": "Graveyard",
+                "owner": 2
+              },
+              "values": {
+                "power": 1,
+                "toughness": 1
+              }
+            }
+          ],
+          "damageEvents": [
+            {
+              "source": {
+                "name": "Swiftblade Vindicator",
+                "zone": "Battlefield",
+                "owner": 1
+              },
+              "target": {
+                "name": "Moss Viper",
+                "zone": "Graveyard",
+                "owner": 2
+              },
+              "amount": 1
+            },
+            {
+              "source": {
+                "name": "Swiftblade Vindicator",
+                "zone": "Battlefield",
+                "owner": 1
+              },
+              "target": {
+                "targetSeat": 2
+              },
+              "amount": 1
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "scope": "Single and multiple blockers, player remainder, legal overkill, lifelink and double strike. Positive damage checked as events. No banding, replacement or planeswalker/battle allocation claim."
+}

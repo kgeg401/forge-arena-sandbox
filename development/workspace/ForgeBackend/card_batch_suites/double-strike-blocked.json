@@ -1,0 +1,246 @@
+{
+  "schema": 2,
+  "name": "Blocked double strike does not become trample",
+  "cards": {
+    "Fencing Ace": [
+      "blocked-first-kill",
+      "pump-blocked-first-kill"
+    ]
+  },
+  "cases": [
+    {
+      "id": "double-strike-blocked-first-kill",
+      "card": "Fencing Ace",
+      "covers": [
+        "blocked-first-kill"
+      ],
+      "fixture": {
+        "fixtureHand": [],
+        "fixtureLands": [],
+        "fixtureBattlefield": [
+          "Fencing Ace"
+        ],
+        "fixtureBattlefieldReady": true,
+        "fixtureOpponentBattlefield": [
+          "Coral Merfolk"
+        ],
+        "fixtureOpponentPolicy": "block-all"
+      },
+      "steps": [
+        {
+          "op": "advance",
+          "phase": "MAIN2",
+          "activeSeat": 1,
+          "decisions": [
+            {
+              "kind": "attackers",
+              "expectedOptions": [
+                {
+                  "name": "Fencing Ace",
+                  "owner": 1,
+                  "zone": "Battlefield"
+                }
+              ],
+              "choose": [
+                {
+                  "name": "Fencing Ace",
+                  "owner": 1,
+                  "zone": "Battlefield"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "op": "assert",
+          "state": {
+            "life": 20,
+            "opponentLife": 20
+          },
+          "objects": [
+            {
+              "selector": {
+                "name": "Fencing Ace",
+                "owner": 1,
+                "zone": "Battlefield"
+              },
+              "values": {
+                "power": 1,
+                "toughness": 1,
+                "damage": 0
+              }
+            },
+            {
+              "selector": {
+                "name": "Coral Merfolk",
+                "owner": 2,
+                "zone": "Graveyard"
+              },
+              "values": {
+                "power": 2,
+                "toughness": 1
+              }
+            }
+          ],
+          "damageEvents": [
+            {
+              "source": {
+                "name": "Fencing Ace",
+                "owner": 1,
+                "zone": "Battlefield"
+              },
+              "target": {
+                "name": "Coral Merfolk",
+                "owner": 2,
+                "zone": "Graveyard"
+              },
+              "amount": 1
+            }
+          ]
+        }
+      ],
+      "oracleSource": {
+        "actorPrinting": 69801,
+        "actorScriptSha256": "effa3e7d4baf67b3b28ecfd842011d30c0246bc66443d2c71573a66b74aa0547",
+        "enemyPrinting": 70099,
+        "pumpPrinting": null,
+        "nativeRule": "Blocked double striker without trample has no surviving blocker for regular damage; it does not damage the defending player."
+      },
+      "scope": "First-strike kills the actual blocker; no regular-step player damage without trample. Pump variant also checks additive temporary stats before damage."
+    },
+    {
+      "id": "double-strike-pump-blocked-first-kill",
+      "card": "Fencing Ace",
+      "covers": [
+        "pump-blocked-first-kill"
+      ],
+      "fixture": {
+        "fixtureHand": [
+          "Giant Growth"
+        ],
+        "fixtureLands": [
+          "Forest"
+        ],
+        "fixtureBattlefield": [
+          "Fencing Ace"
+        ],
+        "fixtureBattlefieldReady": true,
+        "fixtureOpponentBattlefield": [
+          "Grizzly Bears"
+        ],
+        "fixtureOpponentPolicy": "block-all"
+      },
+      "steps": [
+        {
+          "op": "cast",
+          "card": "Giant Growth",
+          "mana": 1,
+          "draw": 0,
+          "life": 0,
+          "targetPlan": {
+            "kind": "targets",
+            "expectedOptions": [
+              {
+                "name": "Fencing Ace",
+                "owner": 1,
+                "zone": "Battlefield"
+              },
+              {
+                "name": "Grizzly Bears",
+                "owner": 2,
+                "zone": "Battlefield"
+              }
+            ],
+            "choose": [
+              {
+                "name": "Fencing Ace",
+                "owner": 1,
+                "zone": "Battlefield"
+              }
+            ]
+          }
+        },
+        {
+          "op": "advance",
+          "phase": "MAIN2",
+          "activeSeat": 1,
+          "decisions": [
+            {
+              "kind": "attackers",
+              "expectedOptions": [
+                {
+                  "name": "Fencing Ace",
+                  "owner": 1,
+                  "zone": "Battlefield"
+                }
+              ],
+              "choose": [
+                {
+                  "name": "Fencing Ace",
+                  "owner": 1,
+                  "zone": "Battlefield"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "op": "assert",
+          "state": {
+            "life": 20,
+            "opponentLife": 20
+          },
+          "objects": [
+            {
+              "selector": {
+                "name": "Fencing Ace",
+                "owner": 1,
+                "zone": "Battlefield"
+              },
+              "values": {
+                "power": 4,
+                "toughness": 4,
+                "damage": 0
+              }
+            },
+            {
+              "selector": {
+                "name": "Grizzly Bears",
+                "owner": 2,
+                "zone": "Graveyard"
+              },
+              "values": {
+                "power": 2,
+                "toughness": 2
+              }
+            }
+          ],
+          "damageEvents": [
+            {
+              "source": {
+                "name": "Fencing Ace",
+                "owner": 1,
+                "zone": "Battlefield"
+              },
+              "target": {
+                "name": "Grizzly Bears",
+                "owner": 2,
+                "zone": "Graveyard"
+              },
+              "amount": 4
+            }
+          ]
+        }
+      ],
+      "oracleSource": {
+        "actorPrinting": 69801,
+        "actorScriptSha256": "effa3e7d4baf67b3b28ecfd842011d30c0246bc66443d2c71573a66b74aa0547",
+        "enemyPrinting": 79334,
+        "pumpPrinting": 69613,
+        "nativeRule": "Blocked double striker without trample has no surviving blocker for regular damage; it does not damage the defending player."
+      },
+      "scope": "First-strike kills the actual blocker; no regular-step player damage without trample. Pump variant also checks additive temporary stats before damage."
+    }
+  ],
+  "scope": "Specific source-validated double-strike/blocked-first-kill boundary; not arbitrary combat or admission."
+}

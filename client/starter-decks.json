@@ -6,6 +6,8 @@
     {"file": "Black-Keywords-Practice.txt", "name": "Black Creatures"},
     {"file": "Red-Keywords-Practice.txt", "name": "Red Creatures"},
     {"file": "Green-Keywords-Practice.txt", "name": "Green Creatures"},
+    {"file": "Trample-and-Growth-Practice.txt", "name": "Trample and Growth"},
+    {"file": "Fire-and-Growth-Practice.txt", "name": "Fire and Growth"},
     {"file": "Hare-Apparent-Practice.txt", "name": "Hare Apparent"},
     {"file": "Brawl-Emry-Starter.txt", "name": "Emry Brawl"},
     {"file": "Brawl-Isamaru-Bot.txt", "name": "Isamaru Brawl"}

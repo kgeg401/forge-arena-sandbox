@@ -1,4 +1,4 @@
-# Forge Arena Sandbox - 0.01 alpha
+# Forge Arena Sandbox
 
 An unofficial local Magic sandbox with Arena's installed presentation and Forge
 running the rules. **Windows x64. Experimental. No multiplayer.**
@@ -6,7 +6,7 @@ running the rules. **Windows x64. Experimental. No multiplayer.**
 ## Install once
 
 1. Install MTG Arena separately and let it finish downloading its game content.
-2. Download **ForgeArenaSandbox-Windows.zip** from the **0.01 alpha** GitHub
+2. Download **ForgeArenaSandbox-Windows.zip** from the current Windows GitHub
    release. Extract the entire ZIP and run **Setup.exe**.
 3. Choose the Arena folder and a separate sandbox destination. **Check Arena**
    checks compatibility. **Install sandbox** checks and completes installation.
@@ -31,7 +31,7 @@ A different build is rejected rather than changing your retail installation.
   99 main cards plus one commander, singleton except basics, color identity,
   25 life, a free first mulligan, command-zone returns and commander tax.
 - **Decks:** create, import Arena deck text, edit, duplicate, export or delete
-  local decks. Fresh profiles receive eight recommended starters. Choose Practice or Brawl when creating a deck. Click the deck
+  local decks. Fresh profiles receive recommended starters. Choose Practice or Brawl when creating a deck. Click the deck
   header to change its local format. Brawl uses the native commander slot.
   Original search, color/land, type, rarity, mana and card-size controls are connected.
   Local deck changes also save on a normal client exit.
@@ -53,8 +53,9 @@ omitted. This is not a claim of complete retail UI or behavior parity.
 
 ## Current limits
 
-**252 main-deck card names are admitted**, plus separately verified commanders
-and tokens. The exact list is in release-info.json. Most Arena cards are still
+**Only explicitly verified main-deck names are admitted**, plus separately verified commanders
+and tokens. The current count and exact names are generated in
+[SUPPORTED-CARDS.md](docs/SUPPORTED-CARDS.md) and `release-info.json`. Most Arena cards are still
 unverified for this bridge and cannot enter a match, even though they can be
 browsed, opened or saved in a deck. A warning explains what blocks each deck.
 
@@ -90,8 +91,9 @@ rollback. Rollback pauses automatic updates until an explicit update is applied.
 Use the documented maintenance scripts for update/rollback diagnostics; do not
 remove the data folder when troubleshooting.
 
-The release name **0.01 alpha** uses internal update version
-`0.2.0-alpha.1` so it sorts after the earlier public test builds.
+The exact display and update versions are recorded in `release-info.json`.
+Newer releases use increasing update versions; a display title does not change
+which update is newer.
 
 See [the player guide](docs/FAQ.md) and [exact supported names](docs/SUPPORTED-CARDS.md) for details.
 

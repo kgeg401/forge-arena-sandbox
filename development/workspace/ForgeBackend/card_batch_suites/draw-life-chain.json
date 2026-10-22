@@ -1,0 +1,127 @@
+{
+  "schema": 1,
+  "name": "Eight-spell mixed interaction sequence",
+  "cards": {
+    "Sudden Insight": [
+      "mixed-eight-spell-sequence"
+    ]
+  },
+  "cases": [
+    {
+      "id": "eight-spell-sequence",
+      "card": "Sudden Insight",
+      "covers": [
+        "mixed-eight-spell-sequence"
+      ],
+      "fixture": {
+        "fixtureHand": [
+          "Feed the Clan",
+          "Frantic Inventory",
+          "Life Goes On",
+          "Revitalize",
+          "Ritual of Rejuvenation",
+          "Sphinx's Insight",
+          "Sudden Insight",
+          "Union of the Third Path"
+        ],
+        "fixtureLands": [
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest"
+        ]
+      },
+      "steps": [
+        {
+          "op": "cast",
+          "card": "Feed the Clan",
+          "mana": 2,
+          "draw": 0,
+          "life": 5
+        },
+        {
+          "op": "cast",
+          "card": "Frantic Inventory",
+          "mana": 2,
+          "draw": 1,
+          "life": 0
+        },
+        {
+          "op": "cast",
+          "card": "Life Goes On",
+          "mana": 1,
+          "draw": 0,
+          "life": 4
+        },
+        {
+          "op": "cast",
+          "card": "Revitalize",
+          "mana": 2,
+          "draw": 1,
+          "life": 3
+        },
+        {
+          "op": "cast",
+          "card": "Ritual of Rejuvenation",
+          "mana": 3,
+          "draw": 1,
+          "life": 4
+        },
+        {
+          "op": "cast",
+          "card": "Sphinx's Insight",
+          "mana": 4,
+          "draw": 2,
+          "life": 2
+        },
+        {
+          "op": "cast",
+          "card": "Sudden Insight",
+          "mana": 6,
+          "draw": 4,
+          "life": 0
+        },
+        {
+          "op": "cast",
+          "card": "Union of the Third Path",
+          "mana": 3,
+          "draw": 1,
+          "life": 10
+        }
+      ]
+    }
+  ],
+  "scope": "Eight distinct input-driven casts in one initialized Forge game. Primary branch attribution is Sudden Insight; this is not broad or native admission for any of the eight cards."
+}

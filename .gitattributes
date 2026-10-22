@@ -1,0 +1,2 @@
+# Preserve exact source/policy bytes for pinned hashes and snapshot verification.
+* -text whitespace=cr-at-eol

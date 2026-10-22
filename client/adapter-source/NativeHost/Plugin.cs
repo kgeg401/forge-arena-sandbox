@@ -155,6 +155,15 @@ public sealed class Plugin : BaseUnityPlugin
                   var uiButtonInfo=uiButtons.Select(b=>{var model=(PromptButtonData)buttonModel.GetValue(b);return new{path=ButtonPath(b),enabled=model.Enabled && b.IsInteractable(),key=model.ButtonText?.Key};}).ToArray();
                   object? mulliganBrowser=null;
                   for(var type=activeWorkflow?.GetType();type!=null;type=type.BaseType){var field=type.GetField("_openedBrowser",System.Reflection.BindingFlags.Instance|System.Reflection.BindingFlags.NonPublic|System.Reflection.BindingFlags.DeclaredOnly);if(field!=null){mulliganBrowser=field.GetValue(activeWorkflow);break;}}
+                  var orderCardIds=(mulliganBrowser as Wotc.Mtga.DuelScene.Browsers.OrderCardsBrowser)?.GetCardViews().Select(v=>v.InstanceId).ToArray();
+                  var damageRows=activeWorkflow?.GetType().GetMethod("GetOrderedDamageAssignments",System.Reflection.BindingFlags.Instance|System.Reflection.BindingFlags.NonPublic)?.Invoke(activeWorkflow,null) as IEnumerable<Wotc.Mtga.DuelScene.Interactions.AssignDamage.MtgDamageAssignment>;
+                  var damageAssignments=damageRows?.Select(v=>new{instanceId=v.InstanceId,assignedDamage=v.AssignedDamage,lethalDamage=v.LethalDamage,isPlayer=v.IsPlayerInstance,isAttackQuarry=v.IsAttackQuarry}).ToArray();
+                  var damageBrowser=activeWorkflow?.GetType().GetField("_assignDamageBrowser",System.Reflection.BindingFlags.Instance|System.Reflection.BindingFlags.NonPublic)?.GetValue(activeWorkflow) as Wotc.Mtga.DuelScene.Browsers.AssignDamageBrowser;
+                  var damageToggle=damageBrowser?.GetType().GetField("_autoAssignLethalToggle",System.Reflection.BindingFlags.Instance|System.Reflection.BindingFlags.NonPublic)?.GetValue(damageBrowser) as UnityEngine.UI.Toggle;
+                  var damageSpinners=damageBrowser?.GetType().GetField("_idToSpinnerMap",System.Reflection.BindingFlags.Instance|System.Reflection.BindingFlags.NonPublic)?.GetValue(damageBrowser) as Dictionary<uint,SpinnerAnimated>;
+                  UnityEngine.UI.Button? SpinnerButton(SpinnerAnimated spinner,bool up)=>typeof(SpinnerAnimated).GetField(up?"_upButton":"_downButton",System.Reflection.BindingFlags.Instance|System.Reflection.BindingFlags.NonPublic)?.GetValue(spinner) as UnityEngine.UI.Button;
+                  bool Available(UnityEngine.UI.Selectable? control)=>control!=null && control.gameObject.activeInHierarchy && control.IsInteractable();
+                  var damageControls=new{autoAssign=damageToggle==null?null:new{value=damageToggle.isOn,enabled=Available(damageToggle)},spinners=damageSpinners?.Select(v=>new{instanceId=v.Key,value=v.Value.Value,increase=Available(SpinnerButton(v.Value,true)),decrease=Available(SpinnerButton(v.Value,false))}).ToArray()};
                   int? HandlerCount(string name)=>mulliganBrowser==null?null:(mulliganBrowser.GetType().GetField(name,System.Reflection.BindingFlags.Instance|System.Reflection.BindingFlags.NonPublic)?.GetValue(mulliganBrowser) as Delegate)?.GetInvocationList().Length ?? 0;
                   bool? KeepTargetsCurrent()=>mulliganBrowser==null?null:(mulliganBrowser.GetType().GetField("KeepPressed",System.Reflection.BindingFlags.Instance|System.Reflection.BindingFlags.NonPublic)?.GetValue(mulliganBrowser) as Delegate)?.GetInvocationList().All(d=>ReferenceEquals(d.Target,activeWorkflow));
                   GreClient.Rules.BaseUserRequest? observedRequest=null;
@@ -164,7 +173,7 @@ public sealed class Plugin : BaseUnityPlugin
                 var hits=new List<RaycastResult>();
                 var point=new Vector2((float?)action["x"]??0,(float?)action["y"]??0);
                 if(EventSystem.current!=null && action["x"]!=null)EventSystem.current.RaycastAll(new PointerEventData(EventSystem.current){position=point},hits);
-                  File.WriteAllText(Path.Combine(_root,"native-action-probe.json"),JsonConvert.SerializeObject(new{utc=DateTime.UtcNow,workflow=activeWorkflow?.GetType().Name,applied=activeWorkflow?.AppliedState.ToString(),nativeState=game?.CurrentGameState?.Id,nativeRequest=observedRequest==null?null:new{type=observedRequest.GetType().Name,state=observedRequest.OriginalMessage.GameStateId,message=observedRequest.OriginalMessage.MsgId,submitListeners=observedRequest.OnSubmit?.GetInvocationList().Length ?? 0},uiButtons=uiButtonInfo,mulliganHandlers=new{browser=mulliganBrowser?.GetType().Name,keep=HandlerCount("KeepPressed"),mulligan=HandlerCount("MulliganPressed"),keepTargetsCurrent=KeepTargetsCurrent()},buttons=activeWorkflow?.Buttons?.WorkflowButtons.Select(b=>new{text=b.ButtonText.ToString(),tag=b.Tag.ToString(),enabled=b.Enabled}).ToArray(),screen=new{width=Screen.width,height=Screen.height},focused=Application.isFocused,inputModule=EventSystem.current?.currentInputModule?.GetType().FullName,
+                  File.WriteAllText(Path.Combine(_root,"native-action-probe.json"),JsonConvert.SerializeObject(new{utc=DateTime.UtcNow,workflow=activeWorkflow?.GetType().Name,applied=activeWorkflow?.AppliedState.ToString(),nativeState=game?.CurrentGameState?.Id,orderCardIds,damageAssignments,damageControls,nativeRequest=observedRequest==null?null:new{type=observedRequest.GetType().Name,state=observedRequest.OriginalMessage.GameStateId,message=observedRequest.OriginalMessage.MsgId,submitListeners=observedRequest.OnSubmit?.GetInvocationList().Length ?? 0},uiButtons=uiButtonInfo,mulliganHandlers=new{browser=mulliganBrowser?.GetType().Name,keep=HandlerCount("KeepPressed"),mulligan=HandlerCount("MulliganPressed"),keepTargetsCurrent=KeepTargetsCurrent()},buttons=activeWorkflow?.Buttons?.WorkflowButtons.Select(b=>new{text=b.ButtonText.ToString(),tag=b.Tag.ToString(),enabled=b.Enabled}).ToArray(),screen=new{width=Screen.width,height=Screen.height},focused=Application.isFocused,inputModule=EventSystem.current?.currentInputModule?.GetType().FullName,
                     mouse=UnityEngine.InputSystem.Mouse.current?.position.ReadValue().ToString(),hovered=Wotc.Mtga.CustomInput.CustomUIInputModule.GetHovered().Select(g=>g.name).ToArray(),inputEvents=NativeInputDiagnostics.Events.ToArray(),
                     raycasters=UnityEngine.Object.FindObjectsByType<BaseRaycaster>(FindObjectsSortMode.None).Select(r=>new{name=r.name,type=r.GetType().Name,enabled=r.enabled,camera=r.eventCamera?.name}).ToArray(),
                     raycast=hits.Select(h=>new{name=h.gameObject.name,module=h.module.GetType().Name,card=h.gameObject.GetComponentInParent<DuelScene_CDC>()?.InstanceId,distance=h.distance}).ToArray(),
@@ -194,6 +203,25 @@ public sealed class Plugin : BaseUnityPlugin
                       var model=(PromptButtonData)buttonModel.GetValue(button);
                       if(!model.Enabled || !button.IsInteractable())throw new NativeQaRejectedException("Native UI button is disabled.");
                       button.onClick.Invoke();
+                  }
+                  else if((string?)action["op"]=="damage_toggle" || (string?)action["op"]=="damage_spinner")
+                  {
+                      if(activeWorkflow?.GetType().Name!="AssignDamageWorkflow" || activeWorkflow.AppliedState!=InteractionAppliedState.Applied || game?.CurrentGameState?.Id!=(uint?)action["nativeState"] || damageBrowser==null)throw new NativeQaRejectedException("Native damage context changed; inspect again.");
+                      if((string?)action["op"]=="damage_toggle")
+                      {
+                          if(!Available(damageToggle) || damageToggle!.isOn!=(bool?)action["expectedValue"])throw new NativeQaRejectedException("Original damage toggle changed or is unavailable.");
+                          damageToggle.isOn=!damageToggle.isOn;
+                      }
+                      else
+                      {
+                          uint instance=(uint)action["instanceId"]!;
+                          if(damageSpinners==null || !damageSpinners.TryGetValue(instance,out var spinner) || spinner.Value!=(int?)action["expectedValue"])throw new NativeQaRejectedException("Original damage spinner changed or is unavailable.");
+                          string? direction=(string?)action["direction"];
+                          if(direction!="increase" && direction!="decrease")throw new NativeQaRejectedException("Unknown spinner direction.");
+                          var button=SpinnerButton(spinner,direction=="increase");
+                          if(!Available(button))throw new NativeQaRejectedException("Original damage spinner button is disabled.");
+                          button!.onClick.Invoke();
+                      }
                   }
                   else if((string?)action["op"]!="inspect")throw new NativeQaRejectedException("Unknown native QA operation.");
                   if((string?)action["op"]!="inspect")QaResult(true);

@@ -20,6 +20,15 @@ def norm(name):
     value=unicodedata.normalize('NFKC',clean_name(name)).replace('’',"'").replace('−','-').casefold().strip()
     return re.sub(r'\s*/{2,3}\s*',' // ',value)
 
+def checked_target_prompt(db,name,binding):
+    if set(binding)!={'promptId','expectedText'} or type(binding['promptId']) is not int or binding['promptId']<=0:
+        raise ValueError(('Invalid explicit target prompt binding',name))
+    rows=list(db.execute('SELECT l.Loc FROM Prompts p JOIN Localizations_enUS l ON p.LocId=l.LocId WHERE p.Id=? AND l.Formatted=1',(binding['promptId'],)))
+    normalized=[html.unescape(re.sub('<[^>]+>','',row[0])).strip() for row in rows]
+    if normalized!=[binding['expectedText']]:raise ValueError(('Owned target prompt text differs',name))
+    return binding['promptId']
+
+
 def build():
     digest=hashlib.sha256(DB.read_bytes()).hexdigest()
     if digest!=EXPECTED:raise ValueError('Owned Arena database changed; inspect before mapping cards.')
@@ -27,6 +36,7 @@ def build():
     verified=set(policy['verifiedNames']);candidates=set(policy['candidateNames'])
     if verified&candidates or len(verified)!=len(policy['verifiedNames']) or len(candidates)!=len(policy['candidateNames']):raise ValueError('Duplicate or overlapping admission/candidate names')
     if set(policy['preferredPrintings'])!=verified|candidates:raise ValueError('Runtime printings must be explicitly verified or candidates')
+    if not set(policy.get('targetPromptBindings',{}))<=verified|candidates:raise ValueError('Target prompt bindings must belong to explicit runtime cards')
     enums={(r['Type'],r['Value']):r['Loc'] for r in db.execute('SELECT e.Type,e.Value,l.Loc FROM Enums e JOIN Localizations_enUS l ON l.LocId=e.LocId AND l.Formatted=1')}
     def enum_values(kind,text):return [enums[(kind,int(v))] for v in filter(None,text.split(','))]
     scripts=defaultdict(list);definitions={}
@@ -92,6 +102,9 @@ def build():
         bound+=list(bindings.get('activated',{}).values())
         if any(v not in ability_ids for v in bound):raise ValueError(('Ability binding is absent from source printing',name))
         runtime[name]['abilityBindings']=bindings
+        prompt_binding=policy.get('targetPromptBindings',{}).get(name)
+        if prompt_binding is not None:
+            runtime[name]['targetPromptId']=checked_target_prompt(db,name,prompt_binding)
     for token in policy['tokens']:
         r=all_rows[token['arenaGrpId']];source=all_rows[policy['preferredPrintings'][token['sourceName']]]
         links=dict(p.split(':') for p in source['AbilityIdToLinkedTokenGrpId'].split(',') if p)

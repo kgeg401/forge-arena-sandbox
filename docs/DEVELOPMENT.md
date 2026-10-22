@@ -11,6 +11,9 @@ installable release and contains no Arena assemblies, assets or private profiles
 - `client/decks/` and `client/starter-decks.json`: deck inputs and the recommended
   starter list. Internal regression decks are not all seeded into new profiles.
 - `docs/`: player guide, supported-name policy and validation boundaries.
+- `development/workspace/`: matching authored development sources, batch
+  generators, QA tools and historical notes. Disabled research is marked
+  separately; raw evidence and game assets are excluded.
 - `.github/`: issue forms and headless Windows source checks.
 
 The native game uses an isolated copy of owned files in a zero-network-capability
@@ -43,25 +46,10 @@ compiler and its WinForms/Drawing/Web.Extensions assemblies.
 
 ## Validation and releases
 
-The headless workflow runs authored installer/updater/coordinator fixtures,
-15 compiled Python-bootstrap checks and 11 compiled display-profile checks. It
+The headless workflow runs authored installer/updater/coordinator fixtures. It
 does not contain game assets and cannot establish rendered gameplay, native
 input parity, card-rule support or a successful recipient-PC installation.
 See [verification](VERIFICATION.md) for the separate native evidence.
-
-From a Windows source checkout, the checks without game files are:
-
-```powershell
-python -X utf8 -B client/verify_tester_updates.py
-python -X utf8 -B client/verify_startup_updates.py
-python -X utf8 -B client/verify_dependencies.py
-python -X utf8 -B client/verify_client_service.py
-./client/verify_bootstrap.ps1
-dotnet run --project client/adapter-source/Tests/DisplaySettingsProbe.csproj -- "$env:TEMP/ForgeArenaDisplayProbe"
-```
-
-Use a new empty fixture directory for the display probe; it deliberately writes
-invalid examples there. The .NET 8 SDK is needed for that compiled probe.
 
 A release needs a Windows package with a valid `release-manifest.json`, pinned
 prerequisites, corresponding authored source and the exact admission policy used

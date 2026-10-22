@@ -1,8 +1,44 @@
-# 0.01 alpha: validation and limits
+# Validation and limits
 
-Display release: **0.01 alpha**. Update version: **0.2.0-alpha.1**.
-Acceptance work: 22 October 2026, on one Windows PC. This is an alpha, not a
-claim that every Arena screen, card or animation has been reproduced.
+The current release's enabled names are generated into
+[SUPPORTED-CARDS.md](SUPPORTED-CARDS.md). Its exact update version is recorded in
+`release-info.json`; its support policy is `ForgeBackend/bridge_support.json`.
+This remains an alpha, not a claim that every Arena card or animation works.
+
+The native-menu acceptance below records the original **0.01 alpha** checkpoint
+on 22 October 2026, on one Windows PC. Later catalogue batches add evidence for
+specific mechanics; they do not turn these historical checks into an exhaustive
+validation of every interaction.
+
+## 370-card catalogue checkpoint
+
+The 22 October 2026 delivery checkpoint expanded the locally installed policy
+from 278 to 370 verified Arena card names. The earlier public release had 252.
+These additions cover trample creatures, removal, fixed creature damage,
+temporary stat changes, and reviewed draw/life effects.
+
+- The final 59 effect cards passed 477 targeted rules scenarios / 10,301
+  assertions, 62 fresh-process reference comparisons, 24 complete shuffled
+  Forge games, 899 original native control checks and 59 native model/art checks.
+- The first 33 additions reuse reviewed, sealed source and gameplay evidence.
+- Production regression passed 25 stages / 272 recorded engine assertions and
+  three complete games. Compiled package classes match the gameplay-tested ones.
+- A normally shuffled installed game completed 75 original native control
+  actions over 31 turns. Native stats and annotations confirm Bombard, Ragefire,
+  Giant Growth and Titanic Growth. An earlier short loss lacked burn coverage;
+  it is retained as a coverage shortfall. The longer game's bounded timeout was
+  resumed in the same session without replaying accepted inputs.
+- Installed acceptance checks policy, enabled deck-builder names, support index,
+  the live zero-network native process and original Home together. Existing
+  decks, collection, preferences and play selection were preserved. Only the
+  two declared new practice decks were added.
+- Activation/rollback/reapply preserved saved profiles. Paradox Engine remains
+  a disabled research draft and is not a supported card.
+
+These are bounded mechanic and integration checks on one PC. Representative
+complete games do not establish every possible Magic interaction, complete
+animation parity or a successful installation on another PC. Release shipping
+checks are recorded separately in the release notes.
 
 ## Native client checks
 
@@ -65,14 +101,14 @@ Forge: **2.0.15**. The installer verifies the exact files in `requirements.json`
 and `dependencies-lock.json` before use. For source checkouts, those files are
 under `client/`.
 
-The admission-policy SHA-256 is
-`a3df92158b0d95ba37572818ed2803525340a554223f4b6b322ae40d6347516d`.
-The packaged support index must identify that same policy and Forge scripts.
+The packaged support index must identify the exact SHA-256 of that release's
+admission policy and its pinned Forge scripts. The running client's generated
+manifest and deck builder must agree with it.
 
 ## Remaining gaps
 
-Only **252 main-deck names**, plus the separately verified Brawl commanders and
-token, are admitted. Unverified cards can be browsed, opened and stored but
+Only names in the current supported list, plus the separately verified Brawl
+commanders and token, are admitted. Unverified cards can be browsed, opened and stored but
 cannot enter a match. Emry support does not imply that every Emry deck works.
 
 Both queues use local Forge AI. Online matchmaking, multiplayer, account

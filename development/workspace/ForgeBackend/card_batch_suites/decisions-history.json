@@ -1,0 +1,456 @@
+{
+  "schema": 2,
+  "name": "Authored target and actual-history scenarios",
+  "cards": {
+    "Life Goes On": [
+      "old-graveyard-is-not-a-death",
+      "actual-creature-death",
+      "death-history-expires"
+    ],
+    "Sphinx's Insight": [
+      "opponent-main-no-addendum"
+    ],
+    "Unsummon": [
+      "friendly-target",
+      "enemy-target",
+      "cancel",
+      "hexproof-exclusion",
+      "no-legal-target"
+    ]
+  },
+  "cases": [
+    {
+      "id": "life-old-graveyard",
+      "card": "Life Goes On",
+      "covers": [
+        "old-graveyard-is-not-a-death"
+      ],
+      "fixture": {
+        "fixtureHand": [
+          "Life Goes On"
+        ],
+        "fixtureLands": [
+          "Forest"
+        ],
+        "fixtureGraveyard": [
+          "Grizzly Bears"
+        ]
+      },
+      "steps": [
+        {
+          "op": "cast",
+          "card": "Life Goes On",
+          "mana": 1,
+          "draw": 0,
+          "life": 4
+        }
+      ]
+    },
+    {
+      "id": "life-real-death-and-expiry",
+      "card": "Life Goes On",
+      "covers": [
+        "actual-creature-death",
+        "death-history-expires"
+      ],
+      "fixture": {
+        "fixtureHand": [
+          "Life Goes On",
+          "Life Goes On"
+        ],
+        "fixtureLands": [
+          "Forest",
+          "Forest"
+        ],
+        "fixtureBattlefield": [
+          "Grizzly Bears"
+        ],
+        "fixtureOpponentBattlefield": [
+          "Rumbling Baloth"
+        ],
+        "fixtureActiveSeat": 2,
+        "fixtureOpponentPolicy": "attack-all"
+      },
+      "steps": [
+        {
+          "op": "advance",
+          "phase": "MAIN2",
+          "activeSeat": 2,
+          "decisions": [
+            {
+              "kind": "blockers",
+              "assignments": [
+                {
+                  "blocker": {
+                    "name": "Grizzly Bears",
+                    "owner": 1,
+                    "zone": "Battlefield"
+                  },
+                  "attackers": [
+                    {
+                      "name": "Rumbling Baloth",
+                      "owner": 2,
+                      "zone": "Battlefield"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "op": "assert",
+          "objects": [
+            {
+              "selector": {
+                "name": "Grizzly Bears",
+                "owner": 1,
+                "zone": "Graveyard"
+              },
+              "values": {
+                "zone": "Graveyard"
+              }
+            },
+            {
+              "selector": {
+                "name": "Rumbling Baloth",
+                "owner": 2,
+                "zone": "Battlefield"
+              },
+              "values": {
+                "damage": 2
+              }
+            }
+          ],
+          "state": {
+            "life": 20
+          }
+        },
+        {
+          "op": "cast",
+          "card": "Life Goes On",
+          "mana": 1,
+          "draw": 0,
+          "life": 8,
+          "selector": {
+            "name": "Life Goes On",
+            "owner": 1,
+            "zone": "Hand",
+            "index": 0
+          }
+        },
+        {
+          "op": "advance",
+          "phase": "MAIN1",
+          "activeSeat": 1,
+          "decisions": []
+        },
+        {
+          "op": "cast",
+          "card": "Life Goes On",
+          "mana": 1,
+          "draw": 0,
+          "life": 4,
+          "selector": {
+            "name": "Life Goes On",
+            "owner": 1,
+            "zone": "Hand",
+            "index": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "sphinx-opponent-main",
+      "card": "Sphinx's Insight",
+      "covers": [
+        "opponent-main-no-addendum"
+      ],
+      "fixture": {
+        "fixtureHand": [
+          "Sphinx's Insight"
+        ],
+        "fixtureLands": [
+          "Plains",
+          "Plains",
+          "Island",
+          "Island"
+        ],
+        "fixtureActiveSeat": 2
+      },
+      "steps": [
+        {
+          "op": "assert",
+          "state": {
+            "activeSeat": 2,
+            "phase": "MAIN1"
+          }
+        },
+        {
+          "op": "cast",
+          "card": "Sphinx's Insight",
+          "mana": 4,
+          "draw": 2,
+          "life": 0
+        }
+      ]
+    },
+    {
+      "id": "unsummon-friendly-target",
+      "card": "Unsummon",
+      "covers": [
+        "friendly-target"
+      ],
+      "fixture": {
+        "fixtureHand": [
+          "Unsummon"
+        ],
+        "fixtureLands": [
+          "Island"
+        ],
+        "fixtureBattlefield": [
+          "Yoked Ox"
+        ],
+        "fixtureOpponentBattlefield": [
+          "Grizzly Bears"
+        ]
+      },
+      "steps": [
+        {
+          "op": "cast",
+          "card": "Unsummon",
+          "mana": 1,
+          "draw": 0,
+          "life": 0,
+          "targetPlan": {
+            "kind": "targets",
+            "expectedOptions": [
+              {
+                "name": "Yoked Ox",
+                "owner": 1,
+                "zone": "Battlefield"
+              },
+              {
+                "name": "Grizzly Bears",
+                "owner": 2,
+                "zone": "Battlefield"
+              }
+            ],
+            "choose": [
+              {
+                "name": "Yoked Ox",
+                "owner": 1,
+                "zone": "Battlefield"
+              }
+            ],
+            "probeEmpty": true,
+            "probeStale": true
+          },
+          "zoneChanges": [
+            {
+              "selector": {
+                "name": "Yoked Ox",
+                "owner": 1,
+                "zone": "Battlefield"
+              },
+              "to": "Hand"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "unsummon-enemy-target",
+      "card": "Unsummon",
+      "covers": [
+        "enemy-target"
+      ],
+      "fixture": {
+        "fixtureHand": [
+          "Unsummon"
+        ],
+        "fixtureLands": [
+          "Island"
+        ],
+        "fixtureBattlefield": [
+          "Yoked Ox"
+        ],
+        "fixtureOpponentBattlefield": [
+          "Grizzly Bears"
+        ]
+      },
+      "steps": [
+        {
+          "op": "cast",
+          "card": "Unsummon",
+          "mana": 1,
+          "draw": 0,
+          "life": 0,
+          "targetPlan": {
+            "kind": "targets",
+            "expectedOptions": [
+              {
+                "name": "Yoked Ox",
+                "owner": 1,
+                "zone": "Battlefield"
+              },
+              {
+                "name": "Grizzly Bears",
+                "owner": 2,
+                "zone": "Battlefield"
+              }
+            ],
+            "choose": [
+              {
+                "name": "Grizzly Bears",
+                "owner": 2,
+                "zone": "Battlefield"
+              }
+            ],
+            "probeEmpty": true,
+            "probeStale": true
+          },
+          "zoneChanges": [
+            {
+              "selector": {
+                "name": "Grizzly Bears",
+                "owner": 2,
+                "zone": "Battlefield"
+              },
+              "to": "Hand"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "unsummon-cancel",
+      "card": "Unsummon",
+      "covers": [
+        "cancel"
+      ],
+      "fixture": {
+        "fixtureHand": [
+          "Unsummon"
+        ],
+        "fixtureLands": [
+          "Island"
+        ],
+        "fixtureBattlefield": [
+          "Yoked Ox"
+        ]
+      },
+      "steps": [
+        {
+          "op": "cast",
+          "card": "Unsummon",
+          "mana": 1,
+          "draw": 0,
+          "life": 0,
+          "targetPlan": {
+            "kind": "targets",
+            "expectedOptions": [
+              {
+                "name": "Yoked Ox",
+                "owner": 1,
+                "zone": "Battlefield"
+              }
+            ],
+            "cancel": true,
+            "probeEmpty": true,
+            "probeStale": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "unsummon-hexproof",
+      "card": "Unsummon",
+      "covers": [
+        "hexproof-exclusion"
+      ],
+      "fixture": {
+        "fixtureHand": [
+          "Unsummon"
+        ],
+        "fixtureLands": [
+          "Island"
+        ],
+        "fixtureBattlefield": [
+          "Yoked Ox"
+        ],
+        "fixtureOpponentBattlefield": [
+          "Nightveil Predator"
+        ]
+      },
+      "steps": [
+        {
+          "op": "cast",
+          "card": "Unsummon",
+          "mana": 1,
+          "draw": 0,
+          "life": 0,
+          "targetPlan": {
+            "kind": "targets",
+            "expectedOptions": [
+              {
+                "name": "Yoked Ox",
+                "owner": 1,
+                "zone": "Battlefield"
+              }
+            ],
+            "invalid": [
+              {
+                "name": "Nightveil Predator",
+                "owner": 2,
+                "zone": "Battlefield"
+              }
+            ],
+            "choose": [
+              {
+                "name": "Yoked Ox",
+                "owner": 1,
+                "zone": "Battlefield"
+              }
+            ]
+          },
+          "zoneChanges": [
+            {
+              "selector": {
+                "name": "Yoked Ox",
+                "owner": 1,
+                "zone": "Battlefield"
+              },
+              "to": "Hand"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "unsummon-no-target",
+      "card": "Unsummon",
+      "covers": [
+        "no-legal-target"
+      ],
+      "fixture": {
+        "fixtureHand": [
+          "Unsummon"
+        ],
+        "fixtureLands": [
+          "Island"
+        ],
+        "fixtureOpponentBattlefield": [
+          "Nightveil Predator"
+        ]
+      },
+      "steps": [
+        {
+          "op": "deny",
+          "card": "Unsummon"
+        }
+      ]
+    }
+  ],
+  "scope": "Explicit expected rules, legal target sets, cancellation and actual combat death. Research only; no native or admission claim."
+}

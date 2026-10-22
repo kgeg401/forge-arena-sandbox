@@ -1,0 +1,1892 @@
+{
+  "schema": 1,
+  "name": "Untargeted draw and life conditional batches",
+  "cards": {
+    "Feed the Clan": [
+      "no-creature",
+      "power-below-four",
+      "power-equals-four",
+      "wrong-color-rejected"
+    ],
+    "Frantic Inventory": [
+      "graveyard-zero",
+      "graveyard-one",
+      "graveyard-three",
+      "chained-copies",
+      "wrong-color-rejected"
+    ],
+    "Life Goes On": [
+      "no-death",
+      "creature-died-this-turn",
+      "wrong-color-rejected"
+    ],
+    "Revitalize": [
+      "main-phase",
+      "combat-phase",
+      "wrong-color-rejected"
+    ],
+    "Ritual of Rejuvenation": [
+      "main-phase",
+      "combat-phase",
+      "wrong-color-rejected"
+    ],
+    "Sphinx's Insight": [
+      "main-phase-addendum",
+      "combat-no-addendum",
+      "opponent-main-no-addendum",
+      "wrong-color-rejected"
+    ],
+    "Sudden Insight": [
+      "empty-graveyard",
+      "lands-excluded",
+      "duplicate-mana-values",
+      "distinct-mana-values",
+      "wrong-color-rejected"
+    ],
+    "Union of the Third Path": [
+      "last-card",
+      "cards-remain",
+      "wrong-color-rejected"
+    ],
+    "Visions of Beyond": [
+      "own-nineteen",
+      "own-twenty",
+      "enemy-twenty",
+      "split-graveyards",
+      "wrong-color-rejected"
+    ]
+  },
+  "cases": [
+    {
+      "id": "feed-no-creature",
+      "card": "Feed the Clan",
+      "covers": [
+        "no-creature"
+      ],
+      "fixture": {
+        "fixtureHand": [
+          "Feed the Clan"
+        ],
+        "fixtureLands": [
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest"
+        ]
+      },
+      "steps": [
+        {
+          "op": "cast",
+          "card": "Feed the Clan",
+          "mana": 2,
+          "draw": 0,
+          "life": 5
+        }
+      ]
+    },
+    {
+      "id": "feed-power-two",
+      "card": "Feed the Clan",
+      "covers": [
+        "power-below-four"
+      ],
+      "fixture": {
+        "fixtureHand": [
+          "Feed the Clan"
+        ],
+        "fixtureLands": [
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest"
+        ],
+        "fixtureBattlefield": [
+          "Grizzly Bears"
+        ]
+      },
+      "steps": [
+        {
+          "op": "cast",
+          "card": "Feed the Clan",
+          "mana": 2,
+          "draw": 0,
+          "life": 5
+        }
+      ]
+    },
+    {
+      "id": "feed-power-four",
+      "card": "Feed the Clan",
+      "covers": [
+        "power-equals-four"
+      ],
+      "fixture": {
+        "fixtureHand": [
+          "Feed the Clan"
+        ],
+        "fixtureLands": [
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest"
+        ],
+        "fixtureBattlefield": [
+          "Rumbling Baloth"
+        ]
+      },
+      "steps": [
+        {
+          "op": "cast",
+          "card": "Feed the Clan",
+          "mana": 2,
+          "draw": 0,
+          "life": 10
+        }
+      ]
+    },
+    {
+      "id": "frantic-0",
+      "card": "Frantic Inventory",
+      "covers": [
+        "graveyard-zero"
+      ],
+      "fixture": {
+        "fixtureHand": [
+          "Frantic Inventory"
+        ],
+        "fixtureLands": [
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest"
+        ],
+        "fixtureGraveyard": []
+      },
+      "steps": [
+        {
+          "op": "cast",
+          "card": "Frantic Inventory",
+          "mana": 2,
+          "draw": 1,
+          "life": 0
+        }
+      ]
+    },
+    {
+      "id": "frantic-1",
+      "card": "Frantic Inventory",
+      "covers": [
+        "graveyard-one"
+      ],
+      "fixture": {
+        "fixtureHand": [
+          "Frantic Inventory"
+        ],
+        "fixtureLands": [
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest"
+        ],
+        "fixtureGraveyard": [
+          "Frantic Inventory"
+        ]
+      },
+      "steps": [
+        {
+          "op": "cast",
+          "card": "Frantic Inventory",
+          "mana": 2,
+          "draw": 2,
+          "life": 0
+        }
+      ]
+    },
+    {
+      "id": "frantic-3",
+      "card": "Frantic Inventory",
+      "covers": [
+        "graveyard-three"
+      ],
+      "fixture": {
+        "fixtureHand": [
+          "Frantic Inventory"
+        ],
+        "fixtureLands": [
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest"
+        ],
+        "fixtureGraveyard": [
+          "Frantic Inventory",
+          "Frantic Inventory",
+          "Frantic Inventory"
+        ]
+      },
+      "steps": [
+        {
+          "op": "cast",
+          "card": "Frantic Inventory",
+          "mana": 2,
+          "draw": 4,
+          "life": 0
+        }
+      ]
+    },
+    {
+      "id": "frantic-chained",
+      "card": "Frantic Inventory",
+      "covers": [
+        "chained-copies"
+      ],
+      "fixture": {
+        "fixtureHand": [
+          "Frantic Inventory",
+          "Frantic Inventory"
+        ],
+        "fixtureLands": [
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest"
+        ]
+      },
+      "steps": [
+        {
+          "op": "cast",
+          "card": "Frantic Inventory",
+          "mana": 2,
+          "draw": 1,
+          "life": 0
+        },
+        {
+          "op": "cast",
+          "card": "Frantic Inventory",
+          "mana": 2,
+          "draw": 2,
+          "life": 0
+        }
+      ]
+    },
+    {
+      "id": "life-no-death",
+      "card": "Life Goes On",
+      "covers": [
+        "no-death"
+      ],
+      "fixture": {
+        "fixtureHand": [
+          "Life Goes On"
+        ],
+        "fixtureLands": [
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest"
+        ]
+      },
+      "steps": [
+        {
+          "op": "cast",
+          "card": "Life Goes On",
+          "mana": 1,
+          "draw": 0,
+          "life": 4
+        }
+      ]
+    },
+    {
+      "id": "revitalize-main",
+      "card": "Revitalize",
+      "covers": [
+        "main-phase"
+      ],
+      "fixture": {
+        "fixtureHand": [
+          "Revitalize"
+        ],
+        "fixtureLands": [
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest"
+        ]
+      },
+      "steps": [
+        {
+          "op": "cast",
+          "card": "Revitalize",
+          "mana": 2,
+          "draw": 1,
+          "life": 3
+        }
+      ]
+    },
+    {
+      "id": "revitalize-combat",
+      "card": "Revitalize",
+      "covers": [
+        "combat-phase"
+      ],
+      "fixture": {
+        "fixtureHand": [
+          "Revitalize"
+        ],
+        "fixtureLands": [
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest"
+        ]
+      },
+      "steps": [
+        {
+          "op": "phase",
+          "phase": "COMBAT_BEGIN"
+        },
+        {
+          "op": "cast",
+          "card": "Revitalize",
+          "mana": 2,
+          "draw": 1,
+          "life": 3
+        }
+      ]
+    },
+    {
+      "id": "ritual-main",
+      "card": "Ritual of Rejuvenation",
+      "covers": [
+        "main-phase"
+      ],
+      "fixture": {
+        "fixtureHand": [
+          "Ritual of Rejuvenation"
+        ],
+        "fixtureLands": [
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest"
+        ]
+      },
+      "steps": [
+        {
+          "op": "cast",
+          "card": "Ritual of Rejuvenation",
+          "mana": 3,
+          "draw": 1,
+          "life": 4
+        }
+      ]
+    },
+    {
+      "id": "ritual-combat",
+      "card": "Ritual of Rejuvenation",
+      "covers": [
+        "combat-phase"
+      ],
+      "fixture": {
+        "fixtureHand": [
+          "Ritual of Rejuvenation"
+        ],
+        "fixtureLands": [
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest"
+        ]
+      },
+      "steps": [
+        {
+          "op": "phase",
+          "phase": "COMBAT_BEGIN"
+        },
+        {
+          "op": "cast",
+          "card": "Ritual of Rejuvenation",
+          "mana": 3,
+          "draw": 1,
+          "life": 4
+        }
+      ]
+    },
+    {
+      "id": "sphinx-main",
+      "card": "Sphinx's Insight",
+      "covers": [
+        "main-phase-addendum"
+      ],
+      "fixture": {
+        "fixtureHand": [
+          "Sphinx's Insight"
+        ],
+        "fixtureLands": [
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest"
+        ]
+      },
+      "steps": [
+        {
+          "op": "cast",
+          "card": "Sphinx's Insight",
+          "mana": 4,
+          "draw": 2,
+          "life": 2
+        }
+      ]
+    },
+    {
+      "id": "sphinx-combat",
+      "card": "Sphinx's Insight",
+      "covers": [
+        "combat-no-addendum"
+      ],
+      "fixture": {
+        "fixtureHand": [
+          "Sphinx's Insight"
+        ],
+        "fixtureLands": [
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest"
+        ]
+      },
+      "steps": [
+        {
+          "op": "phase",
+          "phase": "COMBAT_BEGIN"
+        },
+        {
+          "op": "cast",
+          "card": "Sphinx's Insight",
+          "mana": 4,
+          "draw": 2,
+          "life": 0
+        }
+      ]
+    },
+    {
+      "id": "sudden-empty",
+      "card": "Sudden Insight",
+      "covers": [
+        "empty-graveyard"
+      ],
+      "fixture": {
+        "fixtureHand": [
+          "Sudden Insight"
+        ],
+        "fixtureLands": [
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest"
+        ]
+      },
+      "steps": [
+        {
+          "op": "cast",
+          "card": "Sudden Insight",
+          "mana": 6,
+          "draw": 0,
+          "life": 0
+        }
+      ]
+    },
+    {
+      "id": "sudden-lands",
+      "card": "Sudden Insight",
+      "covers": [
+        "lands-excluded"
+      ],
+      "fixture": {
+        "fixtureHand": [
+          "Sudden Insight"
+        ],
+        "fixtureLands": [
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest"
+        ],
+        "fixtureGraveyard": [
+          "Plains",
+          "Island",
+          "Forest"
+        ]
+      },
+      "steps": [
+        {
+          "op": "cast",
+          "card": "Sudden Insight",
+          "mana": 6,
+          "draw": 0,
+          "life": 0
+        }
+      ]
+    },
+    {
+      "id": "sudden-duplicate-values",
+      "card": "Sudden Insight",
+      "covers": [
+        "duplicate-mana-values"
+      ],
+      "fixture": {
+        "fixtureHand": [
+          "Sudden Insight"
+        ],
+        "fixtureLands": [
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest"
+        ],
+        "fixtureGraveyard": [
+          "Quick Study",
+          "Divination",
+          "Plains"
+        ]
+      },
+      "steps": [
+        {
+          "op": "cast",
+          "card": "Sudden Insight",
+          "mana": 6,
+          "draw": 1,
+          "life": 0
+        }
+      ]
+    },
+    {
+      "id": "sudden-distinct-values",
+      "card": "Sudden Insight",
+      "covers": [
+        "distinct-mana-values"
+      ],
+      "fixture": {
+        "fixtureHand": [
+          "Sudden Insight"
+        ],
+        "fixtureLands": [
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest"
+        ],
+        "fixtureGraveyard": [
+          "Yoked Ox",
+          "Revitalize",
+          "Quick Study",
+          "Divination",
+          "Plains"
+        ]
+      },
+      "steps": [
+        {
+          "op": "cast",
+          "card": "Sudden Insight",
+          "mana": 6,
+          "draw": 3,
+          "life": 0
+        }
+      ]
+    },
+    {
+      "id": "union-last-card",
+      "card": "Union of the Third Path",
+      "covers": [
+        "last-card"
+      ],
+      "fixture": {
+        "fixtureHand": [
+          "Union of the Third Path"
+        ],
+        "fixtureLands": [
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest"
+        ]
+      },
+      "steps": [
+        {
+          "op": "cast",
+          "card": "Union of the Third Path",
+          "mana": 3,
+          "draw": 1,
+          "life": 1
+        }
+      ]
+    },
+    {
+      "id": "union-four-in-hand",
+      "card": "Union of the Third Path",
+      "covers": [
+        "cards-remain"
+      ],
+      "fixture": {
+        "fixtureHand": [
+          "Union of the Third Path",
+          "Yoked Ox",
+          "Grizzly Bears",
+          "Quick Study"
+        ],
+        "fixtureLands": [
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest"
+        ]
+      },
+      "steps": [
+        {
+          "op": "cast",
+          "card": "Union of the Third Path",
+          "mana": 3,
+          "draw": 1,
+          "life": 4
+        }
+      ]
+    },
+    {
+      "id": "visions-own-nineteen",
+      "card": "Visions of Beyond",
+      "covers": [
+        "own-nineteen"
+      ],
+      "fixture": {
+        "fixtureHand": [
+          "Visions of Beyond"
+        ],
+        "fixtureLands": [
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest"
+        ],
+        "fixtureGraveyard": [
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains"
+        ]
+      },
+      "steps": [
+        {
+          "op": "cast",
+          "card": "Visions of Beyond",
+          "mana": 1,
+          "draw": 1,
+          "life": 0
+        }
+      ]
+    },
+    {
+      "id": "visions-own-twenty",
+      "card": "Visions of Beyond",
+      "covers": [
+        "own-twenty"
+      ],
+      "fixture": {
+        "fixtureHand": [
+          "Visions of Beyond"
+        ],
+        "fixtureLands": [
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest"
+        ],
+        "fixtureGraveyard": [
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains"
+        ]
+      },
+      "steps": [
+        {
+          "op": "cast",
+          "card": "Visions of Beyond",
+          "mana": 1,
+          "draw": 3,
+          "life": 0
+        }
+      ]
+    },
+    {
+      "id": "visions-enemy-twenty",
+      "card": "Visions of Beyond",
+      "covers": [
+        "enemy-twenty"
+      ],
+      "fixture": {
+        "fixtureHand": [
+          "Visions of Beyond"
+        ],
+        "fixtureLands": [
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest"
+        ],
+        "fixtureOpponentGraveyard": [
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains"
+        ]
+      },
+      "steps": [
+        {
+          "op": "cast",
+          "card": "Visions of Beyond",
+          "mana": 1,
+          "draw": 3,
+          "life": 0
+        }
+      ]
+    },
+    {
+      "id": "visions-split",
+      "card": "Visions of Beyond",
+      "covers": [
+        "split-graveyards"
+      ],
+      "fixture": {
+        "fixtureHand": [
+          "Visions of Beyond"
+        ],
+        "fixtureLands": [
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Island",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest"
+        ],
+        "fixtureGraveyard": [
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains"
+        ],
+        "fixtureOpponentGraveyard": [
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains"
+        ]
+      },
+      "steps": [
+        {
+          "op": "cast",
+          "card": "Visions of Beyond",
+          "mana": 1,
+          "draw": 1,
+          "life": 0
+        }
+      ]
+    },
+    {
+      "id": "wrong-color-0",
+      "card": "Feed the Clan",
+      "covers": [
+        "wrong-color-rejected"
+      ],
+      "fixture": {
+        "fixtureHand": [
+          "Feed the Clan"
+        ],
+        "fixtureLands": [
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains"
+        ]
+      },
+      "steps": [
+        {
+          "op": "deny",
+          "card": "Feed the Clan"
+        }
+      ]
+    },
+    {
+      "id": "wrong-color-1",
+      "card": "Frantic Inventory",
+      "covers": [
+        "wrong-color-rejected"
+      ],
+      "fixture": {
+        "fixtureHand": [
+          "Frantic Inventory"
+        ],
+        "fixtureLands": [
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains"
+        ]
+      },
+      "steps": [
+        {
+          "op": "deny",
+          "card": "Frantic Inventory"
+        }
+      ]
+    },
+    {
+      "id": "wrong-color-2",
+      "card": "Life Goes On",
+      "covers": [
+        "wrong-color-rejected"
+      ],
+      "fixture": {
+        "fixtureHand": [
+          "Life Goes On"
+        ],
+        "fixtureLands": [
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains"
+        ]
+      },
+      "steps": [
+        {
+          "op": "deny",
+          "card": "Life Goes On"
+        }
+      ]
+    },
+    {
+      "id": "wrong-color-3",
+      "card": "Revitalize",
+      "covers": [
+        "wrong-color-rejected"
+      ],
+      "fixture": {
+        "fixtureHand": [
+          "Revitalize"
+        ],
+        "fixtureLands": [
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest"
+        ]
+      },
+      "steps": [
+        {
+          "op": "deny",
+          "card": "Revitalize"
+        }
+      ]
+    },
+    {
+      "id": "wrong-color-4",
+      "card": "Ritual of Rejuvenation",
+      "covers": [
+        "wrong-color-rejected"
+      ],
+      "fixture": {
+        "fixtureHand": [
+          "Ritual of Rejuvenation"
+        ],
+        "fixtureLands": [
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest"
+        ]
+      },
+      "steps": [
+        {
+          "op": "deny",
+          "card": "Ritual of Rejuvenation"
+        }
+      ]
+    },
+    {
+      "id": "wrong-color-5",
+      "card": "Sphinx's Insight",
+      "covers": [
+        "wrong-color-rejected"
+      ],
+      "fixture": {
+        "fixtureHand": [
+          "Sphinx's Insight"
+        ],
+        "fixtureLands": [
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains"
+        ]
+      },
+      "steps": [
+        {
+          "op": "deny",
+          "card": "Sphinx's Insight"
+        }
+      ]
+    },
+    {
+      "id": "wrong-color-6",
+      "card": "Sudden Insight",
+      "covers": [
+        "wrong-color-rejected"
+      ],
+      "fixture": {
+        "fixtureHand": [
+          "Sudden Insight"
+        ],
+        "fixtureLands": [
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains"
+        ]
+      },
+      "steps": [
+        {
+          "op": "deny",
+          "card": "Sudden Insight"
+        }
+      ]
+    },
+    {
+      "id": "wrong-color-7",
+      "card": "Union of the Third Path",
+      "covers": [
+        "wrong-color-rejected"
+      ],
+      "fixture": {
+        "fixtureHand": [
+          "Union of the Third Path"
+        ],
+        "fixtureLands": [
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest",
+          "Forest"
+        ]
+      },
+      "steps": [
+        {
+          "op": "deny",
+          "card": "Union of the Third Path"
+        }
+      ]
+    },
+    {
+      "id": "wrong-color-8",
+      "card": "Visions of Beyond",
+      "covers": [
+        "wrong-color-rejected"
+      ],
+      "fixture": {
+        "fixtureHand": [
+          "Visions of Beyond"
+        ],
+        "fixtureLands": [
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains",
+          "Plains"
+        ]
+      },
+      "steps": [
+        {
+          "op": "deny",
+          "card": "Visions of Beyond"
+        }
+      ]
+    }
+  ],
+  "scope": "Authored expected outcomes from printed rules. Initial zone fixtures only. Missing branches remain explicit; no admission or native parity claim."
+}

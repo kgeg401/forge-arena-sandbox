@@ -1,0 +1,124 @@
+# Cards added since the previous public release
+
+Public252 →370 supported main-deck names. These118 additions have bounded
+reviewed support; this is not retail format legality or every-interaction proof.
+The disabled Paradox Engine draft is excluded.
+
+- Aegis of the Heavens
+- Ambush Viper
+- Ankle Biter
+- Antagonize
+- Auger Spree
+- Bathe in Dragonfire
+- Bilbo's Deadly Slice
+- Blade Banish
+- Bombard
+- Bring to Trial
+- Charging Badger
+- Charging Monstrosaur
+- Collar the Culprit
+- Colossadactyl
+- Colossal Dreadmaw
+- Command the Storm
+- Concentrated Fire
+- Copper Host Crusher
+- Crash of Rhinos
+- Cut Down
+- Daggerback Basilisk
+- Dark Betrayal
+- Dark Deed
+- Dark Remedy
+- Defenestrate
+- Disfigure
+- Doom Blade
+- Dragon Sniper
+- Electrify
+- Elfhame Wurm
+- Engulfing Eruption
+- Epic Downfall
+- Eviscerate
+- Explosive Shot
+- Feed the Clan
+- Fell
+- Feral Abomination
+- Feral Ferocity
+- Fiery Finish
+- Final Death
+- Final Reward
+- Flame Slash
+- Fleetfoot Dancer
+- Flowstone Infusion
+- Frantic Inventory
+- Galewind Moose
+- Giant Growth
+- Gifted Aetherborn
+- Gilacorn
+- Go for the Throat
+- Grasp of Darkness
+- Grotesque Demise
+- Havoc Devils
+- Highspire Mantis
+- Hippo-Cows
+- Hired Poisoner
+- Hullcarver
+- Impale
+- Infuriate
+- Iron Giant
+- Komodo Rhino
+- Kraul Stinger
+- Lash of Malice
+- Last Gasp
+- Legion's Judgment
+- Life Goes On
+- Midnight Assassin
+- Moldering Karok
+- Moss Viper
+- Murder
+- Needlethorn Drake
+- Nightveil Predator
+- Noxious Groodion
+- Pardic Wanderer
+- Pharika's Chosen
+- Pierce the Sky
+- Plummet
+- Power Word Kill
+- Quaketusk Boar
+- Ragefire
+- Reave Soul
+- Reaver Ambush
+- Repulsor Rays
+- Revitalize
+- Ritual of Rejuvenation
+- Scorching Shot
+- Scorpion's Sting
+- Sedge Scorpion
+- Shorecomber Crab
+- Show of Valor
+- Smite the Monstrous
+- Sphinx's Insight
+- Squirrelanoids
+- Stab
+- Strangling Spores
+- Sudden Insight
+- Sungold Barrage
+- Swiftblade Vindicator
+- Tajuru Blightblade
+- Tajuru Pathwarden
+- Thornweald Archer
+- Throttle
+- Titanic Growth
+- Typhoid Rats
+- Ukud Cobra
+- Ultimate Price
+- Underdark Basilisk
+- Union of the Third Path
+- Vampire Champion
+- Vampire Nighthawk
+- Vampire of the Dire Moon
+- Vanquish the Weak
+- Visions of Beyond
+- Walk the Plank
+- Wander Off
+- Warriors of Wakanda
+- Wildwood Patrol
+- Wrecking Crew

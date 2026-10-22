@@ -1,6 +1,6 @@
 # Verified card names
 
-This release admits 252 main-deck names. Brawl commanders are separately verified.
+This release admits 370 main-deck names. Brawl commanders are separately verified.
 Searching, opening or storing another Arena card does not establish match support.
 
 ## Brawl commanders
@@ -13,6 +13,7 @@ Searching, opening or storing another Arena card does not establish match suppor
 - A.I.M. Bot
 - Aardvark Sloth
 - Adult Gold Dragon
+- Aegis of the Heavens
 - Aegis Turtle
 - Aerial Responder
 - Aether Spellbomb
@@ -23,10 +24,14 @@ Searching, opening or storing another Arena card does not establish match suppor
 - Alley Strangler
 - Alpine Grizzly
 - Alpine Watchdog
+- Ambush Viper
 - Ancient Brontodon
 - Ancient Crab
+- Ankle Biter
+- Antagonize
 - Anvilwrought Raptor
 - Armored Whirl Turtle
+- Auger Spree
 - Aven Reedstalker
 - Aven Sentry
 - Axebane Beast
@@ -36,18 +41,23 @@ Searching, opening or storing another Arena card does not establish match suppor
 - Bartizan Bats
 - Bassara Tower Archer
 - Bastion Enforcer
+- Bathe in Dragonfire
 - Battlefield Raptor
 - Bear Cub
+- Bilbo's Deadly Slice
 - Bishop's Soldier
 - Bitterbow Sharpshooters
+- Blade Banish
 - Blood Glutton
 - Boggart Brute
 - Bogstomper
+- Bombard
 - Borderland Minotaur
 - Bounding Wolf
 - Brazen Scourge
 - Breakneck Berserker
 - Brightblade Stoat
+- Bring to Trial
 - Brushstrider
 - Cabal Evangel
 - Canal Monitor
@@ -56,78 +66,128 @@ Searching, opening or storing another Arena card does not establish match suppor
 - Catacomb Crocodile
 - Centaur Courser
 - Chardalyn Dragon
+- Charging Badger
+- Charging Monstrosaur
 - Charity Extractor
 - Child of Night
 - Cliffhaven Sell-Sword
 - Cold-Water Snapper
+- Collar the Culprit
+- Colossadactyl
+- Colossal Dreadmaw
+- Command the Storm
 - Concentrate
+- Concentrated Fire
 - Concordia Pegasus
 - Consulate Skygate
+- Copper Host Crusher
 - Coral Commando
 - Coral Merfolk
+- Crash of Rhinos
 - Crystacean
 - Cursed Minotaur
+- Cut Down
+- Daggerback Basilisk
+- Dark Betrayal
+- Dark Deed
+- Dark Remedy
 - Dawn Gryff
 - Dawn's Light Archer
 - Daybreak Chaplain
 - Deer-Dog
+- Defenestrate
 - Deranged Whelp
 - Devilthorn Fox
+- Disfigure
 - Divination
 - Divine Arrow
+- Doom Blade
 - Douser of Lights
 - Dragon Moose
+- Dragon Sniper
 - Dune Beetle
+- Electrify
 - Elephant-Rat
+- Elfhame Wurm
 - Emry, Lurker of the Loch
 - Enforcer Griffin
+- Engulfing Eruption
+- Epic Downfall
 - Essence Scatter
+- Eviscerate
+- Explosive Shot
 - Exultant Skymarcher
 - Faithbearer Paladin
 - Fearless Halberdier
+- Feed the Clan
+- Fell
 - Fencing Ace
+- Feral Abomination
+- Feral Ferocity
 - Feral Maaka
 - Field Creeper
+- Fiery Finish
+- Final Death
+- Final Reward
 - Fire Elemental
 - Fire Nation Ambushers
 - Fire Nation Soldier
+- Flame Slash
+- Fleetfoot Dancer
+- Flowstone Infusion
 - Flying Dolphin-Fish
 - Forest
 - Fortress Crab
+- Frantic Inventory
 - Frenzied Raptor
 - Frog-Squirrels
 - Fusion Elemental
+- Galewind Moose
 - Garruk's Gorehorn
+- Giant Growth
 - Giant Spider
+- Gifted Aetherborn
 - Gigantosaurus
+- Gilacorn
 - Gilded Sentinel
 - Gladecover Scout
 - Glamorous Grapplers
 - Gloom Pangolin
 - Gnottvold Recluse
+- Go for the Throat
 - Goblin Assailant
 - Goblin Trailblazer
+- Grasp of Darkness
 - Grazing Whiptail
 - Greenwood Sentinel
 - Griffin Sentinel
 - Grizzled Outrider
 - Grizzly Bears
+- Grotesque Demise
 - Gurmag Swiftwing
 - Hare Apparent
 - Harmonize
+- Havoc Devils
 - Headwater Sentries
 - Healer's Flock
 - Healer's Hawk
 - Highborn Vampire
+- Highspire Mantis
+- Hippo-Cows
 - Hired Blade
+- Hired Poisoner
 - Hitchclaw Recluse
 - Hostile Minotaur
 - Huatli's Snubhorn
 - Hulking Bugbear
+- Hullcarver
 - Humongulus
 - Hurloon Minotaur
+- Impale
 - Impassioned Orator
 - Imperial Outrider
+- Infuriate
+- Iron Giant
 - Ironclad Krovod
 - Island
 - Jibbirik Omnivore
@@ -135,14 +195,20 @@ Searching, opening or storing another Arena card does not establish match suppor
 - Knight of New Benalia
 - Knight of the Keep
 - Knight of the Tusk
+- Komodo Rhino
 - Kraken Hatchling
 - Kraul Raider
+- Kraul Stinger
 - Krovikan Scoundrel
 - Kyoshi Warrior Guard
+- Lash of Malice
+- Last Gasp
 - Lathnu Sailback
 - Lazotep Behemoth
 - Leatherback Baloth
+- Legion's Judgment
 - Leonin Skyhunter
+- Life Goes On
 - Lightning Elemental
 - Lightning Stormkin
 - Living Tempest
@@ -153,15 +219,22 @@ Searching, opening or storing another Arena card does not establish match suppor
 - Maned Serval
 - Mantis Rider
 - Mesa Unicorn
+- Midnight Assassin
 - Moat Piranhas
+- Moldering Karok
 - Monoist Sentry
+- Moss Viper
 - Mosscoat Goriak
 - Mountain
 - Murasa Brute
+- Murder
 - Murmuring Phantasm
 - Naga Eternal
+- Needlethorn Drake
 - Nest Robber
+- Nightveil Predator
 - Nimble Birdsticker
+- Noxious Groodion
 - Oko's Accomplices
 - Onakke Ogre
 - Orazca Frillback
@@ -169,24 +242,36 @@ Searching, opening or storing another Arena card does not establish match suppor
 - Ordinary Bear
 - Oreskos Swiftclaw
 - Ornithopter
+- Pardic Wanderer
+- Pharika's Chosen
+- Pierce the Sky
 - Plains
+- Plummet
 - Pouncing Cheetah
+- Power Word Kill
 - Primordial Wurm
 - Prized Griffin
 - Prowling Caracal
 - Pyromantic Pilgrim
 - Quakestrider Ceratops
+- Quaketusk Boar
 - Queen's Bay Soldier
 - Quick Study
+- Ragefire
 - Raging Goblin
 - Raging Redcap
 - Raptor Companion
 - Rearing Embermare
+- Reave Soul
+- Reaver Ambush
 - Relic Sloth
 - Renegade Demon
+- Repulsor Rays
 - Resistance Skywarden
+- Revitalize
 - Ripscale Predator
 - Riptide Turtle
+- Ritual of Rejuvenation
 - Roc Hunter
 - Rotting Mastodon
 - Rumbling Baloth
@@ -198,12 +283,17 @@ Searching, opening or storing another Arena card does not establish match suppor
 - Scaled Wurm
 - Scathe Zombies
 - Scion of Ugin
+- Scorching Shot
+- Scorpion's Sting
 - Seat of the Synod
+- Sedge Scorpion
 - Segovian Angel
 - Sentinel Spider
 - Seraph of Dawn
 - Serra Angel
 - Shining Aerosaur
+- Shorecomber Crab
+- Show of Valor
 - Shrike Force
 - Siege Mastodon
 - Silverbeak Griffin
@@ -211,29 +301,42 @@ Searching, opening or storing another Arena card does not establish match suppor
 - Skyblade of the Legion
 - Skyknight Legionnaire
 - Skyraker Giant
+- Smite the Monstrous
 - Snapping Drake
 - Soaring Drake
 - Soul of the Rapids
+- Sphinx's Insight
 - Spined Karok
 - Sporecap Spider
+- Squirrelanoids
+- Stab
 - Staunch Shieldmate
 - Steadfast Paladin
 - Stone Golem
 - Stormfront Pegasus
 - Stormrider Spirit
 - Story Seeker
+- Strangling Spores
+- Sudden Insight
 - Summit Prowler
 - Sun Sentinel
 - Sunblade Angel
+- Sungold Barrage
 - Sungrace Pegasus
 - Swab Goblin
 - Swamp
 - Swift Spinner
+- Swiftblade Vindicator
 - Swooping Lookout
 - Sworn Guardian
+- Tajuru Blightblade
+- Tajuru Pathwarden
 - Tajuru Snarecaster
 - Thornhide Wolves
+- Thornweald Archer
 - Those Who Serve
+- Throttle
+- Titanic Growth
 - Tolarian Scholar
 - Tormod's Crypt
 - Tundra Wall
@@ -241,24 +344,39 @@ Searching, opening or storing another Arena card does not establish match suppor
 - Tusked Colossodon
 - Twinscroll Shaman
 - Two-Headed Zombie
+- Typhoid Rats
+- Ukud Cobra
+- Ultimate Price
+- Underdark Basilisk
+- Union of the Third Path
 - Unsummon
+- Vampire Champion
+- Vampire Nighthawk
+- Vampire of the Dire Moon
 - Vampire Revenant
+- Vanquish the Weak
 - Venerable Lammasu
 - Vexing Gull
 - Vigilant Baloth
+- Visions of Beyond
 - Volcanic Dragon
 - Vorstclaw
+- Walk the Plank
 - Walking Corpse
 - Wall of Mist
 - Wall of Vines
+- Wander Off
 - Wardscale Crocodile
+- Warriors of Wakanda
 - Warship Scout
 - Wary Okapi
 - Weave Fate
 - Wetland Sambar
 - Wild Ceratok
+- Wildwood Patrol
 - Wind Strider
 - Wishcoin Crab
 - Witch's Familiar
+- Wrecking Crew
 - Yoked Ox
 - Youthful Knight
