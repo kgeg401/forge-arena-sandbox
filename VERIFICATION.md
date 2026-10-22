@@ -21,3 +21,8 @@ It does not make gameplay available. Full setup still requires compatible local
 Arena files and a supported Forge distribution. The old pinned Forge snapshot
 is not offered by the rolling upstream download. No successful brother-PC
 install, gameplay or multiplayer test is claimed.
+
+
+## Python bootstrap - test.3
+
+Fifteen authored flow checks passed for runtime reuse, missing runtime, rejected downloads, installer cancellation/errors and post-install probing. The actual official Python installer was downloaded and matched the published SHA-256; it was not executed on this machine because a working runtime exists. The packaged Setup.exe reused that runtime and opened the real setup window. A full missing-Python installation on a clean Windows PC remains unverified.

@@ -1,6 +1,6 @@
 {
-  "version": "0.1.0-test.2",
-  "headline": "Second test build - you are running the newer GitHub version",
+  "version": "0.1.0-test.3",
+  "headline": "Setup now installs missing Python automatically",
   "testRelease": true,
   "gameplaySource": "c14dc620228442eee67480d2f47a3953ac726bcf",
   "admittedNames": [

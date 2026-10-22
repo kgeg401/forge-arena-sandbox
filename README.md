@@ -12,20 +12,30 @@ Apache-2.0 license and source link. Adapter testing permission: LICENSE.txt.
 
 ## No games installed? Test the launcher and updates now
 
-1. Install Python 3.12 for 64-bit Windows from https://www.python.org/downloads/windows/.
-   Keep the Python launcher and Tcl/Tk options enabled.
-2. Download `ForgeArenaSandbox-Windows.zip` from a labelled test release.
-   Extract the complete ZIP, then double-click `Setup.cmd`.
+1. Download `ForgeArenaSandbox-Windows.zip` from test.3 or a newer test release.
+   Extract the complete ZIP, then double-click **Setup.exe** (or Setup.cmd).
+2. Setup checks for working 64-bit Python 3.10+ with Tcl/Tk. If missing, it
+   downloads the official Python 3.13.17 Windows installer from python.org,
+   verifies its published SHA-256, and installs Python with Tcl/Tk and its
+   launcher for the current user. Installation progress is visible. It does not
+   add Python to PATH or replace a working interpreter. After rechecking Python,
+   it opens the sandbox setup window automatically. Internet is needed for a
+   missing Python download; failed/cancelled installs do not continue.
 3. Choose a NEW install folder outside the extracted download. Click
    **Install launcher only**. This needs no Arena, Forge, account, Java or .NET.
 4. Open **Start Sandbox** in the installed folder. It checks the public test
    channel and automatically downloads newer adapter versions at startup.
    The window displays the installed version and release message.
 
-To demonstrate an update, install **0.1.0-test.1**, then open Start Sandbox.
-When test.2 or later is published it should fetch it automatically. Keep the
+To demonstrate an update with Python setup included, install **0.1.0-test.3**,
+then open Start Sandbox after a later test release is published. Keep the
 launcher closed while publishing for a clear before/after. Updates are checked
 at startup, not continuously during a match. No telemetry is uploaded.
+
+Setup.exe uses the .NET Framework included with supported Windows 10/11 PCs.
+This is separate from .NET 8, which is still required for full game setup.
+Python setup logs are in `%LOCALAPPDATA%/ForgeArenaSandbox/setup-logs`.
+Python remains a separate installed prerequisite if you remove the sandbox.
 
 Launcher-only means the updater/UI is installed; it is NOT a playable game.
 The game buttons stay disabled until a separate full setup is completed.

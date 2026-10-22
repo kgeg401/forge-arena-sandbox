@@ -1,10 +1,8 @@
 @echo off
-where py >nul 2>nul
-if not errorlevel 1 (
-  py -3 -B "%~dp0setup_client.py"
-  if errorlevel 1 pause
-) else (
-  echo Install Python 3.12 for Windows from https://www.python.org/downloads/windows/
-  echo Include Tcl/Tk and the Python launcher in setup. Then run this file again.
+if not exist "%~dp0Setup.exe" (
+  echo Extract the complete Windows release ZIP first. Setup.exe is required.
   pause
+  exit /b 1
 )
+start "" /wait "%~dp0Setup.exe"
+if errorlevel 1 pause
