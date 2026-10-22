@@ -5,6 +5,7 @@ from pathlib import Path
 from datetime import datetime, timezone
 import argparse, json, os, shutil, subprocess, sys, time
 from tester_common import verify_tree, sha, no_links, within, metadata_recipe
+from dependencies import match_forge
 
 def read_json(path):return json.loads(Path(path).read_text(encoding='utf-8-sig'))
 def win_processes():
@@ -38,9 +39,7 @@ def start(args):
     requirements=read_json(app/'requirements.json')
     for rel,digest in requirements['arenaFiles'].items():
         if sha(lab/rel)!=digest:raise ValueError('This release does not support the copied Arena build: '+rel)
-    if sha(data/'forge-runtime/forge.jar')!=requirements['forgeFiles'][requirements['forgeJar']]:raise ValueError('Copied Forge engine changed')
-    for rel,digest in requirements['forgeFiles'].items():
-        if rel.startswith('res/') and sha(data/'forge-runtime'/rel)!=digest:raise ValueError('Copied Forge scripts changed: '+rel)
+    match_forge(data/'forge-runtime',requirements,runtime=True)
     for rel,digest in requirements['loaderFiles'].items():
         if sha(lab/rel)!=digest:raise ValueError('Copied loader changed: '+rel)
     # Preflight deck admission before disrupting any running private client.

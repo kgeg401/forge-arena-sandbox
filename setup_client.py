@@ -37,57 +37,62 @@ def install_launcher(package,destination,repository=REPOSITORY):
 def show():
     import tkinter as tk
     from tkinter import ttk,filedialog,messagebox
-    window=tk.Tk();window.title('Install Forge Arena Sandbox');window.geometry('770x650')
-    panel=ttk.Frame(window,padding=20);panel.pack(fill='both',expand=True)
-    ttk.Label(panel,text='Install the sandbox test client',font=('Segoe UI',19,'bold')).pack(anchor='w')
-    ttk.Label(panel,text='No games installed? Install the launcher first to test GitHub automatic updates.\nPlaying still requires your own compatible game files. Existing installations stay unchanged.',wraplength=720).pack(anchor='w',pady=12)
+    from auto_install import install_automatic,check_arena
+    window=tk.Tk();window.title('Install Forge Arena Sandbox');window.geometry('790x440')
+    panel=ttk.Frame(window,padding=22);panel.pack(fill='both',expand=True)
+    ttk.Label(panel,text='Install the sandbox',font=('Segoe UI',21,'bold')).pack(anchor='w')
+    ttk.Label(panel,text='Install Arena separately and finish its content download first.\nSetup downloads and configures Forge, Java, .NET and the loader automatically.\nAllow at least 20 GiB free for an independent copy; your Arena installation stays unchanged.',wraplength=740).pack(anchor='w',pady=12)
     values={}
     def field(key,label,default=''):
-        row=ttk.Frame(panel);row.pack(fill='x',pady=4);ttk.Label(row,text=label,width=17).pack(side='left');var=tk.StringVar(value=default);values[key]=var
+        row=ttk.Frame(panel);row.pack(fill='x',pady=5);ttk.Label(row,text=label,width=16).pack(side='left');var=tk.StringVar(value=default);values[key]=var
         ttk.Entry(row,textvariable=var).pack(side='left',fill='x',expand=True)
         def browse():
             selected=filedialog.askdirectory(title=label)
             if selected:var.set(selected)
         ttk.Button(row,text='Browse',command=browse).pack(side='left',padx=(6,0))
-    field('destination','NEW install folder',str(Path.home()/'Games/ForgeArenaSandbox-Test'))
-    ttk.Label(panel,text='Optional full game setup (use a NEW separate destination):',font=('Segoe UI',10,'bold')).pack(anchor='w',pady=(14,6))
-    for key,label in (('arena','Arena folder'),('forge','Forge folder'),('java','Java 17 folder'),('loader','Extracted loader')):field(key,label)
-    links=ttk.Frame(panel);links.pack(anchor='w',pady=10)
-    for label,url in LINKS.items():ttk.Button(links,text=label,command=lambda u=url:webbrowser.open(u)).pack(side='left',padx=(0,4))
-    ttk.Label(panel,text='The tested Forge snapshot is 2.0.15-SNAPSHOT-08.31, not the latest snapshot.\nOther builds are rejected. Full game setup may need developer compatibility work.',wraplength=720).pack(anchor='w')
-    status=tk.StringVar(value='Choose launcher-only setup, or check your game files before full setup.')
-    ttk.Label(panel,textvariable=status,wraplength=720).pack(anchor='w',pady=12)
-    buttons=ttk.Frame(panel);buttons.pack(anchor='w');events=queue.Queue()
+    installed=HERE.parent.parent if HERE.parent.name=='versions' else None
+    arena_default=''
+    if installed and (installed/'sandbox-install.json').exists():arena_default=json.loads((installed/'sandbox-install.json').read_text()).get('arenaInstall','')
+    if not arena_default:
+        for p in (Path('D:/GAMES/MTGA'),Path(os.environ.get('ProgramFiles','C:/Program Files'))/'Wizards of the Coast/MTGA'):
+            if (p/'MTGA.exe').exists():arena_default=str(p);break
+    field('arena','Installed Arena',arena_default)
+    field('destination','Sandbox folder',str(installed or Path.home()/'Games/ForgeArenaSandbox-Test'))
+    ttk.Label(panel,text='Forge 2.0.15 is pinned to an official release. Existing launcher-only installs\ncan be completed here; saved decks are backed up and retained.',wraplength=740).pack(anchor='w',pady=12)
+    status=tk.StringVar(value='Ready to check Arena and install the sandbox.');ttk.Label(panel,textvariable=status,wraplength=740).pack(anchor='w',pady=8)
+    buttons=ttk.Frame(panel);buttons.pack(anchor='w',pady=8);events=queue.Queue();busy=False
     def work(kind):
-        paths={k:Path(v.get()).absolute() for k,v in values.items()};buttons_state('disabled');status.set('Checking files…' if kind=='check' else 'Installing… please keep this window open.')
+        nonlocal busy
+        paths={k:Path(v.get()).absolute() for k,v in values.items()};busy=True
+        for b in buttons.winfo_children():b.configure(state='disabled')
+        status.set('Checking files…')
         def task():
             try:
                 if kind=='launcher':result=install_launcher(HERE,paths['destination'])
-                elif kind=='check':
-                    plan=inspect_install(paths['arena'],paths['forge'],paths['java'],paths['loader'],paths['destination'],HERE)
-                    result={'checked':True,'requiredGiB':round(plan['estimatedTotalBytes']/1024**3,1)}
-                else:
-                    command=[sys.executable,'-B',str(HERE/'install_tester.py'),'--repository',REPOSITORY,'--channel','test']
-                    for key in ('arena','forge','java','loader','destination'):command+=['--'+key,str(paths[key])]
-                    log=Path(os.environ.get('TEMP',str(Path.home())))/('ForgeArena-setup-'+datetime.now().strftime('%Y%m%d-%H%M%S-%f')+'.log')
-                    with log.open('w',encoding='utf8') as out:p=subprocess.run(command,stdout=out,stderr=subprocess.STDOUT,creationflags=subprocess.CREATE_NO_WINDOW)
-                    if p.returncode:raise RuntimeError('Setup stopped. Existing installs were preserved. Details: '+str(log))
-                    result={'destination':str(paths['destination'])}
+                elif kind=='check':check_arena(paths['arena'],paths['destination'],HERE);result={'checked':True}
+                else:result=install_automatic(paths['arena'],paths['destination'],HERE,progress=lambda text:events.put(('progress',text)))
                 events.put((True,result))
             except Exception as e:events.put((False,str(e)))
         threading.Thread(target=task,daemon=True).start()
-    def buttons_state(state):
-        for b in buttons.winfo_children():b.configure(state=state)
-    for text,kind in (('Install launcher only','launcher'),('Check game files','check'),('Install with game files','game')):ttk.Button(buttons,text=text,command=lambda k=kind:work(k)).pack(side='left',padx=(0,8))
+    for title,kind in (('Install sandbox','game'),('Check Arena','check'),('Launcher only','launcher')):ttk.Button(buttons,text=title,command=lambda k=kind:work(k)).pack(side='left',padx=(0,8))
     def poll():
+        nonlocal busy
         try:
-            ok,result=events.get_nowait();buttons_state('normal')
-            if not ok:status.set(result);messagebox.showerror('Setup stopped',result)
-            elif result.get('checked'):status.set('Compatible files. Full setup needs '+str(result['requiredGiB'])+' GiB plus a 2 GiB reserve. Click Install with game files to copy.')
-            else:status.set('Installed. Open Start Sandbox in '+result['destination']);messagebox.showinfo('Installed','Open Start Sandbox in:\n'+result['destination']+'\nThe launcher checks GitHub automatically when opened.')
+            # Drain progress messages so large downloads do not stall the UI.
+            while True:
+                ok,result=events.get_nowait()
+                if ok=='progress':status.set(result);continue
+                busy=False
+                for b in buttons.winfo_children():b.configure(state='normal')
+                if not ok:status.set(result);messagebox.showerror('Setup stopped',result)
+                elif result.get('checked'):status.set('Arena is compatible. Click Install sandbox to download and configure the remaining dependencies.')
+                else:status.set('Installed: '+result['destination']);messagebox.showinfo('Installed','Open Start Sandbox in:\n'+result['destination'])
         except queue.Empty:pass
         window.after(150,poll)
-    poll();window.mainloop()
+    def close():
+        if busy:messagebox.showinfo('Setup is running','Please wait for setup to finish. Progress is shown in this window.')
+        else:window.destroy()
+    window.protocol('WM_DELETE_WINDOW',close);poll();window.mainloop()
 
 if __name__=='__main__':
     p=argparse.ArgumentParser(description=__doc__);p.add_argument('--launcher-destination');p.add_argument('--package',default=str(HERE));a=p.parse_args()

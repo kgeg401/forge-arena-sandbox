@@ -1,93 +1,95 @@
-# Public installation/update test
+# Public sandbox installer and update test
 
 Download the Windows ZIP from [Releases](https://github.com/kgeg401/forge-arena-sandbox/releases). The GitHub source ZIP is not an installable binary release.
 
-# Forge Arena Sandbox — public test client
+# Forge Arena Sandbox - public test client
 
-This download tests installation and automatic updates. It is an unfinished,
-unofficial personal sandbox adapter. Multiplayer and full card support are not
-implemented. No Arena executable, art, audio, card database, Forge engine,
-loader, accounts or profiles are included. Gson 2.13.2 is included with its
-Apache-2.0 license and source link. Adapter testing permission: LICENSE.txt.
+An unofficial, unfinished local sandbox adapter using owned Arena files and
+Forge rules. Limited admitted cards; no multiplayer. No Arena assets/accounts,
+Forge engine, Java, .NET or loader files are redistributed inside this ZIP.
+The small Gson JSON library is included with its Apache-2.0 license and source.
+Our setup downloads prerequisites directly from their official sources.
 
-## No games installed? Test the launcher and updates now
+## Install
 
-1. Download `ForgeArenaSandbox-Windows.zip` from test.3 or a newer test release.
-   Extract the complete ZIP, then double-click **Setup.exe** (or Setup.cmd).
-2. Setup checks for working 64-bit Python 3.10+ with Tcl/Tk. If missing, it
-   downloads the official Python 3.13.17 Windows installer from python.org,
-   verifies its published SHA-256, and installs Python with Tcl/Tk and its
-   launcher for the current user. Installation progress is visible. It does not
-   add Python to PATH or replace a working interpreter. After rechecking Python,
-   it opens the sandbox setup window automatically. Internet is needed for a
-   missing Python download; failed/cancelled installs do not continue.
-3. Choose a NEW install folder outside the extracted download. Click
-   **Install launcher only**. This needs no Arena, Forge, account, Java or .NET.
-4. Open **Start Sandbox** in the installed folder. It checks the public test
-   channel and automatically downloads newer adapter versions at startup.
-   The window displays the installed version and release message.
+1. Install Arena separately and let it finish downloading its game content.
+2. Download the Windows ZIP from test.5 or a newer test release. Extract the
+   ENTIRE ZIP, then double-click **Setup.exe** (or Setup.cmd).
+3. Setup reuses working 64-bit Python 3.10+ with Tcl/Tk. If missing, it downloads
+   and verifies the official Python 3.13.17 installer, installs it for your
+   Windows user, and opens the sandbox setup window automatically.
+4. Select your Arena folder and a sandbox destination. Click **Install sandbox**.
+   No Forge, Java, .NET or loader folders need to be supplied. Setup downloads
+   and verifies the fixed official Forge 2.0.15 release, Eclipse Temurin Java 17
+   JRE, Microsoft .NET 8 runtime and BepInEx 5.4.23.5, then configures the client.
+5. Open **Start Sandbox** in the installed folder. Choose Start practice or Open
+   decks. The launcher automatically checks this repository for newer test
+   releases at startup. Close the game before updating.
 
-To demonstrate an update with Python setup included, install **0.1.0-test.3**,
-then open Start Sandbox after a later test release is published. Keep the
-launcher closed while publishing for a clear before/after. Updates are checked
-at startup, not continuously during a match. No telemetry is uploaded.
+Allow at least 20 GiB free, in addition to Arena's installation. Setup copies
+Arena into an independent game folder and keeps Forge and private Java/.NET
+runtimes there. Expect about 360 MiB of prerequisite downloads (plus Python if
+missing). Installation and card indexing can take several minutes.
 
-Setup.exe uses the .NET Framework included with supported Windows 10/11 PCs.
-This is separate from .NET 8, which is still required for full game setup.
-Python setup logs are in `%LOCALAPPDATA%/ForgeArenaSandbox/setup-logs`.
-Python remains a separate installed prerequisite if you remove the sandbox.
+An existing launcher-only sandbox can be selected as the destination. Its saved
+profile is backed up and retained while setup adds game files. An existing
+playable sandbox must use its updater or a new destination. Unrelated existing
+folders are rejected. Interrupted work is preserved; never delete saved decks
+when troubleshooting an incomplete setup.
 
-Launcher-only means the updater/UI is installed; it is NOT a playable game.
-The game buttons stay disabled until a separate full setup is completed.
+## Exact supported files
 
-## Playing: additional prerequisites and a current blocker
+- Arena Client0.1.14517.1329972 / Unity 6000.3.14f1, including the pinned card
+  database. Arena is NOT installed by this setup. A missing database means you
+  must finish Arena's content download first. A different build is rejected
+  before prerequisite downloads or game copying. Build support is still narrow.
+- Automatic setup uses **official Forge 2.0.15** from the fixed `forge-2.0.15`
+  release. This replaces the first-install dependency on an unavailable rolling
+  snapshot. Existing sandboxes using 2.0.15-SNAPSHOT-08.31 remain supported;
+  their engine/resources are not silently replaced during adapter updates.
+- Java 17.0.20.1+1 JRE, .NET 8.0.32, BepInEx 5.4.23.5 Windows x64. The pinned
+  download URLs, hashes and Forge fingerprints are in dependencies-lock.json
+  and requirements.json. Portable runtimes are private to the sandbox; no PATH
+  change or global Java/.NET installation is needed.
 
-Full setup needs Windows x64, Python 3.10+ with Tk, .NET 8 x64, Java 17,
-your own complete Arena installation, Forge and extracted BepInEx 5.4.23.5.
-Use the setup window's prerequisite links and folder selectors. **Check game
-files** is read-only; **Install with game files** copies into a NEW separate
-folder. Allow about 15 GiB plus Forge files and a 2 GiB reserve, in addition to
-the source game installation. Original installs are never patched.
+This is still a developer preview. The sixteen ordinary admitted names are in
+release-info.json. Full Emry-deck support and Paradox Engine are not admitted in
+these distribution test builds. Full home navigation, general card support,
+pack-opening launcher and multiplayer are not implemented. Native gameplay
+uses a zero-network-capability Windows AppContainer. The external updater and
+prerequisite downloader contact official servers; the game does not.
 
-Only the exact pinned files in requirements.json are accepted:
-- Arena Client0.1.14517.1329972 / Unity 6000.3.14f1, including its card database.
-- Forge 2.0.15-SNAPSHOT-08.31. The rolling upstream snapshot is newer;
-  this old snapshot is not currently offered by that download. We still need
-  a supported fresh-PC Forge distribution/build before full game setup is
-  suitable for a tester with neither game installed. Installing latest Forge
-  alone does NOT satisfy these checks. Do not bypass the checks.
-- BepInEx 5.4.23.5 Windows x64, Java 17 and .NET 8.
+## Updates, saved files and rollback
 
-After compatible full setup, Start Sandbox offers practice and the native deck
-browser. All Arena game execution uses a zero-network-capability AppContainer;
-the external updater alone contacts GitHub. Other Arena clients must be closed.
-The package's release-info.json lists its sixteen ordinary admitted names.
-Other cards may be saved in decks but cannot start an unsupported match.
-Emry mechanics have local development evidence, but the full Emry list and
-Paradox Engine are not admitted by these first distribution test releases.
-Native readiness is not proof of a complete manual game on another PC.
+The test channel is `kgeg401/forge-arena-sandbox`. A published newer prerelease
+with ForgeArenaSandbox-Windows.zip is required; pushing source alone does not
+update installed clients. Startup verifies GitHub's asset SHA-256, internal file
+hashes, archive paths and existing game/profile compatibility before switching.
+The active release is verified again after any update failure. Actions are
+serialized, profiles backed up, and older adapter versions kept for rollback.
 
-## Updates, failures and rollback
+Saved decks/collection live in `data/native-lab/local-profile`, outside
+`versions/<version>`. Updates do not overwrite them. Back them up.
+Rollback pauses automatic updates until **Install Update** is used. A fresh
+stable-Forge install cannot roll back to an old adapter release that only
+accepted the snapshot; compatibility checks stop that downgrade.
+No automatic Arena/Forge asset migration or profile-schema migration is included.
 
-The test channel is `kgeg401/forge-arena-sandbox` on GitHub. Test releases are
-explicitly marked prereleases; stable releases use a separate channel.
-The updater downloads only the named Windows ZIP from that repository, checks
-GitHub's SHA-256 digest, all internal file hashes, archive paths, and any existing
-game/profile compatibility. It backs up profiles before switching versions.
-Concurrent launcher/update actions are blocked. Close the game for updates.
-A failed update preserves the installed release; the launcher verifies it again.
+## Logs, cache and removal
 
-Saved decks and collection live in `data/native-lab/local-profile`, outside
-`versions/<version>`. Update/rollback does not overwrite them. Back them up.
-**Rollback Sandbox** selects the retained previous adapter. Automatic updates
-are paused on rollback until **Install Update** is used, so the previous version
-can actually be tested. Diagnostic receipts/logs stay in the installation folder.
-There is no automatic game-asset upgrade or profile-schema migration.
+Python setup logs: `%LOCALAPPDATA%/ForgeArenaSandbox/setup-logs`.
+Prerequisite cache and full-setup logs:
+`%LOCALAPPDATA%/ForgeArenaSandbox/prerequisites`.
+Install/update receipts and game logs are inside your chosen sandbox folder.
+Verified download archives are cached for reuse; failed/interrupted work is
+preserved for diagnosis. A successful full sandbox does not depend on that cache.
 
-Uninstall: close the client, back up local-profile, then delete only your chosen
-install folder. Original games/accounts remain. The network-restricted
-AppContainer registration may remain after a full-game uninstall.
+To remove: close the game, back up local-profile, and delete your sandbox folder.
+That also removes its private Forge/Java/.NET copies. Python and the download
+cache remain separate; original Arena and its account remain unchanged.
+The Windows AppContainer registration may remain after removing a full sandbox.
 
-Developed with OpenAI Codex assistance. Dependencies: Card-Forge/Forge,
-BepInEx, Python, Eclipse Temurin Java, Microsoft .NET, Google Gson.
-Corresponding authored adapter source is included; no decompiled game source.
+Dependencies retain their licenses. Credits: Card-Forge/Forge, Eclipse Adoptium,
+Microsoft .NET, BepInEx, Python Software Foundation and Google Gson. Developed
+with OpenAI Codex assistance. Corresponding authored adapter source is included;
+no decompiled game source or private account data is distributed. See LICENSE.txt.

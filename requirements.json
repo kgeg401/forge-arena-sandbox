@@ -31,6 +31,26 @@
     "res/cardsfolder/cardsfolder.zip": "2fe9463a8014d419c7e276b57e71f0fa1c2f2a63846183b995dbc94af670089f",
     "res/tokenscripts/w_1_1_rabbit.txt": "4ab0f9d0be3ca8fa60e9ccbf121a8eecfdcbc26468e4a3bcaf5878272ad5b5c8"
   },
+  "forgeVariants": [
+    {
+      "id": "legacy-snapshot-08.31",
+      "jar": "forge-gui-desktop-2.0.15-SNAPSHOT-jar-with-dependencies.jar",
+      "files": {
+        "forge-gui-desktop-2.0.15-SNAPSHOT-jar-with-dependencies.jar": "b17c37b5483b84e0c6bc77a8a191680b6eb5bfa508235475c495acc45a4ad110",
+        "res/cardsfolder/cardsfolder.zip": "2fe9463a8014d419c7e276b57e71f0fa1c2f2a63846183b995dbc94af670089f",
+        "res/tokenscripts/w_1_1_rabbit.txt": "4ab0f9d0be3ca8fa60e9ccbf121a8eecfdcbc26468e4a3bcaf5878272ad5b5c8"
+      }
+    },
+    {
+      "id": "official-2.0.15",
+      "jar": "forge-gui-desktop-2.0.15-jar-with-dependencies.jar",
+      "files": {
+        "forge-gui-desktop-2.0.15-jar-with-dependencies.jar": "85a4c31e07d4d5621a84bb03b6d75fd08e9f4ba289e575c870579b49c0033766",
+        "res/cardsfolder/cardsfolder.zip": "ac26ccbe2a9c015bad4851db61d57d421777e10bf96c32d72add618b258bec07",
+        "res/tokenscripts/w_1_1_rabbit.txt": "4ab0f9d0be3ca8fa60e9ccbf121a8eecfdcbc26468e4a3bcaf5878272ad5b5c8"
+      }
+    }
+  ],
   "loaderFiles": {
     ".doorstop_version": "75a2f501000d4fe28f74bc7ee66dae5581959d28b6c44f0c1b0c05cd5ba261e6",
     "changelog.txt": "b184d858cb0ff6614ca8ce0247fb0d186cabc91ed7e4d4d9d57ea3d744ce98b5",

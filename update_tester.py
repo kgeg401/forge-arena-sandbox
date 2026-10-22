@@ -57,9 +57,8 @@ def compatible(manifest,folder,config):
         return
     for rel,digest in req['arenaFiles'].items():
         if sha(lab/rel)!=digest:raise ValueError('Update needs a different Arena build; preserve this sandbox until a tested asset migration exists')
-    if sha(data/'forge-runtime/forge.jar')!=req['forgeFiles'][req['forgeJar']]:raise ValueError('Update needs a different Forge build')
-    for rel,digest in req['forgeFiles'].items():
-        if rel.startswith('res/') and sha(data/'forge-runtime'/rel)!=digest:raise ValueError('Update needs different Forge scripts')
+    from dependencies import match_forge
+    match_forge(data/'forge-runtime',req,runtime=True)
     for rel,digest in req['loaderFiles'].items():
         if sha(lab/rel)!=digest:raise ValueError('Update needs a different loader build')
 
@@ -68,7 +67,11 @@ def require_stopped(config):
     root=str(Path(config['privateRoot'])).casefold()
     procs=win_processes()
     for p in procs:
-        if root in (p.get('ExecutablePath') or '').casefold():raise ValueError('Close this sandbox window before applying an update or rollback')
+        if root in (p.get('ExecutablePath') or '').casefold():
+            # Automatic setup keeps Java inside data too. Its recorded Forge
+            # backend is quiesced below after the game window closes.
+            known_backend='ForgeLandEngine' in (p.get('CommandLine') or '') and root in (p.get('CommandLine') or '').casefold() and Path(p.get('ExecutablePath') or '').name.casefold()=='java.exe'
+            if not known_backend:raise ValueError('Close this sandbox window before applying an update or rollback')
     # Closing the game window can leave its headless rules process waiting.
     # Stop only that exact owned backend through its existing IPC shutdown.
     for p in procs:
