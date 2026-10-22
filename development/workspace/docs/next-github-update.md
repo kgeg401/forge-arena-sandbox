@@ -1,10 +1,11 @@
 # Consolidated 370-card publication
 
 The user authorized publishing the current local state on 22 October 2026.
-Target update version: `0.2.0-alpha.5`, a public prerelease on the existing test
+Published update version: `0.2.0-alpha.5`, a public prerelease on the existing test
 channel. The production policy is exactly the locally tested 370-name policy.
 This release consolidates the earlier unpublished catalogue work; old downloads
-remain available for rollback. Exact shipping receipts are in the release notes.
+remain available for rollback. Shipping results are in the
+[publication record](github-publication-0.2.0-alpha.5.md) and release notes.
 
 Paradox Engine's unfinished policy/input are preserved under
 `ForgeBackend/draft_policies/` and explicitly marked research-only. They cannot

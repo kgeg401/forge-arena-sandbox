@@ -6,7 +6,7 @@ separately verified Brawl commanders and token. The latest local delivery added
 
 The public player download and automatic-update channel are maintained at
 [forge-arena-sandbox](https://github.com/kgeg401/forge-arena-sandbox). The
-consolidated publication target is `0.2.0-alpha.5`. Players install Arena
+published consolidated update is `0.2.0-alpha.5`. Players install Arena
 separately, then run Setup.exe from the Windows release ZIP. The setup includes
 Forge and the pinned runtimes; saved data stays outside version folders.
 
