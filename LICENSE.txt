@@ -1,0 +1,14 @@
+Forge Arena Sandbox adapter — public testing permission
+
+Permission is granted to download and run these adapter builds for personal,
+noncommercial testing. The adapter is provided as-is, without warranty.
+No further license to the adapter source is granted at this checkpoint.
+
+Magic: The Gathering, MTG Arena and their assets belong to their respective
+owners and are not included. No permission for those materials is granted.
+Forge, BepInEx, Python, Java, Microsoft .NET and other dependencies retain
+their own licenses. The included unmodified Google Gson library is licensed
+under Apache-2.0; its license and source URL are in third-party/gson.
+
+This is an unofficial independent experiment, not affiliated with Wizards
+of the Coast. Developed with OpenAI Codex assistance.
