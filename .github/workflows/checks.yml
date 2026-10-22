@@ -1,0 +1,46 @@
+name: Windows source checks
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  headless:
+    runs-on: windows-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: '3.13'
+      - name: Run authored headless checks
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $reportFolder = Join-Path $env:RUNNER_TEMP 'sandbox-checks'
+          New-Item -ItemType Directory -Path $reportFolder -Force | Out-Null
+          $env:FORGE_ARENA_TEST_OUTPUT = $reportFolder
+          foreach ($name in @('verify_tester_updates', 'verify_startup_updates', 'verify_dependencies', 'verify_client_service')) {
+            python -X utf8 -B (Join-Path 'client' ($name + '.py')) > (Join-Path $reportFolder ($name + '.json'))
+            if ($LASTEXITCODE -ne 0) { throw ($name + ' failed') }
+          }
+      - name: Check Windows bootstrap and saved display settings
+        shell: pwsh
+        env:
+          DOTNET_ROLL_FORWARD: LatestMajor
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $reportFolder = Join-Path $env:RUNNER_TEMP 'sandbox-checks'
+          $env:FORGE_ARENA_TEST_OUTPUT = $reportFolder
+          & ./client/verify_bootstrap.ps1 > (Join-Path $reportFolder 'bootstrap.txt')
+          dotnet run --project client/adapter-source/Tests/DisplaySettingsProbe.csproj -- (Join-Path $reportFolder 'display-fixture') > (Join-Path $reportFolder 'display.txt')
+          if ($LASTEXITCODE -ne 0) { throw 'Saved display checks failed' }
+      - name: Keep headless reports
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: windows-headless-checks
+          path: ${{ runner.temp }}/sandbox-checks
+          retention-days: 14

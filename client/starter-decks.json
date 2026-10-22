@@ -1,0 +1,13 @@
+{
+  "schema": 1,
+  "decks": [
+    {"file": "White-Lifegain.txt", "name": "White Lifegain"},
+    {"file": "Blue-Draw-Practice.txt", "name": "Blue Card Draw"},
+    {"file": "Black-Keywords-Practice.txt", "name": "Black Creatures"},
+    {"file": "Red-Keywords-Practice.txt", "name": "Red Creatures"},
+    {"file": "Green-Keywords-Practice.txt", "name": "Green Creatures"},
+    {"file": "Hare-Apparent-Practice.txt", "name": "Hare Apparent"},
+    {"file": "Brawl-Emry-Starter.txt", "name": "Emry Brawl"},
+    {"file": "Brawl-Isamaru-Bot.txt", "name": "Isamaru Brawl"}
+  ]
+}

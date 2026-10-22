@@ -1,98 +1,85 @@
-# Public sandbox installer and update test
+# Forge Arena Sandbox
 
-Download the Windows ZIP from [Releases](https://github.com/kgeg401/forge-arena-sandbox/releases). The GitHub source ZIP is not an installable binary release.
+A local Magic sandbox using your installed Arena's original screens, cards and
+animations. Forge runs the bot and supported rules.
 
-# Forge Arena Sandbox - public test client
+**[Download 0.01 alpha for Windows](https://github.com/kgeg401/forge-arena-sandbox/releases/tag/v0.2.0-alpha.1)**
 
-An unofficial, unfinished local sandbox adapter using owned Arena files and
-Forge rules. Limited admitted cards; no multiplayer. No Arena assets/accounts,
-Forge engine, Java, .NET or loader files are redistributed inside this ZIP.
-The small Gson JSON library is included with its Apache-2.0 license and source.
-Our setup downloads prerequisites directly from their official sources.
+Download **ForgeArenaSandbox-Windows.zip** from that release. GitHub's **Code >
+Download ZIP** contains source code, not the installable client.
+
+![The persistent native Home menu](docs/images/home.png)
+
+*Actual sandbox capture. Original Arena presentation is loaded from the user's
+separate installation; game assets are not bundled with the client.*
 
 ## Install
 
-1. Install Arena separately and let it finish downloading its game content.
-2. Download the Windows ZIP from test.6 or a newer test release. Extract the
-   ENTIRE ZIP, then double-click **Setup.exe** (or Setup.cmd).
-3. Setup reuses working 64-bit Python 3.10+ with Tcl/Tk. If missing, it downloads
-   and verifies the official Python 3.13.17 installer, installs it for your
-   Windows user, and opens the sandbox setup window automatically.
-4. Select your Arena folder and a sandbox destination. **Check Arena** checks
-   compatibility without installing anything. **Install sandbox** performs that
-   check automatically and completes setup. These are the two setup actions.
-   No Forge, Java, .NET or loader folders need to be supplied. Setup downloads
-   and verifies the fixed official Forge 2.0.15 release, Eclipse Temurin Java 17
-   JRE, Microsoft .NET 8 runtime and BepInEx 5.4.23.5, then configures the client.
-5. Open **Start Sandbox** in the installed folder. Choose Start practice or Open
-   decks. The launcher automatically checks this repository for newer test
-   releases at startup. Close the game before updating.
+1. Install MTG Arena separately and finish downloading its game content.
+2. Extract the entire sandbox release ZIP and run **Setup.exe**.
+3. Choose your Arena folder and a separate sandbox folder. **Check Arena**
+   verifies compatibility; **Install sandbox** checks and installs everything.
+4. Open **Forge Arena Sandbox** in the installed folder. Its dedicated launcher
+   is **ForgeArenaSandbox.exe**.
 
-Allow at least 20 GiB free, in addition to Arena's installation. Setup copies
-Arena into an independent game folder and keeps Forge and private Java/.NET
-runtimes there. Expect about 360 MiB of prerequisite downloads (plus Python if
-missing). Installation and card indexing can take several minutes.
+Setup handles Forge, private Java/.NET runtimes and the loader. It installs the
+pinned official Python build if needed. Only the tested Arena build is accepted:
+**Client0.1.14517.1329972 / Unity 6000.3.14f1**, with its matching card database.
+Allow space for an independent Arena copy; setup checks the required space.
 
-An existing launcher-only sandbox can be selected as the destination. Its saved
-profile is backed up and retained while setup adds game files. An existing
-playable sandbox must use its updater or a new destination. Unrelated existing
-folders are rejected. Interrupted work is preserved; never delete saved decks
-when troubleshooting an incomplete setup.
+## Play
 
-## Exact supported files
+- **Home > Play > Play:** choose Practice Bot and a valid deck. **White Lifegain**
+  is a straightforward first match.
+- **Home > Play > Brawl:** choose Brawl Bot and **Emry Brawl** or **Isamaru Brawl**.
+  These use 99 cards plus a commander, 25 life and a free first mulligan.
+- **Decks:** create, import Arena deck text, edit, duplicate, export and delete
+  local decks. The Brawl editor has the original commander slot.
+- **Packs:** use the original pack carousel, reveal animations and Continue
+  controls. Fresh profiles receive 100 sandbox packs for each supported set.
+- Finish or concede a game, then Continue to Home. Start another match without
+  restarting the client.
 
-- Arena Client0.1.14517.1329972 / Unity 6000.3.14f1, including the pinned card
-  database. Arena is NOT installed by this setup. A missing database means you
-  must finish Arena's content download first. A different build is rejected
-  before prerequisite downloads or game copying. Build support is still narrow.
-- Automatic setup uses **official Forge 2.0.15** from the fixed `forge-2.0.15`
-  release. This replaces the first-install dependency on an unavailable rolling
-  snapshot. Existing sandboxes using 2.0.15-SNAPSHOT-08.31 remain supported;
-  their engine/resources are not silently replaced during adapter updates.
-- Java 17.0.20.1+1 JRE, .NET 8.0.32, BepInEx 5.4.23.5 Windows x64. The pinned
-  download URLs, hashes and Forge fingerprints are in dependencies-lock.json
-  and requirements.json. Portable runtimes are private to the sandbox; no PATH
-  change or global Java/.NET installation is needed.
+The original deck search, color/land controls, advanced type/rarity/mana filters,
+card zoom and size controls are connected to local data. Graphics and audio use
+the native Options screens. Home, decks, packs and preferences persist locally.
+Upgraded installations retain their existing deck names and libraries.
 
-This is still a developer preview. The sixteen ordinary admitted names are in
-release-info.json. Full Emry-deck support and Paradox Engine are not admitted in
-these distribution test builds. Full home navigation, general card support,
-pack-opening launcher and multiplayer are not implemented. Native gameplay
-uses a zero-network-capability Windows AppContainer. The external updater and
-prerequisite downloader contact official servers; the game does not.
+## Alpha limits
 
-## Updates, saved files and rollback
+**252 main-deck card names are verified**, with **Emry** and **Isamaru** verified
+as Brawl commanders. Most Arena cards remain unverified for this bridge. They
+can be searched or stored, but an unsupported deck cannot start a match.
+See [supported cards](docs/SUPPORTED-CARDS.md).
 
-The test channel is `kgeg401/forge-arena-sandbox`. A published newer prerelease
-with ForgeArenaSandbox-Windows.zip is required; pushing source alone does not
-update installed clients. Startup verifies GitHub's asset SHA-256, internal file
-hashes, archive paths and existing game/profile compatibility before switching.
-The active release is verified again after any update failure. Actions are
-serialized, profiles backed up, and older adapter versions kept for rollback.
+Both queues create local Forge bot matches. Multiplayer, online matchmaking,
+retail account services, full card coverage and complete retail UI parity are
+unfinished. Packs use custom sandbox collation, without retail wildcard rewards,
+bonus sheets or duplicate protection. Opening a card does not enable its rules.
 
-Saved decks/collection live in `data/native-lab/local-profile`, outside
-`versions/<version>`. Updates do not overwrite them. Back them up.
-Rollback pauses automatic updates until **Install Update** is used. A fresh
-stable-Forge install cannot roll back to an old adapter release that only
-accepted the snapshot; compatibility checks stop that downgrade.
-No automatic Arena/Forge asset migration or profile-schema migration is included.
+[See the Brawl panel and a native Emry match](docs/SCREENS.md).
 
-## Logs, cache and removal
+This is an unofficial experiment. Arena is required separately; its assets are
+not distributed here. The game runs with zero Windows network capabilities.
+The external installer/updater downloads prerequisites and adapter releases.
 
-Python setup logs: `%LOCALAPPDATA%/ForgeArenaSandbox/setup-logs`.
-Prerequisite cache and full-setup logs:
-`%LOCALAPPDATA%/ForgeArenaSandbox/prerequisites`.
-Install/update receipts and game logs are inside your chosen sandbox folder.
-Verified download archives are cached for reuse; failed/interrupted work is
-preserved for diagnosis. A successful full sandbox does not depend on that cache.
+## Update
 
-To remove: close the game, back up local-profile, and delete your sandbox folder.
-That also removes its private Forge/Java/.NET copies. Python and the download
-cache remain separate; original Arena and its account remain unchanged.
-The Windows AppContainer registration may remain after removing a full sandbox.
+Close the game and reopen **ForgeArenaSandbox.exe**. It checks GitHub and applies
+a newer release automatically. Running Setup.exe again is normally unnecessary.
+Saved decks, packs and settings stay outside the version folders and are backed
+up before updates. Failed/offline checks retain the verified installed version.
 
-Dependencies retain their licenses. Credits: Card-Forge/Forge, Eclipse Adoptium,
-Microsoft .NET, BepInEx, Python Software Foundation and Google Gson. Developed
-with OpenAI Codex assistance. Corresponding authored adapter source is included;
-no decompiled game source or private account data is distributed. See LICENSE.txt.
+An older test.3/test.6 launcher may show its old hub once after updating. Choose
+**Start practice** once; subsequent launches use the new dedicated launcher.
 
+## Help and source
+
+- [Installation, updates and troubleshooting](docs/FAQ.md)
+- [What has actually been tested](docs/VERIFICATION.md)
+- [Report a reproducible problem](https://github.com/kgeg401/forge-arena-sandbox/issues/new/choose)
+- [Developer notes and source layout](docs/DEVELOPMENT.md)
+
+Dependencies retain their licenses. Credits include Card-Forge/Forge, BepInEx,
+Eclipse Adoptium, Microsoft .NET, Python and Google Gson. Development is AI
+assisted with OpenAI Codex. See [testing permission and attribution](LICENSE.txt).

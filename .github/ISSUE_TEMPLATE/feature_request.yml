@@ -1,0 +1,16 @@
+name: Feature or card-support request
+description: Suggest a specific improvement or reproducible unsupported-card scenario.
+title: "[Request] "
+body:
+  - type: textarea
+    id: request
+    attributes:
+      label: What would you like to do?
+      description: Describe the player action or card interaction and why it matters.
+    validations:
+      required: true
+  - type: textarea
+    id: scenario
+    attributes:
+      label: Example deck or scenario
+      description: For card support, include an Arena card name and the specific interaction that needs testing.

@@ -1,0 +1,50 @@
+name: Sandbox problem
+description: Report an installation, update, menu or gameplay problem.
+title: "[Bug] "
+body:
+  - type: input
+    id: version
+    attributes:
+      label: Sandbox version
+      placeholder: 0.01 alpha / 0.2.0-alpha.1
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Where did it happen?
+      options:
+        - Installation or Arena compatibility check
+        - Launcher or automatic update
+        - Home or Options
+        - Decks or search
+        - Packs
+        - Practice bot match
+        - Brawl bot match
+    validations:
+      required: true
+  - type: input
+    id: arena
+    attributes:
+      label: Arena build and Windows version
+      description: The alpha requires the exact compatible Arena files listed in the player guide.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: Include the deck/card names when relevant and the last action before the problem.
+    validations:
+      required: true
+  - type: textarea
+    id: result
+    attributes:
+      label: Expected and actual result
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Screenshot or relevant log excerpt
+      description: Attach a screenshot or a short relevant excerpt. Do not upload game files or credentials.

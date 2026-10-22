@@ -1,0 +1,8 @@
+Deck
+8 Plains
+8 Island
+8 Swamp
+8 Mountain
+8 Forest
+10 Fusion Elemental
+10 Stone Golem

@@ -1,0 +1,1565 @@
+{
+  "schema": 1,
+  "verifiedNames": [
+    "Plains",
+    "Island",
+    "Savannah Lions",
+    "Yoked Ox",
+    "Oreskos Swiftclaw",
+    "Divine Arrow",
+    "Impassioned Orator",
+    "Unsummon",
+    "Essence Scatter",
+    "Quick Study",
+    "Hare Apparent",
+    "Emry, Lurker of the Loch",
+    "Ornithopter",
+    "Aether Spellbomb",
+    "Seat of the Synod",
+    "Tormod's Crypt",
+    "Swamp",
+    "Mountain",
+    "Forest",
+    "Aegis Turtle",
+    "Ageless Guardian",
+    "Alpine Grizzly",
+    "Ancient Brontodon",
+    "Ancient Crab",
+    "Armored Whirl Turtle",
+    "Axebane Beast",
+    "Barony Vampire",
+    "Bastion Enforcer",
+    "Bear Cub",
+    "Bogstomper",
+    "Borderland Minotaur",
+    "Cabal Evangel",
+    "Canal Monitor",
+    "Capital Guard",
+    "Catacomb Crocodile",
+    "Centaur Courser",
+    "Cliffhaven Sell-Sword",
+    "Coral Commando",
+    "Coral Merfolk",
+    "Devilthorn Fox",
+    "Douser of Lights",
+    "Dune Beetle",
+    "Fearless Halberdier",
+    "Feral Maaka",
+    "Field Creeper",
+    "Fire Elemental",
+    "Fortress Crab",
+    "Frenzied Raptor",
+    "Fusion Elemental",
+    "Garruk's Gorehorn",
+    "Gigantosaurus",
+    "Gilded Sentinel",
+    "Gloom Pangolin",
+    "Goblin Assailant",
+    "Grizzled Outrider",
+    "Grizzly Bears",
+    "Headwater Sentries",
+    "Highborn Vampire",
+    "Hurloon Minotaur",
+    "Imperial Outrider",
+    "Ironclad Krovod",
+    "Jibbirik Omnivore",
+    "Knight of New Benalia",
+    "Knight of the Keep",
+    "Kraken Hatchling",
+    "Krovikan Scoundrel",
+    "Kyoshi Warrior Guard",
+    "Lathnu Sailback",
+    "Lazotep Behemoth",
+    "Leatherback Baloth",
+    "Looming Altisaur",
+    "Loxodon Line Breaker",
+    "Murasa Brute",
+    "Naga Eternal",
+    "Onakke Ogre",
+    "Orazca Frillback",
+    "Orazca Raptor",
+    "Ordinary Bear",
+    "Primordial Wurm",
+    "Prowling Caracal",
+    "Quakestrider Ceratops",
+    "Queen's Bay Soldier",
+    "Raptor Companion",
+    "Renegade Demon",
+    "Rotting Mastodon",
+    "Rumbling Baloth",
+    "Runeclaw Bear",
+    "Sanctuary Cat",
+    "Savai Sabertooth",
+    "Scaled Wurm",
+    "Scathe Zombies",
+    "Siege Mastodon",
+    "Spined Karok",
+    "Staunch Shieldmate",
+    "Stone Golem",
+    "Summit Prowler",
+    "Swab Goblin",
+    "Sworn Guardian",
+    "Thornhide Wolves",
+    "Those Who Serve",
+    "Tolarian Scholar",
+    "Tusked Colossodon",
+    "Vorstclaw",
+    "Walking Corpse",
+    "Warship Scout",
+    "Wetland Sambar",
+    "Wild Ceratok",
+    "Wishcoin Crab",
+    "Witch's Familiar",
+    "A.I.M. Bot",
+    "Aardvark Sloth",
+    "Adult Gold Dragon",
+    "Aerial Responder",
+    "Air Elemental",
+    "Alabaster Host Sanctifier",
+    "Alabaster Kirin",
+    "Alley Strangler",
+    "Alpine Watchdog",
+    "Anvilwrought Raptor",
+    "Aven Reedstalker",
+    "Aven Sentry",
+    "Azure Drake",
+    "Banehound",
+    "Bartizan Bats",
+    "Bassara Tower Archer",
+    "Battlefield Raptor",
+    "Bishop's Soldier",
+    "Bitterbow Sharpshooters",
+    "Blood Glutton",
+    "Boggart Brute",
+    "Bounding Wolf",
+    "Brazen Scourge",
+    "Breakneck Berserker",
+    "Brightblade Stoat",
+    "Brushstrider",
+    "Canopy Spider",
+    "Chardalyn Dragon",
+    "Charity Extractor",
+    "Child of Night",
+    "Cold-Water Snapper",
+    "Concordia Pegasus",
+    "Consulate Skygate",
+    "Crystacean",
+    "Cursed Minotaur",
+    "Dawn Gryff",
+    "Dawn's Light Archer",
+    "Daybreak Chaplain",
+    "Deer-Dog",
+    "Deranged Whelp",
+    "Dragon Moose",
+    "Elephant-Rat",
+    "Enforcer Griffin",
+    "Exultant Skymarcher",
+    "Faithbearer Paladin",
+    "Fencing Ace",
+    "Fire Nation Ambushers",
+    "Fire Nation Soldier",
+    "Flying Dolphin-Fish",
+    "Frog-Squirrels",
+    "Giant Spider",
+    "Gladecover Scout",
+    "Glamorous Grapplers",
+    "Gnottvold Recluse",
+    "Goblin Trailblazer",
+    "Grazing Whiptail",
+    "Greenwood Sentinel",
+    "Griffin Sentinel",
+    "Gurmag Swiftwing",
+    "Healer's Flock",
+    "Healer's Hawk",
+    "Hired Blade",
+    "Hitchclaw Recluse",
+    "Hostile Minotaur",
+    "Huatli's Snubhorn",
+    "Hulking Bugbear",
+    "Humongulus",
+    "Kithkin Billyrider",
+    "Knight of the Tusk",
+    "Kraul Raider",
+    "Leonin Skyhunter",
+    "Lightning Elemental",
+    "Lightning Stormkin",
+    "Living Tempest",
+    "Magnigoth Sentry",
+    "Mammoth Spider",
+    "Maned Serval",
+    "Mantis Rider",
+    "Mesa Unicorn",
+    "Moat Piranhas",
+    "Monoist Sentry",
+    "Mosscoat Goriak",
+    "Murmuring Phantasm",
+    "Nest Robber",
+    "Nimble Birdsticker",
+    "Oko's Accomplices",
+    "Pouncing Cheetah",
+    "Prized Griffin",
+    "Pyromantic Pilgrim",
+    "Raging Goblin",
+    "Raging Redcap",
+    "Rearing Embermare",
+    "Relic Sloth",
+    "Resistance Skywarden",
+    "Ripscale Predator",
+    "Riptide Turtle",
+    "Roc Hunter",
+    "Rustwing Falcon",
+    "Scion of Ugin",
+    "Segovian Angel",
+    "Sentinel Spider",
+    "Seraph of Dawn",
+    "Serra Angel",
+    "Shining Aerosaur",
+    "Shrike Force",
+    "Silverbeak Griffin",
+    "Sky Terror",
+    "Skyblade of the Legion",
+    "Skyknight Legionnaire",
+    "Skyraker Giant",
+    "Snapping Drake",
+    "Soaring Drake",
+    "Soul of the Rapids",
+    "Sporecap Spider",
+    "Steadfast Paladin",
+    "Stormfront Pegasus",
+    "Stormrider Spirit",
+    "Story Seeker",
+    "Sun Sentinel",
+    "Sunblade Angel",
+    "Sungrace Pegasus",
+    "Swift Spinner",
+    "Swooping Lookout",
+    "Tajuru Snarecaster",
+    "Tundra Wall",
+    "Turtle-Seals",
+    "Twinscroll Shaman",
+    "Two-Headed Zombie",
+    "Vampire Revenant",
+    "Venerable Lammasu",
+    "Vexing Gull",
+    "Vigilant Baloth",
+    "Volcanic Dragon",
+    "Wall of Mist",
+    "Wall of Vines",
+    "Wardscale Crocodile",
+    "Wary Okapi",
+    "Wind Strider",
+    "Youthful Knight",
+    "Concentrate",
+    "Divination",
+    "Harmonize",
+    "Weave Fate"
+  ],
+  "candidateNames": [
+    "Isamaru, Hound of Konda"
+  ],
+  "brawlCommanders": {
+    "Isamaru, Hound of Konda": {
+      "colorIdentity": [
+        "W"
+      ]
+    },
+    "Emry, Lurker of the Loch": {
+      "colorIdentity": [
+        "U"
+      ]
+    }
+  },
+  "nativeBasicManaAbilityIds": {
+    "Plains": 1001,
+    "Island": 1002,
+    "Swamp": 1003,
+    "Mountain": 1004,
+    "Forest": 1005
+  },
+  "preferredPrintings": {
+    "Plains": 75556,
+    "Island": 58443,
+    "Savannah Lions": 93859,
+    "Yoked Ox": 69826,
+    "Oreskos Swiftclaw": 67742,
+    "Divine Arrow": 69461,
+    "Impassioned Orator": 75451,
+    "Unsummon": 75477,
+    "Essence Scatter": 73836,
+    "Quick Study": 86756,
+    "Hare Apparent": 93728,
+    "Isamaru, Hound of Konda": 72175,
+    "Emry, Lurker of the Loch": 70190,
+    "Ornithopter": 75832,
+    "Aether Spellbomb": 72518,
+    "Seat of the Synod": 93331,
+    "Tormod's Crypt": 72023,
+    "Swamp": 7347,
+    "Mountain": 7153,
+    "Forest": 6993,
+    "Aegis Turtle": 71106,
+    "Ageless Guardian": 76401,
+    "Alpine Grizzly": 58191,
+    "Ancient Brontodon": 66317,
+    "Ancient Crab": 69441,
+    "Armored Whirl Turtle": 75465,
+    "Axebane Beast": 69249,
+    "Barony Vampire": 69870,
+    "Bastion Enforcer": 70087,
+    "Bear Cub": 79330,
+    "Bogstomper": 67854,
+    "Borderland Minotaur": 72363,
+    "Cabal Evangel": 67260,
+    "Canal Monitor": 66743,
+    "Capital Guard": 98196,
+    "Catacomb Crocodile": 69195,
+    "Centaur Courser": 68022,
+    "Cliffhaven Sell-Sword": 73190,
+    "Coral Commando": 69164,
+    "Coral Merfolk": 70099,
+    "Devilthorn Fox": 86060,
+    "Douser of Lights": 68531,
+    "Dune Beetle": 73880,
+    "Fearless Halberdier": 68561,
+    "Feral Maaka": 69228,
+    "Field Creeper": 68150,
+    "Fire Elemental": 67344,
+    "Fortress Crab": 69845,
+    "Frenzied Raptor": 66257,
+    "Fusion Elemental": 72513,
+    "Garruk's Gorehorn": 71966,
+    "Gigantosaurus": 68050,
+    "Gilded Sentinel": 66451,
+    "Gloom Pangolin": 71156,
+    "Goblin Assailant": 69579,
+    "Grizzled Outrider": 75218,
+    "Grizzly Bears": 79334,
+    "Headwater Sentries": 66077,
+    "Highborn Vampire": 73304,
+    "Hurloon Minotaur": 75515,
+    "Imperial Outrider": 70091,
+    "Ironclad Krovod": 69470,
+    "Jibbirik Omnivore": 94968,
+    "Knight of New Benalia": 67152,
+    "Knight of the Keep": 70166,
+    "Kraken Hatchling": 49049,
+    "Krovikan Scoundrel": 75491,
+    "Kyoshi Warrior Guard": 98178,
+    "Lathnu Sailback": 75713,
+    "Lazotep Behemoth": 69546,
+    "Leatherback Baloth": 35537,
+    "Looming Altisaur": 66007,
+    "Loxodon Line Breaker": 67728,
+    "Murasa Brute": 73404,
+    "Naga Eternal": 69511,
+    "Onakke Ogre": 67986,
+    "Orazca Frillback": 66897,
+    "Orazca Raptor": 66833,
+    "Ordinary Bear": 103513,
+    "Primordial Wurm": 67458,
+    "Prowling Caracal": 69145,
+    "Quakestrider Ceratops": 93823,
+    "Queen's Bay Soldier": 66195,
+    "Raptor Companion": 66023,
+    "Renegade Demon": 68803,
+    "Rotting Mastodon": 58111,
+    "Rumbling Baloth": 68801,
+    "Runeclaw Bear": 79342,
+    "Sanctuary Cat": 68804,
+    "Savai Sabertooth": 71096,
+    "Scaled Wurm": 22911,
+    "Scathe Zombies": 75500,
+    "Siege Mastodon": 70096,
+    "Spined Karok": 76536,
+    "Staunch Shieldmate": 71821,
+    "Stone Golem": 70025,
+    "Summit Prowler": 58179,
+    "Swab Goblin": 67037,
+    "Sworn Guardian": 66733,
+    "Thornhide Wolves": 68088,
+    "Those Who Serve": 73815,
+    "Tolarian Scholar": 67246,
+    "Tusked Colossodon": 58247,
+    "Vorstclaw": 69986,
+    "Walking Corpse": 67932,
+    "Warship Scout": 98206,
+    "Wetland Sambar": 58061,
+    "Wild Ceratok": 68611,
+    "Wishcoin Crab": 68521,
+    "Witch's Familiar": 75507,
+    "A.I.M. Bot": 105546,
+    "Aardvark Sloth": 98174,
+    "Adult Gold Dragon": 77321,
+    "Aerial Responder": 75579,
+    "Air Elemental": 66051,
+    "Alabaster Host Sanctifier": 84251,
+    "Alabaster Kirin": 57945,
+    "Alley Strangler": 75655,
+    "Alpine Watchdog": 71784,
+    "Anvilwrought Raptor": 70006,
+    "Aven Reedstalker": 93070,
+    "Aven Sentry": 67110,
+    "Azure Drake": 93071,
+    "Banehound": 69528,
+    "Bartizan Bats": 68523,
+    "Bassara Tower Archer": 94403,
+    "Battlefield Raptor": 75038,
+    "Bishop's Soldier": 65971,
+    "Bitterbow Sharpshooters": 73963,
+    "Blood Glutton": 71872,
+    "Boggart Brute": 67942,
+    "Bounding Wolf": 78526,
+    "Brazen Scourge": 93904,
+    "Breakneck Berserker": 75167,
+    "Brightblade Stoat": 91540,
+    "Brushstrider": 72443,
+    "Canopy Spider": 70123,
+    "Chardalyn Dragon": 81853,
+    "Charity Extractor": 69532,
+    "Child of Night": 67858,
+    "Cold-Water Snapper": 67200,
+    "Concordia Pegasus": 69135,
+    "Consulate Skygate": 75806,
+    "Crystacean": 71113,
+    "Cursed Minotaur": 64969,
+    "Dawn Gryff": 86624,
+    "Dawn's Light Archer": 98495,
+    "Daybreak Chaplain": 67700,
+    "Deer-Dog": 98259,
+    "Deranged Whelp": 86197,
+    "Dragon Moose": 98197,
+    "Elephant-Rat": 98190,
+    "Enforcer Griffin": 69462,
+    "Exultant Skymarcher": 66631,
+    "Faithbearer Paladin": 86063,
+    "Fencing Ace": 69801,
+    "Fire Nation Ambushers": 98191,
+    "Fire Nation Soldier": 98200,
+    "Flying Dolphin-Fish": 98185,
+    "Frog-Squirrels": 98213,
+    "Giant Spider": 68046,
+    "Gladecover Scout": 94412,
+    "Glamorous Grapplers": 105553,
+    "Gnottvold Recluse": 75217,
+    "Goblin Trailblazer": 66827,
+    "Grazing Whiptail": 66347,
+    "Greenwood Sentinel": 68054,
+    "Griffin Sentinel": 69806,
+    "Gurmag Swiftwing": 58085,
+    "Healer's Flock": 75968,
+    "Healer's Hawk": 68475,
+    "Hired Blade": 67880,
+    "Hitchclaw Recluse": 68594,
+    "Hostile Minotaur": 67974,
+    "Huatli's Snubhorn": 66553,
+    "Hulking Bugbear": 77254,
+    "Humongulus": 69169,
+    "Kithkin Billyrider": 84277,
+    "Knight of the Tusk": 67716,
+    "Kraul Raider": 68751,
+    "Leonin Skyhunter": 19689,
+    "Lightning Elemental": 72406,
+    "Lightning Stormkin": 69998,
+    "Living Tempest": 73256,
+    "Magnigoth Sentry": 82224,
+    "Mammoth Spider": 67446,
+    "Maned Serval": 71090,
+    "Mantis Rider": 58305,
+    "Mesa Unicorn": 67158,
+    "Moat Piranhas": 69852,
+    "Monoist Sentry": 96685,
+    "Mosscoat Goriak": 71234,
+    "Murmuring Phantasm": 72219,
+    "Nest Robber": 66269,
+    "Nimble Birdsticker": 70117,
+    "Oko's Accomplices": 70423,
+    "Pouncing Cheetah": 72481,
+    "Prized Griffin": 70171,
+    "Pyromantic Pilgrim": 67660,
+    "Raging Goblin": 68784,
+    "Raging Redcap": 70281,
+    "Rearing Embermare": 102586,
+    "Relic Sloth": 76631,
+    "Resistance Skywarden": 83846,
+    "Ripscale Predator": 69942,
+    "Riptide Turtle": 70572,
+    "Roc Hunter": 82634,
+    "Rustwing Falcon": 67752,
+    "Scion of Ugin": 94224,
+    "Segovian Angel": 71366,
+    "Sentinel Spider": 75545,
+    "Seraph of Dawn": 79259,
+    "Serra Angel": 67170,
+    "Shining Aerosaur": 66033,
+    "Shrike Force": 91567,
+    "Silverbeak Griffin": 68252,
+    "Sky Terror": 66427,
+    "Skyblade of the Legion": 66035,
+    "Skyknight Legionnaire": 68659,
+    "Skyraker Giant": 93696,
+    "Snapping Drake": 67830,
+    "Soaring Drake": 82118,
+    "Soul of the Rapids": 66729,
+    "Sporecap Spider": 70323,
+    "Steadfast Paladin": 77143,
+    "Stormfront Pegasus": 32801,
+    "Stormrider Spirit": 78416,
+    "Story Seeker": 75071,
+    "Sun Sentinel": 66669,
+    "Sunblade Angel": 69482,
+    "Sungrace Pegasus": 93554,
+    "Swift Spinner": 86272,
+    "Swooping Lookout": 83735,
+    "Tajuru Snarecaster": 73419,
+    "Tundra Wall": 98182,
+    "Turtle-Seals": 98188,
+    "Twinscroll Shaman": 76511,
+    "Two-Headed Zombie": 67926,
+    "Vampire Revenant": 66795,
+    "Venerable Lammasu": 57993,
+    "Vexing Gull": 70590,
+    "Vigilant Baloth": 68092,
+    "Volcanic Dragon": 68014,
+    "Wall of Mist": 67846,
+    "Wall of Vines": 68100,
+    "Wardscale Crocodile": 69634,
+    "Wary Okapi": 68610,
+    "Wind Strider": 66139,
+    "Youthful Knight": 70184,
+    "Concentrate": 93084,
+    "Divination": 67208,
+    "Harmonize": 77531,
+    "Weave Fate": 58059
+  },
+  "tokens": [
+    {
+      "forgeName": "Rabbit Token",
+      "forgeScript": "w_1_1_rabbit",
+      "arenaGrpId": 94160,
+      "sourceName": "Hare Apparent",
+      "sourceAbilityId": 175767
+    }
+  ],
+  "colorIdentities": {
+    "Emry, Lurker of the Loch": [
+      "U"
+    ],
+    "Ornithopter": [],
+    "Aether Spellbomb": [
+      "U"
+    ],
+    "Seat of the Synod": [
+      "U"
+    ],
+    "Tormod's Crypt": [],
+    "Aegis Turtle": [
+      "U"
+    ],
+    "Ageless Guardian": [
+      "W"
+    ],
+    "Alpine Grizzly": [
+      "G"
+    ],
+    "Ancient Brontodon": [
+      "G"
+    ],
+    "Ancient Crab": [
+      "U"
+    ],
+    "Armored Whirl Turtle": [
+      "U"
+    ],
+    "Axebane Beast": [
+      "G"
+    ],
+    "Barony Vampire": [
+      "B"
+    ],
+    "Bastion Enforcer": [
+      "W"
+    ],
+    "Bear Cub": [
+      "G"
+    ],
+    "Bogstomper": [
+      "B"
+    ],
+    "Borderland Minotaur": [
+      "R"
+    ],
+    "Cabal Evangel": [
+      "B"
+    ],
+    "Canal Monitor": [
+      "B"
+    ],
+    "Capital Guard": [
+      "R"
+    ],
+    "Catacomb Crocodile": [
+      "B"
+    ],
+    "Centaur Courser": [
+      "G"
+    ],
+    "Cliffhaven Sell-Sword": [
+      "W"
+    ],
+    "Coral Commando": [
+      "U"
+    ],
+    "Coral Merfolk": [
+      "U"
+    ],
+    "Devilthorn Fox": [
+      "W"
+    ],
+    "Douser of Lights": [
+      "B"
+    ],
+    "Dune Beetle": [
+      "B"
+    ],
+    "Fearless Halberdier": [
+      "R"
+    ],
+    "Feral Maaka": [
+      "R"
+    ],
+    "Field Creeper": [],
+    "Fire Elemental": [
+      "R"
+    ],
+    "Fortress Crab": [
+      "U"
+    ],
+    "Frenzied Raptor": [
+      "R"
+    ],
+    "Fusion Elemental": [
+      "W",
+      "U",
+      "B",
+      "R",
+      "G"
+    ],
+    "Garruk's Gorehorn": [
+      "G"
+    ],
+    "Gigantosaurus": [
+      "G"
+    ],
+    "Gilded Sentinel": [],
+    "Gloom Pangolin": [
+      "B"
+    ],
+    "Goblin Assailant": [
+      "R"
+    ],
+    "Grizzled Outrider": [
+      "G"
+    ],
+    "Grizzly Bears": [
+      "G"
+    ],
+    "Headwater Sentries": [
+      "U"
+    ],
+    "Highborn Vampire": [
+      "B"
+    ],
+    "Hurloon Minotaur": [
+      "R"
+    ],
+    "Imperial Outrider": [
+      "W"
+    ],
+    "Ironclad Krovod": [
+      "W"
+    ],
+    "Jibbirik Omnivore": [
+      "G"
+    ],
+    "Knight of New Benalia": [
+      "W"
+    ],
+    "Knight of the Keep": [
+      "W"
+    ],
+    "Kraken Hatchling": [
+      "U"
+    ],
+    "Krovikan Scoundrel": [
+      "B"
+    ],
+    "Kyoshi Warrior Guard": [
+      "W"
+    ],
+    "Lathnu Sailback": [
+      "R"
+    ],
+    "Lazotep Behemoth": [
+      "B"
+    ],
+    "Leatherback Baloth": [
+      "G"
+    ],
+    "Looming Altisaur": [
+      "W"
+    ],
+    "Loxodon Line Breaker": [
+      "W"
+    ],
+    "Murasa Brute": [
+      "G"
+    ],
+    "Naga Eternal": [
+      "U"
+    ],
+    "Onakke Ogre": [
+      "R"
+    ],
+    "Orazca Frillback": [
+      "G"
+    ],
+    "Orazca Raptor": [
+      "R"
+    ],
+    "Ordinary Bear": [
+      "G"
+    ],
+    "Primordial Wurm": [
+      "G"
+    ],
+    "Prowling Caracal": [
+      "W"
+    ],
+    "Quakestrider Ceratops": [
+      "G"
+    ],
+    "Queen's Bay Soldier": [
+      "B"
+    ],
+    "Raptor Companion": [
+      "W"
+    ],
+    "Renegade Demon": [
+      "B"
+    ],
+    "Rotting Mastodon": [
+      "B"
+    ],
+    "Rumbling Baloth": [
+      "G"
+    ],
+    "Runeclaw Bear": [
+      "G"
+    ],
+    "Sanctuary Cat": [
+      "W"
+    ],
+    "Savai Sabertooth": [
+      "W"
+    ],
+    "Scaled Wurm": [
+      "G"
+    ],
+    "Scathe Zombies": [
+      "B"
+    ],
+    "Siege Mastodon": [
+      "W"
+    ],
+    "Spined Karok": [
+      "G"
+    ],
+    "Staunch Shieldmate": [
+      "W"
+    ],
+    "Stone Golem": [],
+    "Summit Prowler": [
+      "R"
+    ],
+    "Swab Goblin": [
+      "R"
+    ],
+    "Sworn Guardian": [
+      "U"
+    ],
+    "Thornhide Wolves": [
+      "G"
+    ],
+    "Those Who Serve": [
+      "W"
+    ],
+    "Tolarian Scholar": [
+      "U"
+    ],
+    "Tusked Colossodon": [
+      "G"
+    ],
+    "Vorstclaw": [
+      "G"
+    ],
+    "Walking Corpse": [
+      "B"
+    ],
+    "Warship Scout": [
+      "R"
+    ],
+    "Wetland Sambar": [
+      "U"
+    ],
+    "Wild Ceratok": [
+      "G"
+    ],
+    "Wishcoin Crab": [
+      "U"
+    ],
+    "Witch's Familiar": [
+      "B"
+    ],
+    "Swamp": [
+      "B"
+    ],
+    "Mountain": [
+      "R"
+    ],
+    "Forest": [
+      "G"
+    ],
+    "A.I.M. Bot": [
+      "U"
+    ],
+    "Aardvark Sloth": [
+      "W"
+    ],
+    "Adult Gold Dragon": [
+      "R",
+      "W"
+    ],
+    "Aerial Responder": [
+      "W"
+    ],
+    "Air Elemental": [
+      "U"
+    ],
+    "Alabaster Host Sanctifier": [
+      "W"
+    ],
+    "Alabaster Kirin": [
+      "W"
+    ],
+    "Alley Strangler": [
+      "B"
+    ],
+    "Alpine Watchdog": [
+      "W"
+    ],
+    "Anvilwrought Raptor": [],
+    "Aven Reedstalker": [
+      "U"
+    ],
+    "Aven Sentry": [
+      "W"
+    ],
+    "Azure Drake": [
+      "U"
+    ],
+    "Banehound": [
+      "B"
+    ],
+    "Bartizan Bats": [
+      "B"
+    ],
+    "Bassara Tower Archer": [
+      "G"
+    ],
+    "Battlefield Raptor": [
+      "W"
+    ],
+    "Bishop's Soldier": [
+      "W"
+    ],
+    "Bitterbow Sharpshooters": [
+      "G"
+    ],
+    "Blood Glutton": [
+      "B"
+    ],
+    "Boggart Brute": [
+      "R"
+    ],
+    "Bounding Wolf": [
+      "G"
+    ],
+    "Brazen Scourge": [
+      "R"
+    ],
+    "Breakneck Berserker": [
+      "R"
+    ],
+    "Brightblade Stoat": [
+      "W"
+    ],
+    "Brushstrider": [
+      "G"
+    ],
+    "Canopy Spider": [
+      "G"
+    ],
+    "Chardalyn Dragon": [],
+    "Charity Extractor": [
+      "B"
+    ],
+    "Child of Night": [
+      "B"
+    ],
+    "Cold-Water Snapper": [
+      "U"
+    ],
+    "Concordia Pegasus": [
+      "W"
+    ],
+    "Consulate Skygate": [],
+    "Crystacean": [
+      "U"
+    ],
+    "Cursed Minotaur": [
+      "B"
+    ],
+    "Dawn Gryff": [
+      "W"
+    ],
+    "Dawn's Light Archer": [
+      "G"
+    ],
+    "Daybreak Chaplain": [
+      "W"
+    ],
+    "Deer-Dog": [
+      "R"
+    ],
+    "Deranged Whelp": [
+      "R"
+    ],
+    "Dragon Moose": [
+      "R"
+    ],
+    "Elephant-Rat": [
+      "B"
+    ],
+    "Enforcer Griffin": [
+      "W"
+    ],
+    "Exultant Skymarcher": [
+      "W"
+    ],
+    "Faithbearer Paladin": [
+      "W"
+    ],
+    "Fencing Ace": [
+      "W"
+    ],
+    "Fire Nation Ambushers": [
+      "B"
+    ],
+    "Fire Nation Soldier": [
+      "R"
+    ],
+    "Flying Dolphin-Fish": [
+      "U"
+    ],
+    "Frog-Squirrels": [
+      "G"
+    ],
+    "Giant Spider": [
+      "G"
+    ],
+    "Gladecover Scout": [
+      "G"
+    ],
+    "Glamorous Grapplers": [
+      "B"
+    ],
+    "Gnottvold Recluse": [
+      "G"
+    ],
+    "Goblin Trailblazer": [
+      "R"
+    ],
+    "Grazing Whiptail": [
+      "G"
+    ],
+    "Greenwood Sentinel": [
+      "G"
+    ],
+    "Griffin Sentinel": [
+      "W"
+    ],
+    "Gurmag Swiftwing": [
+      "B"
+    ],
+    "Healer's Flock": [
+      "W"
+    ],
+    "Healer's Hawk": [
+      "W"
+    ],
+    "Hired Blade": [
+      "B"
+    ],
+    "Hitchclaw Recluse": [
+      "G"
+    ],
+    "Hostile Minotaur": [
+      "R"
+    ],
+    "Huatli's Snubhorn": [
+      "W"
+    ],
+    "Hulking Bugbear": [
+      "R"
+    ],
+    "Humongulus": [
+      "U"
+    ],
+    "Kithkin Billyrider": [
+      "W"
+    ],
+    "Knight of the Tusk": [
+      "W"
+    ],
+    "Kraul Raider": [
+      "B"
+    ],
+    "Leonin Skyhunter": [
+      "W"
+    ],
+    "Lightning Elemental": [
+      "R"
+    ],
+    "Lightning Stormkin": [
+      "U",
+      "R"
+    ],
+    "Living Tempest": [
+      "U"
+    ],
+    "Magnigoth Sentry": [
+      "G"
+    ],
+    "Mammoth Spider": [
+      "G"
+    ],
+    "Maned Serval": [
+      "W"
+    ],
+    "Mantis Rider": [
+      "U",
+      "R",
+      "W"
+    ],
+    "Mesa Unicorn": [
+      "W"
+    ],
+    "Moat Piranhas": [
+      "U"
+    ],
+    "Monoist Sentry": [
+      "B"
+    ],
+    "Mosscoat Goriak": [
+      "G"
+    ],
+    "Murmuring Phantasm": [
+      "U"
+    ],
+    "Nest Robber": [
+      "R"
+    ],
+    "Nimble Birdsticker": [
+      "R"
+    ],
+    "Oko's Accomplices": [
+      "U"
+    ],
+    "Pouncing Cheetah": [
+      "G"
+    ],
+    "Prized Griffin": [
+      "W"
+    ],
+    "Pyromantic Pilgrim": [
+      "R"
+    ],
+    "Raging Goblin": [
+      "R"
+    ],
+    "Raging Redcap": [
+      "R"
+    ],
+    "Rearing Embermare": [
+      "R"
+    ],
+    "Relic Sloth": [
+      "R",
+      "W"
+    ],
+    "Resistance Skywarden": [
+      "R"
+    ],
+    "Ripscale Predator": [
+      "R"
+    ],
+    "Riptide Turtle": [
+      "U"
+    ],
+    "Roc Hunter": [
+      "R"
+    ],
+    "Rustwing Falcon": [
+      "W"
+    ],
+    "Scion of Ugin": [],
+    "Segovian Angel": [
+      "W"
+    ],
+    "Sentinel Spider": [
+      "G"
+    ],
+    "Seraph of Dawn": [
+      "W"
+    ],
+    "Serra Angel": [
+      "W"
+    ],
+    "Shining Aerosaur": [
+      "W"
+    ],
+    "Shrike Force": [
+      "W"
+    ],
+    "Silverbeak Griffin": [
+      "W"
+    ],
+    "Sky Terror": [
+      "R",
+      "W"
+    ],
+    "Skyblade of the Legion": [
+      "W"
+    ],
+    "Skyknight Legionnaire": [
+      "R",
+      "W"
+    ],
+    "Skyraker Giant": [
+      "R"
+    ],
+    "Snapping Drake": [
+      "U"
+    ],
+    "Soaring Drake": [
+      "U"
+    ],
+    "Soul of the Rapids": [
+      "U"
+    ],
+    "Sporecap Spider": [
+      "G"
+    ],
+    "Steadfast Paladin": [
+      "W"
+    ],
+    "Stormfront Pegasus": [
+      "W"
+    ],
+    "Stormrider Spirit": [
+      "U"
+    ],
+    "Story Seeker": [
+      "W"
+    ],
+    "Sun Sentinel": [
+      "W"
+    ],
+    "Sunblade Angel": [
+      "W"
+    ],
+    "Sungrace Pegasus": [
+      "W"
+    ],
+    "Swift Spinner": [
+      "G"
+    ],
+    "Swooping Lookout": [
+      "W"
+    ],
+    "Tajuru Snarecaster": [
+      "G"
+    ],
+    "Tundra Wall": [
+      "W"
+    ],
+    "Turtle-Seals": [
+      "U"
+    ],
+    "Twinscroll Shaman": [
+      "R"
+    ],
+    "Two-Headed Zombie": [
+      "B"
+    ],
+    "Vampire Revenant": [
+      "B"
+    ],
+    "Venerable Lammasu": [
+      "W"
+    ],
+    "Vexing Gull": [
+      "U"
+    ],
+    "Vigilant Baloth": [
+      "G"
+    ],
+    "Volcanic Dragon": [
+      "R"
+    ],
+    "Wall of Mist": [
+      "U"
+    ],
+    "Wall of Vines": [
+      "G"
+    ],
+    "Wardscale Crocodile": [
+      "G"
+    ],
+    "Wary Okapi": [
+      "G"
+    ],
+    "Wind Strider": [
+      "U"
+    ],
+    "Youthful Knight": [
+      "W"
+    ],
+    "Concentrate": [
+      "U"
+    ],
+    "Divination": [
+      "U"
+    ],
+    "Harmonize": [
+      "G"
+    ],
+    "Weave Fate": [
+      "U"
+    ]
+  },
+  "abilityBindings": {
+    "Emry, Lurker of the Loch": {
+      "trigger": 86971,
+      "activated": {
+        "Effect": 136098
+      }
+    },
+    "Aether Spellbomb": {
+      "activated": {
+        "ChangeZone": 86974,
+        "Draw": 4921
+      }
+    },
+    "Tormod's Crypt": {
+      "activated": {
+        "ChangeZoneAll": 12870
+      }
+    }
+  },
+  "nativeManaAbilityIds": {
+    "Seat of the Synod": 1002
+  },
+  "nativeManaColors": {
+    "Plains": "White",
+    "Island": "Blue",
+    "Seat of the Synod": "Blue",
+    "Swamp": "Black",
+    "Mountain": "Red",
+    "Forest": "Green"
+  },
+  "verificationFamilies": [
+    {
+      "id": "plain-creatures-v1",
+      "names": [
+        "Aegis Turtle",
+        "Ageless Guardian",
+        "Alpine Grizzly",
+        "Ancient Brontodon",
+        "Ancient Crab",
+        "Armored Whirl Turtle",
+        "Axebane Beast",
+        "Barony Vampire",
+        "Bastion Enforcer",
+        "Bear Cub",
+        "Bogstomper",
+        "Borderland Minotaur",
+        "Cabal Evangel",
+        "Canal Monitor",
+        "Capital Guard",
+        "Catacomb Crocodile",
+        "Centaur Courser",
+        "Cliffhaven Sell-Sword",
+        "Coral Commando",
+        "Coral Merfolk",
+        "Devilthorn Fox",
+        "Douser of Lights",
+        "Dune Beetle",
+        "Fearless Halberdier",
+        "Feral Maaka",
+        "Field Creeper",
+        "Fire Elemental",
+        "Fortress Crab",
+        "Frenzied Raptor",
+        "Fusion Elemental",
+        "Garruk's Gorehorn",
+        "Gigantosaurus",
+        "Gilded Sentinel",
+        "Gloom Pangolin",
+        "Goblin Assailant",
+        "Grizzled Outrider",
+        "Grizzly Bears",
+        "Headwater Sentries",
+        "Highborn Vampire",
+        "Hurloon Minotaur",
+        "Imperial Outrider",
+        "Ironclad Krovod",
+        "Jibbirik Omnivore",
+        "Knight of New Benalia",
+        "Knight of the Keep",
+        "Kraken Hatchling",
+        "Krovikan Scoundrel",
+        "Kyoshi Warrior Guard",
+        "Lathnu Sailback",
+        "Lazotep Behemoth",
+        "Leatherback Baloth",
+        "Looming Altisaur",
+        "Loxodon Line Breaker",
+        "Murasa Brute",
+        "Naga Eternal",
+        "Onakke Ogre",
+        "Orazca Frillback",
+        "Orazca Raptor",
+        "Ordinary Bear",
+        "Primordial Wurm",
+        "Prowling Caracal",
+        "Quakestrider Ceratops",
+        "Queen's Bay Soldier",
+        "Raptor Companion",
+        "Renegade Demon",
+        "Rotting Mastodon",
+        "Rumbling Baloth",
+        "Runeclaw Bear",
+        "Sanctuary Cat",
+        "Savai Sabertooth",
+        "Scaled Wurm",
+        "Scathe Zombies",
+        "Siege Mastodon",
+        "Spined Karok",
+        "Staunch Shieldmate",
+        "Stone Golem",
+        "Summit Prowler",
+        "Swab Goblin",
+        "Sworn Guardian",
+        "Thornhide Wolves",
+        "Those Who Serve",
+        "Tolarian Scholar",
+        "Tusked Colossodon",
+        "Vorstclaw",
+        "Walking Corpse",
+        "Warship Scout",
+        "Wetland Sambar",
+        "Wild Ceratok",
+        "Wishcoin Crab",
+        "Witch's Familiar"
+      ],
+      "rules": "source-checked-native-and-forge-plain-definitions",
+      "decisions": "generic-plain-cast-and-combat-class",
+      "assets": "original-native-model-and-exact-source-art-texture",
+      "sequences": "each-card-seeded-cast-payment-resolution; representative-combat; five-normal-matches; native-class-callbacks"
+    },
+    {
+      "id": "five-basic-mana-v1",
+      "names": [
+        "Plains",
+        "Island",
+        "Swamp",
+        "Mountain",
+        "Forest"
+      ],
+      "rules": "source-checked-intrinsic-mana-ids",
+      "decisions": "original-native-mana-callbacks",
+      "assets": "observed-native-five-color-basic-lands",
+      "sequences": "actual-activation-and-native-five-color-payment"
+    },
+    {
+      "names": [
+        "A.I.M. Bot",
+        "Aardvark Sloth",
+        "Adult Gold Dragon",
+        "Aerial Responder",
+        "Air Elemental",
+        "Alabaster Host Sanctifier",
+        "Alabaster Kirin",
+        "Alley Strangler",
+        "Alpine Watchdog",
+        "Anvilwrought Raptor",
+        "Aven Reedstalker",
+        "Aven Sentry",
+        "Azure Drake",
+        "Banehound",
+        "Bartizan Bats",
+        "Bassara Tower Archer",
+        "Battlefield Raptor",
+        "Bishop's Soldier",
+        "Bitterbow Sharpshooters",
+        "Blood Glutton",
+        "Boggart Brute",
+        "Bounding Wolf",
+        "Brazen Scourge",
+        "Breakneck Berserker",
+        "Brightblade Stoat",
+        "Brushstrider",
+        "Canopy Spider",
+        "Chardalyn Dragon",
+        "Charity Extractor",
+        "Child of Night",
+        "Cold-Water Snapper",
+        "Concordia Pegasus",
+        "Consulate Skygate",
+        "Crystacean",
+        "Cursed Minotaur",
+        "Dawn Gryff",
+        "Dawn's Light Archer",
+        "Daybreak Chaplain",
+        "Deer-Dog",
+        "Deranged Whelp",
+        "Dragon Moose",
+        "Elephant-Rat",
+        "Enforcer Griffin",
+        "Exultant Skymarcher",
+        "Faithbearer Paladin",
+        "Fencing Ace",
+        "Fire Nation Ambushers",
+        "Fire Nation Soldier",
+        "Flying Dolphin-Fish",
+        "Frog-Squirrels",
+        "Giant Spider",
+        "Gladecover Scout",
+        "Glamorous Grapplers",
+        "Gnottvold Recluse",
+        "Goblin Trailblazer",
+        "Grazing Whiptail",
+        "Greenwood Sentinel",
+        "Griffin Sentinel",
+        "Gurmag Swiftwing",
+        "Healer's Flock",
+        "Healer's Hawk",
+        "Hired Blade",
+        "Hitchclaw Recluse",
+        "Hostile Minotaur",
+        "Huatli's Snubhorn",
+        "Hulking Bugbear",
+        "Humongulus",
+        "Kithkin Billyrider",
+        "Knight of the Tusk",
+        "Kraul Raider",
+        "Leonin Skyhunter",
+        "Lightning Elemental",
+        "Lightning Stormkin",
+        "Living Tempest",
+        "Magnigoth Sentry",
+        "Mammoth Spider",
+        "Maned Serval",
+        "Mantis Rider",
+        "Mesa Unicorn",
+        "Moat Piranhas",
+        "Monoist Sentry",
+        "Mosscoat Goriak",
+        "Murmuring Phantasm",
+        "Nest Robber",
+        "Nimble Birdsticker",
+        "Oko's Accomplices",
+        "Pouncing Cheetah",
+        "Prized Griffin",
+        "Pyromantic Pilgrim",
+        "Raging Goblin",
+        "Raging Redcap",
+        "Rearing Embermare",
+        "Relic Sloth",
+        "Resistance Skywarden",
+        "Ripscale Predator",
+        "Riptide Turtle",
+        "Roc Hunter",
+        "Rustwing Falcon",
+        "Scion of Ugin",
+        "Segovian Angel",
+        "Sentinel Spider",
+        "Seraph of Dawn",
+        "Serra Angel",
+        "Shining Aerosaur",
+        "Shrike Force",
+        "Silverbeak Griffin",
+        "Sky Terror",
+        "Skyblade of the Legion",
+        "Skyknight Legionnaire",
+        "Skyraker Giant",
+        "Snapping Drake",
+        "Soaring Drake",
+        "Soul of the Rapids",
+        "Sporecap Spider",
+        "Steadfast Paladin",
+        "Stormfront Pegasus",
+        "Stormrider Spirit",
+        "Story Seeker",
+        "Sun Sentinel",
+        "Sunblade Angel",
+        "Sungrace Pegasus",
+        "Swift Spinner",
+        "Swooping Lookout",
+        "Tajuru Snarecaster",
+        "Tundra Wall",
+        "Turtle-Seals",
+        "Twinscroll Shaman",
+        "Two-Headed Zombie",
+        "Vampire Revenant",
+        "Venerable Lammasu",
+        "Vexing Gull",
+        "Vigilant Baloth",
+        "Volcanic Dragon",
+        "Wall of Mist",
+        "Wall of Vines",
+        "Wardscale Crocodile",
+        "Wary Okapi",
+        "Wind Strider",
+        "Youthful Knight"
+      ],
+      "rules": "source-exact keyword text; per-card casts/costs/resolution; 11 representative keyword outcome cases",
+      "decisions": "bounded attack/block/allocation/target and timing sequences; no exhaustive interactions",
+      "assets": "every pinned printing: original native model and exact effective art texture; six native casts and icons inspected",
+      "sequences": "five complete shuffled matches plus native mixed keyword combat; no exhaustive animation parity"
+    },
+    {
+      "names": [
+        "Concentrate",
+        "Divination",
+        "Harmonize",
+        "Weave Fate"
+      ],
+      "rules": "source-exact fixed untargeted draw; actual cost/library identities and instant/sorcery timing",
+      "decisions": "no target or modal choice; existing cleanup tested separately",
+      "assets": "all four original native models and exact source art; original card and Resolve callbacks",
+      "sequences": "two complete shuffled matches and four native draw resolutions; no exhaustive interactions"
+    }
+  ]
+}

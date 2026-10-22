@@ -1,0 +1,264 @@
+# Verified card names
+
+This release admits 252 main-deck names. Brawl commanders are separately verified.
+Searching, opening or storing another Arena card does not establish match support.
+
+## Brawl commanders
+
+- Emry, Lurker of the Loch
+- Isamaru, Hound of Konda
+
+## Main-deck names
+
+- A.I.M. Bot
+- Aardvark Sloth
+- Adult Gold Dragon
+- Aegis Turtle
+- Aerial Responder
+- Aether Spellbomb
+- Ageless Guardian
+- Air Elemental
+- Alabaster Host Sanctifier
+- Alabaster Kirin
+- Alley Strangler
+- Alpine Grizzly
+- Alpine Watchdog
+- Ancient Brontodon
+- Ancient Crab
+- Anvilwrought Raptor
+- Armored Whirl Turtle
+- Aven Reedstalker
+- Aven Sentry
+- Axebane Beast
+- Azure Drake
+- Banehound
+- Barony Vampire
+- Bartizan Bats
+- Bassara Tower Archer
+- Bastion Enforcer
+- Battlefield Raptor
+- Bear Cub
+- Bishop's Soldier
+- Bitterbow Sharpshooters
+- Blood Glutton
+- Boggart Brute
+- Bogstomper
+- Borderland Minotaur
+- Bounding Wolf
+- Brazen Scourge
+- Breakneck Berserker
+- Brightblade Stoat
+- Brushstrider
+- Cabal Evangel
+- Canal Monitor
+- Canopy Spider
+- Capital Guard
+- Catacomb Crocodile
+- Centaur Courser
+- Chardalyn Dragon
+- Charity Extractor
+- Child of Night
+- Cliffhaven Sell-Sword
+- Cold-Water Snapper
+- Concentrate
+- Concordia Pegasus
+- Consulate Skygate
+- Coral Commando
+- Coral Merfolk
+- Crystacean
+- Cursed Minotaur
+- Dawn Gryff
+- Dawn's Light Archer
+- Daybreak Chaplain
+- Deer-Dog
+- Deranged Whelp
+- Devilthorn Fox
+- Divination
+- Divine Arrow
+- Douser of Lights
+- Dragon Moose
+- Dune Beetle
+- Elephant-Rat
+- Emry, Lurker of the Loch
+- Enforcer Griffin
+- Essence Scatter
+- Exultant Skymarcher
+- Faithbearer Paladin
+- Fearless Halberdier
+- Fencing Ace
+- Feral Maaka
+- Field Creeper
+- Fire Elemental
+- Fire Nation Ambushers
+- Fire Nation Soldier
+- Flying Dolphin-Fish
+- Forest
+- Fortress Crab
+- Frenzied Raptor
+- Frog-Squirrels
+- Fusion Elemental
+- Garruk's Gorehorn
+- Giant Spider
+- Gigantosaurus
+- Gilded Sentinel
+- Gladecover Scout
+- Glamorous Grapplers
+- Gloom Pangolin
+- Gnottvold Recluse
+- Goblin Assailant
+- Goblin Trailblazer
+- Grazing Whiptail
+- Greenwood Sentinel
+- Griffin Sentinel
+- Grizzled Outrider
+- Grizzly Bears
+- Gurmag Swiftwing
+- Hare Apparent
+- Harmonize
+- Headwater Sentries
+- Healer's Flock
+- Healer's Hawk
+- Highborn Vampire
+- Hired Blade
+- Hitchclaw Recluse
+- Hostile Minotaur
+- Huatli's Snubhorn
+- Hulking Bugbear
+- Humongulus
+- Hurloon Minotaur
+- Impassioned Orator
+- Imperial Outrider
+- Ironclad Krovod
+- Island
+- Jibbirik Omnivore
+- Kithkin Billyrider
+- Knight of New Benalia
+- Knight of the Keep
+- Knight of the Tusk
+- Kraken Hatchling
+- Kraul Raider
+- Krovikan Scoundrel
+- Kyoshi Warrior Guard
+- Lathnu Sailback
+- Lazotep Behemoth
+- Leatherback Baloth
+- Leonin Skyhunter
+- Lightning Elemental
+- Lightning Stormkin
+- Living Tempest
+- Looming Altisaur
+- Loxodon Line Breaker
+- Magnigoth Sentry
+- Mammoth Spider
+- Maned Serval
+- Mantis Rider
+- Mesa Unicorn
+- Moat Piranhas
+- Monoist Sentry
+- Mosscoat Goriak
+- Mountain
+- Murasa Brute
+- Murmuring Phantasm
+- Naga Eternal
+- Nest Robber
+- Nimble Birdsticker
+- Oko's Accomplices
+- Onakke Ogre
+- Orazca Frillback
+- Orazca Raptor
+- Ordinary Bear
+- Oreskos Swiftclaw
+- Ornithopter
+- Plains
+- Pouncing Cheetah
+- Primordial Wurm
+- Prized Griffin
+- Prowling Caracal
+- Pyromantic Pilgrim
+- Quakestrider Ceratops
+- Queen's Bay Soldier
+- Quick Study
+- Raging Goblin
+- Raging Redcap
+- Raptor Companion
+- Rearing Embermare
+- Relic Sloth
+- Renegade Demon
+- Resistance Skywarden
+- Ripscale Predator
+- Riptide Turtle
+- Roc Hunter
+- Rotting Mastodon
+- Rumbling Baloth
+- Runeclaw Bear
+- Rustwing Falcon
+- Sanctuary Cat
+- Savai Sabertooth
+- Savannah Lions
+- Scaled Wurm
+- Scathe Zombies
+- Scion of Ugin
+- Seat of the Synod
+- Segovian Angel
+- Sentinel Spider
+- Seraph of Dawn
+- Serra Angel
+- Shining Aerosaur
+- Shrike Force
+- Siege Mastodon
+- Silverbeak Griffin
+- Sky Terror
+- Skyblade of the Legion
+- Skyknight Legionnaire
+- Skyraker Giant
+- Snapping Drake
+- Soaring Drake
+- Soul of the Rapids
+- Spined Karok
+- Sporecap Spider
+- Staunch Shieldmate
+- Steadfast Paladin
+- Stone Golem
+- Stormfront Pegasus
+- Stormrider Spirit
+- Story Seeker
+- Summit Prowler
+- Sun Sentinel
+- Sunblade Angel
+- Sungrace Pegasus
+- Swab Goblin
+- Swamp
+- Swift Spinner
+- Swooping Lookout
+- Sworn Guardian
+- Tajuru Snarecaster
+- Thornhide Wolves
+- Those Who Serve
+- Tolarian Scholar
+- Tormod's Crypt
+- Tundra Wall
+- Turtle-Seals
+- Tusked Colossodon
+- Twinscroll Shaman
+- Two-Headed Zombie
+- Unsummon
+- Vampire Revenant
+- Venerable Lammasu
+- Vexing Gull
+- Vigilant Baloth
+- Volcanic Dragon
+- Vorstclaw
+- Walking Corpse
+- Wall of Mist
+- Wall of Vines
+- Wardscale Crocodile
+- Warship Scout
+- Wary Okapi
+- Weave Fate
+- Wetland Sambar
+- Wild Ceratok
+- Wind Strider
+- Wishcoin Crab
+- Witch's Familiar
+- Yoked Ox
+- Youthful Knight

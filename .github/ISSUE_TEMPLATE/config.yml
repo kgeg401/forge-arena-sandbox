@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Installation and update guide
+    url: https://github.com/kgeg401/forge-arena-sandbox/blob/main/docs/FAQ.md
+    about: Start here for setup, compatibility, updates and saved files.

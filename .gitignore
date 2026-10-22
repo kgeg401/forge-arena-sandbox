@@ -1,6 +1,16 @@
 __pycache__/
-*.pyc
+*.py[cod]
 .env*
+**/build/
+**/bin/
+**/obj/
+**/binaries/
+**/backend/
+*.dll
+*.exe
+*.jar
+*.class
+*.pdb
 sandbox-install.json
 active-version.json
 data/
