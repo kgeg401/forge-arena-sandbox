@@ -120,3 +120,21 @@ after closing the client.
 An actual release ZIP must additionally pass package-content scanning,
 activation/rollback and public-download verification. Release notes record those
 shipping checks separately once performed. No recipient-PC install is claimed.
+
+
+## 0.2.0-alpha.6 — smoother turn flow
+
+- Advances empty rules steps without the repeated pause at each substep.
+- Restores original turn banners, phase indicators and contextual Next / To Combat / End Turn controls.
+- Keeps playable actions, combat decisions, full control and explicit stops interactive.
+- Corrects supported End Turn yield expiry and Resolve All clearing.
+- Retains the same rules engine and 370 supported main-deck names as alpha.5.
+
+Verified with eight Forge/native scenarios, twelve rendered checks and local
+user play. Complete server smart-stop behavior, complex phase lookahead and
+all-card support remain unfinished. This release does not include separate
+shared-card-mechanics research. Close and reopen the dedicated launcher to update;
+Setup.exe is only needed for a new installation. Decks and collection are preserved.
+
+Accepted native DLL SHA-256: `1318894da0578f3417debfb297b8670057be38ea582f5a8f16b1fd61858877b0`.
+Publication/download/update receipts are recorded separately.

@@ -14,7 +14,7 @@ LOADER=PRIVATE/'tools/BepInEx-5.4.23.5'
 OWN_SCRIPTS=('install_tester.py','launch_tester.py','update_tester.py','tester_common.py','board_template.py','client_bootstrap.py','client_entry.py','client_service.py','setup_client.py','auto_install.py','dependencies.py','dependencies-lock.json','starter-decks.json','Setup.cmd','Start-Client.ps1','Manage-Updates.ps1','TESTER-README.md','LICENSE.txt')
 PYTHON_FILES=('ForgeBackend/runtime_paths.py','ForgeBackend/arena_catalog.py','ForgeBackend/card_support.py','ForgeBackend/start_backend.py','ForgeBackend/deck_import.py','ForgeBackend/build_card_coverage.py','ForgeBackend/bridge_support.json','DeckBackend/build_deck_catalog.py','PackBackend/build_pack_catalog.py')
 
-def build(tag,output,gameplay_ref=None,headline='Public launcher and automatic update test',support_index=None,display_version=None):
+def build(tag,output,gameplay_ref=None,headline='Public launcher and automatic update test',support_index=None,display_version=None,native_build_root=None):
     version(tag)
     if not gameplay_ref:raise ValueError('Select an independently verified committed gameplay checkpoint with --gameplay-ref; working admission drafts cannot be packaged')
     if output.exists():raise ValueError('Use a new package staging directory; prior packages are preserved')
@@ -61,11 +61,12 @@ def build(tag,output,gameplay_ref=None,headline='Public launcher and automatic u
     for entry in starters['decks']:
         if Path(entry['file']).name!=entry['file'] or not (output/'decks'/entry['file']).is_file():raise ValueError('Starter deck is outside the packaged checkpoint')
 
+    native_build_root=Path(native_build_root) if native_build_root else PRIVATE/'build'
     binaries=output/'binaries';binaries.mkdir()
     for name,project in (('NativeHost','NativeHost'),('LocalTransport','LocalTransport'),('PreferencePatcher','PreferencePatcher'),('LabPreferences','LabPreferences')):
-        shutil.copy2(PRIVATE/f'build/{project}/bin/Debug/netstandard2.1/{name}.dll',binaries/(name+'.dll'))
+        shutil.copy2(native_build_root/f'{project}/bin/Debug/netstandard2.1/{name}.dll',binaries/(name+'.dll'))
     launcher=binaries/'launcher';launcher.mkdir()
-    for ext in ('dll','exe','deps.json','runtimeconfig.json'):shutil.copy2(PRIVATE/f'build/LabLauncher/bin/Debug/net8.0-windows/LabLauncher.{ext}',launcher/f'LabLauncher.{ext}')
+    for ext in ('dll','exe','deps.json','runtimeconfig.json'):shutil.copy2(native_build_root/f'LabLauncher/bin/Debug/net8.0-windows/LabLauncher.{ext}',launcher/f'LabLauncher.{ext}')
     # Build the packaged rules from this source, never an unrelated/stale cache.
     backend=output/'backend';backend.mkdir()
     javac=Path(os.environ.get('FORGE_ARENA_JAVAC',str(Path.home()/'Games/ForgeRuntime-Java17/jdk-17.0.20.1+1/bin/javac.exe')))
@@ -127,4 +128,4 @@ def build(tag,output,gameplay_ref=None,headline='Public launcher and automatic u
     print(json.dumps(receipt,indent=2));return receipt
 
 if __name__=='__main__':
-    p=argparse.ArgumentParser(description=__doc__);p.add_argument('--version',default='0.1.0-test.1');p.add_argument('--output',required=True);p.add_argument('--gameplay-ref');p.add_argument('--support-index',type=Path);p.add_argument('--headline',default='Public launcher and automatic update test');p.add_argument('--display-version');a=p.parse_args();build(a.version,Path(a.output).resolve(),a.gameplay_ref,a.headline,a.support_index,a.display_version)
+    p=argparse.ArgumentParser(description=__doc__);p.add_argument('--version',default='0.1.0-test.1');p.add_argument('--output',required=True);p.add_argument('--gameplay-ref');p.add_argument('--support-index',type=Path);p.add_argument('--headline',default='Public launcher and automatic update test');p.add_argument('--display-version');p.add_argument('--native-build-root',type=Path,help='Explicit native outputs from the tested source checkpoint');a=p.parse_args();build(a.version,Path(a.output).resolve(),a.gameplay_ref,a.headline,a.support_index,a.display_version,a.native_build_root)

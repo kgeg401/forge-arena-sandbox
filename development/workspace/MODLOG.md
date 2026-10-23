@@ -459,3 +459,17 @@ ForgeBackend/draft_policies with researchOnly:true; its input/verifier are
 retained as disabled development work. Planned public update0.2.0-alpha.5 keeps
 the verified gameplay implementation and adds current documentation/source.
 Private profiles, native dumps, owned assets and credentials are not published.
+
+## 2026-10-23 native turn-flow acceptance and alpha.6 release preparation
+
+Recovered native turn/phase annotation and next-phase fields from owned capture
+and parser evidence. Implemented quiet rules-only progression, original phase
+presentation, contextual Next/End Turn, turn-yield expiry and Resolve All clear.
+Eight real Forge/native scenarios and twelve rendered checks pass. User accepts
+the installed alpha.5.turnflow.4 behavior and explicitly authorizes publication.
+NativeHost SHA256: 1318894da0578f3417debfb297b8670057be38ea582f5a8f16b1fd61858877b0.
+Ship a selective patch over alpha.5: rules, policy and 370-name admission unchanged.
+Shared-card research remains unreleased. Full smart-stop/complex lookahead and
+frame-level animation parity remain unproven. See docs/turn-flow.md.
+Private evidence: ../ForgeArenaTurnFlowParity-20261023/completion.json.
+Publication and updater verification require separate receipts.
