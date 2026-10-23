@@ -1,9 +1,9 @@
 {
-  "version": "0.2.0-alpha.5",
-  "displayVersion": "0.2 alpha \u2014 370 supported cards",
-  "headline": "Consolidated catalogue update: 370 supported Arena cards",
+  "version": "0.2.0-alpha.6",
+  "displayVersion": "0.2.0 alpha 6",
+  "headline": "Smoother native turn flow",
   "testRelease": true,
-  "gameplaySource": "9228ca6",
+  "gameplaySource": "HEAD",
   "admittedNames": [
     "Plains",
     "Island",

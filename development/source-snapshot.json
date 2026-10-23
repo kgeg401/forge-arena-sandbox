@@ -1,7 +1,7 @@
 {
   "schema": 1,
   "localSourceCommit": "572633ce615ac73b9a2b34a0361113d0701bc86d",
-  "packageSourceCommit": "9228ca6363ca4f65fa0fe48e0ddb8c25963e989a",
+  "packageSourceCommit": "3aa01e2da5a383905ee8422012df9553f68188ca",
   "productionPolicySha256": "5752392f087eede8e69c546fe2fc31dfc1b2243235c5c61bfcb34a86207d67b5",
   "productionCards": 370,
   "files": {
@@ -277,7 +277,7 @@
     "packaging/public-docs/DEVELOPMENT.md": "535bf6cdfab057c18da87097b8560de974d2b972176369006fc1a406df8776f0",
     "packaging/public-docs/FAQ.md": "319c37c910458d0e0b298f909c19e7639577f26ead72a033a7384b7bd69125f4",
     "packaging/public-docs/VERIFICATION.md": "9dcc1a8114403a4f94d64951b85d002d7248956e8efdac037e98633712be496c",
-    "packaging/PUBLIC-README.md": "96ec621de8804579f037c149a78c4980f79ffb91f86c314ddb8dc47753a7c7ab",
+    "packaging/PUBLIC-README.md": "62dc9ff0b7430645af19c4e6a05ea1d7647ed4308b3f12e86feebf1d5289caac",
     "packaging/Setup.cmd": "dcda5ac659306449f36de6e4e8667a2236d7065d105c56fdf2a169f049e544cf",
     "packaging/setup_client.py": "eda2776bd2889f3d4816eb39369868f375ff493ed9fa195cf53941522865da66",
     "packaging/SetupBootstrap.cs": "8d583e8d511234b39aa0565746e49bba6e1e2fc8277c112f63974422552b6888",
@@ -310,7 +310,7 @@
     "prepare_probe.py": "8e56302e732a7068f83e4875df49a756bcc708cb79c5efbe8e7e9d8ab32c98a6",
     "project-spec.forge-frontend-reference.json": "e7d1bc1c2fd6fab714127daf2a9b2f59a09fa001033ed16deda280606fec78b6",
     "project-spec.json": "6cdd2c2a30c09ed878c4d06f01fdd1bad241bba1e225038bd6dbc6a2b0665556",
-    "README.md": "9844aaf3d177c51fed621d8f2a80c9493b8059f9f580b37ff8bbf71e4dfa2c11",
+    "README.md": "67b36c7fec09aab1df17c29ab023a29686060de2d2133f480deebc4d7fd5ac88",
     "render_checkpoint.py": "3a5211604d58c2dfd7ee2b57a8b1dd86e8bb5b8f7c7e262a3137f07a355f2d61",
     "render_devlog.py": "00fb7a2bec40818492db7dc003bbe95dffa433684a1a92b4ce5982f58b77191a",
     "Run-ParserProbe.ps1": "e8883d06eac818480612d626a991e20e530771e7df9ad0487ea20d65b1891f23",
