@@ -37,7 +37,7 @@ def build(tag,output,gameplay_ref=None,headline='Public launcher and automatic u
     if gameplay_ref:
         # Publish a verified gameplay checkpoint without including unfinished
         # card-policy work in the developer checkout.
-        policy=subprocess.run(['git','show',gameplay_ref+':ForgeBackend/bridge_support.json'],cwd=REPO,capture_output=True,check=True).stdout
+        policy=subprocess.run(['git','show',gameplay_ref+':./ForgeBackend/bridge_support.json'],cwd=REPO,capture_output=True,check=True).stdout
         (output/'ForgeBackend/bridge_support.json').write_bytes(policy)
         names=subprocess.run(['git','ls-tree','-r','--name-only',gameplay_ref,'decks'],cwd=REPO,capture_output=True,text=True,check=True).stdout.splitlines()
         for p in (output/'decks').iterdir():

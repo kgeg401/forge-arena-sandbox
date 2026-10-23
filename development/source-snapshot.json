@@ -262,7 +262,7 @@
     "packaging/Adapter.Build.props": "5d560b2839d22eb5b4833a74e33dba6b57e5fdef092dc313f88445633558ba19",
     "packaging/auto_install.py": "6a596bdd392e9fa660a239ceaac5b7279005c454d33b015d4d1db003ea2c021f",
     "packaging/board_template.py": "f822f75286eb4fff4cde64e7c35a03629406fd7bbfb2739c12b53414832f6d80",
-    "packaging/build_tester_package.py": "d1afb00728fc35e7c9cde95207b8b5f9a8d33e515eda8c346d2351a26c319fe3",
+    "packaging/build_tester_package.py": "8575cde1a633afa967b42be65453b96c0a5216ba9bf6516a30dcf33fecb03542",
     "packaging/client_bootstrap.py": "04fd19ccc47be961733efc6cc8cde867f271032d968b9d7e979e1362d8381cf9",
     "packaging/client_entry.py": "9c73346beb1f1c71fadbb81b7936170259f437a70eb41cca6283c76d627681bf",
     "packaging/client_service.py": "efb3c473a1ccff5a2e4679dc93dc30157f1a5e8eeaed009e15d5c0f0c44257ec",
