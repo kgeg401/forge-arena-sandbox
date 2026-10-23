@@ -23,3 +23,14 @@ remain private. These checks do not prove successful installation on a recipient
 PC. Public download and update-feed checks are recorded after upload.
 
 See [behavior and remaining limits](TURN-FLOW-0.2.0-alpha.6.md).
+
+## Published transport verified
+
+Published [alpha.6](https://github.com/kgeg401/forge-arena-sandbox/releases/tag/v0.2.0-alpha.6).
+GitHub Windows checks passed for commit ba36415a83b9895a1ef056857681d6ecdd6d7420
+([CI run](https://github.com/kgeg401/forge-arena-sandbox/actions/runs/39890933087)).
+The real test-channel feed selects alpha.6 and its correct size/digest. Original
+public alpha.5 startup automatically downloaded and activated that exact release
+in a disposable installation. Download bytes, manifest and native DLL match the
+local tested package; saved fixture profile bytes are unchanged. No active game
+was interrupted. This does not establish recipient-PC installation success.
