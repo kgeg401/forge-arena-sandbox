@@ -29,6 +29,43 @@ def checked_target_prompt(db,name,binding):
     return binding['promptId']
 
 
+def mode_text(value,name):
+    """Exact text identity after markup/spacing only; never fuzzy matching."""
+    value=html.unescape(re.sub(r'<[^>]*>','',value or '')).replace('CARDNAME',name)
+    return re.sub(r'\s+',' ',unicodedata.normalize('NFKC',value)).strip()
+
+
+def modal_binding(db,name,native_card,forge_text):
+    roots=[line for line in forge_text.splitlines() if re.match(r'A:(?:SP|AB)\$ Charm\b',line)]
+    if len(roots)!=1:return None
+    fields=dict(part.strip().split('$',1) for part in roots[0].split('|') if '$' in part)
+    choices=fields.get('Choices','').strip().split(',')
+    descriptions=[]
+    for choice in choices:
+        matches=re.findall(r'^SVar:'+re.escape(choice)+r':(.+)$',forge_text,re.M)
+        if len(matches)!=1:return None
+        parts={k.strip():v.strip() for part in matches[0].split('|') if '$' in part for k,v in [part.split('$',1)]}
+        if not parts.get('SpellDescription'):return None
+        descriptions.append(mode_text(parts['SpellDescription'],name))
+    if len(set(descriptions))!=len(descriptions):return None
+    candidates=[]
+    for raw in filter(None,native_card['AbilityIds'].split(',')):
+        root=int(raw.split(':')[0]);row=db.execute('SELECT ModalChildIds FROM Abilities WHERE Id=?',(root,)).fetchone()
+        if not row or not row[0]:continue
+        ids=[int(v) for v in row[0].split(',') if v]
+        if len(ids)!=len(descriptions):continue
+        native={}
+        for identity in ids:
+            rows=list(db.execute('SELECT l.Loc FROM Abilities a JOIN Localizations_enUS l ON l.LocId=a.TextId AND l.Formatted=1 WHERE a.Id=?',(identity,)))
+            if len(rows)!=1:break
+            text=mode_text(rows[0][0],name)
+            if text in native:break
+            native[text]=identity
+        if len(native)==len(descriptions) and set(native)==set(descriptions):
+            candidates.append(dict(parentAbilityId=root,choices=[dict(forgeDescription=text,nativeAbilityId=native[text]) for text in descriptions],basis='Exact owned modal child text and Forge description after markup/whitespace normalization'))
+    return candidates[0] if len(candidates)==1 else None
+
+
 def build():
     digest=hashlib.sha256(DB.read_bytes()).hexdigest()
     if digest!=EXPECTED:raise ValueError('Owned Arena database changed; inspect before mapping cards.')
@@ -92,6 +129,23 @@ def build():
         ability_ids=[int(x.split(':')[0]) for x in filter(None,r['AbilityIds'].split(','))]
         runtime[name]=dict(grpId=grp,titleId=r['TitleId'],types=core,subtypes=arena_subtypes,supertypes=super_types,genericCost=generic,color=color,colors=colors,abilityId={**policy.get('nativeBasicManaAbilityIds',{}),**policy.get('nativeManaAbilityIds',{})}.get(name,ability_ids[0] if ability_ids else 0),
             abilityIds=ability_ids,forgeScript=match['forgeScripts'][0],forgeScriptSha256=match['forgeScriptSha256'],token=False,admitted=name in verified,candidate=name in candidates)
+        binding=modal_binding(db,name,r,definitions[match['forgeScripts'][0]]['text'])
+        if binding:runtime[name]['modalBinding']=binding
+        generic=policy.get('genericChoiceBindings',{}).get(name)
+        if generic is not None:
+            if set(generic)!={'promptId','expectedText','labels'} or not isinstance(generic['labels'],list) or not generic['labels'] or any(not isinstance(label,str) for label in generic['labels']):raise ValueError(('Invalid explicit generic choice binding',name))
+            prompt=checked_target_prompt(db,name,{k:generic[k] for k in ('promptId','expectedText')})
+            text=definitions[match['forgeScripts'][0]]['text'];roots=re.findall(r'^A:(?:SP|AB)\$ GenericChoice\b(.+)$',text,re.M)
+            if len(roots)!=1:raise ValueError(('Generic choice needs a single explicit source root',name))
+            params={k.strip():v.strip() for part in roots[0].split('|') if '$' in part for k,v in [part.split('$',1)]};labels=[]
+            for choice in params.get('Choices','').split(','):
+                options=re.findall(r'^SVar:'+re.escape(choice)+r':(.+)$',text,re.M)
+                if len(options)!=1:raise ValueError(('Generic choice source option is ambiguous',name,choice))
+                fields={k.strip():v.strip() for part in options[0].split('|') if '$' in part for k,v in [part.split('$',1)]};labels.append(mode_text(fields.get('SpellDescription',''),name))
+            if labels!=generic['labels'] or len(set(labels))!=len(labels):raise ValueError(('Native choice labels differ from the exact source descriptions',name))
+            native_texts=[mode_text(t[0],name) for raw in r['AbilityIds'].split(',') if raw for t in db.execute('SELECT l.Loc FROM Abilities a JOIN Localizations_enUS l ON a.TextId=l.LocId AND l.Formatted=1 WHERE a.Id=?',(int(raw.split(':')[0]),))]
+            if not any(t.startswith(generic['expectedText']) for t in native_texts) or any(re.search(r'(?<![A-Za-z0-9])'+re.escape(label)+r'(?![A-Za-z0-9])',generic['expectedText'],re.I) is None for label in labels):raise ValueError(('Owned source does not independently bind the choice instruction and labels',name))
+            runtime[name]['genericChoiceBinding']=dict(promptId=prompt,labels=labels,basis='Exact source option descriptions and owned native instruction/option words; original dynamic prompt-parameter workflow; English option labels, rendered acceptance pending')
         basic_identity={'Plains':'W','Island':'U','Swamp':'B','Mountain':'R','Forest':'G'}
         identity=policy.get('colorIdentities',{}).get(name,list(dict.fromkeys(symbols)) or [basic_identity[t] for t in arena_subtypes if t in basic_identity])
         runtime[name]['colorIdentity']=identity
@@ -131,12 +185,27 @@ def build():
            for e in entries if len(e['forgeScripts'])==1 for path in e['forgeScripts']}
     (root/'forge-compile-input.json').write_text(json.dumps(dict(schema=1,sourceForgeScriptsSha256=report['sourceForgeScriptsSha256'],scripts=list(probe.values())),ensure_ascii=False),encoding='utf-8')
     for name,commander in policy.get('brawlCommanders',{}).items():
-        if name not in runtime or 'Legendary' not in runtime[name]['supertypes'] or 'Creature' not in runtime[name]['types']:raise ValueError('Brawl commander must have an explicit source-checked legendary creature mapping')
+        if name not in runtime or 'Legendary' not in runtime[name]['supertypes'] or not {'Creature','Planeswalker'} & set(runtime[name]['types']):raise ValueError('Brawl commander must have an explicit source-checked legendary creature or planeswalker mapping')
         if commander['colorIdentity']!=runtime[name]['colorIdentity']:raise ValueError('Commander identity differs from the source-checked policy')
         runtime[name]['commanderAdmitted']=True
         runtime[name]['colorIdentity']=commander['colorIdentity']
+    keyword_ids={}
+    type_ids={}
+    for kind in ['CardType','SubType','SuperType']:
+        values={}
+        for row in db.execute('SELECT e.Value,l.Loc FROM Enums e JOIN Localizations_enUS l ON e.LocId=l.LocId AND l.Formatted=1 WHERE e.Type=?',(kind,)):
+            name=row['Loc'].lower()
+            if name in values and values[name]!=row['Value']:raise ValueError(('Ambiguous owned type enum label',kind,name))
+            values[name]=row['Value']
+        type_ids[kind]=values
+    for keyword in ['Flying','Trample','Hexproof','Haste','Lifelink','Deathtouch','Vigilance','Indestructible','Reach','First strike','Double strike','Defender','Menace','Protection from white','Protection from blue','Protection from black','Protection from red','Protection from green']:
+        matches=list(db.execute('SELECT a.Id FROM Abilities a JOIN Localizations_enUS l ON a.TextId=l.LocId AND l.Formatted=1 WHERE a.Category=3 AND l.Loc=?',(keyword,)))
+        if len(matches)!=1:raise ValueError(('Owned native keyword identity is not unique',keyword))
+        keyword_ids[keyword.lower()]=matches[0]['Id']
     target=ROOT/'native-lab/bridge-card-manifest.json';pending=target.with_suffix('.pending')
-    pending.write_text(json.dumps(dict(schema=1,admissionSchema=1,researchOnly=bool(policy.get('researchOnly')),sourceDatabaseSha256=digest,policySha256=report['policySha256'],sourceForgeScriptsSha256=report['sourceForgeScriptsSha256'],cards=runtime),indent=2))
+    from experimental_cards import merge_manifest
+    manifest=merge_manifest(dict(schema=1,admissionSchema=1,researchOnly=bool(policy.get('researchOnly')),sourceDatabaseSha256=digest,policySha256=report['policySha256'],sourceForgeScriptsSha256=report['sourceForgeScriptsSha256'],keywordAbilityIds=keyword_ids,typeEnumIds=type_ids,cards=runtime))
+    pending.write_text(json.dumps(manifest,indent=2))
     pending.replace(target)
     print(json.dumps(report,indent=2))
 

@@ -126,6 +126,8 @@ def inspect_install(arena,forge,java,loader,destination,package,dotnet=None):
     if existing_app.exists() and verify_tree(existing_app)!=manifest:raise ValueError('Existing adapter version differs; no files were copied')
     checks=[]
     variant=match_forge(forge,requirements)
+    if requirements.get('preferredForgeVariant') and variant['id']!=requirements['preferredForgeVariant']:
+        raise ValueError('This installer needs its pinned Forge build. Use automatic setup to download it.')
     for base,entries in ((arena,requirements['arenaFiles']),(forge,variant['files']),(loader,requirements['loaderFiles'])):
         for rel,digest in entries.items():
             path=base/rel;no_links(path)

@@ -25,8 +25,8 @@ def main():
 
     check('Rules source matches the recorded fresh compilation', build['sourceSha256'] == sha(a.package/'adapter-source/ForgeLandEngine.java'))
     check('Compiler is Java 17', build['compiler'].startswith('javac 17.'))
-    legacy = next(v for v in requirements['forgeVariants'] if v['id'] == 'legacy-snapshot-08.31')
-    check('Compilation uses the pinned Forge dependency', build['forgeJarSha256'] == legacy['files'][legacy['jar']])
+    compiled_variants = [v for v in requirements['forgeVariants'] if build['forgeJarSha256'] == v['files'][v['jar']]]
+    check('Compilation uses one exact supported pinned Forge dependency', len(compiled_variants) == 1)
     check('Compilation uses the packaged Gson dependency', build['gsonSha256'] == sha(a.package/'third-party/gson/gson.jar'))
     classes = {p.name: sha(p) for p in (a.package/'backend').glob('ForgeLandEngine*.class')}
     check('Recorded and packaged engine classes agree exactly', bool(classes) and classes == build['classes'])

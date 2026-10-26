@@ -1,0 +1,10 @@
+# Supported sandbox deck. Arena export set labels may be included but art is pinned.
+Deck
+12 Plains
+12 Island
+8 Savannah Lions
+8 Oreskos Swiftclaw
+8 Impassioned Orator
+6 Unsummon
+4 Divine Arrow
+2 Yoked Ox

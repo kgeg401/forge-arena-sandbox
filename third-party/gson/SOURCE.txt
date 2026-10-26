@@ -1,0 +1,5 @@
+Google Gson 2.13.2
+Source: https://github.com/google/gson/tree/gson-parent-2.13.2
+Maven: https://repo.maven.apache.org/maven2/com/google/code/gson/gson/2.13.2/gson-2.13.2.jar
+Apache-2.0; unmodified artifact.
+SHA-256: dd0ce1b55a3ed2080cb70f9c655850cda86c206862310009dcb5e5c95265a5e0

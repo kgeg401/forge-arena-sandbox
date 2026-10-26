@@ -1,7 +1,8 @@
-"""A real Opt resolution must expose Scry as a gap, never use an AI answer.
+"""A real Winding Way resolution must expose its unmapped card-type choice.
 
 This is a negative capability probe. It must not be used as card admission.
-The supplied independent research manifest must contain source-checked Opt.
+The supplied independent research manifest must contain source-checked Winding Way. Scry now has explicit
+human choices and is tested by verify_shared_choices.py.
 """
 import argparse
 import hashlib
@@ -31,29 +32,29 @@ def run(a):
                 import msvcrt
                 msvcrt.locking(lease.fileno(),msvcrt.LK_NBLCK,1)
             with WarmPool(a.output/'pool',25) as pool:
-                e=pool.engine('card-family',randomSeed=7274,fixtureHand=['Opt'],fixtureLands=['Island'])
+                e=pool.engine('card-family',randomSeed=7274,fixtureHand=['Winding Way'],fixtureLands=['Forest']*2)
                 token=e.worker.ready['worker']
                 try:
                     check('Strict human research controller enabled',e.state['researchControls']['strictHumanCallbacks'])
-                    card=next(c['forgeId'] for c in e.state['hand'] if c['name']=='Opt')
+                    card=next(c['forgeId'] for c in e.state['hand'] if c['name']=='Winding Way')
                     library={c['forgeId'] for c in e.state['hidden'] if c['owner']==1 and c['zone']=='Library'}
-                    check('Original Opt cast is legal and accepted',card in e.state['legalCasts'] and e.send('cast_spell',card)['accepted'])
-                    check('Opt is on the real stack before resolution',any(c['forgeId']==card for c in e.state['stack']))
+                    check('Original Winding Way cast is legal and accepted',card in e.state['legalCasts'] and e.send('cast_spell',card)['accepted'])
+                    check('Winding Way is on the real stack before resolution',any(c['forgeId']==card for c in e.state['stack']))
                     # An explicitly unsupported callback rejects the resolution
                     # request; do not use pass_or_decision's success assertion.
                     reply=e.send('pass_priority')
-                    check('Scry produces the exact unsupported human callback',bool(e.state.get('fidelityGap')) and 'arrangeForScry' in e.state['fidelityGap'])
-                    check('Missing Scry never silently draws a card',not e.state['hand'] and library=={c['forgeId'] for c in e.state['hidden'] if c['owner']==1 and c['zone']=='Library'})
+                    check('Card-type choice produces the exact unsupported callback',bool(e.state.get('fidelityGap')) and 'chooseSomeType' in e.state['fidelityGap'])
+                    check('Unmapped choice never silently selects an effect or draws a card',not e.state['hand'] and library=={c['forgeId'] for c in e.state['hidden'] if c['owner']==1 and c['zone']=='Library'})
                     blocked=e.send('pass_priority')
                     check('Further gameplay refuses the unresolved fidelity gap',not blocked['accepted'] and blocked['state']['fidelityGap']==e.state['fidelityGap'])
                     rows.append(dict(evidence=str(e.ipc),reply=reply,blocked=blocked))
                 finally:e.close()
-                check('Java worker itself retires after a fidelity gap',not e.completion['reusable'] and 'arrangeForScry' in e.completion.get('fidelityGap',''))
+                check('Java worker itself retires after a fidelity gap',not e.completion['reusable'] and 'chooseSomeType' in e.completion.get('fidelityGap',''))
                 clean=pool.engine('card-family',randomSeed=7274,fixtureHand=['Divination'],fixtureLands=['Island']*3)
                 try:
                     check('Next game gets a fresh worker/session and no gap',clean.worker.ready['worker']!=token and clean.session!=e.session and not clean.state['fidelityGap'])
                     identity=next(c['forgeId'] for c in clean.state['hand'] if c['name']=='Divination')
-                    check('Supported cast still works after rejected Scry',clean.send('cast_spell',identity)['accepted'])
+                    check('Supported cast still works after rejected card-type choice',clean.send('cast_spell',identity)['accepted'])
                     clean.pass_or_decision()
                     check('Supported resolution draws two actual cards',len(clean.state['hand'])==2 and not clean.state['fidelityGap'])
                     rows.append(dict(evidence=str(clean.ipc)))
@@ -61,7 +62,7 @@ def run(a):
     finally:
         result=dict(checks=len(checks),passed=bool(checks) and all(c['passed'] for c in checks),results=checks,cases=rows,
             configSha256=hashlib.sha256(a.config.read_bytes()).hexdigest(),policySha256=hashlib.sha256(a.policy.read_bytes()).hexdigest(),
-            scope='Negative capability and worker recovery probe; Opt remains unsupported and unadmitted.')
+            scope='Negative capability and worker recovery probe; Winding Way remains an unadmitted research gap; mapped Scry is covered separately.')
         (a.output/'report.json').write_text(json.dumps(result,indent=2),encoding='utf8')
     print(json.dumps(dict(checks=len(checks),report=str(a.output/'report.json'))))
 

@@ -12,7 +12,7 @@ cp=';'.join(str(p) for p in [ROOT/'build'/'ForgeBackend'/'classes',ROOT/'forge-r
 with (ipc/'engine.log').open('w') as log:
     # Forge's GuiDesktop class queries display scaling during static initialization.
     # No Forge window is created; only that desktop-library requirement is enabled.
-    p=subprocess.Popen([java,'-Xmx2g','-Djava.awt.headless=false','-cp',cp,'ForgeLandEngine',str(ROOT/'forge-runtime'),str(ipc)],cwd=ROOT/'forge-runtime',stdout=log,stderr=subprocess.STDOUT,creationflags=subprocess.CREATE_NO_WINDOW)
+    p=subprocess.Popen([java,'-Xmx2g','-Djava.awt.headless=false','-Dfile.encoding=UTF-8','-cp',cp,'ForgeLandEngine',str(ROOT/'forge-runtime'),str(ipc)],cwd=ROOT/'forge-runtime',stdout=log,stderr=subprocess.STDOUT,creationflags=subprocess.CREATE_NO_WINDOW)
 (ipc/'backend-process.json').write_text(json.dumps({'pid':p.pid,'class':'ForgeLandEngine','ipc':str(ipc),'started':time.time()},indent=2))
 for _ in range(90):
     if (ipc/'state.json').exists():

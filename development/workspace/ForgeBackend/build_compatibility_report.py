@@ -30,7 +30,7 @@ ISSUES={
  'bridge.combat_assignment':('Special keyword or legacy ordered damage needs additional allocation support','ForgeBackend/ForgeLandEngine.java','Unmapped keyword combat damage allocation'),
  'bridge.legendary_choice':('Legend choices require admitted identities and a verified selection sequence','ForgeBackend/ForgeLandEngine.java','class PassiveController'),
  'bridge.damage_events':('Damage paths beyond the verified ordinary spell/combat cases need attribution review','ForgeBackend/ForgeLandEngine.java','Unmapped card damage outside resolving stack'),
- 'bridge.counter_events':('Countered-spell event attribution is pinned to Essence Scatter','ForgeBackend/ForgeLandEngine.java','getName().equals("Essence Scatter")'),
+ 'bridge.counter_events':('Counter branches outside the verified policy require sequence evidence','ForgeBackend/ForgeLandEngine.java','top.getSpellAbility().getApi()!=forge.game.ability.ApiType.Counter'),
  'bridge.activated':('Activated abilities require explicit recovered identity bindings and verified costs/choices','NativeHost/ForgeLandBridge.cs','private JArray Offers'),
  'bridge.triggers':('Stack ability identities are restricted to explicitly recovered bindings','ForgeBackend/ForgeLandEngine.java','Unmapped stack ability'),
  'bridge.replacements':('Replacement selection/events require a native adapter','ForgeBackend/ForgeLandEngine.java','class PassiveController'),

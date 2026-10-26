@@ -77,6 +77,13 @@ public sealed class Plugin : BaseUnityPlugin
         catch(Exception ex){Logger.LogError("Pending deck changes could not be saved; the last committed library was preserved: "+ex);}
     }
 
+    private void OnGUI()
+    {
+        if(_forge?.RulesCalculationSlow!=true)return;
+        float width=Math.Min(440,Screen.width-20);
+        GUI.Box(new Rect((Screen.width-width)/2,12,width,32),"Still calculating this turn… ("+(int)_forge.RulesWaitSeconds+"s)");
+    }
+
     private void Update()
     {
         if(_root=="")return;
@@ -254,7 +261,7 @@ public sealed class Plugin : BaseUnityPlugin
                 nativeGameManager = game != null, nativeState = game != null ? game.CurrentGameState?.Id : null, presentationBusy = game != null && game.UXEventQueue.IsRunning,
                 audio = new { initialized = AudioManager.Instance != null && AudioManager.Instance.Initialized, loadError = AudioManager.Instance != null && AudioManager.Instance.HadLoadError, packages = AudioManager.AvailableAudioPackages?.Count ?? 0 },
                 players = game != null && game.CurrentGameState != null ? game.CurrentGameState.Players.Select(p => new { seat = p.InstanceId, life = p.LifeTotal }).ToArray() : null,
-                forge = _forge == null ? null : new { session = _forge.Session, scenario = _forge.Scenario, gameOver = _forge.GameOver, decision = _forge.DecisionKind, landsPlayed = _forge.LandsPlayed, mana = _forge.ManaTotal, turn = _forge.Turn, phase = _forge.Phase, activeSeat = _forge.ActiveSeat, hand = _forge.HandCount, battlefield = _forge.BattlefieldCount, gap = _forge.Gap },
+                forge = _forge == null ? null : new { session = _forge.Session, scenario = _forge.Scenario, gameOver = _forge.GameOver, decision = _forge.DecisionKind, landsPlayed = _forge.LandsPlayed, mana = _forge.ManaTotal, turn = _forge.Turn, phase = _forge.Phase, activeSeat = _forge.ActiveSeat, hand = _forge.HandCount, battlefield = _forge.BattlefieldCount, rulesWaitSeconds = _forge.RulesWaitSeconds, rulesCalculationSlow = _forge.RulesCalculationSlow, gap = _forge.Gap },
                 persistentPath = Application.persistentDataPath, recentEvents = _events.ToArray()
             }, Formatting.Indented));
         }

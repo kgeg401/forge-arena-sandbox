@@ -8,6 +8,7 @@ from emry_test_client import EmryGame,EMRY
 deck=parse_brawl('Commander\n1 Emry, Lurker of the Loch\n\nDeck\n98 Island\n1 Unsummon\n','Emry commander bounce boundary')
 other=parse_brawl('Commander\n1 Isamaru, Hound of Konda\n\nDeck\n98 Plains\n1 Yoked Ox\n')
 seed_path=ROOT/'research/emry-mechanics/bounce-seed.json'
+seed_path.parent.mkdir(parents=True,exist_ok=True)
 if seed_path.exists():seed=json.loads(seed_path.read_text())['seed']
 else:
     for seed in range(40):

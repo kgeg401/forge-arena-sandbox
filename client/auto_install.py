@@ -50,7 +50,7 @@ def install_automatic(arena,destination,package,workspace=None,progress=lambda t
             code=process.wait()
         if code:raise RuntimeError('Sandbox setup stopped. Existing programs and saved files were preserved. Details: '+str(log))
         receipt=json.loads((destination/'install-receipt.json').read_text())
-        receipt.update(automaticPrerequisites=True,forgeVersion='2.0.15',arenaInstalledBySetup=False,privateRuntimes=True,prerequisiteCache=str(workspace),setupLog=str(log))
+        receipt.update(automaticPrerequisites=True,forgeVersion=lock['dependencies']['forge']['label'],arenaInstalledBySetup=False,privateRuntimes=True,prerequisiteCache=str(workspace),setupLog=str(log))
         (destination/'automatic-setup-receipt.json').write_text(json.dumps(receipt,indent=2))
         progress('Ready. Open Forge Arena Sandbox in '+str(destination));return receipt
 

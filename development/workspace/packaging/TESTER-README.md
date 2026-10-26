@@ -13,7 +13,7 @@ running the rules. **Windows x64. Experimental. No multiplayer.**
 4. Open **Forge Arena Sandbox** in the installed folder, or run
    **ForgeArenaSandbox.exe**. This is the client launcher.
 
-Setup installs the fixed Forge 2.0.15 distribution, private Java 17 and .NET 8
+Setup installs the pinned Forge 2.0.16 snapshot from 25 October 2026, private Java 17 and .NET 8
 runtimes, and the loader. If suitable Python is missing, Setup.exe installs the
 pinned official Python build first. You do not need to install Forge yourself.
 Arena files stay on your computer and are copied into an independent sandbox.

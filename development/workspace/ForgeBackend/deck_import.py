@@ -3,11 +3,17 @@ from pathlib import Path
 import argparse, hashlib, json, re
 from runtime_paths import SUPPORT_POLICY
 from card_support import unsupported_message
+from experimental_cards import load_experimental
 
-SUPPORTED = tuple(json.loads(SUPPORT_POLICY.read_text())['verifiedNames'])
+VERIFIED = tuple(json.loads(SUPPORT_POLICY.read_text())['verifiedNames'])
+EXPERIMENTAL = load_experimental()
+SUPPORTED = tuple(dict.fromkeys((*VERIFIED,*EXPERIMENTAL['cards'])))
 CANONICAL = {name.casefold(): name for name in SUPPORTED}
 BRAWL_COMMANDERS=json.loads(SUPPORT_POLICY.read_text()).get('brawlCommanders',{})
 COLOR_IDENTITIES=json.loads(SUPPORT_POLICY.read_text()).get('colorIdentities',{})
+for _name,_card in EXPERIMENTAL['cards'].items():
+    COLOR_IDENTITIES[_name]=_card['colorIdentity']
+    if _card.get('commanderAdmitted'):BRAWL_COMMANDERS[_name]=dict(colorIdentity=_card['colorIdentity'],experimental=True)
 
 def parse_brawl(text,name='Local Brawl deck'):
     sections={'Commander':{},'Deck':{}};section=None
@@ -22,7 +28,7 @@ def parse_brawl(text,name='Local Brawl deck'):
         card=lookup.get(m[2].casefold())
         if card is None:unsupported.append(m[2]);continue
         sections[section][card]=sections[section].get(card,0)+int(m[1])
-    if unsupported:raise ValueError(unsupported_message(unsupported))
+    if unsupported:raise ValueError(unsupported_message(unsupported)+' '+ '; '.join(n+': '+EXPERIMENTAL.get('blockedCards',{}).get(n,'No enabled native/rules mapping') for n in dict.fromkeys(unsupported)))
     commanders=sections['Commander'];main=sections['Deck']
     if len(commanders)!=1 or sum(commanders.values())!=1:raise ValueError('Brawl requires exactly one commander')
     commander=next(iter(commanders))
@@ -35,7 +41,9 @@ def parse_brawl(text,name='Local Brawl deck'):
         if count!=1 and card not in ('Plains','Island','Swamp','Mountain','Forest'):raise ValueError('Brawl is singleton except basic lands: '+card)
         identity=COLOR_IDENTITIES.get(card,['U'] if card in ('Island','Unsummon','Essence Scatter','Quick Study') else ['W'])
         if not set(identity)<=colors:raise ValueError('Outside commander color identity: '+card)
-    return dict(name=name[:80],format='arena-brawl',commander=dict(name=commander,count=1),cards=[dict(name=n,count=c) for n,c in main.items()])
+    result=dict(name=name[:80],format='arena-brawl',commander=dict(name=commander,count=1),cards=[dict(name=n,count=c) for n,c in main.items()])
+    if commander in EXPERIMENTAL['cards'] or any(n in EXPERIMENTAL['cards'] for n in main):result['experimental']=True
+    return result
 
 def parse_deck(text, name='Custom practice deck'):
     counts = {};unsupported=[]
@@ -55,7 +63,9 @@ def parse_deck(text, name='Custom practice deck'):
     total = sum(counts.values())
     if not 40 <= total <= 250:
         raise ValueError(f'Practice decks must contain 40 to 250 cards; this list has {total}.')
-    return {'name': name[:80], 'cards': [{'name': k, 'count': v} for k, v in counts.items()]}
+    result={'name': name[:80], 'cards': [{'name': k, 'count': v} for k, v in counts.items()]}
+    if any(n in EXPERIMENTAL['cards'] for n in counts):result['experimental']=True
+    return result
 
 def read_deck(path,format='practice'):
     path = Path(path).resolve(strict=True)
@@ -64,7 +74,7 @@ def read_deck(path,format='practice'):
     raw = path.read_bytes()
     deck = (parse_brawl if format=='arena-brawl' else parse_deck)(raw.decode('utf-8-sig'), path.stem)
     deck.update(source=str(path), sha256=hashlib.sha256(raw).hexdigest(),
-                printingPolicy='Pinned verified Arena art; export set and collector labels are not imported',
+                printingPolicy='Pinned native identities; experimental cards are unverified' if deck.get('experimental') else 'Pinned verified Arena art; export set and collector labels are not imported',
                 formatPolicy='Arena Brawl sandbox: 99 main plus one commander, singleton and admitted color identity; no queue banlist claim' if format=='arena-brawl' else 'Sandbox main deck, 40 to 250 cards, unrestricted copy counts; no format legality claim')
     return deck
 

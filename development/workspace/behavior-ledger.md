@@ -504,6 +504,99 @@ screen remain unverified. This supersedes the earlier exile-screen gap above.
 The subsequent native recast showed4U and really paid five Islands, resolved
 Emry, incremented command history to2 and milled four again; extended replay101.
 
+## 2026-10-22: four-hour headless shared-interface checkpoint
+
+This extends development evidence; it does not supersede the native observations
+above or establish new rendered acceptance. The installed/public alpha.5 build
+and production policy still admit370names. No installation, release, account,
+game window or GPU validation was changed/launched for this checkpoint.
+
+Recovered source: original native SelectN/Group/Order/Numeric/CastingTimeOptions
+and optional-action handlers; literal counter/color/keyword/type identities;
+attachment and ability-add/remove model semantics; original Human-controller
+forced sole static/replacement selection and mandatory untargeted trigger play.
+Harvest's exact source/native labels additionally pass the original Core pure
+option translator and prompt-button workflow selector, without a rendered
+workflow. Private owned decompilation and bytecode stay outside the repository.
+
+Implemented in the independent research path: explicit scry/surveil partitions,
+library/graveyard/exile ordering, reveal acknowledgement, constrained discard,
+entity/zone/effect selection, source-bound modes/generic choices, bounded
+number/confirm/color/counter-type primitives, actual typed counters and events,
+attachments, current types/colors, source/lifetime-bound keyword grants and
+ability removals. Unsupported contexts remain gaps. General payments, arbitrary
+generic labels and competing effects do not acquire an approximate fallback.
+
+Verified:179authored interface scenarios /4583saved assertions,92of which are
+choice permutations. Additional evidence covers12normally shuffled full-match
+seeds; existing opening/target/combat/draw regressions; nineEmry/Brawl/Paradox
+scripts; strict native input/replay contracts; four simultaneous fresh starts;
+profile boundaries and owned-descendant timeout cleanup. Selected evidence has
+244native sessions /7567model updates. Counts include multiple games and seed
+discovery sessions; these are not244cards or179new admissions.
+
+The native model is checked on each update for life/counters, attachment edges
+in both directions, current types/colors, creature stats, tap/sickness and
+effective known keyword layers. Four mixed cases prove matching-color
+protection removes Frogify/Pacifism through Forge state-based actions, unrelated
+protection preserves them, and attachment/type/keyword presentation follows.
+Only local-owned exile order is submitted by the human; the bot owns its order.
+
+Failed attempts remain linked beside corrections. They include the fixed
+first-start directory race, an old test bot keeping a no-mana hand, a native
+driver coercing activation IDs, newly explicit mill/exile ordering prompts,
+an obsolete test attack field and invalid bot-ordering assumptions. Original
+rules/outcome assertions were retained; changed authored fixture assumptions
+are called out rather than concealed as implementation fixes.
+
+Static planning audit:16370Arena names /16331unique script candidates /39unmatched;
+9816names mention audited interface families,264have exact modal text bindings.
+Those numbers do not prove gameplay, native visuals or Arena/Forge rules parity.
+
+Remaining headless gap: the final inheritance audit finds AI implementations
+outside the named choice-guard surface, including cost-decision/assist, ability
+selection, draw offers, sideboarding, shuffle hook and isAI. Owned code confirms
+the AI cost factory and identity flag; the shuffle hook is conditional and
+GameRules defaults its cheat flag tofalse. Reachability and human-controller
+parity require further reconstruction and regression. Therefore the named guard
+must not be described as exhaustive closure against all inherited AI behavior.
+Other gaps include competing/optional/targeted trigger/replacement choices,
+broader costs, type/card-name choices, copy/face/token and digital mechanics.
+
+Next acceptance gate: close inherited human-controller/cost paths, expand mixed
+mechanic evidence, then render/input-test representative original workflows
+before any catalogue promotion or release. Full UI/art/animation parity and
+recipient-PC acceptance remain separate from these headless results.
+
+Reproduction and source boundaries: docs/headless-shared-bridge.md. Private
+evidence: C:\Users\loula\Documents\Codex\ForgeArenaHeadless-20261022-1729\
+checkpoint-validation-final.json. This report binds prepared classes, owned
+native libraries, authored inputs, saved assertions, native completion receipts
+and explicit failed-run/corrected-run provenance.
+
+## Turn pacing: local preview 0.2.0-alpha.5.turnflow.2
+
+- Recovered bridge cause: 650 ms state/settings dwell and one-second retry;
+  opponent stack always held even without an offered response.
+- Implemented: readiness-driven automatic pass, one submission per native
+  state/request, 50 ms monotonic retry only for an unready workflow, automatic
+  pass of opponent spells when Forge offers no legal non-mana action.
+- Preserved: Forge's full rules progression, original native request retirement,
+  presentation completion, playable actions, combat/other choices, explicit
+  stops, full control, terminal and fidelity-gap holds.
+- Headless evidence: five real Forge/native-handler scenarios, including a
+  payable Essence Scatter hold and wrong-color no-response progression.
+- Rendered evidence: 12 passing checks in a normal local practice match; original
+  card/Pass callbacks, turn2 to turn4 progression and an interactive native
+  Choose attackers screen, with captured frame inspected.
+- Installed: pacing-only local build based on alpha.5. Native DLL hash verified
+  against the tested DLL. Existing engine/catalogue policy retained. No public
+  update or new supported-card claims.
+- Gaps: complete Arena smart-stop/stop-setting semantics, broader card/payment
+  support, physical input and frame-by-frame animation parity are unproven.
+
+Receipt: C:/Users/loula/Documents/Codex/ForgeArenaTurnFlow-20261023/completion.json.
+
 ## 2026-10-23 native turn-flow acceptance and alpha.6 release preparation
 
 Recovered native turn/phase annotation and next-phase fields from owned capture
@@ -517,3 +610,45 @@ Shared-card research remains unreleased. Full smart-stop/complex lookahead and
 frame-level animation parity remain unproven. See docs/turn-flow.md.
 Private evidence: ../ForgeArenaTurnFlowParity-20261023/completion.json.
 Publication and updater verification require separate receipts.
+
+## 2026-10-22 user-authorized experimental admission
+
+User explicitly requests unblocking the eight deck drafts despite incomplete
+verification. Add an optional experimental admission inventory separately from
+the verified policy. Generate 342 source/native identities plus four commanders;
+exclude Jace and 45 absent native presentations. Preserve structural validation,
+exact identities and runtime fidelity gaps. The private candidate includes the
+shared-controller research paths as unverified work. Python admission and real
+stable-Forge initial match startup pass for Chatterfang, Derevi and Squirrel Girl.
+Native/rendered acceptance and local deployment are separate pending gates.
+See docs/experimental-card-admission.md and ../ForgeArenaExperimental-20261023.
+
+## Bojuka Bog targeted-trigger regression
+
+Observed: experimental.1 Chatterfang turn2, play_land card46, exits in
+HeadlessChoiceController.orderAndPlaySimultaneousSa. Recovered: pinned Forge
+human controller orders triggers then calls PlaySpellAbility; setupTargets calls
+chooseTargetsFor once per targeting subability. Implemented: source-bound single
+mandatory target path, noncancelable target choice, exact Bog trigger/prompt and
+black-mana bindings, zero-mana payment, precise fatal error receipt. Evidence:
+../ForgeArenaBogFix-20261023/native-final.json (five real Forge/original native
+handler scenarios), turn-flow-regression/report.json (eight pass),
+coordinator-final.json (37 authored protocol checks), fatal-report-check.json
+(actual subprocess failure receipt). Rendered target UI, complete Chatterfang
+game, optional/multiple triggers and other experimental cards remain unverified.
+No verified card promotion or public publication.
+
+## Chord availability / convoke callback
+
+Observed: experimental.2 turn6 after Chatterfang resolves, snapshot's Chord
+affordability check exits in chooseCardsForConvokeOrImprovise. Recovered: cost
+adjustment invokes the human payment callback even during canPayCost. Original
+X costs are found in CostPartMana.getMana().countX, not reliably isAnnouncing.
+Implemented: explicit nonfatal per-action gaps in experimental offer queries,
+no decision creation in those queries, restoration of the prior fatal gap,
+strict real-effect handling and once-per-match source-specific native notice.
+Verified: repeated queries do not tap or change events/mana; rejected casts
+leave the engine healthy; independent spells resolve; normal Match.startGame
+reaches Chatterfang plus Chord. Three real Forge and three original-native
+handler cases pass. Convoke, X picker and complete deck interactions remain
+unimplemented/unverified. Private evidence: ../ForgeArenaConvokeFix-20261023.

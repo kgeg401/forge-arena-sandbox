@@ -69,7 +69,7 @@ try:
         if (g.s.get('decision') or {}).get('kind')=='attackers':break
         g.step()
     else:raise AssertionError('No real attack decision')
-    d=g.s['decision'];g.send('select_attackers',decisionToken=d['token'],assignments=[{'forgeId':orn['forgeId'],'defenderId':2}]);g.answer('attackers')
+    d=g.s['decision'];g.send('select_attackers',decisionToken=d['token'],assignments=[{'forgeId':orn['forgeId'],'targetSeat':2}]);g.answer('attackers')
     for _ in range(70):
         if g.s['activeSeat']==1 and g.s['phase']=='MAIN2' and not g.s.get('decision') and not g.s['stack'] and not g.s['stackAbilities']:break
         g.step()

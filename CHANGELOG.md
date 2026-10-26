@@ -1,3 +1,14 @@
+# Changelog
+
+## 0.2.0 alpha 7 — Jace Superfriends Brawl
+
+- Adds the exact 100-card Jace Superfriends Brawl starter, led by Jace, Multiverse Architect.
+- Pins the official Forge 2.0.16 snapshot containing his rules; automatic private engine upgrade retains rollback copies.
+- Connects planeswalker combat recipients, optional mana taxes, copied loyalty abilities, Saga descriptions and Narset rebound.
+- Native checks cover 100 card play/cast scenarios, 21 loyalty activations, focused Jace/rebound/proliferate outcomes, 51 regression groups and eight turn-flow modes. One normal full match completed 30 turns / 570 actions.
+- Installed native client opened the deck and normal Brawl match; prior deck records were unchanged. Profiles and retail assets stay local.
+- The 370-name verified baseline is unchanged. 343 additional card names remain experimental; smoke tests do not verify every branch or combination.
+
 # Changes
 
 ## 0.2.0-alpha.6 â€” smoother turn flow

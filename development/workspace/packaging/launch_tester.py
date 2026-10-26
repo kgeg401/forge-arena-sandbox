@@ -89,6 +89,9 @@ def start_client(args,owned):
     requirements=read_json(app/'requirements.json')
     for rel,digest in requirements['arenaFiles'].items():
         if sha(lab/rel)!=digest:raise ValueError('This release does not support the copied Arena build: '+rel)
+    if not args.check_only:
+        from rules_runtime import ensure_rules_runtime
+        ensure_rules_runtime(app,config)
     match_forge(data/'forge-runtime',requirements,runtime=True)
     for rel,digest in requirements['loaderFiles'].items():
         if sha(lab/rel)!=digest:raise ValueError('Copied loader changed: '+rel)

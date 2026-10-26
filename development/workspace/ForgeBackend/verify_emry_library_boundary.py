@@ -17,6 +17,7 @@ try:
         for _ in range(30):
             d=g.s.get('decision')
             if d:
+                if g.shared_observation():continue
                 g.check('Only the real legend rule interrupts this entry',d['kind']=='legend_rule')
                 g.answer('legend_rule',[{'forgeId':survivor['forgeId']}])
             elif not g.s['stack'] and not g.s['stackAbilities']:break

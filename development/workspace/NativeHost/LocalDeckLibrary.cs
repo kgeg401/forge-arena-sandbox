@@ -64,6 +64,7 @@ internal sealed class LocalDeckLibrary
     }
     public JObject New(string name) => new JObject{["id"]=Guid.NewGuid().ToString(),["name"]=name,["format"]="practice",["main"]=new JObject(),["sideboard"]=new JObject(),["commander"]=new JObject(),["companion"]=new JObject()};
     public bool IsVerifiedCommander(uint id)=>Cards.TryGetValue(id,out var card) && (bool?)_matchCards[(string)card["name"]!]?["commanderAdmitted"]==true;
+    public bool IsExperimental(JObject deck)=>new[]{"main","commander"}.Any(p=>((JObject)deck[p]!).Properties().Any(c=>(bool?)_matchCards[(string)Cards[uint.Parse(c.Name)]["name"]!]?["experimental"]==true));
     public JObject Import(string text,string name)
     {
         if(text.Length>262144)throw new InvalidDataException("Deck text exceeds 256 KB.");
@@ -160,7 +161,7 @@ internal sealed class LocalDeckLibrary
             if(count!=99)gaps.Add("Brawl requires 99 main cards plus one commander (currently "+count+" main cards).");
             string? commander=commanders.Length==1?(string?)Cards[uint.Parse(commanders[0].Name)]["name"]:null;
             var definition=commander==null?null:_matchCards[commander];
-            if((bool?)definition?["commanderAdmitted"]!=true)gaps.Add("This commander is not verified for Brawl.");
+            if((bool?)definition?["commanderAdmitted"]!=true)gaps.Add("This commander is not enabled for Brawl: "+commander);
             var colors=new HashSet<string>((definition?["colorIdentity"] as JArray??new JArray()).Values<string>()!);
             var counts=((JObject)deck["main"]!).Properties().GroupBy(p=>(string)Cards[uint.Parse(p.Name)]["name"]!).Select(g=>new{Name=g.Key,Count=g.Sum(p=>(int)p.Value)});
             foreach(var item in counts)
@@ -169,7 +170,7 @@ internal sealed class LocalDeckLibrary
                 if(item.Name==commander)gaps.Add("The commander also appears in the main deck.");
                 if((bool?)card?["admitted"]!=true)gaps.Add("Unverified match card: "+item.Name);
                 if(item.Count!=1 && !new[]{"Plains","Island","Swamp","Mountain","Forest"}.Contains(item.Name))gaps.Add("Brawl is singleton except basic lands: "+item.Name);
-                if(card?["colorIdentity"] is JArray identity && identity.Values<string>().Any(c=>!colors.Contains(c!)))gaps.Add("Outside commander color identity: "+item.Name);
+                if(definition?["colorIdentity"] is JArray && card?["colorIdentity"] is JArray identity && identity.Values<string>().Any(c=>!colors.Contains(c!)))gaps.Add("Outside commander color identity: "+item.Name);
             }
             foreach(string pile in new[]{"sideboard","companion"})if(((JObject)deck[pile]!).HasValues)gaps.Add("Brawl does not support "+pile+" cards.");
             return gaps.ToArray();

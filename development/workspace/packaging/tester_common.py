@@ -33,7 +33,7 @@ def metadata_recipe(app):
            'DeckBackend/build_deck_catalog.py')
     # Older versions predate these optional helpers. Their original recipe
     # remains valid; new releases invalidate derived indexes when either changes.
-    files+=tuple(name for name in ('ForgeBackend/arena_catalog.py','ForgeBackend/card_support.py','ForgeBackend/card-support-index.json') if (Path(app)/name).is_file())
+    files+=tuple(name for name in ('ForgeBackend/arena_catalog.py','ForgeBackend/card_support.py','ForgeBackend/card-support-index.json','ForgeBackend/experimental_cards.py','ForgeBackend/experimental-admission.json') if (Path(app)/name).is_file())
     rows={name:sha(Path(app)/name) for name in files}
     return hashlib.sha256(json.dumps(rows,sort_keys=True).encode('utf8')).hexdigest()
 

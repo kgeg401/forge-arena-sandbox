@@ -49,8 +49,18 @@
         "res/cardsfolder/cardsfolder.zip": "ac26ccbe2a9c015bad4851db61d57d421777e10bf96c32d72add618b258bec07",
         "res/tokenscripts/w_1_1_rabbit.txt": "4ab0f9d0be3ca8fa60e9ccbf121a8eecfdcbc26468e4a3bcaf5878272ad5b5c8"
       }
+    },
+    {
+      "id": "official-2.0.16-snapshot-20261025",
+      "jar": "forge-gui-desktop-2.0.16-SNAPSHOT-jar-with-dependencies.jar",
+      "files": {
+        "forge-gui-desktop-2.0.16-SNAPSHOT-jar-with-dependencies.jar": "82083a2e52ff04f22e518f705b1a1fcac877a1ee0fa25db4e4fb208bf6a7295a",
+        "res/cardsfolder/cardsfolder.zip": "dffcf416dd40dfa881400df60e5191520b0dfb30fcaaac2c378b5415b927d6e2",
+        "res/tokenscripts/w_1_1_rabbit.txt": "4ab0f9d0be3ca8fa60e9ccbf121a8eecfdcbc26468e4a3bcaf5878272ad5b5c8"
+      }
     }
   ],
+  "preferredForgeVariant": "official-2.0.16-snapshot-20261025",
   "loaderFiles": {
     ".doorstop_version": "75a2f501000d4fe28f74bc7ee66dae5581959d28b6c44f0c1b0c05cd5ba261e6",
     "changelog.txt": "b184d858cb0ff6614ca8ce0247fb0d186cabc91ed7e4d4d9d57ea3d744ce98b5",

@@ -1,16 +1,18 @@
 {
   "schema": 1,
   "compiler": "javac 17.0.20.1",
-  "sourceSha256": "be40492fd52ed0753ea1d216a4f4fcf65369beba91fb54544f9f8d6c2a7fb476",
-  "forgeJarSha256": "b17c37b5483b84e0c6bc77a8a191680b6eb5bfa508235475c495acc45a4ad110",
+  "sourceSha256": "382063fbf1fb1e6035114d104ef0bec28fd4538aec9a5dd7a8c5123575fa5a39",
+  "forgeJarSha256": "82083a2e52ff04f22e518f705b1a1fcac877a1ee0fa25db4e4fb208bf6a7295a",
   "gsonSha256": "dd0ce1b55a3ed2080cb70f9c655850cda86c206862310009dcb5e5c95265a5e0",
   "classes": {
-    "ForgeLandEngine$1.class": "48e7ffc9a48dae6f2d50bb9ed7e60cb28ce0dd6c6434b89985fc0275724d6214",
-    "ForgeLandEngine$EventRecorder.class": "71d22e27e8207afa0c733a831159d303ecaf29ba0415ffe7979ac9e7bcdc3a44",
-    "ForgeLandEngine$LocalSeat.class": "1a01e163073df566e33b9b8d0c90c748db35895ea97cd1ee12c913abff800dde",
-    "ForgeLandEngine$PassiveController.class": "6202a665e4c98d393257b63d6c6d95a807c4b69a1bed4e94e0b012d098318f00",
-    "ForgeLandEngine$ResearchStrictController.class": "d1b57f2c7295065d3fabae10ee05c903ab887b608897226539fe760aeb60dcfc",
-    "ForgeLandEngine$StopRequested.class": "995725f5e37b5658a94e4ce7f02dde3bcd538c029cbaa95d0a3f853eec8324d9",
-    "ForgeLandEngine.class": "6c59ef56f3ebe0e66d630398cbcb637c7cf9f26e838ce0cc3023e3738a62e018"
+    "ForgeLandEngine$1.class": "33676538b3db239083fa8592a5b92a8ff9f7f3f4859f30b331c347ed56562bf7",
+    "ForgeLandEngine$EventRecorder.class": "6ca059afe1fd9fa8bbb9b9b5fdc335fbd27c0e386ea25b425c60a9bdc1421d0c",
+    "ForgeLandEngine$HeadlessChoiceController.class": "28edde0c20aaa15430fbe411dacf6c1e89ca5767e628620429d6aad0869bc516",
+    "ForgeLandEngine$HumanPayments.class": "baecb3e63612f2cfb05634f37ddf2012bd18525985a31bc14377ea988d5c44a4",
+    "ForgeLandEngine$LocalSeat.class": "a395300d94fd3e458cb395c4fdedaeadc6b6fed68ab03c7b9d30e5f5393fdca0",
+    "ForgeLandEngine$PassiveController.class": "6e95821005c0bf2543d6674091402001d8b08e4a9b1968955c5cfaa8005c0199",
+    "ForgeLandEngine$ResearchStrictController.class": "8a8a247bd71868c25da1720e991e7cdf14f04acf376bd12fb3e8067e4ee63ddb",
+    "ForgeLandEngine$StopRequested.class": "23b686fe08bc59be561ef04deb6c442eb11371ccc56a5e785e29b6a7ebd0aa58",
+    "ForgeLandEngine.class": "92538017a8a4fc02e8d07dc1d3326c3aba313921cd5f13c9d8f650635046921b"
   }
 }

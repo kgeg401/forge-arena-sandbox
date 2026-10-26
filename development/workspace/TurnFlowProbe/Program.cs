@@ -72,7 +72,7 @@ internal static class Program
             passes.Add(new JObject{["phase"]=bridge!.Phase,["turn"]=bridge.Turn,["nativeStateId"]=presented,["requestId"]=actions.OriginalMessage.MsgId,["readyToSubmitMs"]=(timer.ElapsedTicks-presentedAt)*1000.0/Stopwatch.Frequency});
             actions.SubmitPass();Forward();return true;
         }
-        bridge=new ForgeLandBridge(root,local,_=>{},()=>presentationReady?presented:null,AutoPass,ipc);
+        bridge=new ForgeLandBridge(root,local,_=>{},()=>presentationReady?presented:null,AutoPass,ipc, mode=="delayed-response" ? ()=>clock : null);
         void Settings(SettingsMessage settings){local.SendMessage(new ClientToGREMessage{Type=ClientMessageType.SetSettingsReq,SetSettingsReq=new SetSettingsReq{Settings=settings}});Drain();}
         void Tick(){bridge.Poll();Drain();if(bridge.Gap!=null)throw new InvalidOperationException(bridge.Gap);}
         void Until(Func<bool> condition)
@@ -88,7 +88,37 @@ internal static class Program
         }
         try
         {
-            bridge.Start();Drain();for(int i=0;i<30;i++)Tick();Check("Settings handshake is required before automatic passing",attempts==0);
+            bridge.Start();Drain();
+            if(mode=="delayed-response")
+            {
+                if(request is not ActionsAvailableRequest available)throw new InvalidOperationException("Fixture must offer a native priority request");
+                available.SubmitPass();Forward();
+                string pending=bridge.PendingResearchRequestId??throw new InvalidOperationException("No pending request");
+                uint? before=presented;
+                clock=14.9;Tick();Check("Normal calculation does not show a slow warning",!bridge.RulesCalculationSlow);
+                foreach(double elapsed in new[]{15.1,106,600})
+                {
+                    clock=elapsed;for(int i=0;i<5;i++)Tick();
+                    Check("Delayed response remains pending at "+elapsed+" seconds",bridge.PendingResearchRequestId==pending && bridge.Gap==null && presented==before && bridge.RulesCalculationSlow);
+                }
+                Check("Pending action was never duplicated",Directory.GetFiles(Path.Combine(ipc,"requests"),"*.json").Length==1);
+                var state=bridge.ResearchState;
+                File.WriteAllText(Path.Combine(ipc,"responses",pending+".json"),new JObject{["id"]=pending,["session"]=bridge.Session,["accepted"]=true,["state"]=state}.ToString());
+                Tick();
+                Check("Valid late response retires the original request",bridge.PendingResearchRequestId==null && presented!=before && bridge.Gap==null);
+                Check("Slow warning clears when the result arrives",!bridge.RulesCalculationSlow && bridge.RulesWaitSeconds==0);
+                uint? adopted=presented;for(int i=0;i<10;i++)Tick();Check("Late response applies only once",presented==adopted);
+                // A second request must start a fresh timer, and foreign-session
+                // responses must remain rejected even after a long wait.
+                if(request is not ActionsAvailableRequest next)throw new InvalidOperationException("Missing follow-up priority request");
+                next.SubmitPass();Forward();Check("Next request has a fresh wait timer",!bridge.RulesCalculationSlow);
+                string second=bridge.PendingResearchRequestId!;
+                File.WriteAllText(Path.Combine(ipc,"responses",second+".json"),new JObject{["id"]=second,["session"]="foreign-session",["accepted"]=true,["state"]=state}.ToString());
+                bool rejected=false;try{bridge.Poll();}catch(InvalidOperationException){rejected=true;}
+                Check("Late-response recovery still rejects a foreign session",rejected && presented==adopted);
+                File.WriteAllText(args[5],new JObject{["passed"]=true,["checks"]=new JArray(checks),["scope"]="Real native handlers and adapter, controlled clock and delayed response transport; no live Forge computation or rendered UI."}.ToString());return 0;
+            }
+            for(int i=0;i<30;i++)Tick();Check("Settings handshake is required before automatic passing",attempts==0);
             Check("Original parser receives a native turn-change event",nativeEvents.Contains("TurnChangeEvent"));
             Check("Original parser receives a native phase-change event",nativeEvents.Contains("GamePhaseChangeEvent"));
             if(mode=="yield" || mode=="yield-turn")

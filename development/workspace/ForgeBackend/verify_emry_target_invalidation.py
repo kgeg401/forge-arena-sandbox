@@ -16,10 +16,13 @@ try:
     g.check('Crypt offers real players with collision-free references',{o['targetSeat'] for o in d['options']}=={1,2} and all(o['targetKind']=='player' and o['forgeId']<-1000000 for o in d['options']))
     g.reject('A card cannot replace a player target','select_targets',decisionToken=d['token'],assignments=[{'forgeId':emry['forgeId']}])
     own=next(o for o in d['options'] if o['targetSeat']==1)
-    g.send('select_targets',decisionToken=d['token'],assignments=[own]);g.answer('targets')
+    g.send('select_targets',decisionToken=d['token'],assignments=[{'forgeId':own['forgeId']}]);g.answer('targets')
     g.check('Crypt sacrificed as a real cost',bool(g.cards('graveyard',CRYPT)) and not g.cards('battlefield',CRYPT))
     g.check('Crypt stack ability identifies chosen player',any(a['abilityId']==12870 and a['targetSeats']==[1] for a in g.s['stackAbilities']))
     gy={c['forgeId'] for c in g.cards('graveyard')};g.step()
+    for _ in range(4):
+        if not g.shared_observation():break
+    else:raise AssertionError('Exile ordering observation bound exceeded')
     g.check('Crypt really exiles the selected graveyard',gy<={c['forgeId'] for c in g.cards('exile')} and not g.cards('graveyard'))
     g.check('Emry is still on stack after its target leaves',any(a['abilityId']==TAP for a in g.s['stackAbilities']))
     g.resolve()

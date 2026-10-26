@@ -3,7 +3,7 @@
 A local Magic sandbox using your installed Arena's original screens, cards and
 animations. Forge runs the bot and supported rules.
 
-**[Download the Windows alpha](https://github.com/kgeg401/forge-arena-sandbox/releases/tag/v0.2.0-alpha.6)**
+**[Download the Jace Brawl alpha for Windows](https://github.com/kgeg401/forge-arena-sandbox/releases/tag/v0.2.0-alpha.7)**
 
 Download **ForgeArenaSandbox-Windows.zip** from that release. GitHub's **Code >
 Download ZIP** contains source code, not the installable client.
@@ -31,7 +31,7 @@ Allow space for an independent Arena copy; setup checks the required space.
 
 - **Home > Play > Play:** choose Practice Bot and a valid deck. **White Lifegain**
   is a straightforward first match.
-- **Home > Play > Brawl:** choose Brawl Bot and **Emry Brawl** or **Isamaru Brawl**.
+- **Home > Play > Brawl:** choose Brawl Bot and **Jace Superfriends Brawl**, **Emry Brawl**, or **Isamaru Brawl**.
   These use 99 cards plus a commander, 25 life and a free first mulligan.
 - **New practice decks:** visit Decks for **Fire and Growth** and **Trample and Growth**.
 - **Decks:** create, import Arena deck text, edit, duplicate, export and delete

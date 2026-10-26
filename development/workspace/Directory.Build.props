@@ -1,7 +1,8 @@
 <Project>
   <PropertyGroup>
-    <BaseOutputPath>D:\GAMES\CodexAssets\ForgeArenaSandbox\build\$(MSBuildProjectName)\bin\</BaseOutputPath>
-    <BaseIntermediateOutputPath>D:\GAMES\CodexAssets\ForgeArenaSandbox\build\$(MSBuildProjectName)\obj\</BaseIntermediateOutputPath>
+    <SandboxBuildRoot Condition="'$(SandboxBuildRoot)' == ''">D:\GAMES\CodexAssets\ForgeArenaSandbox\build</SandboxBuildRoot>
+    <BaseOutputPath>$(SandboxBuildRoot)\$(MSBuildProjectName)\bin\</BaseOutputPath>
+    <BaseIntermediateOutputPath>$(SandboxBuildRoot)\$(MSBuildProjectName)\obj\</BaseIntermediateOutputPath>
     <ArenaManagedDir Condition="'$(ArenaManagedDir)' == ''">D:\GAMES\MTGA\MTGA_Data\Managed</ArenaManagedDir>
     <BepInExRoot Condition="'$(BepInExRoot)' == ''">D:\GAMES\CodexAssets\ForgeArenaSandbox\tools\BepInEx-5.4.23.5</BepInExRoot>
     <LangVersion>latest</LangVersion>

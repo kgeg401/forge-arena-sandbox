@@ -460,6 +460,60 @@ retained as disabled development work. Planned public update0.2.0-alpha.5 keeps
 the verified gameplay implementation and adds current documentation/source.
 Private profiles, native dumps, owned assets and credentials are not published.
 
+## 2026-10-22 four-hour headless shared-bridge checkpoint
+
+User authorizes four hours of headless work only, from21:29:13UTC to01:29:13UTC
+(next day). Skills: mod-any-game and reverse-engineering. Retain the existing
+owned offline Arena/Forge architecture and actual pinned Forge binary as source
+of truth. No rendered launches, input, installed-client update or GitHub push.
+The active user's client/game is not part of these tests.
+
+Evidence/test workspace: C:/Users/loula/Documents/Codex/ForgeArenaHeadless-20261022-1729.
+It is outside the source repository and writable under the current sandbox.
+Installed release0.2.0-alpha.5/370-name policy is frozen. Headless implementations
+and research qualification remain distinct from rendered acceptance/admission.
+Start with reusable typed human choices (partition/order, mode, scalar and card
+selection), validate through actual Forge calls and strict stale/invalid input
+contracts, then broaden shared state/events and automated catalogue impact where
+complete testable work fits the deadline. Retain unknown choice rejection.
+
+First milestone:14 real Forge scenarios pass through the actual C# bridge and
+shipped Arena parser/handlers, including scry, surveil, selection/order, both
+Tavern modes and optional zero-card selection. Native model checks confirm
+peek visibility and subsequent concealment. Modal identity uses exact owned
+parent/child text mappings;264 catalogue names map statically, without claiming
+gameplay support. Full audit and failed attempts remain in the private evidence
+workspace. See docs/headless-shared-bridge.md. Production admission is unchanged.
+
+## 2026-10-22 smoother turn flow (completed 2026-10-23 UTC)
+
+User requests smoother phase progression while retaining useful action stops.
+Found 650 ms per-state/settings dwell, one-second failed-workflow retry, and
+unconditional holds on opponent spells. Replaced dwell with native presented-
+state/workflow readiness, state/request-specific one-shot submission and a
+monotonic 50 ms unready-workflow retry. Opponent spells advance only when Forge
+offers no legal non-mana action; payable responses, choices, full control,
+manual stops and fidelity gaps continue to hold.
+
+Five actual Forge/native-handler scenarios pass. Rendered practice check passes
+12 assertions through original native controls: keep opening hand, play land,
+cast Savannah Lions, automatic resolution/empty progression/opponent spells,
+next main-phase action and explicit attacker selection. Inspected captured
+frame confirms the Choose attackers prompt and original action buttons.
+No physical mouse parity or complete Arena smart-stop parity is claimed.
+
+Installed local version 0.2.0-alpha.5.turnflow.2 through the existing verified
+archive updater; originals/profile backups retained. Candidate starts from
+alpha.5 source with only the pacing patch plus private probe access. Engine
+classes, 370-name policy and other package files stay unchanged. No headless
+shared-mechanics rollout or GitHub publication. Client PID75472 was left at
+turn4 attack selection at completion. Older failed test assumptions (random
+hand, asynchronous menu and randomized starting-player choice) remain in the
+private evidence; none is counted as a passing run.
+
+Evidence: C:/Users/loula/Documents/Codex/ForgeArenaTurnFlow-20261023/completion.json.
+Implementation and reproduction: docs/turn-flow.md.
+
 ## 2026-10-23 native turn-flow acceptance and alpha.6 release preparation
 
 Recovered native turn/phase annotation and next-phase fields from owned capture
@@ -473,3 +527,150 @@ Shared-card research remains unreleased. Full smart-stop/complex lookahead and
 frame-level animation parity remain unproven. See docs/turn-flow.md.
 Private evidence: ../ForgeArenaTurnFlowParity-20261023/completion.json.
 Publication and updater verification require separate receipts.
+
+## 2026-10-22 user-authorized experimental admission
+
+User explicitly requests unblocking the eight deck drafts despite incomplete
+verification. Add an optional experimental admission inventory separately from
+the verified policy. Generate 342 source/native identities plus four commanders;
+exclude Jace and 45 absent native presentations. Preserve structural validation,
+exact identities and runtime fidelity gaps. The private candidate includes the
+shared-controller research paths as unverified work. Python admission and real
+stable-Forge initial match startup pass for Chatterfang, Derevi and Squirrel Girl.
+Native/rendered acceptance and local deployment are separate pending gates.
+See docs/experimental-card-admission.md and ../ForgeArenaExperimental-20261023.
+
+## 2026-10-22 Bojuka Bog runtime crash repair
+
+Preserved the actual installed Chatterfang match logs/state/scenario under
+../ForgeArenaBogFix-20261023. Last action played card46 (Bojuka Bog); mandatory
+targeted trigger rejection escaped the normal Forge match loop. Reconstruct
+that single-trigger human target path through PlaySpellAbility/setupTargets,
+pin the owned native trigger/prompt/mana bindings and preserve forced choice
+rules. Add real Forge and persistent original-native-handler regressions,
+including the normal match owner loop. Unknown callback paths remain explicit
+gaps. Add a fatal error receipt and source-specific coordinator recovery text.
+Local experimental.2 deployment is separate from the headless checks; the
+original experimental.1 package and profile are preserved for rollback.
+
+## 2026-10-23 Chord of Calling action-enumeration failure
+
+Preserve experimental.2 match evidence under ../ForgeArenaConvokeFix-20261023.
+Chatterfang resolves on turn6, then snapshot canPayCost calls an unsupported
+convoke choice for Chord in hand. Add bounded per-action UnsupportedOperation
+isolation and explicit unavailableActions, prohibit decisions in offer probes,
+and keep direct rejected cast checks from setting a fatal match gap. Inspect
+the original X mana cost so the missing X picker cannot silently become X=0.
+Three authored scenarios pass in real Forge and original native handlers,
+including a normal match reaching the reported interaction. Native notices
+use the original dialog once per newly observed card action per match.
+Convoke/X implementation remains incomplete; this is a crash-containment fix.
+Local experimental.3 delivery and rendered verification have separate receipts.
+
+## 2026-10-23 eight-deck completion work (active)
+
+User requests completing all cards across the eight lists except Jace, then
+clarifies to include only cards already in the installed Arena catalogue.
+Private scope ../ForgeArenaEightDecks-20261023/card-scope.json contains 348
+unique in-scope names and 46 exclusions (Jace plus 45 absent native cards).
+Preserved the next Veil of Summer/Nurturing Peatland payment crash. Keep the
+installed experimental.3 client/profile untouched while developing headlessly.
+Do not publish another release or ask the user to retry partial fixes.
+
+Recovered pinned Forge human/AI cost and casting paths privately with CFR,
+downloaded from its official site and checked against the published digest.
+Ordinary casts currently use ComputerUtil.playStack and AiCostDecision. The new
+research-only fullHumanChoices manifest flag routes actual human casts through
+PlaySpellAbility and an authored strict CostDecisionMakerBase visitor. Human
+sacrifice choices, life payments, X announcements and convoke are separate from
+the explicit auto-tap policy and read-only affordability estimation. Default
+installed/public behaviour remains gated off. Original native generic option
+prompt23, numeric and card selectors carry these choices; no new UI is drawn.
+
+Real Forge checks pass for Veil paid by Peatland (one life), Village Rites
+sacrifice/draw, Finale X=2 search and Chord X=2 with convoke. These are not yet
+rendered acceptance or complete-deck results. The private FModel projection
+includes every in-scope card's actual ability/trigger/cost data and 26 token
+scripts. Native category fields and AbilityIdToLinkedTokenGrpId provide source
+links for binding rather than guessed ability/token IDs. Next: native handler
+validation, comprehensive bindings/tokens, remaining human callbacks, and
+per-card/branch plus deck-interaction tests. Admission remains unverified.
+
+
+### Human choices and eight-deck compatibility checkpoint
+
+The independently run native cast/land smoke covered all348 in-scope names.
+The first frozen native pass was337/348; every flagged cast subsequently has
+focused native-handler evidence. This is cast/resolve coverage, not proof of
+all branches or combinations. The142 non-mana activation probes had131 initial
+passes; all11 flags now have focused valid-context sequences. A separate154
+mana-branch sweep had149 initial passes; five flags and related payment types
+pass20 targeted retries. Keep the frozen failures and their build receipts.
+
+The original human PlaySpellAbility path now owns payment, X, targeting,
+convoke, alternative faces/zones and triggered/copy choices. Counter removal
+must populate GameEntityCounterTable's unowned row; using a player row checked
+but did not spend loyalty. Human affordability no longer uses ComputerUtilCost's
+strategic/random AI decisions. Hypothetical mana planning is separated from
+actual choices, and original default mana-pool selection is preserved. Whole
+hand discard and zero-card costs use actual card collections. Source limits
+bound non-mana X costs. Opening-hand choices support Gemstone Caverns.
+
+Native presentation covers30 token/front/back identities, nine emblems and
+five card faces. Token triggers include Decayed's separate attack and delayed
+sacrifice, Illusion sacrifice and Spirit draw counters. Copies are removed on
+resolution; pending copy targets retain their real source. Internal immutable
+Forge effects use their original source card for persistent keyword layers,
+with the provenance retained. Token ability removal uses its presentation key.
+
+Focused outcomes include mixed/restricted mana, original Veil/Peatland payment,
+last-loyalty death with emblem resolution, targeted spell-copy choices,
+Citadel top-library permission, Necropotence's face-down delayed return,
+Tidebinder/Incubator ability removal/restoration, and an explicitly stopped
+Ivy Lane/Scurry Oak loop. Actual normal-start native-handler Brawl matches have
+completed for the three real-commander Arena decks against a simple Isamaru
+opponent. These one-seed robustness runs do not certify every combo or deck
+strength. Automatic turn progression separately passed eight cases.
+
+Private metadata is regenerated from pinned local Forge/Arena data and retains
+source hashes. An experimental presentation overlay changes zero admissions;
+identity, source-drift and admission-overwrite guards are checked before merge.
+The verified production policy remains unchanged. Source and evidence tools
+are authored code; extracted/decompiled game material remains private.
+
+Final regression, packaged binary identity and live rendered checks are
+separate acceptance steps. A consolidated local experimental.4 update is being
+prepared; no GitHub release is authorized by this card-completion request.
+Saved decks/profile remain outside version folders and must be preserved.
+
+
+## 2026-10-23 Chatterfang Brawl demo and pending-cast stack repair
+
+- Recorded the saved 100-card Chatterfang token Brawl deck (40132a02-4f97-4494-99fc-9a7129509c44) in SandboxBrawl against the native AI, through the original client controls. No fixture injection. Raw process-audio/window captures and action receipts retained in `D:\GAMES\CodexAssets\ForgeArenaSandbox\TokenBrawlDemo-20261023`.
+- Found a rendered Unity stall while casting Deadly Dispute: pending spell entered the Stack card zone before Forge committed it to stackOrder. Stack zone membership dropped the pending card, and ZoneTransferHangTimePostProcess.TimeOnStack threw NullReferenceException. Keep stackOrder ordering, then append pending Stack cards absent from that order. Earlier failed match logs retained separately.
+- NativeHost build passed with zero warnings/errors. Installed a local, unpublished experimental.7 candidate; retained experimental.6 for rollback. Rendered Village Rites sacrifice/draw, Tamiyo's Safekeeping targeting, kicked Tear Asunder exile, Green Sun's Zenith X=4 search and Diabolic Intent sacrifice/search all proceeded in the successful match.
+- Ivy Lane Denizen + Scurry Oak + Chatterfang repeated through native target, optional-action and trigger-order controls. Chose a finite stop, made 22 Squirrels, and grew Oak to 19/20. Next own turn committed 29 attackers; Forge ended at life 14/0, turn 19 combat damage, gameOver true, no fidelity gap; native client visibly displayed Victory. This is one rendered match, not comprehensive card parity.
+- All six local-profile JSON hashes, including decks.json, match the pre-recording snapshot. No saved decks changed. No GitHub release was published.
+
+- Final demo: `Chatterfang-Token-Brawl-Demo.mp4`, 192.688 seconds, 1920x1080 H.264/AAC with original game-only audio and explanatory captions. Full decode passed; final contact sheet inspected. Four late-combat AreBlockedByInstancesSimilar rendering exceptions remain in the retained log; they did not prevent lethal damage or native Victory. The repaired TimeOnStack stall did not recur.
+
+
+## 2026-10-25 Jace Superfriends Brawl integration
+
+- Upgraded the isolated rules dependency to the checksum-pinned official Forge
+  2.0.16 snapshot from 25 October 2026, which contains Jace, Multiverse Architect.
+  Added the saved exact 100-card Brawl list to recommended starter decks.
+- Original Arena mappings now support the WUBR planeswalker commander, native
+  planeswalker attack recipients and loyalty damage, explicit optional mana tax
+  payment, copied planeswalker ability identities, Saga description encoding,
+  and Narset's rebound grant/delayed free cast. Forge owns all rules decisions.
+- Added repeatable original-handler Jace scenarios, per-card smoke checks and a
+  bounded full-match driver. One normal shuffled Jace game completed 30 turns /
+  570 commands, with a local win and no runtime fidelity gap.
+- Installer/updater stages and verifies the private Forge upgrade, retains the
+  previous engine, and restores it for rollback. Eight dependency migration
+  fixtures and 44 adapter update fixtures passed. Saved profiles stay separate.
+- Production admission remains 370 names. The 343 additional names remain
+  explicitly experimental; focused/scenario and smoke evidence are not a claim
+  of all card branches or combinations. Public alpha.7 packaging and installed
+  acceptance are separate release steps. No Arena assets are redistributed.

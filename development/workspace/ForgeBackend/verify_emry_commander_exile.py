@@ -26,9 +26,11 @@ for return_to_command in (False,True):
         g.answer('commander_return',[{'returnToCommand':False}]);g.to_main(g.s['turn']+1)
         g.send('activate_ability',crypt['forgeId'],abilityId=12870)
         d=g.s['decision'];own=next(o for o in d['options'] if o['targetSeat']==1)
-        g.send('select_targets',decisionToken=d['token'],assignments=[own]);g.answer('targets')
+        g.send('select_targets',decisionToken=d['token'],assignments=[{'forgeId':own['forgeId']}]);g.answer('targets')
         for _ in range(20):
-            if g.s.get('decision'):break
+            if g.s.get('decision'):
+                if g.shared_observation():continue
+                break
             g.step()
         else:raise AssertionError('Crypt did not expose commander exile choice')
         d=g.s['decision']

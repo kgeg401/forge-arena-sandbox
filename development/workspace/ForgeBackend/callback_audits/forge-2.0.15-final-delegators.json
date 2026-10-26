@@ -37,8 +37,24 @@
     {
       "signature": "public final java.lang.String forge.game.player.PlayerController.chooseSomeType(java.lang.String,forge.game.spellability.SpellAbility,java.util.Collection<java.lang.String>)",
       "dispatchTarget": "Guarded virtual overload of chooseSomeType"
+    },
+    {
+      "signature": "public final void forge.game.player.PlayerController.reveal(forge.game.card.CardCollectionView,forge.game.zone.ZoneType,forge.game.player.Player)",
+      "dispatchTarget": "Owned parent bytecode delegates to guarded reveal overload; original object identities remain chooser-only"
+    },
+    {
+      "signature": "public final void forge.game.player.PlayerController.reveal(forge.game.card.CardCollectionView,forge.game.zone.ZoneType,forge.game.player.Player,java.lang.String)",
+      "dispatchTarget": "Owned parent bytecode delegates to guarded reveal overload; original object identities remain chooser-only"
+    },
+    {
+      "signature": "public final void forge.game.player.PlayerController.reveal(java.util.List<forge.game.card.CardView>,forge.game.zone.ZoneType,forge.game.player.PlayerView,java.lang.String)",
+      "dispatchTarget": "Owned parent bytecode delegates to guarded reveal overload; original object identities remain chooser-only"
+    },
+    {
+      "signature": "public final void forge.game.player.PlayerController.reveal(forge.game.player.DelayedReveal)",
+      "dispatchTarget": "Owned parent bytecode delegates to guarded reveal overload; original object identities remain chooser-only"
     }
   ],
-  "review": "All nine final helpers inspected in installed javap output; each forwards to a virtual choice overload guarded by the authored controller. No inherited AI decision is allowed.",
+  "review": "All 13 final helpers inspected in installed parent bytecode; each forwards to a virtual choice or reveal overload guarded by the authored controller. No inherited AI decision is allowed.",
   "scope": "Exact parent bytecode only; a changed class requires fresh review."
 }

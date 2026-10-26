@@ -1,0 +1,11 @@
+<Project>
+  <PropertyGroup>
+    <SandboxBuildRoot Condition="'$(SandboxBuildRoot)' == ''">$(MSBuildThisFileDirectory)build\</SandboxBuildRoot>
+    <BaseOutputPath>$(SandboxBuildRoot)$(MSBuildProjectName)\bin\</BaseOutputPath>
+    <BaseIntermediateOutputPath>$(SandboxBuildRoot)$(MSBuildProjectName)\obj\</BaseIntermediateOutputPath>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+  <!-- Supply ArenaManagedDir and BepInExRoot as MSBuild properties or
+       environment variables. The adapter source includes no game assemblies. -->
+</Project>

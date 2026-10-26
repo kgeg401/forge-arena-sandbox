@@ -20,12 +20,17 @@ try:
             kind=d['kind'];fields={'decisionToken':d['token']};assignments=[]
             if kind=='mulligan':
                 if not start_names:start_names=[c['name'] for c in s['hand']]
-                fields['assignments']=[{'keep':True}]
+                land_count=sum('Land' in c.get('currentTypes',[]) or c['name'] in ('Plains','Island','Swamp','Mountain','Forest','Seat of the Synod') for c in s['hand'])
+                fields['assignments']=[{'keep':2<=land_count<=5 or s['mulligans']>=2}]
             elif kind=='starting_player':fields['assignments']=[{'startingSeat':1}]
             elif kind=='assign_damage':
                 fields['assignments']=[{'forgeId':v['forgeId'],'amount':v['assignedDamage']} for v in d['options']]
             elif kind=='order_cards':fields['assignments']=[{'forgeId':v['forgeId']} for v in sorted(d['options'],key=lambda v:v['forgeId'])]
-            elif kind in ('discard','mulligan_bottom'):fields['assignments']=d['options'][:d['count']]
+            elif kind=='discard':fields['assignments']=d['options'][:d['count']]
+            elif kind=='mulligan_bottom':
+                hand={c['forgeId']:c for c in s['hand']}
+                bottom=sorted(d['options'],key=lambda o:'Land' in hand[o['forgeId']].get('currentTypes',[]) or hand[o['forgeId']]['name'] in ('Plains','Island','Swamp','Mountain','Forest','Seat of the Synod'))
+                fields['assignments']=bottom[:d['count']]
             elif kind=='attackers':assignments=[{'forgeId':v['forgeId'],'targetSeat':2} for v in d['options']]
             elif kind=='blockers':
                 used=set()

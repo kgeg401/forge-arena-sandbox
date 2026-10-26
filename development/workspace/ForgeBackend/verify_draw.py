@@ -28,8 +28,10 @@ for scenario in ('draw-wrong-color','draw-ready'):
             d=e.state.get('decision',{})
             e.check('normal cleanup requests exactly one human discard',d.get('kind')=='discard' and d.get('count')==1)
             selected=next(v for v in d['options'] if v['forgeId'] in library)
-            r=e.send('select_discard',decisionToken=d['token'],assignments=[selected]);assert r['accepted'],r
-            r=e.send('submit_discard',decisionToken=d['token']);assert r['accepted'],r
+            # Arena's SelectN handler submits the complete selection atomically.
+            # The backend accepts this same route; staged-edit tests live in
+            # verify_discard.py rather than being required for a native UI flow.
+            r=e.send('submit_discard',decisionToken=d['token'],assignments=[selected]);assert r['accepted'],r
             e.check('chosen drawn card actually goes to graveyard',len(e.state['hand'])==7 and any(c['forgeId']==selected['forgeId'] for c in e.state['graveyard']))
             for _ in range(50):
                 if e.state['gameOver']:break

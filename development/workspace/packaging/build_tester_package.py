@@ -11,10 +11,11 @@ PRIVATE=Path(r'D:\GAMES\CodexAssets\ForgeArenaSandbox')
 ARENA=Path(r'D:\GAMES\MTGA')
 FORGE=Path.home()/'Games/Forge'
 LOADER=PRIVATE/'tools/BepInEx-5.4.23.5'
-OWN_SCRIPTS=('install_tester.py','launch_tester.py','update_tester.py','tester_common.py','board_template.py','client_bootstrap.py','client_entry.py','client_service.py','setup_client.py','auto_install.py','dependencies.py','dependencies-lock.json','starter-decks.json','Setup.cmd','Start-Client.ps1','Manage-Updates.ps1','TESTER-README.md','LICENSE.txt')
-PYTHON_FILES=('ForgeBackend/runtime_paths.py','ForgeBackend/arena_catalog.py','ForgeBackend/card_support.py','ForgeBackend/start_backend.py','ForgeBackend/deck_import.py','ForgeBackend/build_card_coverage.py','ForgeBackend/bridge_support.json','DeckBackend/build_deck_catalog.py','PackBackend/build_pack_catalog.py')
+OWN_SCRIPTS=('install_tester.py','launch_tester.py','update_tester.py','rules_runtime.py','tester_common.py','board_template.py','client_bootstrap.py','client_entry.py','client_service.py','setup_client.py','auto_install.py','dependencies.py','dependencies-lock.json','starter-decks.json','Setup.cmd','Start-Client.ps1','Manage-Updates.ps1','TESTER-README.md','LICENSE.txt')
+PYTHON_FILES=('ForgeBackend/runtime_paths.py','ForgeBackend/arena_catalog.py','ForgeBackend/card_support.py','ForgeBackend/start_backend.py','ForgeBackend/deck_import.py','ForgeBackend/experimental_cards.py','ForgeBackend/build_card_coverage.py','ForgeBackend/bridge_support.json','DeckBackend/build_deck_catalog.py','PackBackend/build_pack_catalog.py')
 
-def build(tag,output,gameplay_ref=None,headline='Public launcher and automatic update test',support_index=None,display_version=None,native_build_root=None):
+def build(tag,output,gameplay_ref=None,headline='Public launcher and automatic update test',support_index=None,display_version=None,native_build_root=None,experimental_admission=None,forge_build_jar=None,arena_install=None):
+    arena=Path(arena_install) if arena_install else ARENA
     version(tag)
     if not gameplay_ref:raise ValueError('Select an independently verified committed gameplay checkpoint with --gameplay-ref; working admission drafts cannot be packaged')
     if output.exists():raise ValueError('Use a new package staging directory; prior packages are preserved')
@@ -44,14 +45,28 @@ def build(tag,output,gameplay_ref=None,headline='Public launcher and automatic u
             if p.is_file() and 'decks/'+p.name not in names:p.unlink()
     policy=json.loads((output/'ForgeBackend/bridge_support.json').read_text())
     if policy.get('researchOnly'):raise ValueError('Research admission policies cannot be packaged as supported gameplay')
+    experimental=None
+    if experimental_admission:
+        sys.path.insert(0,str(REPO/'ForgeBackend'))
+        from experimental_cards import load_experimental
+        experimental=load_experimental(experimental_admission)
+        if experimental['policySha256']!=sha(output/'ForgeBackend/bridge_support.json'):raise ValueError('Experimental inventory differs from packaged verified baseline')
+        shutil.copy2(experimental_admission,output/'ForgeBackend/experimental-admission.json')
     if support_index:
         index=json.loads(Path(support_index).read_text(encoding='utf8'))
         if index.get('schema')!=1 or index.get('provenance',{}).get('policySha256')!=sha(output/'ForgeBackend/bridge_support.json'):
             raise ValueError('Support diagnostics must match the packaged admission policy exactly')
         shutil.copy2(support_index,output/'ForgeBackend/card-support-index.json')
-    (output/'release-info.json').write_text(json.dumps(dict(version=tag,displayVersion=display_version or tag,headline=headline,testRelease=True,gameplaySource=gameplay_ref,admittedNames=policy['verifiedNames']),indent=2))
+    release_info=dict(version=tag,displayVersion=display_version or tag,headline=headline,testRelease=True,gameplaySource=gameplay_ref,admittedNames=policy['verifiedNames'])
+    if experimental:release_info.update(experimentalAdmission=True,experimentalNames=sorted(experimental['cards']),experimentalStatus='Unverified local opt-in; runtime gaps remain explicit')
+    (output/'release-info.json').write_text(json.dumps(release_info,indent=2))
     docs=output/'docs';docs.mkdir()
     for file in (REPO/'packaging/public-docs').glob('*.md'):shutil.copy2(file,docs/file.name)
+    if experimental:
+        notice='# Experimental card catalogue\n\nThis build enables '+str(len(experimental['cards']))+' additional experimental card names. The verified catalogue remains '+str(len(policy['verifiedNames']))+' names. See VERIFICATION.md for tested Jace deck scenarios. Permission to start a match is not exhaustive proof of its effects or combos. Actual unmapped mechanics still report a gap.\n\nUse Manage-Updates.ps1 rollback to return to the previous build. Saved decks and profiles are retained.\n'
+        (docs/'EXPERIMENTAL.md').write_text(notice+'\n## Remaining hard blockers\n\n'+''.join('- '+name+': '+reason+'\n' for name,reason in experimental['blockedCards'].items()),encoding='utf8')
+        for readme in ('README.md','TESTER-README.md'):
+            file=output/readme;file.write_text(notice+'\n---\n\n'+file.read_text(encoding='utf8'),encoding='utf8')
     supported='# Verified card names\n\nThis release admits '+str(len(policy['verifiedNames']))+' main-deck names. Brawl commanders are separately verified.\nSearching, opening or storing another Arena card does not establish match support.\n\n## Brawl commanders\n\n'
     supported+=''.join('- '+name+'\n' for name in sorted(policy.get('brawlCommanders',{})))
     supported+='\n## Main-deck names\n\n'+''.join('- '+name+'\n' for name in sorted(policy['verifiedNames'],key=str.casefold))
@@ -73,10 +88,13 @@ def build(tag,output,gameplay_ref=None,headline='Public launcher and automatic u
     compiler_version=subprocess.run([str(javac),'-version'],capture_output=True,text=True,check=True)
     compiler_text=(compiler_version.stdout+compiler_version.stderr).strip()
     if not compiler_text.startswith('javac 17.'):raise ValueError('Package rules require the pinned Java 17 compiler')
-    forge_jar=FORGE/'forge-gui-desktop-2.0.15-SNAPSHOT-jar-with-dependencies.jar'
+    forge_jar=Path(forge_build_jar) if forge_build_jar else FORGE/'forge-gui-desktop-2.0.15-SNAPSHOT-jar-with-dependencies.jar'
+    lock=json.loads((REPO/'packaging/dependencies-lock.json').read_text())
+    known_jar_hashes={sha(FORGE/'forge-gui-desktop-2.0.15-SNAPSHOT-jar-with-dependencies.jar')}|{digest for name,digest in lock['dependencies']['forge']['files'].items() if name.endswith('.jar')}
+    if sha(forge_jar) not in known_jar_hashes:raise ValueError('Compile against a supported pinned Forge engine')
     gson_jar=PRIVATE/'tools/gson-2.13.2/gson.jar'
     source_java=REPO/'ForgeBackend/ForgeLandEngine.java'
-    subprocess.run([str(javac),'-J-Xmx512m','-J-XX:ActiveProcessorCount=2','-cp',str(forge_jar)+';'+str(gson_jar),'-d',str(backend),str(source_java)],check=True,timeout=90)
+    subprocess.run([str(javac),'-J-Xmx512m','-J-XX:ActiveProcessorCount=2','-encoding','UTF-8','-cp',str(forge_jar)+';'+str(gson_jar),'-d',str(backend),str(source_java)],check=True,timeout=90)
     if not (backend/'ForgeLandEngine.class').is_file():raise ValueError('Fresh rules compilation produced no engine class')
     (output/'backend-build.json').write_text(json.dumps(dict(schema=1,compiler=compiler_text,sourceSha256=sha(source_java),
         forgeJarSha256=sha(forge_jar),gsonSha256=sha(gson_jar),classes={p.name:sha(p) for p in sorted(backend.glob('ForgeLandEngine*.class'))}),indent=2))
@@ -94,7 +112,9 @@ def build(tag,output,gameplay_ref=None,headline='Public launcher and automatic u
     shutil.copytree(gson,output/'third-party/gson')
     identity=json.loads((PRIVATE/'research/build-identity.json').read_text())
     arena_files={str(Path(row['path']).relative_to(ARENA)).replace('\\','/'):row['sha256'] for row in identity['files']}
-    for rel in ('MTGA.exe','UnityPlayer.dll','MTGA_Data/Downloads/Raw/Raw_CardDatabase_c344d0dccdfb898a5e3fd4101eedbd48.mtga'):arena_files[rel]=sha(ARENA/rel)
+    for rel in ('MTGA.exe','UnityPlayer.dll','MTGA_Data/Downloads/Raw/Raw_CardDatabase_c344d0dccdfb898a5e3fd4101eedbd48.mtga'):arena_files[rel]=sha(arena/rel)
+    for rel,digest in arena_files.items():
+        if sha(arena/rel)!=digest:raise ValueError('Arena input differs from pinned build identity: '+rel)
     jar='forge-gui-desktop-2.0.15-SNAPSHOT-jar-with-dependencies.jar'
     forge_files={rel:sha(FORGE/rel) for rel in (jar,'res/cardsfolder/cardsfolder.zip','res/tokenscripts/w_1_1_rabbit.txt')}
     lock=json.loads((REPO/'packaging/dependencies-lock.json').read_text())
@@ -106,7 +126,7 @@ def build(tag,output,gameplay_ref=None,headline='Public launcher and automatic u
     loader_files={file.relative_to(LOADER).as_posix():sha(file) for file in LOADER.rglob('*') if file.is_file()}
     requirements=dict(schema=1,platform='Windows x64',arenaBuild='Client0.1.14517.1329972',unity='6000.3.14f1',javaMajor=17,dotnetMajor=8,pythonMinimum='3.10',loader='BepInEx 5.4.23.5',thirdParty=dict(gson=dict(version='2.13.2',license='Apache-2.0',sha256=sha(gson/'gson.jar'))),
         arenaFiles=arena_files,forgeJar=jar,forgeFiles=forge_files,
-        forgeVariants=[dict(id='legacy-snapshot-08.31',jar=jar,files=forge_files),dict(id='official-2.0.15',jar=stable_jar,files=stable['files'])],loaderFiles=loader_files,
+        forgeVariants=[dict(id='legacy-snapshot-08.31',jar=jar,files=forge_files),*stable.get('compatibilityVariants',[]),dict(id=stable.get('variant','official-2.0.15'),jar=stable_jar,files=stable['files'])],preferredForgeVariant=stable.get('variant','official-2.0.15'),loaderFiles=loader_files,
         admission=str(len(policy['verifiedNames']))+' explicitly admitted Arena names plus separately admitted commanders/tokens; no general-card support claim',features=['dedicated Windows client launcher','automatic startup updates','automatic Forge and runtime setup','persistent native Home/Decks/Packs/Play','normal practice bot matches','100-card Brawl bot matches','native commander slot and local format choice','local sandbox pack opening','native local deck browser'],
         excluded=['multiplayer','online matchmaking','retail account services','complete card support','retail banlist/format legality','retail pack collation','automatic client-asset migration'])
     (output/'requirements.json').write_text(json.dumps(requirements,indent=2))
@@ -128,4 +148,4 @@ def build(tag,output,gameplay_ref=None,headline='Public launcher and automatic u
     print(json.dumps(receipt,indent=2));return receipt
 
 if __name__=='__main__':
-    p=argparse.ArgumentParser(description=__doc__);p.add_argument('--version',default='0.1.0-test.1');p.add_argument('--output',required=True);p.add_argument('--gameplay-ref');p.add_argument('--support-index',type=Path);p.add_argument('--headline',default='Public launcher and automatic update test');p.add_argument('--display-version');p.add_argument('--native-build-root',type=Path,help='Explicit native outputs from the tested source checkpoint');a=p.parse_args();build(a.version,Path(a.output).resolve(),a.gameplay_ref,a.headline,a.support_index,a.display_version,a.native_build_root)
+    p=argparse.ArgumentParser(description=__doc__);p.add_argument('--version',default='0.1.0-test.1');p.add_argument('--output',required=True);p.add_argument('--gameplay-ref');p.add_argument('--support-index',type=Path);p.add_argument('--headline',default='Public launcher and automatic update test');p.add_argument('--display-version');p.add_argument('--native-build-root',type=Path,help='Explicit native outputs from the tested source checkpoint');p.add_argument('--experimental-admission',type=Path);p.add_argument('--forge-build-jar',type=Path);p.add_argument('--arena-install',type=Path);a=p.parse_args();build(a.version,Path(a.output).resolve(),a.gameplay_ref,a.headline,a.support_index,a.display_version,a.native_build_root,a.experimental_admission,a.forge_build_jar,a.arena_install)

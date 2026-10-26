@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework></PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\NativeHost\NativeHost.csproj" />
+    <Compile Include="..\ForgeChoiceProbe\NativeChoiceDriver.cs" Link="NativeChoiceDriver.cs" />
+    <Reference Include="Wizards.Arena.Client.Logging"><HintPath>$(ArenaManagedDir)\Wizards.Arena.Client.Logging.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="SharedClientCore"><HintPath>$(ArenaManagedDir)\SharedClientCore.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="Wizards.MDN.GreProtobuf"><HintPath>$(ArenaManagedDir)\Wizards.MDN.GreProtobuf.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="Wizards.Arena.TcpConnection"><HintPath>$(ArenaManagedDir)\Wizards.Arena.TcpConnection.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="Google.Protobuf"><HintPath>$(ArenaManagedDir)\Google.Protobuf.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="Newtonsoft.Json"><HintPath>$(ArenaManagedDir)\Newtonsoft.Json.dll</HintPath><Private>false</Private></Reference>
+  </ItemGroup>
+</Project>

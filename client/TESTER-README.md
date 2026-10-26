@@ -1,3 +1,11 @@
+# Experimental card catalogue
+
+This build enables 343 additional experimental card names. The verified catalogue remains 370 names. See VERIFICATION.md for tested Jace deck scenarios. Permission to start a match is not exhaustive proof of its effects or combos. Actual unmapped mechanics still report a gap.
+
+Use Manage-Updates.ps1 rollback to return to the previous build. Saved decks and profiles are retained.
+
+---
+
 # Forge Arena Sandbox
 
 An unofficial local Magic sandbox with Arena's installed presentation and Forge
@@ -13,7 +21,7 @@ running the rules. **Windows x64. Experimental. No multiplayer.**
 4. Open **Forge Arena Sandbox** in the installed folder, or run
    **ForgeArenaSandbox.exe**. This is the client launcher.
 
-Setup installs the fixed Forge 2.0.15 distribution, private Java 17 and .NET 8
+Setup installs the pinned Forge 2.0.16 snapshot from 25 October 2026, private Java 17 and .NET 8
 runtimes, and the loader. If suitable Python is missing, Setup.exe installs the
 pinned official Python build first. You do not need to install Forge yourself.
 Arena files stay on your computer and are copied into an independent sandbox.

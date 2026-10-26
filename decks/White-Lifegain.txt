@@ -1,0 +1,8 @@
+# Supported sandbox deck. Copy counts are intentionally unrestricted.
+Deck
+24 Plains
+10 Savannah Lions
+8 Impassioned Orator
+8 Oreskos Swiftclaw
+6 Yoked Ox
+4 Divine Arrow

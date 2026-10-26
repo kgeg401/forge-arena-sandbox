@@ -4,17 +4,33 @@
   "dependencies": {
     "forge": {
       "id": "forge",
-      "label": "Forge 2.0.15",
-      "filename": "forge-installer-2.0.15.tar.bz2",
-      "url": "https://github.com/Card-Forge/forge/releases/download/forge-2.0.15/forge-installer-2.0.15.tar.bz2",
-      "digest": "4468f182b60f6ca62d89697baa208981085af744f116781af751c611826db600",
+      "label": "Forge 2.0.16 snapshot (25 October 2026)",
+      "variant": "official-2.0.16-snapshot-20261025",
+      "filename": "forge-installer-2.0.16-SNAPSHOT-10.25.tar.bz2",
+      "url": "https://github.com/kgeg401/forge-arena-sandbox/releases/download/v0.2.0-alpha.7/forge-installer-2.0.16-SNAPSHOT-10.25.tar.bz2",
+      "digest": "a9062e49e180655a68d473688436ced1c1f1fd39d3674398b756f2a4c98afdf2",
       "archive": "tar.bz2",
       "files": {
-        "forge-gui-desktop-2.0.15-jar-with-dependencies.jar": "85a4c31e07d4d5621a84bb03b6d75fd08e9f4ba289e575c870579b49c0033766",
-        "res/cardsfolder/cardsfolder.zip": "ac26ccbe2a9c015bad4851db61d57d421777e10bf96c32d72add618b258bec07",
+        "forge-gui-desktop-2.0.16-SNAPSHOT-jar-with-dependencies.jar": "82083a2e52ff04f22e518f705b1a1fcac877a1ee0fa25db4e4fb208bf6a7295a",
+        "res/cardsfolder/cardsfolder.zip": "dffcf416dd40dfa881400df60e5191520b0dfb30fcaaac2c378b5415b927d6e2",
         "res/tokenscripts/w_1_1_rabbit.txt": "4ab0f9d0be3ca8fa60e9ccbf121a8eecfdcbc26468e4a3bcaf5878272ad5b5c8"
       },
-      "maximumBytes": 367001600
+      "maximumBytes": 367001600,
+      "compatibilityVariants": [
+        {
+          "id": "official-2.0.15",
+          "jar": "forge-gui-desktop-2.0.15-jar-with-dependencies.jar",
+          "files": {
+            "forge-gui-desktop-2.0.15-jar-with-dependencies.jar": "85a4c31e07d4d5621a84bb03b6d75fd08e9f4ba289e575c870579b49c0033766",
+            "res/cardsfolder/cardsfolder.zip": "ac26ccbe2a9c015bad4851db61d57d421777e10bf96c32d72add618b258bec07",
+            "res/tokenscripts/w_1_1_rabbit.txt": "4ab0f9d0be3ca8fa60e9ccbf121a8eecfdcbc26468e4a3bcaf5878272ad5b5c8"
+          }
+        }
+      ],
+      "upstreamUrl": "https://github.com/Card-Forge/forge/releases/download/daily-snapshots/forge-installer-2.0.16-SNAPSHOT-10.25.tar.bz2",
+      "sourceCommit": "434b1efef2ec697becf801132e3a34fa54dd69de",
+      "sourceArchive": "https://github.com/kgeg401/forge-arena-sandbox/releases/download/v0.2.0-alpha.7/Forge-Source-434b1ef.zip",
+      "license": "GPL-3.0-or-later"
     },
     "java": {
       "id": "java",

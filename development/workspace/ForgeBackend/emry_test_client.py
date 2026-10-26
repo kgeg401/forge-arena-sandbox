@@ -39,8 +39,21 @@ class EmryGame:
             if kind in ('attackers','blockers'):self.answer(kind)
             elif kind=='discard':
                 hand={c['forgeId']:c for c in self.s['hand']};options=sorted(d['options'],key=lambda o:(hand[o['forgeId']]['name']!='Island',hand[o['forgeId']]['name']!=EMRY));self.answer(kind,options[:d['count']])
+            elif self.shared_observation():pass
             else:raise AssertionError('Unscripted human decision '+kind)
         else:self.e.pass_or_decision();self.check('Priority progression has no gap',not self.s['fidelityGap'])
+    def shared_observation(self):
+        d=self.s.get('decision') or {};spec=d.get('choice',{})
+        if d.get('kind')!='choice':return False
+        if spec.get('type')=='look':
+            self.check('Look acknowledgement cannot select or move an object',spec['min']==spec['max']==0)
+            self.send('submit_choice',decisionToken=d['token'],assignments=[]);return True
+        if spec.get('type')=='order' and spec.get('destination') in ('Graveyard','Exile'):
+            # Explicit authored test input: keep Forge's offered insertion order.
+            # The general choice suite separately checks reverse/permuted orders.
+            self.check(spec['destination']+' order includes every offered original object exactly once',spec['min']==spec['max']==len(spec['options']) and len({o['forgeId'] for o in spec['options']})==len(spec['options']))
+            self.send('submit_choice',decisionToken=d['token'],assignments=[{'choiceId':o['choiceId']} for o in spec['options']]);return True
+        return False
     def to_main(self,min_turn):
         for _ in range(140):
             if self.s['gameOver']:raise AssertionError('Game ended before requested main phase')
@@ -68,7 +81,9 @@ class EmryGame:
     def resolve(self):
         for _ in range(40):
             if not self.s['stack'] and not self.s['stackAbilities'] and not self.s.get('decision'):return
-            if self.s.get('decision'):raise AssertionError('Choose the target explicitly before resolving')
+            if self.s.get('decision'):
+                if self.shared_observation():continue
+                raise AssertionError('Choose the target explicitly before resolving')
             self.step()
         raise AssertionError('Stack resolution bound exceeded')
     def cast(self,card,resolve=True):

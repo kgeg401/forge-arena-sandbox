@@ -19,13 +19,14 @@ public final class VerifyResearchCallbackSurface {
         List<Map<String,Object>> rows=new ArrayList<>();boolean passed=true;
         for(Method m:strict.getMethods()){
             if(m.isBridge() || m.isSynthetic() || Modifier.isStatic(m.getModifiers()))continue;
-            if(!m.getName().matches("(choose|confirm|order|arrange|pay|applyMana|announce|specify|divide|exert|enlist|willPut|vote|playTrigger|playSaFrom).*"))continue;
+            if(!m.getName().matches("(choose|confirm|order|arrange|pay|applyMana|announce|specify|divide|exert|enlist|willPut|vote|playTrigger|playSaFrom).*") && !m.getName().equals("reveal"))continue;
             String implementation=m.getDeclaringClass().getName();
             boolean mapped=implementation.equals("ForgeLandEngine$PassiveController"),blocked=implementation.equals("ForgeLandEngine$ResearchStrictController");
+            boolean headless=implementation.equals("ForgeLandEngine$HeadlessChoiceController");
             boolean delegated=Modifier.isFinal(m.getModifiers()) && implementation.equals("forge.game.player.PlayerController") && helpers.contains(m.toGenericString());
             if(delegated)seen.add(m.toGenericString());
-            rows.add(Map.of("signature",m.toGenericString(),"implementedBy",implementation,"mapped",mapped,"rejectsUnmappedHumanChoice",blocked,"auditedDelegationToGuard",delegated));
-            if(!mapped && !blocked && !delegated)passed=false;
+            rows.add(Map.of("signature",m.toGenericString(),"implementedBy",implementation,"mapped",mapped,"headlessSharedChoice",headless,"nativeChoiceAcceptancePending",headless,"rejectsUnmappedHumanChoice",blocked,"auditedDelegationToGuard",delegated));
+            if(!mapped && !headless && !blocked && !delegated)passed=false;
         }
         if(!seen.equals(helpers))passed=false;
         rows.sort(Comparator.comparing(r->r.get("signature").toString()));

@@ -1,0 +1,7 @@
+Deck
+24 Forest
+8 Gladecover Scout
+8 Canopy Spider
+8 Greenwood Sentinel
+8 Pouncing Cheetah
+4 Wardscale Crocodile

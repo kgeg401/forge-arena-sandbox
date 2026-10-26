@@ -121,20 +121,35 @@ An actual release ZIP must additionally pass package-content scanning,
 activation/rollback and public-download verification. Release notes record those
 shipping checks separately once performed. No recipient-PC install is claimed.
 
+## Jace Brawl alpha.7
 
-## 0.2.0-alpha.6 — smoother turn flow
+Adds the exact 100-card Jace Superfriends Brawl starter, using Jace, Multiverse
+Architect as the WUBR planeswalker commander. The separately pinned official
+Forge 2.0.16 snapshot supplies its original rules script. The launcher upgrades
+the private Forge runtime and retains the previous runtime for rollback.
 
-- Advances empty rules steps without the repeated pause at each substep.
-- Restores original turn banners, phase indicators and contextual Next / To Combat / End Turn controls.
-- Keeps playable actions, combat decisions, full control and explicit stops interactive.
-- Corrects supported End Turn yield expiry and Resolve All clearing.
-- Retains the same rules engine and 370 supported main-deck names as alpha.5.
+Focused native-handler tests cover draw-two/bottom-one, all three reveal-until
+outcomes, loyalty costs and once-per-turn activation, both combat-tax branches,
+and attacks on Jace and other planeswalkers. Narset rebound is checked through
+next upkeep, including the free second cast. Ichormoon's granted proliferate is
+checked against actual loyalty changes. A normally started 100-card match
+completed 30 turns / 570 actions without an engine exit or mapping gap.
 
-Verified with eight Forge/native scenarios, twelve rendered checks and local
-user play. Complete server smart-stop behavior, complex phase lookahead and
-all-card support remain unfinished. This release does not include separate
-shared-card-mechanics research. Close and reopen the dedicated launcher to update;
-Setup.exe is only needed for a new installation. Decks and collection are preserved.
+The verified catalogue remains 370 names. The 343 additional experimental
+names are explicitly distinguished from that baseline. A completed match and
+per-card smoke checks do not establish every card branch or combination.
+No complete Arena catalogue or retail Brawl legality claim is made.
 
-Accepted native DLL SHA-256: `1318894da0578f3417debfb297b8670057be38ea582f5a8f16b1fd61858877b0`.
-Publication/download/update receipts are recorded separately.
+Final alpha.7 acceptance: 100 distinct deck cards passed native play/cast smoke
+checks (61 spell resolutions and 39 land plays); all 21 planeswalkers also used
+one legal loyalty ability. The 51 regression groups passed with final repeats
+for optional payment, automatic mana and Tower sacrifice. Eight automatic
+turn-flow/response modes passed. These counts describe the scenario scope, not
+every branch on each card.
+
+The installed-client acceptance upgraded the private Forge engine, retained
+all prior deck records unchanged, seeded the Jace starter, opened Brawl Bot,
+and rendered a normally started game with the original mulligan UI, 25 life
+and Jace in the command zone. The owned Arena compatibility pin is unchanged.
+The dependency archive is about 285 MiB and is only needed once per engine
+upgrade; the small Windows adapter download remains separate.

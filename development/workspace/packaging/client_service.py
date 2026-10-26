@@ -117,7 +117,7 @@ class Coordinator:
         from deck_import import read_deck
         opponent=read_deck(self.app/'decks'/('Brawl-Isamaru-Bot.txt' if queue=='SandboxBrawl' else 'White-Lifegain.txt'),'arena-brawl' if queue=='SandboxBrawl' else 'practice')
         self.request_id=request['id'];self.error=None
-        self.publish('starting','Starting the local Forge bot…',queue=queue,deckName=deck['name'])
+        self.publish('starting','Starting experimental Forge match — these cards are unverified' if deck.get('experimental') else 'Starting the local Forge bot…',queue=queue,deckName=deck['name'])
         if self.ipc.exists():
             metadata=self.ipc/'backend-process.json'
             if metadata.exists():
@@ -131,7 +131,7 @@ class Coordinator:
         (self.lab/'enable-forge-land-test.flag').write_text('Authoritative local Forge match')
         cp=';'.join(str(self.root/p) for p in ('build/ForgeBackend/classes','forge-runtime/forge.jar','forge-runtime/gson.jar'))
         self.log=(self.ipc/'engine.log').open('w',encoding='utf8')
-        self.process=subprocess.Popen([str(Path(self.config['javaHome'])/'bin/java.exe'),'-Xmx1024m','-XX:ActiveProcessorCount=2','-Djava.awt.headless=false','-cp',cp,'ForgeLandEngine',str(self.root/'forge-runtime'),str(self.ipc)],cwd=self.root/'forge-runtime',stdout=self.log,stderr=subprocess.STDOUT,creationflags=subprocess.CREATE_NO_WINDOW)
+        self.process=subprocess.Popen([str(Path(self.config['javaHome'])/'bin/java.exe'),'-Xmx1024m','-XX:ActiveProcessorCount=2','-Djava.awt.headless=false','-Dfile.encoding=UTF-8','-cp',cp,'ForgeLandEngine',str(self.root/'forge-runtime'),str(self.ipc)],cwd=self.root/'forge-runtime',stdout=self.log,stderr=subprocess.STDOUT,creationflags=subprocess.CREATE_NO_WINDOW)
         atomic(self.ipc/'backend-process.json',dict(pid=self.process.pid,**{'class':'ForgeLandEngine'},ipc=str(self.ipc),started=time.time(),clientSession=self.session,requestId=self.request_id))
         self.deadline=time.monotonic()+90
     def stop(self,after='idle'):
@@ -145,6 +145,13 @@ class Coordinator:
         if self.log:self.log.close();self.log=None
         self.process=None
         self.publish(self.after_stop,self.error if self.after_stop=='error' and self.error else 'Match cancelled' if self.after_stop=='cancelled' else 'Ready for another local bot match')
+    def engine_failure(self):
+        try:
+            failure=read(self.ipc/'engine-error.json')
+            reason=failure.get('reason') if isinstance(failure,dict) else None
+            if isinstance(reason,str) and reason.strip():return 'Local match stopped: '+reason[:1500]+'. Return Home to start another match.'
+        except (OSError,ValueError,TypeError):pass
+        return 'The local rules engine exited. Return Home and start another match.'
     def handle(self,request):
         if request.get('schema')!=1 or request.get('session')!=self.session:raise RequestRejected('Stale client session request rejected')
         try:request_id=str(uuid.UUID(request.get('id','')))
@@ -182,7 +189,7 @@ class Coordinator:
                 else:self.publish('error',str(error))
         if self.phase=='starting':
             if self.process.poll() is not None:
-                self.publish('error','Forge could not start. See '+str(self.ipc/'engine.log'));self.stopped_log()
+                self.publish('error',self.engine_failure());self.stopped_log()
             elif time.monotonic()>self.deadline:
                 self.error='Forge startup timed out; the engine was stopped';self.stop('error')
             elif (self.ipc/'state.json').exists():
@@ -199,7 +206,7 @@ class Coordinator:
                 # This Popen object is the exact process created by this coordinator.
                 self.process.terminate();self.process.wait(timeout=10);self.stopped()
         elif self.phase in ('ready','playing') and self.process and self.process.poll() is not None:
-            self.publish('error','The local rules engine exited. Return Home and start another match.');self.stopped_log()
+            self.publish('error',self.engine_failure());self.stopped_log()
     def stopped_log(self):
         if self.log:self.log.close();self.log=None
     def close(self):

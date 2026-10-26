@@ -45,6 +45,8 @@ internal sealed class NativeClientShell
     private float _returnDeadline;
     private bool _cancelRequested;
     private string? _reportedServiceError;
+    private string? _rulesSession;
+    private readonly HashSet<string> _reportedUnavailableActions=new HashSet<string>();
     private DateTime _queuedAt;
     private bool _warmingPacks;
     private float _packsDeadline;
@@ -132,7 +134,7 @@ internal sealed class NativeClientShell
         string target=Path.Combine(_root,"client-service-status.json");
         var service=JObject.Parse(File.ReadAllText(target));if((string?)service["session"]!=_session || !new[]{"idle","cancelled","error"}.Contains((string?)service["phase"]) || !DateTimeOffset.TryParse((string?)service["utc"],out var heartbeat) || DateTimeOffset.UtcNow-heartbeat>TimeSpan.FromSeconds(15))throw new InvalidOperationException("The local match service is not ready. Close and reopen the client.");
         _matchRequest=Guid.NewGuid().ToString();
-        _cancelRequested=false;_reportedServiceError=null;_queuedAt=DateTime.UtcNow;
+        _cancelRequested=false;_reportedServiceError=null;_rulesSession=null;_reportedUnavailableActions.Clear();_queuedAt=DateTime.UtcNow;
         var request=new JObject{["schema"]=1,["session"]=_session,["id"]=_matchRequest,["action"]="start",["queue"]=queue,["deckId"]=id.ToString()};
         string path=Path.Combine(_root,"client-service.request.json");if(File.Exists(path)){_matchRequest=null;throw new InvalidOperationException("A local match request is still pending.");}
         File.WriteAllText(path+".pending",request.ToString());File.Move(path+".pending",path);
@@ -203,12 +205,14 @@ internal sealed class NativeClientShell
                 _error=_reportedServiceError=(string?)service["message"]??"The local rules engine stopped.";
                 _dialogs!.Show("Local match stopped",_error,"Return Home",RequestReturn);
             }
+            else if(phase=="playing")PollUnavailableActions();
             return;
         }
         if(phase=="ready" && !_cancelRequested)
         {
             var engine=JObject.Parse(File.ReadAllText(Path.Combine(_root,"forge-ipc","state.json")));
             if((string?)engine["session"]!=(string?)service["engineSession"])throw new InvalidDataException("The local match session changed before the board opened.");
+            _rulesSession=(string?)engine["session"];
             HideQueue();Surface.SetVisible(false);_matchActive=true;_screen="match";
             try{_startMatch();Send("match-started",new JObject{["matchRequestId"]=_matchRequest});}
             catch{_matchActive=false;Surface.SetVisible(true);throw;}
@@ -268,6 +272,24 @@ internal sealed class NativeClientShell
         WriteStatus();
     }
     private void Dump()=>File.WriteAllText(Path.Combine(_root,"client-ui-tree.json"),JsonConvert.SerializeObject(Surface.Root.GetComponentsInChildren<Transform>(true).Select(t=>new{path=PathOf(t),active=t.gameObject.activeSelf,components=t.GetComponents<Component>().Select(c=>c?.GetType().FullName),rect=t is RectTransform r?new{anchors=r.anchorMin.ToString()+" "+r.anchorMax.ToString(),pivot=r.pivot.ToString(),position=r.anchoredPosition.ToString(),size=r.sizeDelta.ToString(),scale=r.localScale.ToString()}:null,group=t.GetComponent<CanvasGroup>()?.alpha,image=t.GetComponent<Image>()?.color.ToString()}),Formatting.Indented));
-    private void WriteStatus()=>File.WriteAllText(Path.Combine(_root,"client-ui-status.json"),JsonConvert.SerializeObject(new{utc=DateTime.UtcNow,screen=_screen,error=_error,nativeHome=_home!=null,nativeNavigation=_nav!=null,persistent=true,matchRequest=_matchRequest,matchActive=_matchActive,cancelRequested=_cancelRequested,queueMessage=_queueMessage,dialogOpen=_dialogs?.IsOpen,selection=_play?.Snapshot(),buttons=Surface==null?null:Surface.Root.GetComponentsInChildren<CustomButton>(false).Select(b=>new{name=b.name,enabled=b.Interactable,path=PathOf(b.transform)}).ToArray()},Formatting.Indented));
+    private void PollUnavailableActions()
+    {
+        if(_dialogs==null || _dialogs.IsOpen || _rulesSession==null)return;
+        JObject state;
+        try{using(var stream=new FileStream(Path.Combine(_root,"forge-ipc","state.json"),FileMode.Open,FileAccess.Read,FileShare.ReadWrite|FileShare.Delete))using(var reader=new StreamReader(stream))state=JObject.Parse(reader.ReadToEnd());}
+        catch(IOException){return;}catch(JsonException){return;}
+        if((string?)state["session"]!=_rulesSession || state["decision"] is JObject)return;
+        var messages=new List<string>();
+        foreach(var item in (JArray?)state["unavailableActions"]??new JArray())
+        {
+            string name=(string?)item["name"]??"Card",key=name+":"+(string?)item["action"];
+            if(!_reportedUnavailableActions.Add(key))continue;
+            string? reason=(string?)item["reason"];
+            string detail=reason?.StartsWith("Convoke, improvise or waterbend",StringComparison.Ordinal)==true?"Its convoke, improvise or waterbend payment choice is not connected yet.":reason?.StartsWith("Choosing X",StringComparison.Ordinal)==true?"Choosing X for this spell is not connected yet.":"This action needs a choice that is not connected yet.";
+            messages.Add(name+": "+detail);
+        }
+        if(messages.Count>0)_dialogs.Show("Card action unavailable",string.Join("\n\n",messages)+"\n\nThe rest of the match can continue.","Continue");
+    }
+    private void WriteStatus()=>File.WriteAllText(Path.Combine(_root,"client-ui-status.json"),JsonConvert.SerializeObject(new{utc=DateTime.UtcNow,screen=_screen,error=_error,nativeHome=_home!=null,nativeNavigation=_nav!=null,persistent=true,matchRequest=_matchRequest,matchActive=_matchActive,cancelRequested=_cancelRequested,queueMessage=_queueMessage,dialogOpen=_dialogs?.IsOpen,unavailableActionsReported=_reportedUnavailableActions.ToArray(),selection=_play?.Snapshot(),buttons=Surface==null?null:Surface.Root.GetComponentsInChildren<CustomButton>(false).Select(b=>new{name=b.name,enabled=b.Interactable,path=PathOf(b.transform)}).ToArray()},Formatting.Indented));
     private static string PathOf(Transform node){var names=new List<string>();for(;node!=null;node=node.parent)names.Add(node.name);names.Reverse();return string.Join("/",names);}
 }

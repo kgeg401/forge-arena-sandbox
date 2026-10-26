@@ -113,7 +113,11 @@ def rollback(install):
     install=Path(install).resolve();no_links(install);active=read(install/'active-version.json');config=read(install/'sandbox-install.json');previous=active.get('previous')
     if not previous:raise ValueError('No previous version is available')
     if Path(config['privateRoot']).resolve()!=install/'data':raise ValueError('Configured data root differs from independent data tree')
-    version(previous);require_stopped(config);folder=install/'versions'/previous;manifest=verify_tree(folder);compatible(manifest,folder,config)
+    version(previous);require_stopped(config);folder=install/'versions'/previous;manifest=verify_tree(folder)
+    if config.get('installationMode')!='launcher-only':
+        from rules_runtime import restore_compatible
+        restore_compatible(Path(config['privateRoot']),read(folder/'requirements.json'))
+    compatible(manifest,folder,config)
     atomic(install/'active-version.json',dict(version=previous,previous=active['version'],profileSchema=active['profileSchema']))
     config['automaticUpdates']=False
     atomic(install/'sandbox-install.json',config)

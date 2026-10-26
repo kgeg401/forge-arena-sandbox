@@ -215,7 +215,7 @@ internal sealed class NativeDeckScreen
         var countFormat=new DeckFormat(null!,Languages.ActiveLocProvider){MinMainDeckCards=brawl?100:40,MaxMainDeckCards=brawl?100:250};
         _list.MainDeckTitlePanel.SetCardCount(total,countFormat,brawl?100:40,false);
         var text=(TMP_Text)Field(_list.MainDeckTitlePanel,"_detailsText");
-        var gaps=_library!.MatchGaps(_deck);text.text=(brawl?"Brawl":"Practice")+" • "+(gaps.Length==0?(_dirty?"Unsaved":"Saved"):(gaps.Length+" match limitation(s)"));
+        var gaps=_library!.MatchGaps(_deck);text.text=(brawl?"Brawl":"Practice")+(_library.IsExperimental(_deck)?" • Experimental / unverified":"")+" • "+(gaps.Length==0?(_dirty?"Unsaved":"Saved"):(gaps.Length+" match limitation(s)"));
         RefreshPool();WriteStatus();
     }
     private void RefreshPool()
@@ -228,7 +228,7 @@ internal sealed class NativeDeckScreen
         _poolResultCount=matched.Length;_poolIds=matched.Take(500).Select(c=>c.GrpId).ToArray();
         var display=matched.Take(500).Select(card=>new PagesMetaCardViewDisplayInformation{Card=card,Max=999,AvailablePrintingCount=999,AvailableTitleCount=999,RemainingTitleCount=999,QuantityStyle=PagesMetaCardView.QuantityDisplayStyle.Infinity}).ToList();
         _pool!.SetCards(display,false);_pool.ScrollToTop();
-        if(_header!=null)_header.EventCardPoolTitleText.text=(_choosingCommander?"Choose a verified Brawl commander":_query.Length>0?"Arena search":"Verified sandbox cards")+" ("+_poolResultCount+(_poolResultCount>500?", first 500":"")+")";
+        if(_header!=null)_header.EventCardPoolTitleText.text=(_choosingCommander?"Choose an enabled Brawl commander":_query.Length>0?"Arena search":"Enabled sandbox cards")+" ("+_poolResultCount+(_poolResultCount>500?", first 500":"")+")";
     }
     private void SetFilter(CardFilterType type,bool value)
     {
