@@ -7,7 +7,7 @@ import argparse,hashlib,json,sqlite3,re,html,unicodedata,collections,copy
 p=argparse.ArgumentParser(description=__doc__)
 for k in ('database','projection','manifest','output','report'):p.add_argument('--'+k,type=Path,required=True)
 args=p.parse_args()
-projection=json.loads(args.projection.read_text());manifest=json.loads(args.manifest.read_text())
+projection=json.loads(args.projection.read_text(encoding='utf-8-sig'));manifest=json.loads(args.manifest.read_text(encoding='utf-8-sig'))
 # Older platform-default readers can misdecode the Saga em dash. Canonicalize
 # only that exact byte-decoding artifact before retaining source descriptions.
 def canonical_projection(value):

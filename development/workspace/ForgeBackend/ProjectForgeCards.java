@@ -26,6 +26,9 @@ public class ProjectForgeCards {
         r.put("abilities",card.getSpellAbilities().stream().map(ProjectForgeCards::ability).toList());r.put("triggers",card.getTriggers().stream().map(t->t.getMapParams()).toList());var latent=new ArrayList<Object>();for(var entry:card.getSVars().entrySet())if(entry.getValue().startsWith("AB$")){try{var a=forge.game.ability.AbilityFactory.getAbility(entry.getValue(),card);a.setActivatingPlayer(card.getOwner());var row=ability(a);row.put("sourceSVar",entry.getKey());latent.add(row);}catch(Exception ex){latent.add(Map.of("sourceSVar",entry.getKey(),"error",ex.toString()));}}r.put("latentAbilities",latent);
         var latentTriggers=new ArrayList<Object>();for(var entry:card.getSVars().entrySet())if(entry.getValue().startsWith("DB$ ImmediateTrigger") || entry.getValue().startsWith("DB$ DelayedTrigger")){
             var params=new LinkedHashMap<String,String>();for(String field:entry.getValue().split("\\|")){String[] pair=field.split("\\$",2);if(pair.length==2)params.put(pair[0].trim(),pair[1].trim());}
+            // DelayedTriggerEffect promotes SpellDescription to the eventual
+            // TriggerDescription. Mana Drain uses this form for its mana trigger.
+            if("DelayedTrigger".equals(params.get("DB")) && !params.containsKey("TriggerDescription") && params.containsKey("SpellDescription"))params.put("TriggerDescription",params.get("SpellDescription"));
             if(params.containsKey("TriggerDescription")){params.put("sourceSVar",entry.getKey());if(params.containsKey("Execute"))params.put("executeRule",card.getSVar(params.get("Execute")));latentTriggers.add(params);}
         }r.put("latentTriggers",latentTriggers);
         var emblems=new ArrayList<Object>();for(var a:card.getSpellAbilities())if(a.hasParam("Name") && a.getParam("Name").startsWith("Emblem")){

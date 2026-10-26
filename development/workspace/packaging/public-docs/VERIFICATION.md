@@ -153,3 +153,22 @@ and rendered a normally started game with the original mulligan UI, 25 life
 and Jace in the command zone. The owned Arena compatibility pin is unchanged.
 The dependency archive is about 285 MiB and is only needed once per engine
 upgrade; the small Windows adapter download remains separate.
+
+## Mana Drain alpha.8 hotfix
+
+Alpha.7's play/cast smoke check resolved Mana Drain's counterspell, but did not
+reach the delayed mana trigger. A live game then stopped at the following main
+phase because that trigger lacked its original native presentation identity.
+
+Forge's DelayedTriggerEffect promotes SpellDescription to TriggerDescription.
+The source projector now does the same for delayed-trigger sub-abilities, so the
+existing exact-text binder connects Mana Drain to its original hidden native
+ability. Regenerated card metadata changes only Mana Drain's ability bindings;
+the gameplay adapter, rules engine, admission and other cards are unchanged.
+
+The dedicated native sequence test follows countering during the opponent's
+turn through the next local main phase, checks the exact colorless amount and
+original trigger identity, then verifies clearing and no repeated trigger on
+the following local turn. It includes mana values 0, 2, 3 and an uncounterable
+4-mana spell. This hotfix requires reopening an already running match client
+because each match loads its integration bindings at startup.

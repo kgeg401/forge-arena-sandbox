@@ -1,7 +1,7 @@
 {
-  "version": "0.2.0-alpha.7",
-  "displayVersion": "0.2.0 alpha 7",
-  "headline": "Jace Superfriends Brawl with updated Forge rules",
+  "version": "0.2.0-alpha.8",
+  "displayVersion": "0.2.0 alpha 8",
+  "headline": "Fix Mana Drain next-main-phase mana stall",
   "testRelease": true,
   "gameplaySource": "HEAD",
   "admittedNames": [

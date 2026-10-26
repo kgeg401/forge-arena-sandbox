@@ -21208,8 +21208,11 @@
           "abilityBindings": {
             "activated": {},
             "descriptions": {},
-            "triggerDescriptions": {},
+            "triggerDescriptions": {
+              "At the beginning of your next main phase, add an amount of {C} equal to that spell's mana value.": 157355
+            },
             "manaDescriptions": {},
+            "trigger": 157355,
             "keywords": {
               "REBOUND": 89
             },
@@ -26748,7 +26751,7 @@
       }
     },
     "provenance": {
-      "projectionSha256": "ae52838b3038fab9b411fccb8e2ab1f214cd10702081ed9dc58647c1f81985be",
+      "projectionSha256": "db6c49facd88aaa8e2724f96240991d6d5376f2ad736b558485e28411512b15e",
       "databaseSha256": "1be0105411ad989ca60e233f1341eaaa9276e3a679c89f1ef6f07e07ede10d25",
       "source": {
         "forgeJarSha256": "82083a2e52ff04f22e518f705b1a1fcac877a1ee0fa25db4e4fb208bf6a7295a",

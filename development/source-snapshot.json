@@ -1,7 +1,7 @@
 {
   "schema": 1,
-  "localSourceCommit": "0ccefadb83754cfe22dff29b88bce30795407576",
-  "packageSourceCommit": "0ccefadb83754cfe22dff29b88bce30795407576",
+  "localSourceCommit": "deb1ad891e897fca773e53a704a8a34ed4223775",
+  "packageSourceCommit": "deb1ad891e897fca773e53a704a8a34ed4223775",
   "productionPolicySha256": "5752392f087eede8e69c546fe2fc31dfc1b2243235c5c61bfcb34a86207d67b5",
   "productionCards": 370,
   "files": {
@@ -20,7 +20,7 @@
     "ForgeBackend/ForgeLandEngine.java": "382063fbf1fb1e6035114d104ef0bec28fd4538aec9a5dd7a8c5123575fa5a39",
     "ForgeBackend/GenerateResearchController.java": "1e3e6562d792e49a568d3d997f1905cdfe1abf63e2227482c7a1126e7c2cc14b",
     "ForgeBackend/PrepareResearchProfile.java": "4b25a61100223b06070bd79383fdfd7f43b3065464e9cedfc95ad6f095091ec4",
-    "ForgeBackend/ProjectForgeCards.java": "94cbaf045f196872604006a5fdf9e711ee1b9d451541483fbcb80c469213b492",
+    "ForgeBackend/ProjectForgeCards.java": "6e3af15127c261f870995983a9e7216174baf947e25e3008137e0cafb3c49e95",
     "ForgeBackend/ResearchGameWorker.java": "c9e7b02d742472e8f13ee79ff1a3c0dbf514569f2f7dd621e96678fe896cf073",
     "ForgeBackend/VerifyResearchCallbackSurface.java": "bf9237783bf0bdf950bab73baa0efc1d3393f1a77f69c8847a226ba4a0b9bef1",
     "ForgeBackend/arena_catalog.py": "186a3efb771b95e0500d98cf322e8907082c87f10abf78f0808073151ce92f53",
@@ -33,7 +33,7 @@
     "ForgeBackend/build_catalogue_work_queue.py": "50c377fe45cde8ba01955e4fbb8d1367072c3a528083cb38da3cc44861aebb1e",
     "ForgeBackend/build_compatibility_report.py": "a8a48197258c187201ba21227c02e696e188709cebdf7469e9b7a221aefbdc58",
     "ForgeBackend/build_development_queue.py": "877a3ddb4f8cd8f189766309aca1cef6933e814a4d4e372a459fe0d0ab382c17",
-    "ForgeBackend/build_human_choice_bindings.py": "af0914064afdb6a73b34f4a9cd07550227567f7b98cdac91563dfc92a740903b",
+    "ForgeBackend/build_human_choice_bindings.py": "e52b8d21bc6ff12e303b14740cb93e9af43d3f5abeb64be50dd45e56078b6daa",
     "ForgeBackend/build_shared_checkpoint.py": "9ab08db182d3d4f2c3989b0c82dc1c1d637d5dfd131cd4e022259949f370f36e",
     "ForgeBackend/build_support_index.py": "28f2535324f2dc86cd522d93555bb6d8bcf4f70020368d574c79ce05b2db79fa",
     "ForgeBackend/callback_audits/forge-2.0.15-final-delegators.json": "2450774daeb0ed1c12e9f6e009c13f8ec17381a76450fb48c1dfb40fc83f8c24",
@@ -149,6 +149,7 @@
     "ForgeBackend/verify_keyword_casts.py": "17764c9ed55c4497f00df9883298d8ee3e710b49bae23214d2205a265566425d",
     "ForgeBackend/verify_keyword_semantics.py": "84345e1aba0a89f0fa9c9c5cdc8b9a8c10ee3a6da3321df8316a313b19768bac",
     "ForgeBackend/verify_mana.py": "98ce39208709e2cc1d5fba1018223755d1ba6488448a1680e4cd496a665b9743",
+    "ForgeBackend/verify_mana_drain_sequence.py": "37e31b5e522219ef4e4a4cd6d2fdecddb464c852c5b9bfa69a775a492d5738c0",
     "ForgeBackend/verify_native_ability_choices.py": "30cf50d0b57bf590402ddc7c93c1f82e7fde09d388c406715c3c5e7c0b5f7e55",
     "ForgeBackend/verify_native_attachments.py": "bc8a9ac7c84a16e5e855c6393dc50fc7790707f93139786232a912e88413b681",
     "ForgeBackend/verify_native_burn_batch.py": "9c6390a5199b8ca4b58abe3e9e7aef32aa54a551cd0d74e19df0e3c6dec0339e",
@@ -226,7 +227,7 @@
     "LocalTransport/LocalGreConnection.cs": "0f3b86a466c04fe6076a89045b93f221c81a88f3b1709686efbd54ae631c5b6f",
     "LocalTransport/LocalTransport.csproj": "ac4a4dc2e87e0f6508cd9d411c3f3d0bac391ddd60a614e278dc1d7deead9577",
     "MODDING_PLAN.md": "dae58f7576ac540189b2ca688677d7beae038c0c5eebd95b68d19e7f40aefd86",
-    "MODLOG.md": "7074f5c199445fa24f6fe677b884ebf8cf06b1e29ed851ab35871be8509f0877",
+    "MODLOG.md": "57e51d5b8940917f4a8b26fb22b2dbe5539a81322b70a0451ca584342c21b7bc",
     "NativeHost/AutomaticPassPacing.cs": "175569d3b42e46a4bf9ed8407ca9077b3c232593191518b5225d141605ad95e4",
     "NativeHost/ForgeLandBridge.cs": "3a5e5ba8446f0cf782745ef478b888a500ca2d5475196093dcaf11ffd6e3ba8a",
     "NativeHost/HeadlessProbeAccess.cs": "de3e2bbb3af4f2bf2220938c57b3e51df2b27c588d5705d826edf823e6e40c36",
@@ -336,7 +337,7 @@
     "packaging/DisplaySettingsTests.cs": "171beca35ec2eecadace362a7347aa696557de30f00ecbcca74093feb3286672",
     "packaging/LICENSE.txt": "a20787ad43cee5a1e3461a40eccdbed3fc806810959084793c2b90d1a8cb1837",
     "packaging/Manage-Updates.ps1": "835f24d8c0cf57ea68a8d5f204a325673465f5a1c209ae11a863f2276b529a02",
-    "packaging/PUBLIC-README.md": "9b4ec89c0b8f35c348aa46565c751f8648c6b7898d2a953c8c516c26f2cf2b51",
+    "packaging/PUBLIC-README.md": "b3a93096cf7c2006396cc103dc5f91f84d1fb52f63cb4fbaf5324a364887c449",
     "packaging/Setup.cmd": "dcda5ac659306449f36de6e4e8667a2236d7065d105c56fdf2a169f049e544cf",
     "packaging/SetupBootstrap.cs": "8d583e8d511234b39aa0565746e49bba6e1e2fc8277c112f63974422552b6888",
     "packaging/SetupBootstrapTests.cs": "7d7180b79c6f7873a109fb21cbdba8e6b6e70753042502897244afed24578c5e",
@@ -355,7 +356,7 @@
     "packaging/public-docs/DEVELOPMENT.md": "535bf6cdfab057c18da87097b8560de974d2b972176369006fc1a406df8776f0",
     "packaging/public-docs/FAQ.md": "319c37c910458d0e0b298f909c19e7639577f26ead72a033a7384b7bd69125f4",
     "packaging/public-docs/FORGE-DEPENDENCY.md": "43b49c95026c28458d229b75c80b0afba48fb94969edb9e742b4b0ab328a0a62",
-    "packaging/public-docs/VERIFICATION.md": "0ad0ca57c277b20a45b49922c4a793464fbdcbd777ff645b5d4a42303fd9a238",
+    "packaging/public-docs/VERIFICATION.md": "b3483ec7ee40a0fdb2e19eedcc24aefc26d80e2722ff9d8f1e2c80107cee6a46",
     "packaging/rules_runtime.py": "f85a9e74e2f77ec00a63ab6d8488c47f3da35c55c4885d4be87ebe3a2b370665",
     "packaging/setup_client.py": "eda2776bd2889f3d4816eb39369868f375ff493ed9fa195cf53941522865da66",
     "packaging/starter-decks.json": "18d169907028671f05e2f13d516b73d3356c5188276973b1d650c036777920ea",
@@ -379,6 +380,6 @@
     "render_devlog.py": "00fb7a2bec40818492db7dc003bbe95dffa433684a1a92b4ce5982f58b77191a"
   },
   "packagedIntegrationRecipes": {
-    "ForgeBackend/experimental-admission.json": "f41bc33b02a5e15ebc2ba2a8962b21f39266b91a25aaa73943266be8a7300b5e"
+    "ForgeBackend/experimental-admission.json": "0f78b2f46162f7aedb8e9198effadad309f4f66d80e7d2059a7b4826359d3793"
   }
 }

@@ -674,3 +674,19 @@ Saved decks/profile remain outside version folders and must be preserved.
   explicitly experimental; focused/scenario and smoke evidence are not a claim
   of all card branches or combinations. Public alpha.7 packaging and installed
   acceptance are separate release steps. No Arena assets are redistributed.
+
+
+## 2026-10-25 Mana Drain delayed-trigger repair
+
+A live alpha.7 Brawl match stalled at turn 7 MAIN1 with an unmapped Mana Drain
+stack ability. The counterspell had worked; its later mana trigger was missing
+from the presentation map. The earlier per-card smoke scope did not cover this
+later phase and did not establish this branch.
+
+Recovered the exact SpellDescription-to-TriggerDescription transformation from
+the pinned Forge source. The projector now includes that delayed-trigger form;
+the existing exact native/source binding selects original hidden ability
+157355. Regenerated metadata changes only Mana Drain. Added a repeatable
+original-handler whole-sequence test, including zero value, ordinary values
+and an uncounterable target, next-main-phase mana and one-shot clearing.
+No live match was ended while researching the fix.
