@@ -1,5 +1,10 @@
 # Forge Arena Sandbox — development workspace
 
+Local development now includes an **experimental four-player Commander pod**:
+one human and three Forge bots. See [the pod implementation and validation
+notes](docs/commander-pod.md). This is not a claim that the published download
+already contains this checkpoint.
+
 Current verified production policy: **370 Arena main-deck card names**, plus the
 separately verified Brawl commanders and token. The latest local delivery added
 92 names over the278-name checkpoint. Full catalogue support remains unfinished.

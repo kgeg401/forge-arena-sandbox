@@ -56,7 +56,7 @@ internal static class Program
                 {
                     latest=update.NewState;presented=latest.Id;request=update.Interaction;presentedAt=timer.ElapsedTicks;
                     nativeEvents.AddRange(update.Changes.Select(c=>c.GetType().Name));
-                    transitions.Add(new JObject{["nativeStateId"]=presented,["interaction"]=request?.GetType().Name,["hasInteraction"]=request!=null,["phase"]=latest.CurrentPhase.ToString(),["step"]=latest.CurrentStep.ToString(),["nextPhase"]=latest.NextPhase.ToString(),["nextStep"]=latest.NextStep.ToString(),["events"]=new JArray(update.Changes.Select(c=>c.GetType().Name))});
+                    transitions.Add(new JObject{["nativeStateId"]=presented,["activeSeat"]=bridge?.ActiveSeat,["interaction"]=request?.GetType().Name,["hasInteraction"]=request!=null,["phase"]=latest.CurrentPhase.ToString(),["step"]=latest.CurrentStep.ToString(),["nextPhase"]=latest.NextPhase.ToString(),["nextStep"]=latest.NextStep.ToString(),["events"]=new JArray(update.Changes.Select(c=>c.GetType().Name))});
                 }
             }
         }
@@ -121,6 +121,27 @@ internal static class Program
             for(int i=0;i<30;i++)Tick();Check("Settings handshake is required before automatic passing",attempts==0);
             Check("Original parser receives a native turn-change event",nativeEvents.Contains("TurnChangeEvent"));
             Check("Original parser receives a native phase-change event",nativeEvents.Contains("GamePhaseChangeEvent"));
+            if(mode=="pod-yield" || mode=="pod-yield-unless")
+            {
+                Check("Pod yield starts during an opponent's real priority window",bridge.IsCommanderPod && bridge.ActiveSeat==2 && bridge.ResearchState["legalCasts"]!.HasValues);
+                int initialTurn=bridge.Turn;
+                Settings(new SettingsMessage{AutoPassOption=mode=="pod-yield"?AutoPassOption.Turn:AutoPassOption.UnlessOpponentAction,DefaultAutoPassOption=AutoPassOption.ResolveMyStackEffects});
+                Tick();
+                if(mode=="pod-yield")
+                {
+                    Until(()=>bridge.ActiveSeat==1 && bridge.Turn>initialTurn && request is ActionsAvailableRequest && bridge.PendingResearchRequestId==null);
+                    Check("Explicit pod yield crosses all three opponents",new[]{2,3,4}.All(seat=>transitions.Any(t=>(int?)t["activeSeat"]==seat)));
+                    int before=passes.Count;uint? state=presented;for(int i=0;i<30;i++)Tick();
+                    Check("Pod yield returns control on the human's next priority",passes.Count==before && presented==state && bridge.ResearchState["legalCasts"]!.HasValues);
+                }
+                else
+                {
+                    Until(()=>bridge.ResearchState["stack"]!.HasValues && bridge.PendingResearchRequestId==null && request is ActionsAvailableRequest);
+                    int before=passes.Count;uint? state=presented;for(int i=0;i<30;i++)Tick();
+                    Check("Unless-opponent-action yield retains a payable response window",passes.Count==before && presented==state && bridge.ActiveSeat==2 && bridge.ResearchState["legalCasts"]!.HasValues);
+                }
+                File.WriteAllText(args[5],new JObject{["passed"]=true,["checks"]=new JArray(checks),["automaticPasses"]=passes,["nativeUpdates"]=transitions,["finalState"]=bridge.ResearchState,["scope"]="Real four-seat Forge game and original native settings/handlers. No Unity or rendered smoothness assertion."}.ToString());return 0;
+            }
             if(mode=="yield" || mode=="yield-turn")
             {
                 int hand=bridge.HandCount;Settings(new SettingsMessage{AutoPassOption=mode=="yield"?AutoPassOption.UnlessOpponentAction:AutoPassOption.Turn,DefaultAutoPassOption=AutoPassOption.ResolveMyStackEffects});

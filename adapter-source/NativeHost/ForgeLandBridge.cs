@@ -47,6 +47,7 @@ internal sealed class ForgeLandBridge
     private bool _automaticSuspended;
     private bool _quietAdvance;
     private int _yieldTurn=-1;
+    private bool _yieldAcrossPod;
     private readonly Func<double> _seconds;
     private double _pendingStarted;
     private bool _slowRequestReported;
@@ -79,6 +80,24 @@ internal sealed class ForgeLandBridge
     public IReadOnlyList<Wizards.Mtga.FrontDoorModels.ClientCommanderInfo> Commanders(int seat) => VisibleCards(_state).Where(c=>(bool?)c["commander"]==true && (int)c["owner"]! == seat)
         .Select(c=>new Wizards.Mtga.FrontDoorModels.ClientCommanderInfo{GrpId=(uint)Identity((string)c["name"]!).Grp,StyleCode=""}).ToList();
 
+    public string PodDetails()
+    {
+        if(!IsCommanderPod)throw new InvalidOperationException("Commander pod details require a four-player match.");
+        var players=(JArray)_state["players"]!;var damage=(JArray)_state["commanderDamage"]!;
+        var names=players.SelectMany(p=>(p["commanders"] as JArray??new JArray()).Select(c=>new{Id=(int)c["forgeId"]!,Name=(string)c["name"]!,Owner=(int)p["seat"]!})).ToDictionary(c=>c.Id);
+        var lines=new List<string>{"40 starting life. Elimination at 21 combat damage from any one commander.",""};
+        foreach(var player in players)
+        {
+            int seat=(int)player["seat"]!;bool lost=(bool)player["lost"]!;
+            lines.Add(PlayerName(seat)+" - "+(lost?"Eliminated ("+(string)player["lossReason"]!+")":(int)player["life"]!+" life"));
+            var received=damage.Where(d=>(int)d["seat"]! == seat && (int)d["amount"]!>0).Select(d=>{
+                int id=(int)d["commanderForgeId"]!;return (names.TryGetValue(id,out var source)?source.Name+" ("+PlayerName(source.Owner)+")":"Commander #"+id)+": "+(int)d["amount"]!+"/21";
+            }).ToArray();
+            lines.Add("Commander damage received: "+(received.Length==0?"none":string.Join("; ",received)));lines.Add("");
+        }
+        return string.Join("\n",lines).TrimEnd();
+    }
+
     public ForgeLandBridge(string root, LocalGreConnection connection, System.Action<string> log, Func<uint?> presentedState, Func<bool> submitAutomaticPass,string? researchIpc=null, Func<double>? seconds=null)
     {
         if(researchIpc!=null)
@@ -98,6 +117,7 @@ internal sealed class ForgeLandBridge
         _session=(string)_state["session"]!;
         if(LandsPlayed!=0)throw new InvalidOperationException("Start a fresh Forge land scenario before opening this native test.");
         _template=(JObject)JObject.Parse(File.ReadAllText(Path.Combine(root,"board-fixture.json")))["messages"]![0]!["gameStateMessage"]!;
+        ExtendPodTemplate();
         foreach(var c in Cards(_state))_ids[(int)c["forgeId"]!]=(int)c["arenaId"]!;
         _connection.LocalCommand+=Handle;
     }
@@ -120,8 +140,29 @@ internal sealed class ForgeLandBridge
     }
 
     private JObject? Decision => _state["decision"] as JObject;
+    public int PlayerCount=>(int?)_state["playerCount"]??2;
+    public bool IsCommanderPod=>(bool?)_state["pod"]==true;
+    private bool LocalPodEliminated=>IsCommanderPod && PlayerLost(1);
+    public string PlayerName(int seat)=>(string?)((JArray?)_state["players"])?.SingleOrDefault(p=>(int)p["seat"]! == seat)?["name"] ?? (seat==1?"Local Player":"Opponent");
+    private void ExtendPodTemplate()
+    {
+        if(PlayerCount==2)return;
+        if(!IsCommanderPod || PlayerCount!=4)throw new NotSupportedException("Only a four-seat Commander roster is connected.");
+        var players=(JArray)_template["players"]!;var zones=(JArray)_template["zones"]!;
+        _template["teams"]=new JArray(Enumerable.Range(1,PlayerCount).Select(seat=>new JObject{["id"]=seat,["playerIds"]=new JArray(seat),["status"]="TeamStatus_InGame"}));
+        for(int seat=3;seat<=4;seat++)
+        {
+            var player=(JObject)players[1]!.DeepClone();player["systemSeatNumber"]=seat;player["teamId"]=seat;player["controllerSeatId"]=seat;players.Add(player);
+            var revealed=(JObject)zones.Single(z=>(int)z["zoneId"]! == 19).DeepClone();revealed["zoneId"]=17+seat;revealed["ownerSeatId"]=seat;zones.Add(revealed);
+            foreach(var prototype in zones.Where(z=>(int?)z["ownerSeatId"]==2 && (int)z["zoneId"]!>=35).ToArray())
+            {
+                var zone=(JObject)prototype.DeepClone();zone["zoneId"]=(int)zone["zoneId"]!+4*(seat-2);zone["ownerSeatId"]=seat;
+                if(zone["viewers"]!=null)zone["viewers"]=new JArray(seat);zones.Add(zone);
+            }
+        }
+    }
     private static int ZoneId(JToken card) => (string)card["zone"]! switch
-    { "Hand"=>(int)card["owner"]! == 1?31:35,"Library"=>(int)card["owner"]! == 1?32:36,"Battlefield"=>28,"Stack"=>27,"Command"=>26,"Exile"=>29,"Limbo"=>30,"Graveyard"=>(int)card["owner"]! == 1?33:37,_=>throw new NotSupportedException("Unmapped card zone") };
+    { "Hand"=>31+4*((int)card["owner"]!-1),"Library"=>32+4*((int)card["owner"]!-1),"Battlefield"=>28,"Stack"=>27,"Command"=>26,"Exile"=>29,"Limbo"=>30,"Graveyard"=>33+4*((int)card["owner"]!-1),_=>throw new NotSupportedException("Unmapped card zone") };
 
     // Identities/costs checked against the pinned installed read-only Arena database.
     // Creature power, toughness, damage and legality always come from Forge.
@@ -188,7 +229,11 @@ internal sealed class ForgeLandBridge
             ["subtypes"]=new JArray(identity.Subtypes.Select(s=>"SubType_"+s)),["viewers"]=new JArray(1)
         };
         result["superTypes"]=new JArray(((JArray)Definition(name)["supertypes"]!).Select(t=>"SuperType_"+(string)t!));
-        if(((JArray)Definition(name)["types"]!).Any(t=>(string)t! =="Planeswalker") && card["loyalty"]!=null)result["loyalty"]=new JObject{["value"]=(int)card["loyalty"]!};
+        if(((JArray)Definition(name)["types"]!).Any(t=>(string)t! =="Planeswalker") && card["loyalty"]!=null){
+            int loyalty=(int)card["loyalty"]!;
+            if((string?)card["zone"]!="Battlefield" && int.TryParse((string?)card["baseLoyalty"],System.Globalization.NumberStyles.Integer,System.Globalization.CultureInfo.InvariantCulture,out int printed))loyalty=printed;
+            result["loyalty"]=new JObject{["value"]=loyalty};
+        }
         if(((JArray)Definition(name)["types"]!).Any(t=>(string)t! =="Battle") && card["defense"]!=null)result["defense"]=new JObject{["value"]=(int)card["defense"]!};
         if((bool?)card["token"]==true)result["type"]="GameObjectType_Token";
         SharedCharacteristicsProtocol.Apply(result,card,_typeBindings);
@@ -275,19 +320,25 @@ internal sealed class ForgeLandBridge
 
     private JObject TurnInfo() => NativeTurnProtocol.Info(_state);
 
+    private static JToken? PlayerState(JObject state,int seat)=>((JArray?)state["players"])?.SingleOrDefault(p=>(int)p["seat"]! == seat);
+    private static int PlayerLife(JObject state,int seat)=>(int?)PlayerState(state,seat)?["life"] ?? (int)state[seat==1?"life":"opponentLife"]!;
+    private bool PlayerLost(int seat)=>(bool?)PlayerState(_state,seat)?["lost"] ?? (bool?)_state[seat==1?"localLost":"opponentLost"] ?? false;
+
     private JArray Players()
     {
         var players=(JArray)_template["players"]!.DeepClone();
         foreach(var player in players)
         {
-            bool local=(int)player["systemSeatNumber"]! == 1;
-            player["lifeTotal"]=local ? _state["life"]!.DeepClone() : _state["opponentLife"]!.DeepClone();
-            if((string?)_state["format"]=="arena-brawl")player["startingLifeTotal"]=25;
+            int seat=(int)player["systemSeatNumber"]!;bool local=seat==1;
+            var authoritative=((JArray?)_state["players"])?.SingleOrDefault(p=>(int)p["seat"]! == seat);
+            bool lost=(bool?)authoritative?["lost"] ?? (bool?)_state[local?"localLost":"opponentLost"] ?? false;
+            player["lifeTotal"]=authoritative?["life"]?.DeepClone() ?? (local ? _state["life"]!.DeepClone() : _state["opponentLife"]!.DeepClone());
+            player["startingLifeTotal"]=(int?)authoritative?["startingLifeTotal"] ?? (int?)_state[local?"startingLifeTotal":"opponentStartingLifeTotal"] ?? ((string?)_state["format"]=="commander-40"?40:(string?)_state["format"]=="arena-brawl"?25:20);
             ((JObject)player).Remove("pendingMessageType");
-            if((string?)Decision?["kind"]=="starting_player" && local)player["pendingMessageType"]="ClientMessageType_ChooseStartingPlayerResp";
-            else if((string?)_state["stage"]=="Mulligan" && (local || !((bool?)_state["opponentKept"] ?? false)))player["pendingMessageType"]="ClientMessageType_MulliganResp";
-            player["mulliganCount"]=(int?)_state[local?"mulligans":"opponentMulligans"] ?? 0;
-            player["status"]=(bool?)_state[local?"localLost":"opponentLost"]==true?"PlayerStatus_PendingLoss":"PlayerStatus_InGame";
+            if(!lost && (string?)Decision?["kind"]=="starting_player" && local)player["pendingMessageType"]="ClientMessageType_ChooseStartingPlayerResp";
+            else if(!lost && (string?)_state["stage"]=="Mulligan" && (local || !((bool?)authoritative?["kept"] ?? (bool?)_state["opponentKept"] ?? false)))player["pendingMessageType"]="ClientMessageType_MulliganResp";
+            player["mulliganCount"]=(int?)authoritative?["mulligans"] ?? (int?)_state[local?"mulligans":"opponentMulligans"] ?? 0;
+            player["status"]=lost?(IsCommanderPod?"PlayerStatus_Removed":"PlayerStatus_PendingLoss"):"PlayerStatus_InGame";
             var mana=new JArray();
             if(local) foreach(var m in (JArray)_state["mana"]!)
             {
@@ -303,11 +354,12 @@ internal sealed class ForgeLandBridge
     private JObject GameInfo()
     {
         var info=(JObject)_template["gameInfo"]!.DeepClone();
+        if(IsCommanderPod)info["type"]="GameType_MultiPlayer";
         info["matchID"]="forge-"+_session;info["stage"]=GameOver?"GameStage_GameOver":(string?)_state["stage"]=="Mulligan" || (string?)_state["stage"]=="BeforeMulligan"?"GameStage_Start":"GameStage_Play";
         // A local sandbox has no multi-game series scoring. SingleElimination
         // would make the shipped workflow auto-choose Play and hide its browser.
-        if(Scenario=="opening-duel" || Scenario=="spell-duel" || Scenario=="trigger-duel" || Scenario=="blue-duel" || Scenario=="custom-duel" || Scenario=="brawl-duel")info["matchWinCondition"]="MatchWinCondition_None";
-        if((string?)_state["format"]=="arena-brawl"){info["variant"]="GameVariant_Brawl";info["deckConstraintInfo"]=new JObject{["minDeckSize"]=100,["maxDeckSize"]=100,["maxSideboardSize"]=0};}
+        if(Scenario=="opening-duel" || Scenario=="spell-duel" || Scenario=="trigger-duel" || Scenario=="blue-duel" || Scenario=="custom-duel" || Scenario=="brawl-duel" || Scenario=="commander-duel" || Scenario=="commander-pod")info["matchWinCondition"]="MatchWinCondition_None";
+        if((string?)_state["format"]=="arena-brawl" || (string?)_state["format"]=="commander-40"){info["variant"]=(string?)_state["format"]=="commander-40"?"GameVariant_Commander":"GameVariant_Brawl";info["deckConstraintInfo"]=new JObject{["minDeckSize"]=100,["maxDeckSize"]=100,["maxSideboardSize"]=0};}
         info["matchState"]=GameOver?"MatchState_MatchComplete":"MatchState_GameInProgress";
         info.Remove("results");
         if(GameOver)info["results"]=new JArray(new[]{"MatchScope_Game","MatchScope_Match"}.Select(scope=>new JObject{["scope"]=scope,["result"]=(int)_state["winnerSeat"]! == 0?"ResultType_Draw":"ResultType_WinLoss",["winningTeamId"]=(int)_state["winnerSeat"]!,["reason"]=(string?)_state["lossReason"]=="Conceded"?"ResultReason_Concede":"ResultReason_Game"}));
@@ -351,7 +403,7 @@ internal sealed class ForgeLandBridge
             int id=_ids[(int)Decision["sourceForgeId"]!];
             message=Envelope("GREMessageType_OptionalActionMessage",new JObject{["sourceId"]=id,["optionalActionTypes"]=new JArray("CardMechanicType_ZoneTransfer"),["recipientIds"]=new JArray(1)},"optionalActionMessage");
         }
-        else if((string)Decision["kind"]! == "starting_player")message=Envelope("GREMessageType_ChooseStartingPlayerReq",new JObject{["teamType"]="TeamType_Individual",["systemSeatIds"]=new JArray(1,2)},"chooseStartingPlayerReq");
+        else if((string)Decision["kind"]! == "starting_player")message=Envelope("GREMessageType_ChooseStartingPlayerReq",new JObject{["teamType"]="TeamType_Individual",["systemSeatIds"]=new JArray(Enumerable.Range(1,PlayerCount))},"chooseStartingPlayerReq");
         else if((string)Decision["kind"]! == "targets")
         {
             int source=(int)Decision["sourceForgeId"]!;
@@ -458,8 +510,8 @@ internal sealed class ForgeLandBridge
         {
             _settings.MergeFrom(command.SetSettingsReq.Settings);
             _hasSettings=true;
-            if(command.SetSettingsReq.Settings.AutoPassOption is AutoPassOption.Turn or AutoPassOption.UnlessOpponentAction)_yieldTurn=Turn;
-            else if(command.SetSettingsReq.Settings.AutoPassOption!=AutoPassOption.None)_yieldTurn=-1;
+            if(command.SetSettingsReq.Settings.AutoPassOption is AutoPassOption.Turn or AutoPassOption.UnlessOpponentAction){_yieldTurn=Turn;_yieldAcrossPod=IsCommanderPod && ActiveSeat!=1;}
+            else if(command.SetSettingsReq.Settings.AutoPassOption!=AutoPassOption.None){_yieldTurn=-1;_yieldAcrossPod=false;}
             if(_fullControl){_settings.AutoPassOption=AutoPassOption.FullControl;_settings.DefaultAutoPassOption=AutoPassOption.FullControl;}
             Queue(new GREToClientMessage { Type=GREMessageType.SetSettingsResp, MsgId=++_messageId,
                 SystemSeatIds={1},SetSettingsResp=new SetSettingsResp{Settings=_settings.Clone()} });
@@ -471,7 +523,7 @@ internal sealed class ForgeLandBridge
         if(!conceding && (_pending!=null || command.GameStateId!=_stateId || (!cancelling && command.RespId!=_requestId)))
             throw new InvalidOperationException("Rejected pending/stale native response.");
         var fields=new JObject();int nativeId=0;_pendingForgeId=0;
-        int ForgeId(int native) => (DecisionKind=="targets" || DecisionKind=="assign_damage") && (native==1 || native==2)?(int)((JArray)Decision!["options"]!).Single(o=>(string?)o["targetKind"]=="player" && (int)o["targetSeat"]! == native)["forgeId"]!:_ids.Single(pair=>pair.Value==native).Key;
+        int ForgeId(int native) => (DecisionKind=="targets" || DecisionKind=="assign_damage") && (native>=1 && native<=PlayerCount)?(int)((JArray)Decision!["options"]!).Single(o=>(string?)o["targetKind"]=="player" && (int)o["targetSeat"]! == native)["forgeId"]!:_ids.Single(pair=>pair.Value==native).Key;
         if(conceding)_pendingOp="concede";
         else if(Decision!=null)
         {
@@ -663,12 +715,13 @@ internal sealed class ForgeLandBridge
             if(ZoneId(before)!=ZoneId(card))
             {
                 int old=Id(card),next=_nextArenaId++;retired.Add(old);_ids[(int)card["forgeId"]!]=next;
-                string category=ZoneId(before)==28 && (ZoneId(card)==31 || ZoneId(card)==35)?"Return":ZoneId(before)==32 || ZoneId(before)==36?"Draw":ZoneId(card)==27?"CastSpell":ZoneId(before)==27?"Resolve":(ZoneId(before)==31 || ZoneId(before)==35) && (ZoneId(card)==33 || ZoneId(card)==37)?"Discard":ZoneId(card)==33 || ZoneId(card)==37?"SBA_Damage":"PlayLand";
+                string from=(string)before["zone"]!,to=(string)card["zone"]!;
+                string category=from=="Battlefield" && to=="Hand"?"Return":from=="Library"?"Draw":to=="Stack"?"CastSpell":from=="Stack"?"Resolve":from=="Hand" && to=="Graveyard"?"Discard":to=="Graveyard"?"SBA_Damage":"PlayLand";
                 if(ZoneId(card)==26)category="Put"; // Source parser supports Put; a commander return is not a land play.
                 if(ZoneId(card)==29)category="Exile";
-                if((ZoneId(before)==32 || ZoneId(before)==36) && (ZoneId(card)==33 || ZoneId(card)==37))category="Mill";
-                if(ZoneId(before)==28 && (ZoneId(card)==33 || ZoneId(card)==37) && sacrificed.Contains((int)card["forgeId"]!))category="Sacrifice";
-                if(ZoneId(before)==28 && (ZoneId(card)==33 || ZoneId(card)==37) && (string?)prior["decision"]?["kind"]=="legend_rule")category="SBA_Legend";
+                if(from=="Library" && to=="Graveyard")category="Mill";
+                if(from=="Battlefield" && to=="Graveyard" && sacrificed.Contains((int)card["forgeId"]!))category="Sacrifice";
+                if(from=="Battlefield" && to=="Graveyard" && (string?)prior["decision"]?["kind"]=="legend_rule")category="SBA_Legend";
                 bool wasCountered=countered.TryGetValue((int)card["forgeId"]!,out int counterSource);
                 if(wasCountered)category="Countered";
                 annotations.Add(new JObject{["id"]=annotationId++,["affectedIds"]=new JArray(old),["type"]=new JArray("AnnotationType_ObjectIdChanged"),["details"]=new JArray(Detail("orig_id",old),Detail("new_id",next))});
@@ -702,6 +755,7 @@ internal sealed class ForgeLandBridge
         // graveyard card to carry an ObjectIdChanged event into the next state.
         var currentObjectIds=Cards(_state).Select(c=>(int)c["forgeId"]!).ToHashSet();
         var vanishedCopies=Cards(prior).Where(c=>(bool?)c["ephemeralCopy"]==true && !currentObjectIds.Contains((int)c["forgeId"]!)).Select(c=>oldIds[(int)c["forgeId"]!]).ToList();
+        var eliminatedObjects=IsCommanderPod?Cards(prior).Where(c=>PlayerLost((int)c["owner"]!) && !currentObjectIds.Contains((int)c["forgeId"]!)).Select(c=>oldIds[(int)c["forgeId"]!]).ToList():new List<int>();
         var damageSources=new Dictionary<int,int>();
         foreach(var e in (JArray?)_state["events"] ?? new JArray())
         {
@@ -721,9 +775,9 @@ internal sealed class ForgeLandBridge
                 damageSources[target]=sourceId;
             }
         }
-        foreach(int seat in new[]{1,2})
+        foreach(int seat in Enumerable.Range(1,PlayerCount))
         {
-            string key=seat==1?"life":"opponentLife";int change=(int)_state[key]!-(int)prior[key]!;
+            int change=PlayerLife(_state,seat)-PlayerLife(prior,seat);
             // Arena distributes one aggregate life-loss event across all combat hits to this player.
             // Separate source-specific life events make its ModifyEventsList cap later hits at zero.
             if(change!=0)annotations.Add(new JObject{["id"]=annotationId++,["affectorId"]=damageSources.TryGetValue(seat,out int sourceId)?sourceId:seat,["affectedIds"]=new JArray(seat),["type"]=new JArray("AnnotationType_ModifiedLife"),["details"]=new JArray(Detail("life",change))});
@@ -749,10 +803,10 @@ internal sealed class ForgeLandBridge
         var concealed=VisibleCards(prior).Where(c=>(bool?)c["privateChoice"]==true && !visibleIds.Contains((int)c["forgeId"]!)).Select(c=>Cards(_state).Single(n=>(int)n["forgeId"]! == (int)c["forgeId"]!)).Select(c=>new JObject
             {["instanceId"]=Id(c),["grpId"]=0,["overlayGrpId"]=0,["name"]=0,["type"]="GameObjectType_Card",["zoneId"]=ZoneId(c),["ownerSeatId"]=(int)c["owner"]!,["controllerSeatId"]=(int)c["controller"]!,["visibility"]="Visibility_Hidden"});
         bool quiet=!GameOver && ShouldAutoPass(false);
-        var delta=new JObject { ["type"]="GameStateType_Diff",["gameStateId"]=_stateId,["prevGameStateId"]=previous,["pendingMessageCount"]=quiet?0:1,
+        var delta=new JObject { ["type"]="GameStateType_Diff",["gameStateId"]=_stateId,["prevGameStateId"]=previous,["pendingMessageCount"]=quiet || LocalPodEliminated?0:1,
             ["zones"]=Zones(retired),["players"]=Players(),["turnInfo"]=TurnInfo(),["gameObjects"]=new JArray(nowVisible.Select(CardObject).Concat(concealed)),["annotations"]=annotations,
             ["persistentAnnotations"]=new JArray(TargetAnnotations().Concat(nextCounterState).Concat(nextAttachmentState).Concat(nextKeywordState)),
-            ["diffDeletedInstanceIds"]=new JArray(resolvedAbilities.Select(a=>oldIds[(int)a["forgeId"]!]).Concat(vanishedTokens).Concat(vanishedCopies).Distinct()),
+            ["diffDeletedInstanceIds"]=new JArray(resolvedAbilities.Select(a=>oldIds[(int)a["forgeId"]!]).Concat(vanishedTokens).Concat(vanishedCopies).Concat(eliminatedObjects).Distinct()),
             ["diffDeletedPersistentAnnotationIds"]=new JArray(((JArray)prior["stack"]!).Concat(priorAbilities).Where(c=>(((JArray?)c["targetForgeIds"])?.Count ?? 0)+(((JArray?)c["targetSeats"])?.Count ?? 0)>0 && !((JArray)_state["stack"]!).Concat(nextAbilities).Any(n=>(int)n["forgeId"]! == (int)c["forgeId"]!)).Select(c=>900000+(int)c["forgeId"]!)),
             ["actions"]=new JArray(Offers().Select(a=>new JObject{["seatId"]=1,["action"]=a.DeepClone()})) };
         if(GameOver || (string?)prior["stage"] != (string?)_state["stage"])delta["gameInfo"]=GameInfo();
@@ -762,14 +816,15 @@ internal sealed class ForgeLandBridge
         if(GameOver)
         {
             delta["gameInfo"]=GameInfo();
-            delta["teams"]=new JArray(new[]{1,2}.Select(seat=>new JObject{["id"]=seat,["playerIds"]=new JArray(seat),["status"]=(bool?)_state[seat==1?"localLost":"opponentLost"]==true?"TeamStatus_PendingLoss":"TeamStatus_InGame"}));
+            delta["teams"]=new JArray(Enumerable.Range(1,PlayerCount).Select(seat=>new JObject{["id"]=seat,["playerIds"]=new JArray(seat),["status"]=PlayerLost(seat)?"TeamStatus_PendingLoss":"TeamStatus_InGame"}));
             string reason=(string?)_state["lossReason"] switch {"LifeReachedZero"=>"SBA_LifeTotal","Milled"=>"SBA_DrawFromEmptyLib","Conceded"=>"SBA_Concede",_=>"Other"};
-            delta["persistentAnnotations"]=new JArray(new JObject{["id"]=annotationId++,["affectedIds"]=new JArray((bool?)_state["localLost"]==true?1:2),["type"]=new JArray("AnnotationType_LossOfGame"),["details"]=new JArray(new JObject{["key"]="reason",["type"]="KeyValuePairValueType_string",["valueString"]=new JArray(reason)})});
+            delta["persistentAnnotations"]=new JArray(new JObject{["id"]=annotationId++,["affectedIds"]=new JArray(Enumerable.Range(1,PlayerCount).Where(PlayerLost)),["type"]=new JArray("AnnotationType_LossOfGame"),["details"]=new JArray(new JObject{["key"]="reason",["type"]="KeyValuePairValueType_string",["valueString"]=new JArray(reason)})});
         }
         Queue(Parse(Envelope("GREMessageType_GameStateMessage",delta,"gameStateMessage")));
         _quietAdvance=quiet;
         if(quiet)_requestId=0;
-        else if(!GameOver)Queue(Parse(ActionRequest()));
+        else if(!GameOver && !LocalPodEliminated)Queue(Parse(ActionRequest()));
+        else if(LocalPodEliminated && !GameOver)_requestId=0;
         else Queue(Parse(Envelope("GREMessageType_IntermissionReq",new JObject
         {
             ["result"]=((JArray)GameInfo()["results"]!)[1].DeepClone(),
@@ -795,10 +850,15 @@ internal sealed class ForgeLandBridge
         bool changed=false;
         if(_yieldTurn>=0)
         {
-            bool opponentAction=Cards(_state).Any(c=>(string?)c["zone"]=="Stack" && (int?)c["controller"]==2 && !Cards(prior).Any(p=>(string?)p["zone"]=="Stack" && (int?)p["forgeId"]==(int?)c["forgeId"]))
-                || ((JArray)_state["battlefield"]!).Any(c=>(int?)c["controller"]==2 && (int?)c["attackTarget"]>0 && !((JArray)prior["battlefield"]!).Any(p=>(int?)p["forgeId"]==(int?)c["forgeId"] && (int?)p["attackTarget"]>0));
-            if(Turn!=_yieldTurn || Phase=="END_OF_TURN" || (_settings.TurnAutoPassOption()==AutoPassOption.UnlessOpponentAction && opponentAction))
-            {_yieldTurn=-1;_settings.AutoPassOption=AutoPassOption.Clear;changed=true;}
+            bool opponentAction=Cards(_state).Any(c=>(string?)c["zone"]=="Stack" && (int?)c["controller"]!=1 && !Cards(prior).Any(p=>(string?)p["zone"]=="Stack" && (int?)p["forgeId"]==(int?)c["forgeId"]))
+                || ((JArray)_state["battlefield"]!).Any(c=>(int?)c["controller"]!=1 && ((int?)c["attackTarget"]>0 || (int?)c["attackTargetForgeId"]>0) && !((JArray)prior["battlefield"]!).Any(p=>(int?)p["forgeId"]==(int?)c["forgeId"] && ((int?)p["attackTarget"]>0 || (int?)p["attackTargetForgeId"]>0)));
+            // In a pod, yielding during another player's turn means waiting
+            // through every remaining opponent, including extra turns, until
+            // the human actually receives the next turn. Own-turn and duel
+            // boundaries retain the previously accepted behavior.
+            bool boundary=_yieldAcrossPod?ActiveSeat==1 && Turn!=_yieldTurn:Turn!=_yieldTurn || Phase=="END_OF_TURN";
+            if(boundary || (_settings.TurnAutoPassOption()==AutoPassOption.UnlessOpponentAction && opponentAction))
+            {_yieldTurn=-1;_yieldAcrossPod=false;_settings.AutoPassOption=AutoPassOption.Clear;changed=true;}
         }
         if(_settings.StackAutoPassOption==AutoPassOption.ResolveAll && !((JArray)_state["stack"]!).HasValues && !((JArray?)_state["stackAbilities"]??new JArray()).HasValues)
         {_settings.StackAutoPassOption=AutoPassOption.Clear;changed=true;}
@@ -806,7 +866,7 @@ internal sealed class ForgeLandBridge
     }
     private bool ShouldAutoPass(bool requirePresentation=true)
     {
-        if(_automaticSuspended || !_hasSettings || _fullControl || _settings.FullControlEnabled() || _settings.Stops.Count>0 || _settings.TransientStops.Count>0 || (requirePresentation && _presentedState()!=_stateId) || GameOver || Gap!=null || Decision!=null || !((bool?)_state["canPass"] ?? false))return false;
+        if(_automaticSuspended || !_hasSettings || _fullControl || _settings.FullControlEnabled() || _settings.Stops.Count>0 || _settings.TransientStops.Count>0 || (requirePresentation && _presentedState()!=_stateId) || GameOver || LocalPodEliminated || Gap!=null || Decision!=null || !((bool?)_state["canPass"] ?? false))return false;
         // Local bridge automation policy, not a reconstruction of Arena's
         // server-side smart-stop engine. Legal offers remain Forge-owned.
         var mode=_settings.TurnAutoPassOption();
@@ -823,7 +883,11 @@ internal sealed class ForgeLandBridge
     {
         if(recipient==null || recipient.Type==DamageRecType.None)return new JObject{["forgeId"]=attacker,["targetSeat"]=0};
         if(recipient.Type==DamageRecType.Player)return new JObject{["forgeId"]=attacker,["targetSeat"]=(int)recipient.PlayerSystemSeatId};
-        if(recipient.Type==DamageRecType.PlanesWalker)return new JObject{["forgeId"]=attacker,["targetSeat"]=2,["targetForgeId"]=_ids.Single(pair=>pair.Value==(int)recipient.PlaneswalkerInstanceId).Key};
+        if(recipient.Type==DamageRecType.PlanesWalker)
+        {
+            int target=_ids.Single(pair=>pair.Value==(int)recipient.PlaneswalkerInstanceId).Key;
+            return new JObject{["forgeId"]=attacker,["targetSeat"]=(int)Cards(_state).Single(c=>(int)c["forgeId"]! == target)["controller"]!,["targetForgeId"]=target};
+        }
         throw new NotSupportedException("Unmapped attack recipient: "+recipient.Type);
     }
     private int[] CommanderColorIdentity(string name)

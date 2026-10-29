@@ -8,6 +8,13 @@ if not (APP/'ForgeBackend').is_dir():APP=APP.parent
 sys.path.insert(0,str(APP/'ForgeBackend'))
 from client_service import Coordinator,NativeLifetime,RequestRejected,atomic,parse_local_deck,service_lock
 
+# This checker uses authored baseline deck/protocol fixtures only. A public
+# checkout includes a pinned experimental recipe, whose production loader must
+# require owned game files. Keep that integration check separate from this test
+# instead of weakening the loader or requiring game assets on the CI runner.
+with patch('experimental_cards.load_experimental',return_value=dict(cards={},blockedCards={},enabled=False)):
+    import deck_import
+
 checks=[]
 def check(label,condition):
     if not condition:raise AssertionError(label)
@@ -21,6 +28,8 @@ def deck(main,commander=None):return dict(id=str(uuid.uuid4()),name='Fixture dec
 practice=deck({'1':24,'3':16});brawl=deck({'1':98,'3':1},{'4':1})
 check('Practice preserves the exact admitted name counts',parse_local_deck(practice,catalog,'SandboxPractice')['cards']==[dict(name='Plains',count=24),dict(name='Savannah Lions',count=16)])
 check('Brawl retains the commander and 99 main cards',sum(c['count'] for c in parse_local_deck(brawl,catalog,'SandboxBrawl')['cards'])==99)
+check('Four-player Commander independently enforces the Commander deck policy',parse_local_deck(brawl,catalog,'SandboxCommanderPod')['format']=='commander-40')
+reject('Commander pod rejects a deck without a commander',lambda:parse_local_deck(practice,catalog,'SandboxCommanderPod'))
 reject('Practice cannot silently drop a commander',lambda:parse_local_deck(brawl,catalog,'SandboxPractice'))
 reject('Unknown local queues are rejected',lambda:parse_local_deck(practice,catalog,'OnlineRanked'))
 reject('Unknown saved printing IDs are rejected',lambda:parse_local_deck(deck({'999':60}),catalog,'SandboxPractice'))

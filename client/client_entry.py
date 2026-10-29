@@ -64,7 +64,7 @@ def show_hub(root,status):
     ttk.Button(pane,text='Set up game files…',command=lambda:subprocess.Popen([config['python'],'-B',str(app/'setup_client.py')])).pack(anchor='w',pady=4)
     ttk.Button(pane,text='Check / install update',command=lambda:run('update')).pack(anchor='w',pady=4)
     ttk.Button(pane,text='Rollback previous version',command=lambda:run('rollback')).pack(anchor='w',pady=4)
-    ttk.Label(pane,text='Developer preview | limited verified cards | no multiplayer',foreground='#666666').pack(anchor='w',pady=(14,0))
+    ttk.Label(pane,text='Developer preview | experimental local bot matches | no network play',foreground='#666666').pack(anchor='w',pady=(14,0))
     window.mainloop()
 
 def main(args):

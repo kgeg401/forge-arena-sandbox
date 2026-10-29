@@ -168,3 +168,33 @@ Before broad admission, review/guard these entry points, replace the human
 identity/cost paths where appropriate, and rerun the affected normal-game and
 mixed-mechanic regressions. The existing bounded fixed-payment checks and
 scenario results do not close that wider obligation.
+
+
+## Human identity correction — 2026-10-29
+
+The earlier audit's AI identity issue was reproduced in actual normal and
+four-seat openings: both the controller and cached PlayerView marked seat one
+as AI. The first-controller factory now carries an explicit human role before
+installation, independently of display names or the previous warm game's
+static player reference. Human controllers report false for `isAI`; bot
+controllers retain true. The human shuffle helper follows the original human
+no-op contract rather than the inherited AI path.
+
+`verify_human_controller_identity.py` checks actual normal shuffled openings,
+original native Keep/land handlers and both identity representations.
+`VerifyHumanSeatConstruction.java` additionally checks renamed seats, a stale
+previous game, exact card order/view identity and no shuffle-helper RNG use.
+The earlier inherited-method inventory remains historical evidence. Assist,
+draw offers, sideboarding and control of another player still require separate
+reachability/behavior work; this does not establish complete human-controller
+or card parity.
+
+### 29 October: normal-game target cancellation and artifact mana
+
+A full-human normal Emry regression reproduced a successful prepayment target cancellation being acknowledged as a failed play. The native bridge then suspended its automatic progression on that rejection. A current explicit cancel-targets request now remains successful when Forge returns false for the canceled ability; other failures to complete original costs remain rejected. The full normal Emry sequence passes cancellation/retry, real tap and mana payment, mill, graveyard permission, turn expiry and source departure. A rendered normal four-seat Thoughtseize cancellation also returned to ActionsAvailable with unchanged card/life/mana and an untapped land, without a gap.
+
+The artifact-land sequence exposed missing manual mana presentation for Seat of the Synod under full human choices. A fresh pinned Forge projection and exact native text bind its blue-mana ability to 1002. The complete native-handler sequence then passes manual mana, artifact affinity, real payment and the artifact-land graveyard target restriction. A presentation audit projects all 713 currently admitted primary names without unbound projected ability roles; this is not gameplay certification of those names. Existing explicit Orator/Hare trigger fallbacks and shared keyword dictionaries account for redundant binder additions and were not replaced. Admission stays 370 verified names plus 343 experimental names. Paradox Engine's separate draft remains admission-gated and was not launched or promoted.
+
+### Printed loyalty versus battlefield counters
+
+Rendered hand/mulligan cards showed zero loyalty while the original library browser displayed the printed number. The rules snapshot now supplies the current card state's original base-loyalty string separately from actual counters. The native object uses a numeric printed value outside the battlefield, and real current loyalty on the battlefield. Compleated payment sequences independently require five in hand, three after paying life, and five after paying full mana. Existing variable printed values are not claimed by this numeric display correction.

@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.2.0 alpha 9 - Human gameplay fixes and local Commander
+
+- Adds 40-life Commander Bot and an experimental four-player Commander Pod: one human and three easy Forge bots on the same PC. Includes a shared table, opponent focus, public-zone controls and commander-damage display.
+- Corrects the human controller and cached Forge player identity at construction. Bots remain AI; human deck shuffling does not use AI helpers.
+- Fixes prepayment target cancellation being treated as a rejected play and suspending automatic progression. Real cost failures remain rejected.
+- Shows numeric printed planeswalker loyalty outside the battlefield and actual counters on the battlefield; includes both Compleated payment branches.
+- Restores Jace, Cunning Castaway's combat-loot trigger, Incubator's active Phyrexian face and Seat of the Synod's manual blue mana. Retains Mana Drain's delayed mana fix.
+- Checks include 51 payment/effect groups, normal Emry mechanics and Commander return/tax sequences, a complete normal duel, a 713-name static presentation-binding audit, and rendered four-seat cancellation/retry. Static mapping is not gameplay certification of every card.
+- The verified baseline remains 370 names; 343 additional names remain experimental. Network multiplayer, complete card coverage, durable match saves and full retail UI parity remain unfinished.
+- Update through the existing launcher after closing the client. Profiles stay outside version folders and rollback is retained.
+
 ## 0.2.0 alpha 8 - Mana Drain delayed mana fix
 
 - Fixes the stall at Mana Drain's next-main-phase trigger after its counterspell resolved.

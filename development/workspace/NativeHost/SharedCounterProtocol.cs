@@ -37,7 +37,7 @@ internal static class SharedCounterProtocol
             if(card["counters"] is JArray counters && counters.Count>0){int forge=Integer(card["forgeId"]);if(forge>=500000)throw new InvalidDataException("Counter card identity exceeds its reserved annotation range");Entity(checked(forge+1024),cardId(forge),counters);}
         foreach(var player in (JArray?)state["playerCounters"]??new JArray())
         {
-            int seat=Integer(player["seat"]);if(seat!=1 && seat!=2)throw new InvalidDataException("Unknown counter owner seat");Entity(seat,seat,(JArray)player["counters"]!);
+            int seat=Integer(player["seat"]);if(!ValidSeat(state,seat))throw new InvalidDataException("Unknown counter owner seat");Entity(seat,seat,(JArray)player["counters"]!);
         }
         return result;
     }
@@ -49,10 +49,11 @@ internal static class SharedCounterProtocol
             int before=Integer(e["before"]),after=Integer(e["after"]),delta=checked(after-before);if(delta==0)continue;
             var type=Type((string)e["counterType"]!);
             int target=e["targetSeat"]!=null?Integer(e["targetSeat"]):cardId(Integer(e["targetForgeId"]));
-            if(e["targetSeat"]!=null && target!=1 && target!=2)throw new InvalidDataException("Unknown counter event player");
+            if(e["targetSeat"]!=null && !ValidSeat(state,target))throw new InvalidDataException("Unknown counter event player");
             var value=new JObject{["id"]=annotationId++,["affectedIds"]=new JArray(target),["type"]=new JArray(delta>0?"AnnotationType_CounterAdded":"AnnotationType_CounterRemoved"),["details"]=new JArray(Detail("counter_type",(int)type),Detail("transaction_amount",Math.Abs(delta)))};
             int? source=sourceId((int?)e["sourceStackForgeId"]??0);if(source.HasValue)value["affectorId"]=source.Value;result.Add(value);
         }
         return result;
     }
+    private static bool ValidSeat(JObject state,int seat)=>seat>=1 && seat<=((int?)state["playerCount"]??2);
 }

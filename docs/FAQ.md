@@ -29,7 +29,7 @@ or construction rules blocking a match. [The supported list](SUPPORTED-CARDS.md)
 records the current admission policy. A matching Forge script alone does not
 prove that the Arena bridge can present every required action correctly.
 
-Practice uses 40–250 main cards. Brawl uses 99 main cards plus one verified
+Practice uses 40–250 main cards. Brawl and Commander use 99 main cards plus one enabled
 commander, singleton except basic lands, and the commander's color identity.
 Sideboards and companions are not supported. The sandbox does not apply retail
 format banlists. Importing an unsupported deck never silently removes its cards.
@@ -40,7 +40,7 @@ not cause it to be added again every time the client opens.
 
 ## Are these Arena bots or online opponents?
 
-Both queues start a **local Forge AI** game in the native Arena board. They do
+All queues start local games in the native Arena board. Commander Pod is one human and three Forge bots on this PC. Brawl Bot uses 25 life; Commander Bot and Commander Pod use 40 life and 21 commander combat damage. They do
 not connect to Arena matchmaking or use its server AI. Multiplayer is unfinished.
 Games are not resumable after closing the client.
 
@@ -108,3 +108,7 @@ is unavailable. Decks and collection are saved separately from matches.
 Close the client and back up `local-profile`, then remove the sandbox folder.
 Its private game copy, Forge and runtimes are there. Retail Arena remains
 separate. Python and the prerequisite download cache are outside that folder.
+
+## Can I save a match and close the game?
+
+Home can park and Resume the same running match. Closing the client ends it; there is no durable match restoration. Decks, packs, collection and settings persist separately.

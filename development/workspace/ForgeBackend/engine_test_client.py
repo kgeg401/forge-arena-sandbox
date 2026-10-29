@@ -14,9 +14,9 @@ class Engine:
  def wait_json(self,path,seconds=5):
   limit=time.monotonic()+seconds;last_error=None
   while time.monotonic()<limit:
-   try:return json.loads(path.read_text())
+   try:return json.loads(path.read_text(encoding="utf-8-sig"))
    except (FileNotFoundError,PermissionError,json.JSONDecodeError) as error:last_error=error
-   if self.process.poll() is not None:raise RuntimeError((self.ipc/"engine.log").read_text()[-5000:])
+   if self.process.poll() is not None:raise RuntimeError((self.ipc/"engine.log").read_text(encoding="utf-8-sig")[-5000:])
    time.sleep(.025)
   raise TimeoutError(str(path)+'; last read: '+repr(last_error))
  def begin(self,op,forgeId=0,**fields):
@@ -27,12 +27,12 @@ class Engine:
  def pass_or_decision(self):
   id=self.begin("pass_priority");end=time.monotonic()+5
   while time.monotonic()<end:
-   if self.process.poll() is not None:raise RuntimeError((self.ipc/"engine.log").read_text()[-3000:])
+   if self.process.poll() is not None:raise RuntimeError((self.ipc/"engine.log").read_text(encoding="utf-8-sig")[-3000:])
    response=self.ipc/"responses"/(id+".json")
    if response.exists():r=self.finish(id);assert r["accepted"],r;return r,None
    p=self.ipc/"decision.json"
    if p.exists():
-    try:d=json.loads(p.read_text())
+    try:d=json.loads(p.read_text(encoding="utf-8-sig"))
     except (FileNotFoundError,PermissionError,json.JSONDecodeError):d=None
     if d and d["parentRequestId"]==id:self.state=d["state"];return None,d
    time.sleep(.025)

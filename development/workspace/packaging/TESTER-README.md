@@ -1,7 +1,7 @@
 # Forge Arena Sandbox
 
 An unofficial local Magic sandbox with Arena's installed presentation and Forge
-running the rules. **Windows x64. Experimental. No multiplayer.**
+running the rules. **Windows x64. Experimental. Local bots only.**
 
 ## Install once
 
@@ -30,6 +30,7 @@ A different build is rejected rather than changing your retail installation.
 - **Home > Play > Brawl:** choose Brawl Bot and a Brawl deck. This sandbox uses
   99 main cards plus one commander, singleton except basics, color identity,
   25 life, a free first mulligan, command-zone returns and commander tax.
+- **Commander:** on the Brawl tab, choose **Commander Bot (40 Life)** or **Commander Pod (4 Players)**. The pod is one human and three easy Forge bots on this PC, with 40 life, commander tax and 21 commander combat damage. Its shared table and public-zone controls are experimental.
 - **Decks:** create, import Arena deck text, edit, duplicate, export or delete
   local decks. Fresh profiles receive recommended starters. Choose Practice or Brawl when creating a deck. Click the deck
   header to change its local format. Brawl uses the native commander slot.
@@ -45,7 +46,7 @@ A different build is rejected rather than changing your retail installation.
 - Opening the launcher again focuses the existing client instead of starting
   a second game.
 
-There is no online matchmaking: both queues create a **local Forge bot match**.
+All queues create local Forge bot matches. Four-player Commander is one human and three bots; network multiplayer and online matchmaking are not implemented.
 The Home menu, navigation, Play panel, deck widgets, pack chamber and game board
 reuse installed Arena assets. Local navigation and queue data replace the online
 services. Advertising, store/account controls and online reward panels are
@@ -53,15 +54,9 @@ omitted. This is not a claim of complete retail UI or behavior parity.
 
 ## Current limits
 
-**Only explicitly verified main-deck names are admitted**, plus separately verified commanders
-and tokens. The current count and exact names are generated in
-[SUPPORTED-CARDS.md](docs/SUPPORTED-CARDS.md) and `release-info.json`. Most Arena cards are still
-unverified for this bridge and cannot enter a match, even though they can be
-browsed, opened or saved in a deck. A warning explains what blocks each deck.
+The verified baseline remains **370 main-deck names**. Another **343 names** are enabled experimentally, including the Jace Superfriends starter. The exact baseline is in [SUPPORTED-CARDS.md](docs/SUPPORTED-CARDS.md); experimental status and blockers are in [EXPERIMENTAL.md](docs/EXPERIMENTAL.md). Card admission and play/cast checks do not prove every branch or combination. Actual unmapped actions still report a gap.
 
-Verified Brawl commanders: **Isamaru, Hound of Konda** and **Emry, Lurker of the
-Loch**. Included starter lists use admitted cards. This does not enable every
-Emry deck, Paradox Engine, every commander, or retail format banlists.
+Home can park and resume the same running match. Closing the client ends it; durable match saves are not implemented. Decks, packs and settings persist separately.
 
 Packs use custom sandbox collation: five commons, two uncommons and one
 rare/mythic, with a one-in-eight mythic choice when available. Retail bonus

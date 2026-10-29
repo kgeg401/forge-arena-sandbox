@@ -1,3 +1,23 @@
+# Current gameplay alpha: 0.2.0-alpha.9
+
+The verified baseline remains 370 names; 343 other names are enabled experimentally. The current dependency is the pinned official Forge 2.0.16 snapshot from 25 October. Earlier sections below describe historical releases and their original scope.
+
+The local queues are Practice Bot, Brawl Bot, Commander Bot (40 Life) and Commander Pod (4 Players). The pod is one human and three Forge bots on this PC, not network play. Its shared table and per-seat public-zone controls remain experimental. Home Resume retains a running match only; closing the client ends the match.
+
+The human controller now identifies itself as human before Forge installs its first controller and caches PlayerView. Actual native opening-hand checks reproduced the old AI classification in both a duel and pod, then verified the corrected identities through Keep and land play. A separate real Forge factory check covers renamed seats, an old global match, cached views and a human shuffle that leaves order and RNG unchanged. Bots retain AI classification.
+
+Explicit cancellation of a prepayment target choice is now acknowledged as a successful UI action. Forge still cancels the unplayed spell/ability and retains its costs. A failure to complete costs without that explicit cancellation remains a rejection. The normal Emry sequence covers cancellation, retry and real tap/mana payments. Its fixed-color assertions now use the current explicit color-options schema.
+
+Original hidden trigger and linked token-face data now retain Jace, Cunning Castaway's combat-loot effect, Mana Drain's delayed mana and the active Phyrexian face of Incubator. These are presentation bindings for Forge's rules, not replacement card scripts. The source projection is regenerated against exact pinned local data. UTF-8 test readers prevent Windows' legacy encoding from misreading native card-name text.
+
+A fresh source-to-native binding audit covers the 713 currently admitted primary names. It found the missing Seat of the Synod manual mana identity; its original blue-mana binding is restored and checked through native mana activation, Emry affinity, actual mana payment and the artifact-land graveyard target restriction. The audit is a static presentation-contract check, not 713 gameplay validations. Existing explicit Orator/Hare trigger fallbacks and shared keyword mappings remain unchanged.
+
+Planeswalker presentation now distinguishes numeric printed loyalty outside the battlefield from actual battlefield counters. Jace, the Perfected Mind shows printed five before casting; original native-handler checks cover paying Phyrexian life to enter with three and paying mana to enter with five. This is presentation data; Forge retains the actual rules counters and payments.
+
+Whole-catalogue support, exhaustive card combinations, network multiplayer, complete Arena UI parity and recipient-PC installation are not established by these checks. Final release receipts distinguish the package tests and rendered acceptance performed for this release.
+
+---
+
 # Validation and limits
 
 The current release's enabled names are generated into

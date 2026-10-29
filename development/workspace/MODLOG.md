@@ -1,5 +1,13 @@
 # Forge x Arena development journal
 
+## 2026-10-28: headless match stability research
+
+- Resumed headless-only work in a fresh private Forge profile and new native test builds on D:. No Unity launch, installed-client restart, collection edit, card admission or public release. Owned parser/response-handler checks remain separate from rendered acceptance.
+- Added `verify_native_blocker_recovery.py`: actual Forge rejects one blocker against menace; original Arena handlers can retry with two blockers, choose no blocks, or concede while waiting. Literal expected life/damage is checked without injecting intermediate state. Five adversarial inputs per branch are rejected before reaching the rules owner; the rules journal and complete state stay unchanged. No new gameplay defect was reproduced in those cases.
+- Added the serial `pod` campaign to `run_headless_shared_regression.py`, including blocker recovery, split combat, player targets, commander return/tax, mulligans/elimination, Brawl/Commander regression and yield across three opponents. Both initial and final fingerprinted seven-group campaigns pass. The final campaign covers 15 focused branches in 196.532 seconds with zero artifact drift; the linked checkpoint retains exact inputs and scope.
+- Runtime preflight rejects unmarked/game-bearing roots; evidence cannot be written into source; pod tests require an explicit turn probe. Config, actual manifest/fixture, Java classes/libraries/scripts, native DLLs, selected scripts and runner are fingerprinted so drift stops the campaign. Three guard tests reject before creating output or starting a game. Use low-priority serial tests with two processor limits while the user plays.
+- Evidence: `D:\GAMES\CodexAssets\ForgeArenaSandbox\research\headless-stability-20261028`. See [headless stability](docs/headless-stability-20261028.md). No all-card, UI parity or historical-stall repair claim.
+
 ## 2026-10-21 three-hour checkpoint
 
 - Started 08:12:58 UTC; stop development and finish verified dev log by 11:12:58 UTC.
@@ -690,3 +698,181 @@ the existing exact native/source binding selects original hidden ability
 original-handler whole-sequence test, including zero value, ordinary values
 and an uncounterable target, next-main-phase mana and one-shot clearing.
 No live match was ended while researching the fix.
+
+
+## 2026-10-25 Separate 40-life Commander bot mode
+
+- Added SandboxCommander / commander-40 / commander-duel alongside the existing
+  SandboxBrawl mode. It uses Forge GameType.Commander and the original native
+  GameVariant_Commander, not a life-label override. Both players start at 40;
+  singleton, color identity, command zone/tax and the 21-damage loss rule apply.
+- Native Play > Brawl now offers Brawl Bot and Commander Bot (40 Life). Existing
+  100-card commander decks work in either queue without rewriting saved decks.
+  Brawl remains 25 life with its free first mulligan; two-player Commander uses
+  Forge's ordinary London mulligan without the Brawl free mulligan.
+- Native-handler starts/mulligans/commander casting passed in both modes. A full
+  Commander match ended on CommanderDamage: 22 from one commander, losing player
+  still at 18 life. The coordinator parsed the saved Jace list for both queues.
+- Local preview only; no new GitHub publication was requested for this feature.
+  Installation and rendered menu/match acceptance are separate final checks.
+
+## 2026-10-25 Gentler default bot deck
+
+- Replaced the 40-land/59-card low-curve Isamaru swarm with a deliberately
+  land-heavy practice list: Isamaru, 75 Plains and 24 ground creatures/defenders.
+  Removed all attacking flyers, double strike and removal; retained normal
+  deck construction, combat, commander rules and AI decisions.
+- Validated the exact list through both Commander/Brawl import policies.
+  Same-seed original-handler Commander openings, with a local player playing
+  only lands: prior bot won on turn16 at -12 life; easier bot reached turn19
+  with the player still alive at2 life. Neither produced a fidelity gap.
+  This is a bounded opening comparison, not a Jace win-rate guarantee.
+- Backed up installed app to
+  C:\Users\loula\.universal-modder\backups\ForgeArena-before-easy-bot-20261025\20261025-232932.zip.
+  Applied only the local packaged deck and updated its manifest checksum;
+  complete package integrity verification passed. The coordinator reads the
+  deck afresh each match, so no client restart is needed.
+- Returned the already completed old match Home and started the selected Jace
+  Commander deck. Actual coordinator scenario confirms the new 75-land bot.
+  Evidence: C:\Users\loula\Documents\Codex\ForgeArenaEasyBot-20261025.
+  Local change only, no GitHub release. Saved player decks are unchanged.
+
+## 2026-10-25 Defensive bot replaces failed easier aggro attempt
+
+The 75-land Isamaru list still overwhelmed the user's live Jace deck (completed
+match reached -9 life). Reducing threat density alone was inadequate; the
+commander and drawn 3-power attackers still provided early pressure.
+
+Changed the actual bot list to Emry, 94 Islands and five zero-power creatures:
+Aegis Turtle, Kraken Hatchling, Murmuring Phantasm, Riptide Turtle, Wall of Mist.
+Only the unbuffed 1-power commander can deal combat damage. No removal,
+counters, combat boosts or artifact recursion targets. This is explicitly a
+setup-practice opponent, not a balanced easy deck or an optimized Emry deck.
+The legacy file name stays because the running coordinator reads it per match.
+
+Verified original-handler games through global turn25 (12 full rounds) with a
+local player only playing lands: both Commander seeds7274/113 retained31 life,
+Brawl seed42 retained16 life; no fidelity gap or game over. Both format import
+policies passed. Evidence and script: ForgeArenaEasyBot-20261025 under Codex.
+
+Installed the local data-only change after a full app backup at
+C:\Users\loula\.universal-modder\backups\ForgeArena-before-defensive-bot-20261025\20261025-234224.zip.
+Updated the manifest hash and passed full tree integrity. Returned the completed
+match to Play and loaded the selected Jace deck against actual defensive Emry;
+coordinator scenario confirmed94 Islands. No saved player deck edits, rule
+changes, client restart or GitHub publication.
+
+## 2026-10-26 Cunning Castaway combat trigger repair and exact live recovery
+
+- Live Commander session35fb889e-1aca-4992-afee-3807841c74c0 stopped after
+  blockers, during COMBAT_DAMAGE on global turn15. Forge still held a valid
+  running game (31 vs38 life). Cunning Castaway's +1 generated immutable effect
+  source208; the missing hidden trigger mapping produced abilityId0 and the
+  native adapter could not find that synthetic source among real card views.
+- ProjectForgeCards now projects non-emblem Effect-created SVar triggers.
+  Pinned source TrigDrawDiscard and the original native hidden child116810
+  match exactly. Regenerating the full binding overlay changed only Cunning
+  Castaway. Effect source traversal now supplies the actual parent card both
+  for stack presentation and for later discard prompts, with bounded cycle
+  detection. The first trigger test also exposed the previously hidden discard
+  source-ID failure, which was corrected before live application.
+- Added verify_castaway_effect.py: +1, two attacking creatures, one combat
+  trigger, native source ownership, actual loot/discard, and effect expiry
+  through the next combat. The complete original-handler sequence passed.
+- Backups: ForgeArena-Castaway-live-stall-20261025/20261025-235327.zip and
+  ForgeArena-before-Castaway-engine-fix-20261026/20261026-000505.zip under
+  C:\Users\loula\.universal-modder\backups. Evidence, original and fixed
+  snapshots, owned-data binding reports and private recovery helpers are in
+  C:\Users\loula\Documents\Codex\ForgeArenaCastawayFix-20261025.
+- Preserved the actual running game using JVM instrumentation to replace only
+  own adapter method bodies and the one presentation binding. The live rules
+  process43228 was retained. A bounded main-thread helper rebuilt the missing
+  native delta from the last presented checkpoint; native process58684 was
+  also retained. No game actions, replay, restart or fabricated game state.
+- exact-match-restoration.json verifies unchanged session, turn, phase, life,
+  opposing life, hand, battlefield, graveyard, command, exile and hidden state.
+  Rendered repaired-current-game.png shows the proper original Jace trigger
+  and enabled Resolve button; native and Forge gaps are clear at state176.
+  The user can choose when to resolve and which card to discard.
+- Persisted the compiled adapter and regenerated overlay in the local installed
+  package/runtime; full package integrity passed. A future metadata rebuild
+  retains the fix. No GitHub publication. One-off recovery code stays private.
+- Final regressions also passed: all five existing Jace suite groups (draw,
+  polymorph, combat tax, Narset rebound, Ichormoon granted ability) and all four
+  Mana Drain delayed-mana cases. No extra live gameplay actions were performed.
+
+## 2026-10-26 Borrowed Chandra emblem on Nicol Bolas, Dragon-God
+
+- Same live match stalled on global turn24 MAIN1 at27 vs23 life. The player
+  used Nicol Bolas's gained Chandra +2. Forge correctly created the opponent's
+  fourth Chandra emblem; presentationKey incorrectly used its current ability
+  host (Nicol Bolas) instead of getOriginalHost (Chandra). Native display had no
+  mapping for emblem:Nicol Bolas, Dragon-God and failed while building the delta.
+- Verified the live source-ability chain with a read-only JVM agent: current
+  hostNicol Bolas, originalHostChandra and exact Chandra Name/Triggers/description.
+  Changed emblem presentation identity to originalHost, retaining the current
+  host fallback only when originalHost is absent. No rules or asset changes.
+- verify_borrowed_emblem.py passed through original handlers: direct Chandra
+  plus borrowed Nicol Bolas abilities create two distinct Chandra emblems;
+  both tick once at opponent upkeep, taking life20 to18; Bolas loyalty4 to6.
+  The prior full Cunning Castaway combat/loot/expiry regression also passed.
+- Backed up exact IPC to ForgeArena-Bolas-Emblem-live-stall-20261026/
+  20261026-002416.zip, installed app to ForgeArena-before-borrowed-emblem-fix-20261026/
+  20261026-002744.zip under C:\Users\loula\.universal-modder\backups.
+- Repaired the same running rules process43228 and native process58684 in place.
+  No restart, replay or gameplay actions. Exact snapshot comparison verifies
+  all card/game fields unchanged except emblem238's presentation key. Native
+  state501->502 now renders the fourth Chandra emblem and enabled Next control,
+  with both native and Forge gaps clear. Captured and visually inspected
+  repaired-current-game.png. User can continue their existing main phase.
+- Updated packaged/runtime class files and verified complete package integrity;
+  no metadata additions or GitHub release. One-off helpers/evidence stay private
+  in C:\Users\loula\Documents\Codex\ForgeArenaBolasEmblemFix-20261026.
+
+## 2026-10-26 Servo-copy repair and parked match for UI work
+
+- Same match stalled on global turn24 MAIN1 at29 vs23 life when Saheeli's -2
+  made nontoken Mox Amber84 a copy of a Servo. The current face had source image
+  t:c_1_1_a_servo, while its paper printing remained Mox Amber. The old mapper
+  only resolved token scripts when isToken was true, so it emitted Servo Token
+  without a native identity for this legal nontoken copy.
+- presentationKey now reads the active face image, preserving real token status
+  separately; a missing current image alone falls back to paper image. Added
+  verify_token_copy_identity.py: original Saheeli token creation, explicit two
+  targets, Mox retains its instance/nontoken status and Servo body/art, then
+  reverts to Mox at end of turn. Original-handler sequence passed.
+- Backed up IPC to ForgeArena-Servo-copy-live-stall-20261026/20261026-003503.zip.
+  Repaired the same running native/rules processes in place and persisted new
+  class files; package integrity passed. No game actions or restart.
+- User requested preserving the game while working five hours on native UI.
+  The exact running match is now parked: bridge actions/polling are guarded,
+  the Home surface has a native Resume Match button, match inputs/cameras and
+  overlapping canvases are restored on resume. A native button round trip
+  preserved the exact full position, then parked it again at29 vs23.
+- Saved-match files are under installed native-lab/local-profile/saved-matches/
+  jace-commander-current. This is deliberately labeled parked-running-match:
+  requiresRunningClient=true, survivesClientExit=false. Snapshot/backup files
+  are not represented as a lossless standalone game save. Forge GameState's
+  puzzle export skips effects and does not preserve this game's full layers.
+  Keep the existing client/rules processes open. The limitation was disclosed.
+- Private repair evidence: ForgeArenaServoCopyFix-20261026. Park/resume/UI
+  evidence: ForgeArenaUiParity-20261026, both under Documents/Codex. No devlog
+  or public release. The timed UI checkpoint is05:33:33 America/New_York.
+# 2026-10-26 - Native deck browsing and catalogue UI checkpoint
+
+Connected original deck search, colors, sorting and favorites to local deck
+contents. Added original statistics popup and native header cost calculations.
+Restored native printing expansion/favorites and removed the500-result cutoff:
+all16,370 installed titles paginate with only three pages of rendered cards.
+Restored77 exact installed set filters through the original filter evaluator.
+Fixed clipped rarity/type rows in the persistent advanced-filter popup using an
+inherited nested canvas, preserving viewport masking and original graphics.
+
+Validation:41 storage checks and45 bounded native UI interaction checks across
+library, details, catalogue and advanced filters; separate cold-started production
+build and private rendered captures. Original user's game/profile remain intact.
+This is a subsystem checkpoint, not a full-client1:1 claim. No public release.
+
+- UI parity follow-up 2026-10-26: native editor quantity/statistics/format/notice/Done acceptance passes 18 checks; page preservation and native modal focus pass eight. Restored read-only original Avatar/Pet/Sleeve summaries. Native drag handler replay passes six checks; physical drag/keyboard automation remains unverified. Packs passes five isolated-profile workflow checks including native reveal and no duplicate grants. See docs/ui-parity-20261026.md for scope and remaining gaps.
+
+- UI checkpoint final interaction pass: a new isolated real Commander bot match reached native mulligan, accepted physical Keep 7, advanced and returned Home; last-played changed without changing modified time, and statistics survived scene unload. Quantity-only catalogue refresh now reuses native display records; eight cache/printing/search checks plus the existing 18 editor/eight pagination checks pass. Original game resumed/rendered/reparked with identical state bytes at turn24, 29/23. Local package/source/build provenance verified; running match retained, no public release.

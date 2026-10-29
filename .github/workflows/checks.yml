@@ -25,7 +25,7 @@ jobs:
           New-Item -ItemType Directory -Path $reportFolder -Force | Out-Null
           $env:FORGE_ARENA_TEST_OUTPUT = $reportFolder
           foreach ($name in @('verify_tester_updates', 'verify_startup_updates', 'verify_dependencies', 'verify_client_service')) {
-            python -X utf8 -B (Join-Path 'client' ($name + '.py')) > (Join-Path $reportFolder ($name + '.json'))
+            python -X utf8 -B (Join-Path 'development/workspace/packaging' ($name + '.py')) > (Join-Path $reportFolder ($name + '.json'))
             if ($LASTEXITCODE -ne 0) { throw ($name + ' failed') }
           }
       - name: Check Windows bootstrap and saved display settings
@@ -36,8 +36,11 @@ jobs:
           $ErrorActionPreference = 'Stop'
           $reportFolder = Join-Path $env:RUNNER_TEMP 'sandbox-checks'
           $env:FORGE_ARENA_TEST_OUTPUT = $reportFolder
-          & ./client/verify_bootstrap.ps1 > (Join-Path $reportFolder 'bootstrap.txt')
-          dotnet run --project client/adapter-source/Tests/DisplaySettingsProbe.csproj -- (Join-Path $reportFolder 'display-fixture') > (Join-Path $reportFolder 'display.txt')
+          & ./development/workspace/packaging/verify_python_bootstrap.ps1 > (Join-Path $reportFolder 'bootstrap.txt')
+          $displayBuild = Join-Path $reportFolder 'build'
+          dotnet build development/workspace/packaging/DisplaySettingsProbe/DisplaySettingsProbe.csproj "-p:SandboxBuildRoot=$displayBuild" --nologo > (Join-Path $reportFolder 'display-build.txt')
+          if ($LASTEXITCODE -ne 0) { throw 'Saved display build failed' }
+          dotnet (Join-Path $displayBuild 'DisplaySettingsProbe/bin/Debug/net8.0/DisplaySettingsProbe.dll') (Join-Path $reportFolder 'display-fixture') > (Join-Path $reportFolder 'display.txt')
           if ($LASTEXITCODE -ne 0) { throw 'Saved display checks failed' }
       - name: Keep headless reports
         if: always()

@@ -13071,7 +13071,16 @@
             "keywords": {
               "REBOUND": 89
             },
-            "reboundDelayedTrigger": 213
+            "reboundDelayedTrigger": 213,
+            "activated": {},
+            "descriptions": {
+              "{T}: Add {U}.": 1002,
+              "Add {U}.": 1002
+            },
+            "triggerDescriptions": {},
+            "manaDescriptions": {
+              "{T}: Add {U}.": 1002
+            }
           }
         }
       },
@@ -20498,12 +20507,15 @@
               "Create a 2/2 blue Illusion creature token with \"When this token becomes the target of a spell, sacrifice it.\"": 1073,
               "Create two tokens that are copies of CARDNAME, except they're not legendary.": 116811
             },
-            "triggerDescriptions": {},
+            "triggerDescriptions": {
+              "Whenever one or more creatures you control deal combat damage to a player this turn, draw a card, then discard a card.": 116810
+            },
             "manaDescriptions": {},
             "keywords": {
               "REBOUND": 89
             },
-            "reboundDelayedTrigger": 213
+            "reboundDelayedTrigger": 213,
+            "trigger": 116810
           },
           "targetPromptId": 10
         }
@@ -21212,11 +21224,11 @@
               "At the beginning of your next main phase, add an amount of {C} equal to that spell's mana value.": 157355
             },
             "manaDescriptions": {},
-            "trigger": 157355,
             "keywords": {
               "REBOUND": 89
             },
-            "reboundDelayedTrigger": 213
+            "reboundDelayedTrigger": 213,
+            "trigger": 157355
           },
           "targetPromptId": 10
         }
@@ -26748,6 +26760,45 @@
           },
           "reboundDelayedTrigger": 213
         }
+      },
+      "token:phyrexian:Backside": {
+        "grpId": 84617,
+        "titleId": 495942,
+        "types": [
+          "Artifact",
+          "Creature"
+        ],
+        "subtypes": [
+          "Phyrexian"
+        ],
+        "supertypes": [],
+        "color": "Colorless",
+        "colors": [
+          "Artifact"
+        ],
+        "colorIdentity": [],
+        "genericCost": 0,
+        "abilityId": 0,
+        "abilityIds": [],
+        "token": true,
+        "admitted": false,
+        "forgeTokenScript": "incubator_c_0_0_a_phyrexian:Backside",
+        "nativeLinks": [],
+        "bindingBasis": "Original native source links and exact token body, color, types, subtypes and printed keywords; exact pinned active Forge token image and state",
+        "equivalentNativeCandidates": [
+          84617
+        ],
+        "abilityBindings": {
+          "descriptions": {},
+          "activated": {},
+          "triggerDescriptions": {},
+          "keywords": {
+            "REBOUND": 89
+          },
+          "reboundDelayedTrigger": 213
+        },
+        "presentationAliasOf": "token:incubator_c_0_0_a_phyrexian:Backside",
+        "presentationImageKey": "t:phyrexian|EOC|15$alt"
       }
     },
     "provenance": {
@@ -27108,7 +27159,35 @@
         },
         "sourceForgeScriptsSha256": "dffcf416dd40dfa881400df60e5191520b0dfb30fcaaac2c378b5415b927d6e2"
       },
-      "gameplayVerified": false
+      "gameplayVerified": false,
+      "supplementalReconstruction": {
+        "projectionSha256": "b72495598ff26dc5494ed5308ec4b9bca38fc64d7a8ac89a005584a5b3724ff8",
+        "databaseSha256": "1be0105411ad989ca60e233f1341eaaa9276e3a679c89f1ef6f07e07ede10d25",
+        "source": {
+          "scopeSha256": "623be8fe6705e46e71ee627b273c1b7292b0b1b97f27f5e91ffa4ea1966fdad2",
+          "sourceScriptHashes": {
+            "Jace, Cunning Castaway": "0b2cc4b75c4ac7d35f7c950228aaab5c05a7ab67e3e8f4b1467507fe8f7a90fb",
+            "Mana Drain": "65ace45fe4d0f89d009f1785acf9ff95e238acfefd1a76d7c5ec2ebedd1a2ead",
+            "Sunfall": "d3d6aa694fca2b60bbaf3a1f30a722603f5869002873671538d4c191a242f8b1"
+          },
+          "scriptArchiveSha256": "dffcf416dd40dfa881400df60e5191520b0dfb30fcaaac2c378b5415b927d6e2",
+          "forgeJarSha256": "82083a2e52ff04f22e518f705b1a1fcac877a1ee0fa25db4e4fb208bf6a7295a"
+        },
+        "gameplayVerified": false
+      },
+      "seatManaReconstruction": {
+        "projectionSha256": "22ce2bc834daf601279ec293acef4a06d72f6f255ee1e0d46b6325b5545f769a",
+        "databaseSha256": "1be0105411ad989ca60e233f1341eaaa9276e3a679c89f1ef6f07e07ede10d25",
+        "source": {
+          "scopeSha256": "0fec8ab87ecb333f9d4347dbc5565b437d174e2f6d29bed89daf3059dbe669f7",
+          "sourceScriptHashes": {
+            "Seat of the Synod": "c215d013b324cafb9b5bf5207d53c48cad6c463356556fff6937af8e5a677c8d"
+          },
+          "scriptArchiveSha256": "dffcf416dd40dfa881400df60e5191520b0dfb30fcaaac2c378b5415b927d6e2",
+          "forgeJarSha256": "82083a2e52ff04f22e518f705b1a1fcac877a1ee0fa25db4e4fb208bf6a7295a"
+        },
+        "gameplayVerified": false
+      }
     },
     "sourceDatabaseSha256": "1be0105411ad989ca60e233f1341eaaa9276e3a679c89f1ef6f07e07ede10d25",
     "sourceForgeScriptsSha256": "dffcf416dd40dfa881400df60e5191520b0dfb30fcaaac2c378b5415b927d6e2",

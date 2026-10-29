@@ -4,6 +4,7 @@ No private projection or generated game data belongs in a public release.
 """
 from pathlib import Path
 import argparse,hashlib,json,sqlite3,re,html,unicodedata,collections,copy
+from token_presentation_aliases import add_token_presentation_aliases
 p=argparse.ArgumentParser(description=__doc__)
 for k in ('database','projection','manifest','output','report'):p.add_argument('--'+k,type=Path,required=True)
 args=p.parse_args()
@@ -259,6 +260,7 @@ for script,source in projection['tokens'].items():
         if len(matches)==1:trigger_map[desc]=matches[0]['Id'];counts['token trigger exact']+=1
         else:unbound_tokens.append(dict(script=script,trigger=desc,reason='Token trigger has no unique native binding'))
     card['abilityBindings']=dict(descriptions=desc_map,activated=api_map,triggerDescriptions=trigger_map,keywords=keyword_map)
+counts['active token image aliases'] = len(add_token_presentation_aliases(manifest, projection['tokens']))
 manifest['cardNameIds']={r['Name']:r['TitleId'] for r in db.execute('SELECT l.Loc AS Name,MIN(c.TitleId) AS TitleId FROM Cards c JOIN Localizations_enUS l ON c.TitleId=l.LocId AND l.Formatted=1 WHERE c.IsToken=0 GROUP BY l.Loc')}
 for kind in ('CardType','SubType','SuperType'):
     target=manifest['typeEnumIds'].setdefault(kind,{})

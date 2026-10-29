@@ -45,7 +45,7 @@ for return_to_command in (False,True):
         g.check('Tax is offered only for a commander in command',commander['commanderTax']==(2 if return_to_command else 0))
         if return_to_command:
             g.lands(5);commander=g.one('command',EMRY)
-            g.check('No artifact remains to discount the taxed recast',g.cost(commander)==[{'color':'Generic','count':4},{'color':'Blue','count':1}])
+            g.check('No artifact remains to discount the taxed recast',g.cost(commander)==[{'color':'Generic','count':4},{'colors':['Blue'],'count':1}])
             before=g.tapped_lands();g.cast(commander)
             g.check('Actual command recast pays five after Crypt leaves',g.tapped_lands()-before==5 and g.one('battlefield',EMRY)['commandCasts']==2)
         else:g.reject('Declined exiled commander cannot be cast','cast_spell',emry['forgeId'])

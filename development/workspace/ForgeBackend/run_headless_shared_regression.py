@@ -21,8 +21,15 @@ def sha(path):return hashlib.sha256(path.read_bytes()).hexdigest()
 def main():
     p=argparse.ArgumentParser(description=__doc__)
     for key in ('config','policy','worker','managed','fixture','output'):p.add_argument('--'+key,type=Path,required=True)
-    p.add_argument('--group',choices=['decisions','normal','emry','matrix'],required=True);p.add_argument('--max-seconds',type=int,default=2700);a=p.parse_args()
+    p.add_argument('--group',choices=['decisions','normal','emry','matrix','pod'],required=True)
+    p.add_argument('--probe',type=Path,help='Built TurnFlowProbe; required for the pod campaign')
+    p.add_argument('--max-seconds',type=int,default=2700);a=p.parse_args()
     if not 60<=a.max_seconds<=3600:p.error('Use a bounded campaign of60-3600seconds')
+    folder=Path(__file__).resolve().parent;config=json.loads(a.config.read_text());root=Path(config['privateRoot']);prep=root.parent/'preparation.json'
+    manifest=json.loads((root/'native-lab/bridge-card-manifest.json').read_text())
+    if manifest.get('researchOnly') is not True or (root/'native-lab/MTGA.exe').exists():p.error('Use a separately prepared research runtime without a game executable')
+    if not a.output.is_absolute() or a.output.resolve().is_relative_to(folder.parent):p.error('Use a new absolute private output outside the source repository')
+    if a.group=='pod' and (a.probe is None or not a.probe.is_file()):p.error('The pod campaign requires an explicit built --probe')
     a.output.mkdir(parents=True,exist_ok=False)
     env={**os.environ,'FORGE_ARENA_CONFIG':str(a.config),'FORGE_ARENA_POLICY':str(a.policy),'DOTNET_PROCESSOR_COUNT':'2','PYTHONIOENCODING':'utf8'}
     common=['--config',str(a.config),'--policy',str(a.policy),'--worker',str(a.worker),'--managed',str(a.managed),'--fixture',str(a.fixture)]
@@ -43,11 +50,22 @@ def main():
         for seed in (7274,113,5,42,2026,104729,271828,314159,161803,99991,55555,8675309):
             job('duel-'+str(seed),'run_persistent_native_regression.py',common+['--script','verify_normal_duel.py','--seed',str(seed),'--output',str(a.output/('duel-'+str(seed)))],180)
         job('terminal-direct','verify_terminal.py')
+    elif a.group=='pod':
+        # Pod tools consume the prepared manifest, not a separate admission policy.
+        pod_common=['--config',str(a.config),'--worker',str(a.worker),'--managed',str(a.managed),'--fixture',str(a.fixture)]
+        for key in ('native_blocker_recovery','commander_pod_combat','commander_pod_targets','commander_pod_tax','commander_pod_boundaries','commander_modes'):
+            job(key,'verify_'+key+'.py',pod_common+['--output',str(a.output/key)],400)
+        job('commander_pod_yield','verify_commander_pod_yield.py',['--config',str(a.config),'--probe',str(a.probe),'--managed',str(a.managed),'--fixture',str(a.fixture),'--output',str(a.output/'commander_pod_yield')],150)
     else:
         for key in ('emry_mechanics','emry_brawl','emry_artifact_land','emry_legend','emry_target_invalidation','emry_library_boundary','emry_commander_bounce','emry_commander_exile','paradox_engine'):
             job(key,'run_persistent_native_regression.py',common+['--script','verify_'+key+'.py','--output',str(a.output/key)],timeout=300)
-    folder=Path(__file__).resolve().parent;config=json.loads(a.config.read_text());root=Path(config['privateRoot']);prep=root.parent/'preparation.json'
-    hashes={str(path):sha(path) for path in [prep,a.config,a.policy,*a.worker.parent.glob('*.dll')]};rows=[];start=time.monotonic();timed_out=False
+    pinned=[prep,a.config,a.policy,a.fixture,Path(__file__).resolve(),
+            root/'native-lab/bridge-card-manifest.json',root/'forge-runtime/forge.jar',root/'forge-runtime/gson.jar',
+            root/'forge-runtime/res/cardsfolder/cardsfolder.zip',
+            *sorted((root/'build/ForgeBackend/classes').glob('*.class')),
+            *a.worker.parent.glob('*.dll'),*(folder/script for _,script,_,_ in jobs)]
+    if a.probe is not None:pinned.extend(a.probe.parent.glob('*.dll'))
+    hashes={str(path):sha(path) for path in pinned};rows=[];start=time.monotonic();timed_out=False
     for name,script,args,timeout in jobs:
         remaining=a.max_seconds-(time.monotonic()-start)
         if remaining<30:timed_out=True;break

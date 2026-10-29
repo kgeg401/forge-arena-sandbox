@@ -45,6 +45,9 @@ internal sealed class NativeDeckScreen
     private DeckFolderView? _folder;
     private string? _selected;
     private bool _browsing;
+    private NativeDeckBrowserControls? _browser;
+    private NativeDeckDetailsView? _details;
+    private NativeCatalogueView? _catalogue;
     private NativeClientDialogs? _dialogs;
     private LocalDeckLibrary? _library;
     private JObject? _deck;
@@ -60,8 +63,9 @@ internal sealed class NativeDeckScreen
     private uint[] _poolIds=Array.Empty<uint>();
     private static NativeDeckScreen? _active;
     private bool _constructing;
+    private Coroutine? _pendingDrop;
     public NativeDeckScreen(string root,PAPA papa,Action<string> log,NativeMenuSurface? surface=null,NativeClientDialogs? dialogs=null){_root=root;_papa=papa;_log=log;_surface=surface;_dialogs=dialogs;}
-    public void Hide(){if(_dirty)Save();_advanced?.gameObject.SetActive(false);_surface?.ClearTransientPresentation();if(_wrapper!=null)_wrapper.gameObject.SetActive(false);if(_manager!=null)_manager.gameObject.SetActive(false);}
+    public void Hide(){CancelDrag();if(_dirty)Save();_details?.Hide();_advanced?.gameObject.SetActive(false);_surface?.ClearTransientPresentation();if(_wrapper!=null)_wrapper.gameObject.SetActive(false);if(_manager!=null)_manager.gameObject.SetActive(false);}
     public void FlushProfile(){if(_dirty && _deck!=null){_library!.Save(_deck);_dirty=false;_log("Saved pending local deck changes on client exit.");}}
     public LocalDeckLibrary Library=>_library!;
     public List<DeckViewInfo> DeckInfos()=>_library!.Decks.OfType<JObject>().Select(GetInfo).ToList();
@@ -76,6 +80,7 @@ internal sealed class NativeDeckScreen
         _library=new LocalDeckLibrary(Path.Combine(_root,"local-profile","decks.json"),Path.Combine(_root,"deck-catalog.json"));
         _filters=new NativeCatalogueFilters(_papa.CardDatabase,_library.Cards.Keys);
         _surface=_surface??new NativeMenuSurface(_papa);_active=this;
+        NativeDeckDragAdapter.Initialize(card=>card.Holder!=null && (ReferenceEquals(card.Holder,_pool) || (_list!=null && ReferenceEquals(card.Holder,_list.MainDeckCardHolder))));
         var harmony=new Harmony("local.codex.forge-arena-decks");
         foreach(var spec in new[]{(typeof(WrapperDeckBuilder),new[]{"Awake","OnEnable","OnDestroy","Update"}),(typeof(DeckBuilderWidget),new[]{"OnEnable","OnDisable","OnDestroy"}),(typeof(DeckListView),new[]{"OnEnable","OnDisable","OnDestroy"}),(typeof(DeckMainTitlePanel),new[]{"OnEnable","OnDisable"}),(typeof(SearchAndFilterBar),new[]{"Awake","OnEnable","OnDisable","OnDestroy"}),(typeof(CardPoolHolder),new[]{"OnEnable","OnDisable","OnDestroy"}),(typeof(AdvancedFiltersView),new[]{"Awake","OnEnable","OnDisable"})})
             foreach(string method in spec.Item2)harmony.Patch(AccessTools.Method(spec.Item1,method),prefix:new HarmonyMethod(typeof(NativeDeckScreen),nameof(SkipOnlineLifecycle)));
@@ -97,10 +102,12 @@ internal sealed class NativeDeckScreen
             ((RectTransform)_list.transform).StretchToParent();
             var holder=_list.MainDeckCardHolder;holder.EnsureInit(_papa.CardDatabase,_papa.CardViewBuilder);holder.RolloverZoomView=_surface.Zoom;
             holder.OnCardAddClicked=v=>Act(()=>Adjust(v.Card.GrpId,1));holder.OnCardRemoveClicked=v=>Act(()=>Adjust(v.Card.GrpId,-1));
-            holder.CanSingleClickCards=v=>false;holder.CanDragCards=v=>false;
+            holder.CanSingleClickCards=v=>false;holder.CanDragCards=v=>!_choosingCommander;
+            holder.CanDropCards=v=>!_choosingCommander && ReferenceEquals(v.Holder,_pool);
+            holder.OnCardDropped=(view,destination)=>QueueDrop(view,1);
             holder.ClearCommanderCards();holder.ClearPartnerCards();holder.ClearCompanionCards();
             var commander=holder._commanderHolder;commander.EnsureInit(_papa.CardDatabase,_papa.CardViewBuilder);commander.RolloverZoomView=_surface.Zoom;
-            commander.CanSingleClickCards=v=>false;commander.CanDragCards=v=>false;
+            commander.CanSingleClickCards=v=>true;commander.CanDoubleClickCards=v=>false;commander.CanDragCards=v=>false;
             commander.OnCardClicked=v=>Act(()=>{_deck!["commander"]=new JObject();_deck["format"]="arena-brawl";_dirty=true;Refresh();});
             Bind(commander.AddButton,()=>{BeginCommanderChoice();RefreshPool();});
             _list.SideboardCardHolder.gameObject.SetActive(false);_list.SideboardTitlePanel.gameObject.SetActive(false);_list.ShowSideboardToggle.gameObject.SetActive(false);
@@ -108,13 +115,15 @@ internal sealed class NativeDeckScreen
             Clear(_list.DeckNameInput.onEndEdit);_list.DeckNameInput.characterLimit=80;
             _list.DeckNameInput.onEndEdit.AddListener(name=>Act(()=>{if(string.IsNullOrWhiteSpace(name))throw new InvalidDataException("Enter a deck name.");_deck!["name"]=name;_dirty=true;Refresh();}));
             _list.MainDeckTitlePanel.SetDeckFormatSelector(null!,false,false);
-            Bind(_list.MainDeckTitlePanel.Button,ChooseFormat);
+            Bind(_list.MainDeckTitlePanel.Button,()=>ShowDetails(_deck!));
             _list.SetSleeve("CardBack_Default",_papa.CardViewBuilder,_papa.CardDatabase);
             _pool=UnityEngine.Object.Instantiate((CardPoolHolder)Field(_widget,"_poolHolderPrefab"),(Transform)Field(_widget,"_poolParent"));
             ((RectTransform)_pool.transform).StretchToParent();_pool.EnsureInit(_papa.CardDatabase,_papa.CardViewBuilder);
             _pool.DirectlySetZoomHandler=_surface.Zoom;_pool.RolloverZoomView=_surface.Zoom;
             _pool.OnCardClicked=v=>Act(()=>{if(_choosingCommander){if(!_library!.IsVerifiedCommander(v.Card.GrpId))throw new InvalidDataException("This commander is not verified for Brawl.");_deck!["commander"]=new JObject{[v.Card.GrpId.ToString()]=1};_deck["format"]="arena-brawl";_choosingCommander=false;_dirty=true;Refresh();}else Adjust(v.Card.GrpId,1);});_pool.OnCardRightClicked=null;
-            _pool.CanSingleClickCards=v=>true;_pool.CanDragCards=v=>false;_pool.CanDropCards=v=>false;
+            _pool.CanSingleClickCards=v=>true;_pool.CanDragCards=v=>!_choosingCommander;
+            _pool.CanDropCards=v=>!_choosingCommander && ReferenceEquals(v.Holder,holder);
+            _pool.OnCardDropped=(view,destination)=>QueueDrop(view,-1);
             _pool.ShowHighlight=v=>true;
             _header=UnityEngine.Object.Instantiate((SearchAndFilterBar)Field(_widget,"_headerPrefab"),(Transform)Field(_widget,"_headerParent"));
             ((RectTransform)_header.transform).StretchToParent();
@@ -139,6 +148,7 @@ internal sealed class NativeDeckScreen
             _header.SearchInput.ShowSearchTips+=visible=>((GameObject)Field(_header,"_advancedSearchTips")).SetActive(visible);
             Bind((CustomButton)Field(_widget,"_doneButton"),()=>{Save();ShowLibrary();});
             Bind((CustomButton)Field(_widget,"_backButton"),()=>{Save();ShowLibrary();});
+            ((CustomButton)Field(_widget,"_backButton")).gameObject.SetActive(false);
             ((CustomButton)Field(_widget,"_batchCraftingButton")).gameObject.SetActive(false);
             ((CustomButton)Field(_widget,"_applySkinsButton")).gameObject.SetActive(false);
             _library.Seed(Path.Combine(_root,"local-deck-seeds"));
@@ -173,7 +183,19 @@ internal sealed class NativeDeckScreen
     }
     private static void Clear(UnityEventBase events){for(int i=0;i<events.GetPersistentEventCount();i++)events.SetPersistentListenerState(i,UnityEventCallState.Off);events.RemoveAllListeners();}
     private void Bind(CustomButton button,Action action){button.Interactable=true;Clear(button.OnClick);button.OnClick.RemoveAllListeners();button.OnClick.AddListener(()=>Act(action));}
-    private void Act(Action action){try{action();_message="";}catch(Exception ex){_message=ex.Message;_log(ex.ToString());}ShowMessage();WriteStatus();}
+    private void Act(Action action)
+    {
+        try{action();_message="";}
+        catch(Exception ex)
+        {
+            _message=ex.Message;_log(ex.ToString());
+            // A details/filter modal can cover the deck header. Use Arena's
+            // original notice above it so a rejected edit is still explained.
+            _dialogs=_dialogs??new NativeClientDialogs(_papa);
+            _dialogs.Show("Deck could not be changed",ex.Message);
+        }
+        ShowMessage();WriteStatus();
+    }
     private void Adjust(uint id,int change)
     {
         var cards=(JObject)_deck!["main"]!;string key=id.ToString();int count=checked(((int?)cards[key]??0)+change);
@@ -181,13 +203,31 @@ internal sealed class NativeDeckScreen
         int total=new[]{"main","sideboard","commander","companion"}.Sum(pile=>((JObject)_deck[pile]!).Properties().Sum(p=>(int)p.Value));
         if(change>0 && checked(total+change)>1000)throw new InvalidDataException("Local editing is limited to 1000 total cards.");
         if(count<=0)cards.Remove(key);else cards[key]=count;
-        _dirty=true;Refresh();
+        _dirty=true;Refresh(true);
+    }
+    private void QueueDrop(MetaCardView card,int change)
+    {
+        if(_pendingDrop!=null || _deck==null)return;
+        _pendingDrop=_widget!.StartCoroutine(ApplyDrop(card.Card.GrpId,change,(string)_deck["id"]!));
+    }
+    private IEnumerator ApplyDrop(uint id,int change,string deckId)
+    {
+        // Let the original OnEndDrag restore/release its visual before a
+        // quantity change can destroy the last list row or rebuild a pool page.
+        yield return null;_pendingDrop=null;
+        if(_browsing || _wrapper==null || !_wrapper.gameObject.activeInHierarchy || (string?)_deck?["id"]!=deckId)yield break;
+        Act(()=>Adjust(id,change));
+    }
+    private void CancelDrag()
+    {
+        if(_pendingDrop!=null && _widget!=null){_widget.StopCoroutine(_pendingDrop);_pendingDrop=null;}
+        _pool?.ReleaseAllDraggingCards();_list?.MainDeckCardHolder.ReleaseAllDraggingCards();
     }
     private void Save(){_library!.Save(_deck!);_dirty=false;_selected=(string)_deck!["id"]!;_log("Saved local deck "+_deck["id"]+" / "+_deck["name"]);Refresh();}
-    private void NewDeck(){if(_dirty)Save();_deck=_library!.New("New sandbox deck");_dirty=true;_choosingCommander=false;ShowEditor();Refresh();ChooseFormat();}
+    private void NewDeck(){if(_dirty)Save();_deck=_library!.New("New sandbox deck");_dirty=true;_choosingCommander=false;ShowEditor();_pool!.ScrollToTop();Refresh();ChooseFormat();}
     private void BeginCommanderChoice()
     {
-        _choosingCommander=true;_query="";_header!.SearchInput.text="";_filters!.Reset();SyncFilterControls();
+        _choosingCommander=true;_query="";_header!.SearchInput.text="";_filters!.Reset();SyncFilterControls();_pool!.ScrollToTop();
     }
     private void ChooseFormat()
     {
@@ -196,12 +236,13 @@ internal sealed class NativeDeckScreen
         var dropdown=(TMP_Dropdown)Field(panel,"_formatDropdown");Clear(dropdown.onValueChanged);dropdown.ClearOptions();dropdown.AddOptions(new List<string>{"Practice Bot","Brawl Bot",""});dropdown.SetValueWithoutNotify(2);dropdown.options.RemoveAt(2);
         dropdown.onValueChanged.AddListener(index=>Act(()=>{if(index<0 || index>1)throw new InvalidDataException("Choose Practice or Brawl.");if(index==0 && ((JObject)_deck!["commander"]!).HasValues){dropdown.SetValueWithoutNotify(1);throw new InvalidOperationException("Remove the commander before switching this deck to Practice.");}_deck!["format"]=index==1?"arena-brawl":"practice";_dirty=true;panel.SetDeckFormatSelector(null!,false,false);_choosingCommander=index==1 && !((JObject)_deck["commander"]!).HasValues;if(_choosingCommander)BeginCommanderChoice();else{_query="";_header!.SearchInput.text="";}Refresh();}));
     }
-    private void Refresh()
+    private void Refresh(bool quantitiesOnly=false)
     {
         var values=((JObject)_deck!["main"]!).Properties().Select(p=>new{Id=uint.Parse(p.Name),Count=(uint)p.Value});
         var display=values.Select(p=>new ListMetaCardViewDisplayInformation{Card=_papa.CardDatabase.CardDataProvider.GetCardPrintingById(p.Id),Quantity=p.Count,Invalid=!(bool)_library!.Cards[p.Id]["matchSupported"]!}).ToList();
         display=CardSorter.Sort(display,_papa.CardDatabase,SortType.LandLast,SortType.CMCWithXLast,SortType.ColorOrder,SortType.Title).ToList();
         _list!.MainDeckCardHolder.SetCards(display);_list.DeckNameInput.SetTextWithoutNotify((string)_deck["name"]!);
+        _list.CostWidget.SetDeck(display.Select(c=>new CardPrintingQuantity{Printing=c.Card,Quantity=c.Quantity}).ToList());
         var commanders=((JObject)_deck["commander"]!).Properties().ToArray();
         bool brawl=commanders.Length>0 || (string?)_deck["format"]=="arena-brawl";
         if(brawl)
@@ -215,20 +256,19 @@ internal sealed class NativeDeckScreen
         var countFormat=new DeckFormat(null!,Languages.ActiveLocProvider){MinMainDeckCards=brawl?100:40,MaxMainDeckCards=brawl?100:250};
         _list.MainDeckTitlePanel.SetCardCount(total,countFormat,brawl?100:40,false);
         var text=(TMP_Text)Field(_list.MainDeckTitlePanel,"_detailsText");
-        var gaps=_library!.MatchGaps(_deck);text.text=(brawl?"Brawl":"Practice")+(_library.IsExperimental(_deck)?" • Experimental / unverified":"")+" • "+(gaps.Length==0?(_dirty?"Unsaved":"Saved"):(gaps.Length+" match limitation(s)"));
-        RefreshPool();WriteStatus();
+        var gaps=_library!.MatchGaps(_deck);text.text=(brawl?"Brawl / Commander":"Practice")+(gaps.Length>0?" • "+gaps.Length+" issue(s)":"");
+        if(quantitiesOnly && _catalogue!=null)_catalogue.RefreshQuantities();else RefreshPool(false);
+        WriteStatus();
     }
-    private void RefreshPool()
+    private void RefreshPool(bool resetPage=true)
     {
+        _catalogue=_catalogue??new NativeCatalogueView(Path.Combine(_root,"local-profile","preferred-printings.json"),_papa,_pool!,_library!.Cards.Keys,id=>(bool)_library.Cards[id]["preferred"]!,()=>_deck!);
         var candidates=_library!.Cards.Values.Where(c=>!_choosingCommander || _library.IsVerifiedCommander((uint)c["grpId"]!))
-            .Where(c=>(bool)c["preferred"]! || _query.Length>0 || _choosingCommander)
-            .GroupBy(c=>(string)c["name"]!).Select(g=>g.OrderByDescending(c=>(bool)c["preferred"]!).ThenByDescending(c=>(uint)c["grpId"]!).First());
+            .ToArray();
         var criteria=_filters!.Selected.Contains(CardFilterType.Type_Land)?new[]{SortType.BasicLandsFirst,SortType.ColorOrder,SortType.CMCWithXLast,SortType.Title}:CardSorter.CardPoolNewCardsFirstSort;
         var matched=CardSorter.Sort(_filters.Apply(candidates.Select(c=>(uint)c["grpId"]!),_query),_papa.CardDatabase,false,criteria).ToArray();
-        _poolResultCount=matched.Length;_poolIds=matched.Take(500).Select(c=>c.GrpId).ToArray();
-        var display=matched.Take(500).Select(card=>new PagesMetaCardViewDisplayInformation{Card=card,Max=999,AvailablePrintingCount=999,AvailableTitleCount=999,RemainingTitleCount=999,QuantityStyle=PagesMetaCardView.QuantityDisplayStyle.Infinity}).ToList();
-        _pool!.SetCards(display,false);_pool.ScrollToTop();
-        if(_header!=null)_header.EventCardPoolTitleText.text=(_choosingCommander?"Choose an enabled Brawl commander":_query.Length>0?"Arena search":"Enabled sandbox cards")+" ("+_poolResultCount+(_poolResultCount>500?", first 500":"")+")";
+        _catalogue.SetCards(matched,resetPage);_poolResultCount=_catalogue.TitleCount;_poolIds=_catalogue.DisplayIds.ToArray();
+        if(_header!=null)_header.EventCardPoolTitleText.text=(_choosingCommander?"Choose a Brawl commander":"All Cards")+" ("+_poolResultCount+")";
     }
     private void SetFilter(CardFilterType type,bool value)
     {
@@ -245,6 +285,11 @@ internal sealed class NativeDeckScreen
                 if(view.FilterToggle!=null && view.FilterToggle.interactable)view.FilterToggle.isOn=selected.Contains(view.FilterType);
             _header.LandsToggle.isOn=selected.Contains(CardFilterType.Type_Land);
             _header.FiltersUsedToggle.SetIsOnWithoutNotify(selected.Count>0);
+            if(_advanced!=null)foreach(var group in (IEnumerable)Field(_advanced,"_filterGroupsOfMTGSets"))
+            {
+                var views=(List<CardFilterView>)Field(group!,"AllFilterViews");
+                ((Toggle)Field(group!,"Toggle")).SetIsOnWithoutNotify(views.Count>0 && views.All(view=>selected.Contains(view.FilterType)));
+            }
         }
         finally{_syncingFilters=false;}
     }
@@ -258,12 +303,27 @@ internal sealed class NativeDeckScreen
         ((GameObject)Field(_advanced,"_collectedCardsGroup")).transform.parent.gameObject.SetActive(false);
         var onlineColumn=_advanced.transform.Find("Content/Scroll/Viewport/ContentCONTAINER/Column_2");
         if(onlineColumn==null)throw new InvalidDataException("The installed advanced filter layout changed.");
-        onlineColumn.gameObject.SetActive(false);
-        foreach(var group in (IEnumerable)Field(_advanced,"_filterGroupsOfMTGSets"))
+        onlineColumn.gameObject.SetActive(true);
+        // Keep the original left-column graphics in a separate native UI batch.
+        // Without this canvas the persistent popup drops their clipped meshes.
+        // Inherit sorting and the outer viewport mask; retain normal scrolling.
+        var filterColumn=_advanced.transform.Find("Content/Scroll/Viewport/ContentCONTAINER/Column_1");
+        var columnCanvas=filterColumn.gameObject.AddComponent<Canvas>();columnCanvas.overrideSorting=false;
+        filterColumn.gameObject.AddComponent<GraphicRaycaster>();
+        var groups=((IEnumerable)Field(_advanced,"_filterGroupsOfMTGSets")).Cast<AdvancedFiltersView.FilterGroupView>().ToArray();
+        foreach(var group in groups)
         {
-            ((GameObject)Field(group!,"Container")).SetActive(false);
-            ((Toggle)Field(group!,"Toggle")).gameObject.SetActive(false);
+            group.Container.SetActive(false);group.Toggle.gameObject.SetActive(false);
         }
+        var setGroup=groups[0];var prefab=(CardFilterView)Field(_advanced,"_setFilterViewPrefab");
+        foreach(var set in _filters!.SetFilters.OrderByDescending(s=>(int)s.Key))
+        {
+            var view=UnityEngine.Object.Instantiate(prefab,setGroup.Container.transform);view.Initialize(set.Key,set.Value);setGroup.AllFilterViews.Add(view);
+        }
+        for(var node=setGroup.Container.transform;node!=null && node!=_advanced.transform;node=node.parent)node.gameObject.SetActive(true);
+        ((TMP_Text)Field(_advanced,"_formatLegalText")).text=Languages.ActiveLocProvider.GetLocalizedText("MainNav/Collection/AllSets");
+        Clear(setGroup.Toggle.onValueChanged);setGroup.Toggle.gameObject.SetActive(true);setGroup.Toggle.interactable=true;
+        setGroup.Toggle.onValueChanged.AddListener(value=>Act(()=>{foreach(var view in setGroup.AllFilterViews)view.FilterToggle.isOn=value;}));
         foreach(var view in _advanced.GetComponentsInChildren<CardFilterView>(true))
         {
             var local=view;bool available=!view.FilterType.ToString().StartsWith("Collection_");
@@ -274,7 +334,9 @@ internal sealed class NativeDeckScreen
         var reset=(Button)Field(_advanced,"_resetButton");Clear(reset.onClick);
         reset.onClick.AddListener(()=>Act(()=>{_filters!.Reset();_query="";_header!.SearchInput.text="";SyncFilterControls();}));
         Clear(_header!.AdvancedFiltersButton.onClick);_header.AdvancedFiltersButton.interactable=true;
-        _header.AdvancedFiltersButton.onClick.AddListener(()=>Act(()=>{_surface!.ClearTransientPresentation();SyncFilterControls();_advanced.Show();}));
+        _header.AdvancedFiltersButton.onClick.AddListener(()=>Act(()=>{
+            _surface!.ClearTransientPresentation();SyncFilterControls();_advanced.Show();
+        }));
         _header.FiltersUsedToggle.gameObject.SetActive(true);_header.FiltersUsedToggle.interactable=false;
         SyncFilterControls();_advanced.gameObject.SetActive(false);
     }
@@ -296,26 +358,51 @@ internal sealed class NativeDeckScreen
         ((CustomButton)Field(_manager,"_editDeckButton")).SetText(Languages.ActiveLocProvider.GetLocalizedText("MainNav/DeckManager/Button_Edit"));
         Bind((CustomButton)Field(_manager,"_importDeckButton"),()=>{var imported=_library!.Import(GUIUtility.systemCopyBuffer,"Imported deck");_library.Save(imported);_selected=(string)imported["id"]!;ShowLibrary();});
         Bind((CustomButton)Field(_manager,"_exportDeckButton"),()=>{var deck=Find(Selected());var text=_library!.Export(deck);GUIUtility.systemCopyBuffer=text;ExportFile(deck);_log("Exported deck to clipboard and local file: "+deck["id"]);});
-        Bind((CustomButton)Field(_manager,"_cloneDeckButton"),()=>{var deck=Find(Selected());deck["id"]=Guid.NewGuid().ToString();deck["name"]=((string)deck["name"]!).Substring(0,Math.Min(73,((string)deck["name"]!).Length))+" (copy)";_library!.Save(deck);_selected=(string)deck["id"]!;ShowLibrary();});
+        Bind((CustomButton)Field(_manager,"_cloneDeckButton"),()=>{var deck=Find(Selected());deck["id"]=Guid.NewGuid().ToString();deck["name"]=((string)deck["name"]!).Substring(0,Math.Min(73,((string)deck["name"]!).Length))+" (copy)";deck.Remove("favorite");deck.Remove("lastPlayedUtc");_library!.Save(deck);_selected=(string)deck["id"]!;ShowLibrary();});
         Bind((CustomButton)Field(_manager,"_deleteDeckButton"),()=>{
             var id=Selected();var name=(string)Find(id)["name"]!;_dialogs=_dialogs??new NativeClientDialogs(_papa);
             _dialogs.Confirm("Delete local deck?","Delete “"+name+"”? This removes it from this sandbox's deck library.","Delete",()=>Act(()=>{_library!.Delete(id);_selected=null;ShowLibrary();}));
         });
-        foreach(string field in new[]{"_deckDetailsButton","_favoriteDeckButton","_craftAllButton","_collectionButton"})((CustomButton)Field(_manager,field)).gameObject.SetActive(false);
+        foreach(string field in new[]{"_craftAllButton","_collectionButton"})((CustomButton)Field(_manager,field)).gameObject.SetActive(false);
+        var details=(CustomButton)Field(_manager,"_deckDetailsButton");details.gameObject.SetActive(true);Bind(details,OpenDetails);
         foreach(var dropdown in _manager.GetComponentsInChildren<TMP_Dropdown>(true))dropdown.interactable=false;
-        // Manager filter bars require server format data; unsupported controls stay inactive.
-        ((Transform)Field(_manager,"_deckFilterBarPrefab")).gameObject.SetActive(false);
-        ((DeckFilterBar)Field(_manager,"_deckColorFilterPrefab")).gameObject.SetActive(false);
+        _browser=new NativeDeckBrowserControls(_manager,ShowLibrary,()=>_selected,Find,(id,value)=>_library!.SetFavorite(id,value));
     }
     private JObject Find(string id)=>_library!.Decks.OfType<JObject>().First(d=>string.Equals((string)d["id"]!,id,StringComparison.OrdinalIgnoreCase));
     private string Selected()=>_selected??throw new InvalidOperationException("Select a local deck first.");
-    private void Select(string id){_selected=id;_folder!.SelectDeck(_folder.GetDeckViewInfo(id));UpdateLibraryText();}
-    private void Edit(string id){if(_dirty)throw new InvalidOperationException("Save the current deck before switching.");_choosingCommander=false;_deck=Find(id);_selected=id;ShowEditor();Refresh();}
+    private void OpenDetails()
+    {
+        ShowDetails(Find(Selected()));
+    }
+    private void ShowDetails(JObject deck)
+    {
+        _surface!.ClearTransientPresentation();
+        _details=_details??new NativeDeckDetailsView(_papa,(Transform)Field(_browsing?(object)_manager!:_widget!,"_popupRoot"),
+            (id,name)=>ChangeDetails(id,value=>value["name"]=name),
+            (id,format)=>ChangeDetails(id,value=>{
+                if(format=="practice" && ((JObject)value["commander"]!).HasValues)throw new InvalidOperationException("Remove the commander before switching this deck to Practice.");
+                value["format"]=format;
+            }),error=>Act(()=>throw error),_surface.Zoom);
+        // The editor popup must stay active while the library is hidden and vice versa.
+        _details.Popup.transform.SetParent((Transform)Field(_browsing?(object)_manager!:_widget!,"_popupRoot"),false);
+        _details.Open(deck,GetInfo(deck));
+    }
+    private void ChangeDetails(string id,Action<JObject> change)
+    {
+        if(!_browsing && (string?)_deck?["id"]==id){change(_deck!);_dirty=true;Refresh();}
+        else{var value=Find(id);change(value);_library!.Save(value);if((string?)_deck?["id"]==id)_deck=value;ShowLibrary();}
+    }
+    public void RecordPlayed(Guid id)=>_library!.RecordPlayed(id.ToString());
+    private void Select(string id){_selected=id;_folder!.SelectDeck(_folder.GetDeckViewInfo(id));_browser?.SelectionChanged();UpdateLibraryText();}
+    private void Edit(string id){if(_dirty)throw new InvalidOperationException("Save the current deck before switching.");_choosingCommander=false;_deck=Find(id);_selected=id;ShowEditor();_pool!.ScrollToTop();Refresh();}
     private void ShowEditor(){_browsing=false;_manager?.gameObject.SetActive(false);_wrapper!.gameObject.SetActive(true);}
     private void ShowLibrary()
     {
+        CancelDrag();
         _browsing=true;_wrapper!.gameObject.SetActive(false);_manager!.gameObject.SetActive(true);
-        var infos=_library!.Decks.OfType<JObject>().Select(GetInfo).ToList();_folder!.SetDecks(infos,true);_folder.SetFolderOpenState(true);
+        var infos=_library!.Decks.OfType<JObject>().Select(GetInfo).ToList();if(_browser!=null)infos=_browser.Apply(infos);
+        if(_selected!=null && !infos.Any(info=>info.deckId.ToString()==_selected))_selected=null;
+        _folder!.SetDecks(infos,true);_folder.SetFolderOpenState(true);
         ((Localize)Field(_folder,"_invalidGridDescription")).gameObject.SetActive(false);
         ((Transform)Field(_folder,"_invalidGridParent")).gameObject.SetActive(false);
         foreach(var view in _folder.GetComponentsInChildren<DeckView>(true))
@@ -330,16 +417,17 @@ internal sealed class NativeDeckScreen
             }
         }
         if(_selected!=null){var info=infos.FirstOrDefault(i=>i.deckId.ToString()==_selected);if(info!=null)_folder.SelectDeck(info);}
-        UpdateLibraryText();
+        _browser?.SelectionChanged();UpdateLibraryText();
     }
-    private void UpdateLibraryText(){if(_manager!=null)((TMP_Text)Field(_manager,"_deckCountText")).text=_library!.Decks.Count+" / ∞";}
+    private void UpdateLibraryText(){if(_manager!=null)((TMP_Text)Field(_manager,"_deckCountText")).text=(_browser!=null && _browser.VisibleCount<_browser.TotalCount?"<color=#5555FF>"+_browser.VisibleCount+"</color>":_library!.Decks.Count.ToString())+" / ∞";}
     internal DeckViewInfo GetInfo(JObject deck)
     {
         var first=((JObject)deck["main"]!).Properties().OrderBy(p=>(int)_library!.Cards[uint.Parse(p.Name)]["sort"]![0]!).ThenByDescending(p=>(int)p.Value).FirstOrDefault();
         first=((JObject)deck["commander"]!).Properties().FirstOrDefault()??first;
         var printing=first==null?null:_papa.CardDatabase.CardDataProvider.GetCardPrintingById(uint.Parse(first.Name));
         string art=printing?.ImageAssetPath??"";
-        return new DeckViewInfo{deckId=Guid.Parse((string)deck["id"]!),deckName=(string)deck["name"]!,deck=new Client_Deck(new Client_DeckSummary{DeckId=Guid.Parse((string)deck["id"]!),Name=(string)deck["name"]!,Avatar="Avatar_Basic_AjaniGoldmane",CardBack="CardBack_Default"}),accountCosmeticDefaults=new ClientVanitySelectionsV3{avatarSelection="Avatar_Basic_AjaniGoldmane",cardBackSelection="CardBack_Default"},sleeveData=CardDataExtensions.CreateSkinCard(0,_papa.CardDatabase,"","CardBack_Default",true),crop=_papa.CardViewBuilder.CardMaterialBuilder.CropDatabase.GetCrop(art,"Normal")??ArtCrop.DEFAULT,deckImageAssetPath=_papa.CardViewBuilder.CardMaterialBuilder.TextureLoader.GetCardArtPath(art)};
+        var info=new DeckViewInfo{deckId=Guid.Parse((string)deck["id"]!),deckName=(string)deck["name"]!,deck=new Client_Deck(new Client_DeckSummary{DeckId=Guid.Parse((string)deck["id"]!),Name=(string)deck["name"]!,Avatar="Avatar_Basic_AjaniGoldmane",CardBack="CardBack_Default"}),accountCosmeticDefaults=new ClientVanitySelectionsV3{avatarSelection="Avatar_Basic_AjaniGoldmane",cardBackSelection="CardBack_Default"},sleeveData=CardDataExtensions.CreateSkinCard(0,_papa.CardDatabase,"","CardBack_Default",true),crop=_papa.CardViewBuilder.CardMaterialBuilder.CropDatabase.GetCrop(art,"Normal")??ArtCrop.DEFAULT,deckImageAssetPath=_papa.CardViewBuilder.CardMaterialBuilder.TextureLoader.GetCardArtPath(art)};
+        NativeDeckBrowserControls.CompleteInfo(info,deck,_papa,_library!.MatchGaps(deck).Length==0);return info;
     }
     private void ExportFile(JObject deck){Directory.CreateDirectory(Path.Combine(_root,"local-deck-exports"));File.WriteAllText(Path.Combine(_root,"local-deck-exports",(string)deck["id"]!+".txt"),_library!.Export(deck));}
     private void ShowMessage(){if(_message!=""){if(_browsing && _manager!=null)((TMP_Text)Field(_manager,"_deckCountText")).text=_message;else if(_list!=null)((TMP_Text)Field(_list.MainDeckTitlePanel,"_detailsText")).text=_message;}}
@@ -373,6 +461,9 @@ internal sealed class NativeDeckScreen
                 case "select_format":
                     ((TMP_Dropdown)Field(_list!.MainDeckTitlePanel,"_formatDropdown")).value=(int)action["index"]!;break;
                 case "new":NewDeck();break;
+                case "library_query":_browser!.QueryText((string)action["text"]!);break;
+                case "library_sort":_browser!.SetSort((int)action["index"]!);break;
+                case "library_format":_browser!.SetFormat((int)action["index"]!);break;
                 case "rename":_deck["name"]=(string)action["name"]!;_dirty=true;Refresh();break;
                 case "adjust":Adjust((uint)action["grpId"]!,(int)action["change"]!);break;
                 default:throw new NotSupportedException("Unsupported deck action.");

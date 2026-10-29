@@ -146,6 +146,7 @@ public sealed class Plugin : BaseUnityPlugin
             }
             var scenes = Enumerable.Range(0, SceneManager.sceneCount).Select(i => SceneManager.GetSceneAt(i).name).ToArray();
             var game = UnityEngine.Object.FindFirstObjectByType<GameManager>();
+            if(game!=null && papa!=null && _forge?.IsCommanderPod==true)NativeCommanderPodView.Ensure(game,papa,()=>{if(_forge?.IsCommanderPod==true)_shell?.ShowPodDetails(_forge.PodDetails());});
             NativeInputDiagnostics.Enabled=File.Exists(Path.Combine(_root,"input-diagnostics.flag"));
             var nativeActionPath=Path.Combine(_root,"native-action.request.json");
             if(File.Exists(nativeActionPath))
@@ -340,11 +341,13 @@ public sealed class Plugin : BaseUnityPlugin
                 return true;
             });
         manager.Initialize(_connection, papa.CardDatabase);
+        // Multiplayer layout captures the local seat during scene initialization.
+        HarmonyLib.AccessTools.Property(typeof(MatchManager),"LocalPlayerSeatId").SetValue(manager,1u,null);
         manager.LocalPlayerInfo.SeatId = 1;
         manager.LocalPlayerInfo.TeamId = 1;
         manager.OpponentInfo.SeatId = 2;
         manager.OpponentInfo.TeamId = 2;
-        if(_forge?.Scenario=="brawl-duel")
+        if(_forge?.Scenario=="brawl-duel" || _forge?.Scenario=="commander-duel" || _forge?.IsCommanderPod==true)
         {
             manager.LocalPlayerInfo.Commanders=_forge.Commanders(1);
             manager.OpponentInfo.Commanders=_forge.Commanders(2);
@@ -360,6 +363,15 @@ public sealed class Plugin : BaseUnityPlugin
         _events.Add("Native avatar portraits: "+localPortrait+" | "+opponentPortrait);
         manager.Players.Add(manager.LocalPlayerInfo);
         manager.Players.Add(manager.OpponentInfo);
+        if(_forge?.IsCommanderPod==true)
+        {
+            manager.LocalPlayerInfo.ScreenName=_forge.PlayerName(1);
+            manager.OpponentInfo.ScreenName=_forge.PlayerName(2);
+            for(int seat=3;seat<=_forge.PlayerCount;seat++)
+                manager.Players.Add(new MatchManager.PlayerInfo(_forge.PlayerName(seat))
+                {SeatId=(uint)seat,TeamId=(uint)seat,AvatarSelection=AvatarIdConstants.Sparky,Commanders=_forge.Commanders(seat)});
+            _events.Add("Four-player Commander roster configured before native match scene load.");
+        }
         var fixture = JObject.Parse(File.ReadAllText(Path.Combine(_root, "board-fixture.json")));
         var full = GREToClientMessage.Parser.ParseJson(fixture["messages"]![0]!.ToString(Formatting.None));
         _phase = "loading-native-match-scene";

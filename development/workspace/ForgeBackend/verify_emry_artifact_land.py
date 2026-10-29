@@ -7,10 +7,12 @@ SEAT='Seat of the Synod'
 deck=parse_deck('8 Island\n16 Seat of the Synod\n8 Emry, Lurker of the Loch\n8 Ornithopter\n','Artifact land boundary practice')
 g=EmryGame(deck_override=deck)
 try:
-    seat=g.ensure_hand(SEAT);g.send('play_land',seat['forgeId']);g.send('activate_mana',seat['forgeId'])
+    seat=g.ensure_hand(SEAT);g.send('play_land',seat['forgeId'])
+    mana=next(o for o in g.s['legalManaOffers'] if o['forgeId']==seat['forgeId'])
+    g.send('activate_mana',seat['forgeId'],abilityId=mana['abilityId'])
     g.check('Seat produces actual blue mana',g.s['manaTotal']==1 and g.s['mana'][0]['color']==2 and g.s['mana'][0]['sourceForgeId']==seat['forgeId'])
     g.next_main();nextseat=g.ensure_hand(SEAT);g.send('play_land',nextseat['forgeId']);emry=g.ensure_hand(EMRY)
-    g.check('Two artifact lands reduce Emry generic cost to zero',g.cost(emry)==[{'color':'Blue','count':1}])
+    g.check('Two artifact lands reduce Emry generic cost to zero',g.cost(emry)==[{'colors':['Blue'],'count':1}])
     before=sum(c['tapped'] for c in g.cards('battlefield'));g.cast(emry)
     g.check('Blue cost remains and is actually paid',sum(c['tapped'] for c in g.cards('battlefield'))-before==1)
     for _ in range(3):

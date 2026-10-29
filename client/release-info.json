@@ -1,9 +1,9 @@
 {
-  "version": "0.2.0-alpha.8",
-  "displayVersion": "0.2.0 alpha 8",
-  "headline": "Fix Mana Drain next-main-phase mana stall",
+  "version": "0.2.0-alpha.9",
+  "displayVersion": "0.2.0-alpha.9",
+  "headline": "Local Commander pod and human gameplay fixes",
   "testRelease": true,
-  "gameplaySource": "HEAD",
+  "gameplaySource": "4f98a79",
   "admittedNames": [
     "Plains",
     "Island",

@@ -46,8 +46,10 @@ internal sealed class NativeClientShell
     private bool _cancelRequested;
     private string? _reportedServiceError;
     private string? _rulesSession;
+    private bool _reportedPodElimination;
     private readonly HashSet<string> _reportedUnavailableActions=new HashSet<string>();
     private DateTime _queuedAt;
+    private Guid? _queuedDeckId;
     private bool _warmingPacks;
     private float _packsDeadline;
     private GameObject? _loading;
@@ -57,6 +59,7 @@ internal sealed class NativeClientShell
     private string _screen="starting";
     private string? _error;
     public NativeMenuSurface Surface {get;private set;}=null!;
+    public void ShowPodDetails(string message){if(_matchActive && !_returning && _dialogs?.IsOpen==false)_dialogs.Show("Commander Pod",message,"Close");}
     public NativeClientShell(string root,PAPA papa,Action<string> log,MonoBehaviour runner,Action startMatch,Func<IEnumerator> endMatch){_root=root;_papa=papa;_log=log;_runner=runner;_startMatch=startMatch;_endMatch=endMatch;}
     private static bool Owned(Component obj)=>_active!=null && (_active._constructing || (_active.Surface!=null && obj.transform.IsChildOf(_active.Surface.Root)));
     private static bool SkipOnline(Component __instance)=>!Owned(__instance);
@@ -134,7 +137,8 @@ internal sealed class NativeClientShell
         string target=Path.Combine(_root,"client-service-status.json");
         var service=JObject.Parse(File.ReadAllText(target));if((string?)service["session"]!=_session || !new[]{"idle","cancelled","error"}.Contains((string?)service["phase"]) || !DateTimeOffset.TryParse((string?)service["utc"],out var heartbeat) || DateTimeOffset.UtcNow-heartbeat>TimeSpan.FromSeconds(15))throw new InvalidOperationException("The local match service is not ready. Close and reopen the client.");
         _matchRequest=Guid.NewGuid().ToString();
-        _cancelRequested=false;_reportedServiceError=null;_rulesSession=null;_reportedUnavailableActions.Clear();_queuedAt=DateTime.UtcNow;
+        _queuedDeckId=id;
+        _cancelRequested=false;_reportedServiceError=null;_rulesSession=null;_reportedPodElimination=false;_reportedUnavailableActions.Clear();_queuedAt=DateTime.UtcNow;
         var request=new JObject{["schema"]=1,["session"]=_session,["id"]=_matchRequest,["action"]="start",["queue"]=queue,["deckId"]=id.ToString()};
         string path=Path.Combine(_root,"client-service.request.json");if(File.Exists(path)){_matchRequest=null;throw new InvalidOperationException("A local match request is still pending.");}
         File.WriteAllText(path+".pending",request.ToString());File.Move(path+".pending",path);
@@ -216,6 +220,7 @@ internal sealed class NativeClientShell
             HideQueue();Surface.SetVisible(false);_matchActive=true;_screen="match";
             try{_startMatch();Send("match-started",new JObject{["matchRequestId"]=_matchRequest});}
             catch{_matchActive=false;Surface.SetVisible(true);throw;}
+            if(_queuedDeckId is Guid played){try{_decks!.RecordPlayed(played);}catch(Exception error){_log("Could not record last-played time; match continues: "+error.Message);}_queuedDeckId=null;}
         }
         else if(new[]{"idle","cancelled","error"}.Contains(phase))
         {
@@ -278,7 +283,13 @@ internal sealed class NativeClientShell
         JObject state;
         try{using(var stream=new FileStream(Path.Combine(_root,"forge-ipc","state.json"),FileMode.Open,FileAccess.Read,FileShare.ReadWrite|FileShare.Delete))using(var reader=new StreamReader(stream))state=JObject.Parse(reader.ReadToEnd());}
         catch(IOException){return;}catch(JsonException){return;}
-        if((string?)state["session"]!=_rulesSession || state["decision"] is JObject)return;
+        if((string?)state["session"]!=_rulesSession)return;
+        if((bool?)state["pod"]==true && (bool?)state["localLost"]==true && (bool?)state["gameOver"]!=true)
+        {
+            if(!_reportedPodElimination){_reportedPodElimination=true;_dialogs.Show("Eliminated from the pod","Your seat has been eliminated. This local practice session pauses here. Return Home to start another match.","Return Home",RequestReturn);}
+            return;
+        }
+        if(state["decision"] is JObject)return;
         var messages=new List<string>();
         foreach(var item in (JArray?)state["unavailableActions"]??new JArray())
         {

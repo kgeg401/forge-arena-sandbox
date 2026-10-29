@@ -45,6 +45,10 @@ def parse_brawl(text,name='Local Brawl deck'):
     if commander in EXPERIMENTAL['cards'] or any(n in EXPERIMENTAL['cards'] for n in main):result['experimental']=True
     return result
 
+def parse_commander(text,name="Local Commander deck"):
+    result=parse_brawl(text,name);result["format"]="commander-40";return result
+
+
 def parse_deck(text, name='Custom practice deck'):
     counts = {};unsupported=[]
     for number, raw in enumerate(text.splitlines(), 1):
@@ -72,16 +76,16 @@ def read_deck(path,format='practice'):
     if not path.is_file() or path.stat().st_size > 262144:
         raise ValueError('Select a deck text file under 256 KB.')
     raw = path.read_bytes()
-    deck = (parse_brawl if format=='arena-brawl' else parse_deck)(raw.decode('utf-8-sig'), path.stem)
+    deck = (parse_commander if format=='commander-40' else parse_brawl if format=='arena-brawl' else parse_deck)(raw.decode('utf-8-sig'), path.stem)
     deck.update(source=str(path), sha256=hashlib.sha256(raw).hexdigest(),
                 printingPolicy='Pinned native identities; experimental cards are unverified' if deck.get('experimental') else 'Pinned verified Arena art; export set and collector labels are not imported',
-                formatPolicy='Arena Brawl sandbox: 99 main plus one commander, singleton and admitted color identity; no queue banlist claim' if format=='arena-brawl' else 'Sandbox main deck, 40 to 250 cards, unrestricted copy counts; no format legality claim')
+                formatPolicy='Commander sandbox: 40 life, 99 main plus one commander, singleton and admitted color identity; no queue banlist claim' if format=='commander-40' else 'Arena Brawl sandbox: 99 main plus one commander, singleton and admitted color identity; no queue banlist claim' if format=='arena-brawl' else 'Sandbox main deck, 40 to 250 cards, unrestricted copy counts; no format legality claim')
     return deck
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('deck'); parser.add_argument('--opponent')
-    parser.add_argument('--format',choices=('practice','arena-brawl'),default='practice')
+    parser.add_argument('--format',choices=('practice','arena-brawl','commander-40'),default='practice')
     args = parser.parse_args()
     try:
         local = read_deck(args.deck,args.format)

@@ -40,7 +40,7 @@ internal static class NativeTurnProtocol
         {
             "UNTAP"=>"UPKEEP","UPKEEP"=>"DRAW","DRAW"=>"MAIN1",
             "MAIN1"=>"COMBAT_BEGIN","COMBAT_BEGIN"=>"COMBAT_DECLARE_ATTACKERS",
-            "COMBAT_DECLARE_ATTACKERS"=>((JArray)state["battlefield"]!).Any(c=>(int?)c["attackTarget"]>0)?"COMBAT_DECLARE_BLOCKERS":"COMBAT_END",
+            "COMBAT_DECLARE_ATTACKERS"=>((JArray)state["battlefield"]!).Any(c=>(int?)c["attackTarget"]>0 || (int?)c["attackTargetForgeId"]>0)?"COMBAT_DECLARE_BLOCKERS":"COMBAT_END",
             "COMBAT_FIRST_STRIKE_DAMAGE"=>"COMBAT_DAMAGE","COMBAT_DAMAGE"=>"COMBAT_END",
             "COMBAT_END"=>"MAIN2","MAIN2"=>"END_OF_TURN","END_OF_TURN"=>"CLEANUP",
             _=>null

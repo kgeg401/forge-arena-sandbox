@@ -93,12 +93,15 @@
     "persistent native Home/Decks/Packs/Play",
     "normal practice bot matches",
     "100-card Brawl bot matches",
+    "40-life Commander bot matches",
+    "four-player local Commander with one human and three bots",
+    "experimental shared table and public zones",
     "native commander slot and local format choice",
     "local sandbox pack opening",
     "native local deck browser"
   ],
   "excluded": [
-    "multiplayer",
+    "network multiplayer",
     "online matchmaking",
     "retail account services",
     "complete card support",

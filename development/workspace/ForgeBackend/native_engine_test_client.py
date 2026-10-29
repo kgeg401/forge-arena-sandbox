@@ -16,7 +16,7 @@ from runtime_paths import ROOT
 
 class NativeEngine(Engine):
     def __init__(self,scenario='card-family',*,worker,managed,fixture,**settings):
-        if (ROOT/'native-lab/MTGA.exe').exists() or json.loads((ROOT/'native-lab/bridge-card-manifest.json').read_text()).get('researchOnly') is not True:
+        if (ROOT/'native-lab/MTGA.exe').exists() or json.loads((ROOT/'native-lab/bridge-card-manifest.json').read_text(encoding="utf-8-sig")).get('researchOnly') is not True:
             raise ValueError('Persistent native tests require an isolated research runtime')
         super().__init__(scenario,**settings)
         self.native_folder=self.ipc/'native-worker'

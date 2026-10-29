@@ -91,6 +91,7 @@ internal sealed class LocalDeckLibrary
     private void Validate(JObject deck)
     {
         if(!Guid.TryParse((string?)deck["id"],out _) || string.IsNullOrWhiteSpace((string?)deck["name"]) || ((string)deck["name"]!).Length>80)throw new InvalidDataException("Deck requires an ID and a name of 1 to 80 characters.");
+        if(deck["favorite"]!=null && deck["favorite"]!.Type!=JTokenType.Boolean)throw new InvalidDataException("Deck favorite must be a boolean; original library preserved.");
         if(deck["format"]!=null && !new[]{"practice","arena-brawl"}.Contains((string?)deck["format"]))throw new InvalidDataException("Unsupported saved sandbox deck format.");
         int total=0;
         foreach(string pile in new[]{"main","sideboard","commander","companion"})
@@ -106,6 +107,7 @@ internal sealed class LocalDeckLibrary
         Validate(deck);var next=(JObject)_state.DeepClone();var decks=(JArray)next["decks"]!;
         var previous=decks.OfType<JObject>().FirstOrDefault(d=>string.Equals((string)d["id"]!,(string)deck["id"]!,StringComparison.OrdinalIgnoreCase));
         var value=(JObject)deck.DeepClone();value["updatedUtc"]=DateTime.UtcNow;
+        if(previous!=null)foreach(string key in new[]{"favorite","lastPlayedUtc"})if(previous[key]!=null)value[key]=previous[key]!.DeepClone();
         if(previous==null)decks.Add(value);else previous.Replace(value);
         Commit(next);
     }
@@ -113,6 +115,16 @@ internal sealed class LocalDeckLibrary
     {
         var next=(JObject)_state.DeepClone();var deck=((JArray)next["decks"]!).OfType<JObject>().FirstOrDefault(d=>string.Equals((string)d["id"]!,id,StringComparison.OrdinalIgnoreCase))??throw new InvalidDataException("Deck no longer exists.");
         deck.Remove();Commit(next);
+    }
+    public void SetFavorite(string id,bool favorite)
+    {
+        var next=(JObject)_state.DeepClone();var deck=((JArray)next["decks"]!).OfType<JObject>().Single(d=>string.Equals((string)d["id"]!,id,StringComparison.OrdinalIgnoreCase));
+        if((bool?)deck["favorite"]==favorite)return;deck["favorite"]=favorite;Commit(next);
+    }
+    public void RecordPlayed(string id)
+    {
+        var next=(JObject)_state.DeepClone();var deck=((JArray)next["decks"]!).OfType<JObject>().Single(d=>string.Equals((string)d["id"]!,id,StringComparison.OrdinalIgnoreCase));
+        deck["lastPlayedUtc"]=DateTime.UtcNow;Commit(next);
     }
     private void Commit(JObject next)
     {
@@ -152,16 +164,17 @@ internal sealed class LocalDeckLibrary
     }
     public string[] MatchGaps(JObject deck,string? format=null)
     {
+        string commanderLabel=format=="SandboxCommander" || format=="SandboxCommanderPod"?"Commander":"Brawl";
         var gaps=new List<string>();int count=((JObject)deck["main"]!).Properties().Sum(p=>(int)p.Value);
         var commanders=((JObject)deck["commander"]!).Properties().ToArray();
-        bool brawl=format=="SandboxBrawl" || (format==null && (commanders.Length>0 || (string?)deck["format"]=="arena-brawl"));
+        bool brawl=format=="SandboxBrawl" || format=="SandboxCommander" || format=="SandboxCommanderPod" || (format==null && (commanders.Length>0 || (string?)deck["format"]=="arena-brawl"));
         if(brawl)
         {
-            if(commanders.Length!=1 || commanders.Sum(p=>(int)p.Value)!=1)gaps.Add("Brawl requires exactly one commander.");
-            if(count!=99)gaps.Add("Brawl requires 99 main cards plus one commander (currently "+count+" main cards).");
+            if(commanders.Length!=1 || commanders.Sum(p=>(int)p.Value)!=1)gaps.Add(commanderLabel+" requires exactly one commander.");
+            if(count!=99)gaps.Add(commanderLabel+" requires 99 main cards plus one commander (currently "+count+" main cards).");
             string? commander=commanders.Length==1?(string?)Cards[uint.Parse(commanders[0].Name)]["name"]:null;
             var definition=commander==null?null:_matchCards[commander];
-            if((bool?)definition?["commanderAdmitted"]!=true)gaps.Add("This commander is not enabled for Brawl: "+commander);
+            if((bool?)definition?["commanderAdmitted"]!=true)gaps.Add("This commander is not enabled for "+commanderLabel+": "+commander);
             var colors=new HashSet<string>((definition?["colorIdentity"] as JArray??new JArray()).Values<string>()!);
             var counts=((JObject)deck["main"]!).Properties().GroupBy(p=>(string)Cards[uint.Parse(p.Name)]["name"]!).Select(g=>new{Name=g.Key,Count=g.Sum(p=>(int)p.Value)});
             foreach(var item in counts)
@@ -169,10 +182,10 @@ internal sealed class LocalDeckLibrary
                 var card=_matchCards[item.Name];
                 if(item.Name==commander)gaps.Add("The commander also appears in the main deck.");
                 if((bool?)card?["admitted"]!=true)gaps.Add("Unverified match card: "+item.Name);
-                if(item.Count!=1 && !new[]{"Plains","Island","Swamp","Mountain","Forest"}.Contains(item.Name))gaps.Add("Brawl is singleton except basic lands: "+item.Name);
+                if(item.Count!=1 && !new[]{"Plains","Island","Swamp","Mountain","Forest"}.Contains(item.Name))gaps.Add(commanderLabel+" is singleton except basic lands: "+item.Name);
                 if(definition?["colorIdentity"] is JArray && card?["colorIdentity"] is JArray identity && identity.Values<string>().Any(c=>!colors.Contains(c!)))gaps.Add("Outside commander color identity: "+item.Name);
             }
-            foreach(string pile in new[]{"sideboard","companion"})if(((JObject)deck[pile]!).HasValues)gaps.Add("Brawl does not support "+pile+" cards.");
+            foreach(string pile in new[]{"sideboard","companion"})if(((JObject)deck[pile]!).HasValues)gaps.Add(commanderLabel+" does not support "+pile+" cards.");
             return gaps.ToArray();
         }
         if(count<40 || count>250)gaps.Add("Practice requires 40 to 250 main-deck cards (currently "+count+").");

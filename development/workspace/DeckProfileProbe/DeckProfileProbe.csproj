@@ -2,6 +2,7 @@
   <PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework></PropertyGroup>
   <ItemGroup>
     <Compile Include="..\NativeHost\LocalDeckLibrary.cs" Link="LocalDeckLibrary.cs" />
+    <Compile Include="..\NativeHost\LocalPrintingPreferences.cs" Link="LocalPrintingPreferences.cs" />
     <Reference Include="Newtonsoft.Json"><HintPath>$(ArenaManagedDir)\Newtonsoft.Json.dll</HintPath></Reference>
   </ItemGroup>
 </Project>

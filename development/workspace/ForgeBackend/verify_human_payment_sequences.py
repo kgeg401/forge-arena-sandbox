@@ -10,7 +10,7 @@ a=p.parse_args();os.environ['FORGE_ARENA_CONFIG']=str(a.config)
 from native_engine_test_client import NativeEngine
 a.output.mkdir(parents=True,exist_ok=False);E=a.output
 records=[]
-inputs={str(f):hashlib.sha256(f.read_bytes()).hexdigest() for f in (Path(__file__),a.config,a.fixture,a.worker,Path(json.loads(a.config.read_text())['privateRoot'])/'native-lab/bridge-card-manifest.json')}
+inputs={str(f):hashlib.sha256(f.read_bytes()).hexdigest() for f in (Path(__file__),a.config,a.fixture,a.worker,Path(json.loads(a.config.read_text(encoding="utf-8-sig"))['privateRoot'])/'native-lab/bridge-card-manifest.json')}
 started=time.time()
 def Engine(*args,**kw):return NativeEngine(*args,worker=a.worker,managed=a.managed,fixture=a.fixture,**kw)
 
@@ -18,14 +18,14 @@ def action(e,op,card=0,plans=None,plan_queue=None,**fields):
     prior=e.state.get('decision') or {};seen={prior.get('token')} if op.startswith('submit_') else set()
     shared=plan_queue is not None;plans=plan_queue if shared else list(plans or []);root=e.begin(op,card,**fields);pending=[root];deadline=time.monotonic()+30
     while time.monotonic()<deadline:
-        if e.process.poll() is not None:raise RuntimeError((e.ipc/'engine.log').read_text()[-2500:])
+        if e.process.poll() is not None:raise RuntimeError((e.ipc/'engine.log').read_text(encoding="utf-8-sig")[-2500:])
         for key in pending[:]:
             p=e.ipc/'responses'/(key+'.json')
             if p.exists():
-                r=json.loads(p.read_text());assert r['accepted'],r['reason'];pending.remove(key);e.state=r['state']
+                r=json.loads(p.read_text(encoding="utf-8-sig"));assert r['accepted'],r['reason'];pending.remove(key);e.state=r['state']
         p=e.ipc/'decision.json'
         if p.exists():
-            try:d=json.loads(p.read_text())
+            try:d=json.loads(p.read_text(encoding="utf-8-sig"))
             except (FileNotFoundError,PermissionError,json.JSONDecodeError):continue
             spec=d['state'].get('decision',{})
             if d['token'] not in seen:
@@ -56,7 +56,7 @@ def action(e,op,card=0,plans=None,plan_queue=None,**fields):
                     values=[dict(choiceId=o['choiceId']) for o in selected]
                 pending.append(e.begin('submit_choice',decisionToken=d['token'],assignments=values))
         elif not pending:
-            e.state=json.loads((e.ipc/'state.json').read_text())
+            e.state=json.loads((e.ipc/'state.json').read_text(encoding="utf-8-sig"))
             if not shared:assert not plans,plans
             return
         time.sleep(.025)
@@ -176,9 +176,19 @@ def check_phyrexian_compleated():
   e=None
   try:
    e=Engine('card-family',fixtureHand=['Jace, the Perfected Mind'],fixtureLands=['Island']*(3 if pay_life else 4),fixtureLibrary=['Plains']*10)
+   jace=e.state['hand'][0]
+   manifest=json.loads((Path(json.loads(a.config.read_text(encoding='utf-8-sig'))['privateRoot'])/'native-lab/bridge-card-manifest.json').read_text(encoding='utf-8-sig'))
+   printing=manifest['cards']['Jace, the Perfected Mind']['grpId']
+   def presented_loyalty():
+    updates=[obj for line in (e.ipc/'native-wire.jsonl').read_text(encoding='utf-8-sig').splitlines() for row in [json.loads(line)] if row.get('direction')=='incoming' for obj in row.get('message',{}).get('gameStateMessage',{}).get('gameObjects',[]) if obj.get('grpId')==printing and 'loyalty' in obj]
+    assert updates,'Original native parser received no Jace loyalty presentation'
+    return updates[-1]['loyalty']['value']
+   assert jace['loyalty']==0 and jace['baseLoyalty']=='5'
+   assert presented_loyalty()==5,'Hand must show printed five loyalty before any counters exist'
    action(e,'cast_spell',e.state['hand'][0]['forgeId'],[dict(type='confirm',accept=pay_life)])
    action(e,'pass_priority');j=next(c for c in e.state['battlefield'] if c['name']=='Jace, the Perfected Mind')
    assert e.state['life']==(18 if pay_life else 20),e.state['life'];assert j['loyalty']==(3 if pay_life else 5),j['loyalty']
+   assert presented_loyalty()==(3 if pay_life else 5),'Battlefield presentation must retain actual compleated counters'
    r=dict(id='jace-compleated-life' if pay_life else 'jace-compleated-mana',passed=True,evidence=str(e.ipc))
   except BaseException as ex:r=dict(id=str(pay_life),passed=False,error=str(ex),evidence=str(e.ipc) if e else '')
   finally:
@@ -419,7 +429,7 @@ def check_jace_emblem():
     if "results" in locals():assert all(r["passed"] for r in results),results
 
 def check_emblem_creators():
-    m=json.loads((Path(json.loads(a.config.read_text())['privateRoot'])/'native-lab/bridge-card-manifest.json').read_text());results=[]
+    m=json.loads((Path(json.loads(a.config.read_text(encoding="utf-8-sig"))['privateRoot'])/'native-lab/bridge-card-manifest.json').read_text(encoding="utf-8-sig"));results=[]
     for key,d in m['cards'].items():
      if not d.get('emblemPresentation'):continue
      name=d['parentName'];e=None
@@ -798,7 +808,7 @@ def check_mana_combinations():
       if name=='selvala':settings=dict(fixtureHand=[],fixtureLands=['Forest'],fixtureBattlefield=['Selvala, Heart of the Wilds','Craterhoof Behemoth'],fixtureBattlefieldReady=True,fixtureLibrary=['Plains']*10)
       else:settings=dict(fixtureHand=['Aven Interrupter','Jace, Cunning Castaway'],fixtureLands=['Forest','Island','Plains'],fixtureBattlefield=['Interplanar Beacon'],fixtureLibrary=['Plains']*10)
       e=Engine('card-family',**settings);source='Selvala, Heart of the Wilds' if name=='selvala' else 'Interplanar Beacon';c=next(c for c in e.state['battlefield'] if c['name']==source);offers=[a for a in e.state['legalManaOffers'] if a['forgeId']==c['forgeId']]
-      manifest=json.loads((Path(json.loads(Path(os.environ['FORGE_ARENA_CONFIG']).read_text())['privateRoot'])/'native-lab/bridge-card-manifest.json').read_text());ids={v for text,v in manifest['cards'][source]['abilityBindings']['descriptions'].items() if 'Add two mana of different colors' in text}
+      manifest=json.loads((Path(json.loads(Path(os.environ['FORGE_ARENA_CONFIG']).read_text(encoding="utf-8-sig"))['privateRoot'])/'native-lab/bridge-card-manifest.json').read_text(encoding="utf-8-sig"));ids={v for text,v in manifest['cards'][source]['abilityBindings']['descriptions'].items() if 'Add two mana of different colors' in text}
       if name=='beacon':assert len(ids)==1,ids
       ability=offers[0] if name=='selvala' else next(a for a in offers if a['abilityId']==next(iter(ids)))
       plans=[dict(type='colors',label='green'),dict(type='number',number=3),dict(type='colors',label='blue'),dict(type='number',number=2)] if name=='selvala' else [dict(type='colors',label='white'),dict(type='colors',label='blue')]
@@ -907,7 +917,7 @@ def check_replacement_labels():
    action(e,'cast_spell',e.state['hand'][0]['forgeId']);resolve(e,[dict(type='options',label=first)]+([dict(type='options',label='Prosperous Innkeeper (#1)')] if squirrels==2 else []))
    counts={n:sum(c['name']==n for c in e.state['battlefield']) for n in ['Treasure Token','Food Token','Squirrel Token']};assert counts=={'Treasure Token':1,'Food Token':1,'Squirrel Token':squirrels},counts
    # Inspect the native translation's actual button strings, not just source text.
-   native=[json.loads(x) for x in (e.native_folder/'native-model.jsonl').read_text().splitlines()];labels=[r['value']['labels'] for r in native if r['kind']=='original-choice-ui'];assert ['Chatterfang, Squirrel General','Peregrin Took'] in labels,labels
+   native=[json.loads(x) for x in (e.native_folder/'native-model.jsonl').read_text(encoding="utf-8-sig").splitlines()];labels=[r['value']['labels'] for r in native if r['kind']=='original-choice-ui'];assert ['Chatterfang, Squirrel General','Peregrin Took'] in labels,labels
    print(json.dumps(dict(first=first,passed=True,tokens=counts,evidence=str(e.ipc))),flush=True)
   finally:e.close()
 

@@ -76,12 +76,13 @@ internal static class Program
             }
         }
         var bridge=new ForgeLandBridge(root,local,message=>Record("bridge-log",new JValue(message)),()=>presented,()=>false,ipc);
-        JObject Status()=>new JObject{["schema"]=1,["worker"]=worker,["session"]=bridge.Session,["nativeStateId"]=presented,["nativeMessageId"]=interaction?.OriginalMessage.MsgId,["updateOrdinal"]=updateOrdinal,["interaction"]=interaction?.GetType().Name,["gap"]=bridge.Gap,["state"]=bridge.ResearchState};
+        JObject Status()=>new JObject{["schema"]=1,["worker"]=worker,["session"]=bridge.Session,["nativeStateId"]=presented,["nativeMessageId"]=interaction?.OriginalMessage.MsgId,["updateOrdinal"]=updateOrdinal,["interaction"]=interaction?.GetType().Name,["gap"]=bridge.Gap,["state"]=bridge.ResearchState,["podDetails"]=bridge.IsCommanderPod?bridge.PodDetails():null};
         var observedCopyIds=new Dictionary<int,uint>();
         void ValidateModel()
         {
             if(latest==null)throw new InvalidOperationException("Native parser produced no game-state model");
             var state=bridge.ResearchState;
+            if((string?)state["phase"]=="COMBAT_DECLARE_ATTACKERS" && ((JArray)state["battlefield"]!).Any(c=>(int?)c["attackTargetForgeId"]>0) && (latest.NextPhase!=Phase.Combat || latest.NextStep!=Step.DeclareBlock))throw new InvalidOperationException("A planeswalker attack must retain the native blocker-step destination");
             var visible=new[]{"hand","battlefield","stack","graveyard","command","exile"}.SelectMany(k=>(JArray?)state[k]??new JArray()).ToArray();
             var hidden=((JArray?)state["hidden"]??new JArray()).ToArray();
             var liveObjects=visible.Concat(hidden).Concat((JArray?)state["stackAbilities"]??new JArray()).ToList();
@@ -107,7 +108,16 @@ internal static class Program
                 if(target!=0){if(!attachedWith.TryGetValue(target,out var group))attachedWith[target]=group=new HashSet<uint>();group.Add(source);}
                 if(latest.AllCards.TryGetValue(source,out var entity) && entity.AttachedToId!=target)throw new InvalidOperationException("Native attachment target differs from Forge");
             }
-            if(latest.GetPlayerById(1).LifeTotal!=(int)state["life"]! || latest.GetPlayerById(2).LifeTotal!=(int)state["opponentLife"]!)throw new InvalidOperationException("Native player life differs from Forge");
+            if(state["players"] is JArray roster)
+            {
+                foreach(var player in roster)
+                {
+                    var native=latest.GetPlayerById((uint)player["seat"]!);
+                    if(native==null || native.LifeTotal!=(int)player["life"]!)throw new InvalidOperationException("Native player roster/life differs from Forge at seat "+player["seat"]);
+                    if((bool?)state["pod"]==true && (bool?)player["lost"]==true && native.Status!=PlayerStatus.Removed)throw new InvalidOperationException("Eliminated pod player remains active in the native model");
+                }
+            }
+            else if(latest.GetPlayerById(1).LifeTotal!=(int)state["life"]! || latest.GetPlayerById(2).LifeTotal!=(int)state["opponentLife"]!)throw new InvalidOperationException("Native player life differs from Forge");
             if(latest.GetPlayerById(1).ManaPool.Sum(m=>(long)m.Count)!=(int)state["manaTotal"]!)throw new InvalidOperationException("Native mana pool quantity differs from Forge");
             foreach(var card in new[]{"hand","battlefield","stack","graveyard","command","exile"}.SelectMany(k=>(JArray?)state[k]??new JArray()))
             {

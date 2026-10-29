@@ -34,7 +34,7 @@ for command in (False,True):
         zone='command' if command else 'hand';g.check('Emry reaches chosen '+zone,any(c['forgeId']==emry['forgeId'] for c in g.cards(zone,EMRY)))
         g.next_main();g.optional_land();card=g.one(zone,EMRY)
         expected=5 if command else 3
-        g.check('Tax only applies to command cast',g.cost(card)==[{'color':'Generic','count':expected-1},{'color':'Blue','count':1}])
+        g.check('Tax only applies to command cast',g.cost(card)==[{'color':'Generic','count':expected-1},{'colors':['Blue'],'count':1}])
         before=g.tapped_lands();g.cast(card)
         g.check('Recast really pays chosen-zone cost',g.tapped_lands()-before==expected)
         g.check('Only command cast increments commander history',g.one('battlefield',EMRY)['commandCasts']==(2 if command else 1))

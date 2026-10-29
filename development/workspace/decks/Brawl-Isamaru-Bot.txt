@@ -1,64 +1,11 @@
+# Gentle setup opponent. Legacy filename is retained for coordinator compatibility.
 Commander
-1 Isamaru, Hound of Konda
+1 Emry, Lurker of the Loch
 
 Deck
-40 Plains
-1 Ornithopter
-1 Tormod's Crypt
-1 Swooping Lookout
-1 Battlefield Raptor
-1 Healer's Hawk
-1 Rustwing Falcon
-1 Sanctuary Cat
-1 Savannah Lions
-1 Segovian Angel
-1 Staunch Shieldmate
-1 Yoked Ox
-1 Consulate Skygate
-1 Field Creeper
-1 Ageless Guardian
-1 Alabaster Host Sanctifier
-1 Alpine Watchdog
-1 Bishop's Soldier
-1 Brightblade Stoat
-1 Cliffhaven Sell-Sword
-1 Concordia Pegasus
-1 Daybreak Chaplain
-1 Devilthorn Fox
-1 Divine Arrow
-1 Fencing Ace
-1 Hare Apparent
-1 Huatli's Snubhorn
-1 Impassioned Orator
-1 Knight of New Benalia
-1 Kyoshi Warrior Guard
-1 Leonin Skyhunter
-1 Maned Serval
-1 Mesa Unicorn
-1 Oreskos Swiftclaw
-1 Prowling Caracal
-1 Raptor Companion
-1 Savai Sabertooth
-1 Silverbeak Griffin
-1 Skyblade of the Legion
-1 Steadfast Paladin
-1 Stormfront Pegasus
-1 Story Seeker
-1 Sun Sentinel
-1 Sungrace Pegasus
-1 Tundra Wall
-1 Youthful Knight
-1 Aerial Responder
-1 Bastion Enforcer
-1 Dawn Gryff
-1 Exultant Skymarcher
-1 Griffin Sentinel
-1 Healer's Flock
-1 Kithkin Billyrider
-1 Knight of the Keep
-1 Loxodon Line Breaker
-1 Shrike Force
-1 Those Who Serve
-1 Anvilwrought Raptor
-1 Gilded Sentinel
-1 Aardvark Sloth
+94 Island
+1 Aegis Turtle
+1 Kraken Hatchling
+1 Murmuring Phantasm
+1 Riptide Turtle
+1 Wall of Mist

@@ -6,7 +6,7 @@ using ForgeArenaSandbox;
 
 string root=Path.Combine(@"D:\GAMES\CodexAssets\ForgeArenaSandbox\research\deck-ui","storage-check-"+DateTime.UtcNow.ToString("yyyyMMdd-HHmmss"));
 Directory.CreateDirectory(root);string path=Path.Combine(root,"decks.json");
-string catalog=@"D:\GAMES\CodexAssets\ForgeArenaSandbox\native-lab\deck-catalog.json";
+string catalog=Environment.GetEnvironmentVariable("FORGE_ARENA_DECK_CATALOG")??@"D:\GAMES\CodexAssets\ForgeArenaSandbox\native-lab\deck-catalog.json";
 int checks=0;void Check(string label,bool ok){if(!ok)throw new Exception(label);checks++;Console.WriteLine("PASS "+label);}
 var library=new LocalDeckLibrary(path,catalog);
 var deck=library.Import("Deck\n12 Plains\n12 Island\n8 Savannah Lions\n8 Oreskos Swiftclaw\n8 Impassioned Orator\n4 Unsummon\n4 Essence Scatter\n4 Divine Arrow","Practice deck");
@@ -60,6 +60,18 @@ if(args.Length==1)
 deck["name"]="Renamed deck";deck["main"]!["75556"]=13;library.Save(deck);
 Check("Editing updates one deck without creating a duplicate",library.Decks.Count==1 && (string)library.Decks[0]["name"]! =="Renamed deck" && (int)library.Decks[0]["main"]!["75556"]! ==13);
 Check("Previous library version is retained",File.Exists(path+".bak"));
+var metadataBefore=(JObject)library.Decks[0].DeepClone();string metadataId=(string)metadataBefore["id"]!;
+library.SetFavorite(metadataId,true);library.RecordPlayed(metadataId);var metadataAfter=library.Decks[0];
+Check("Favorite and played metadata preserve every card pile and modified date",new[]{"main","sideboard","commander","companion","updatedUtc"}.All(key=>JToken.DeepEquals(metadataBefore[key],metadataAfter[key])) && (bool)metadataAfter["favorite"]! && metadataAfter["lastPlayedUtc"]?.Type==JTokenType.Date);
+var metadataDisk=File.ReadAllText(path);library.SetFavorite(metadataId,true);
+Check("Repeating a favorite selection is idempotent",File.ReadAllText(path)==metadataDisk);
+deck["name"]="Edited after favorite";library.Save(deck);var edited=library.Decks[0];
+Check("Saving a stale editor draft retains latest favorite and played metadata",(bool)edited["favorite"]! && JToken.DeepEquals(edited["lastPlayedUtc"],metadataAfter["lastPlayedUtc"]));
+var metadataReload=new LocalDeckLibrary(path,catalog);
+Check("Favorites and played history survive a library reload",(bool)metadataReload.Decks[0]["favorite"]! && JToken.DeepEquals(metadataReload.Decks[0]["lastPlayedUtc"],edited["lastPlayedUtc"]));
+var malformedFavorite=(JObject)deck.DeepClone();malformedFavorite["favorite"]="yes";bool malformedMetadata=false;
+try{library.Save(malformedFavorite);}catch(InvalidDataException){malformedMetadata=true;}
+Check("Malformed favorite metadata cannot corrupt saved decks",malformedMetadata && JToken.DeepEquals(library.Decks[0],edited));
 before=library.Decks;disk=File.ReadAllText(path);File.SetAttributes(path,File.GetAttributes(path)|FileAttributes.ReadOnly);bool failed=false;
 try{deck["name"]="Must not save";library.Save(deck);}catch{failed=true;}finally{File.SetAttributes(path,File.GetAttributes(path)&~FileAttributes.ReadOnly);}
 Check("Failed write preserves both memory and durable saved decks",failed && JToken.DeepEquals(before,library.Decks) && File.ReadAllText(path)==disk);
@@ -90,4 +102,18 @@ WriteStarters(new JArray(new JObject{["file"]="../outside.txt",["name"]="Invalid
 Check("A starter path cannot escape its seed directory",badSeed && File.ReadAllText(Path.Combine(root,"seed-profile","decks.json"))==seedDisk);
 WriteStarters(new JArray("invalid entry"));badSeed=false;try{seeded.Seed(seeds);}catch(InvalidDataException){badSeed=true;}
 Check("Malformed starter rows are rejected without changing saved decks",badSeed && File.ReadAllText(Path.Combine(root,"seed-profile","decks.json"))==seedDisk);
-File.WriteAllText(Path.Combine(root,"result.json"),new JObject{["checksPassed"]=checks,["scope"]="Actual local deck parser, exact printing round trips and durable persistence. Native UI tested separately.",["profile"]=path}.ToString());Console.WriteLine(root);
+string preferencePath=Path.Combine(root,"printing-preferences.json");var titleMap=new System.Collections.Generic.Dictionary<uint,uint>{{100,10},{101,10},{200,20}};
+var preferences=new LocalPrintingPreferences(preferencePath,titleMap);preferences.Set(10,101);
+Check("A selected alternate printing survives reload",new LocalPrintingPreferences(preferencePath,titleMap).Get(10)==101);
+string preferenceDisk=File.ReadAllText(preferencePath);preferences.Set(10,101);
+Check("Repeated printing preference is idempotent",File.ReadAllText(preferencePath)==preferenceDisk);
+bool wrongTitle=false;try{preferences.Set(10,200);}catch(InvalidDataException){wrongTitle=true;}
+Check("A printing from a different title cannot be assigned",wrongTitle && preferences.Get(10)==101 && File.ReadAllText(preferencePath)==preferenceDisk);
+File.SetAttributes(preferencePath,File.GetAttributes(preferencePath)|FileAttributes.ReadOnly);failed=false;
+try{preferences.Set(10,100);}catch{failed=true;}finally{File.SetAttributes(preferencePath,File.GetAttributes(preferencePath)&~FileAttributes.ReadOnly);}
+Check("Failed preference writes preserve in-memory and durable selection",failed && preferences.Get(10)==101 && File.ReadAllText(preferencePath)==preferenceDisk);
+preferences.Set(10,null);Check("Unfavorite persists without erasing other profile files",new LocalPrintingPreferences(preferencePath,titleMap).Get(10)==null && File.Exists(path));
+File.WriteAllText(preferencePath,"{\"schema\":1,\"printings\":{\"10\":200}}");bool badPrinting=false;
+try{new LocalPrintingPreferences(preferencePath,titleMap);}catch(InvalidDataException){badPrinting=true;}
+Check("Corrupt printing-title links are rejected without rewriting source",badPrinting && File.ReadAllText(preferencePath).Contains("200"));
+File.WriteAllText(Path.Combine(root,"result.json"),new JObject{["checksPassed"]=checks,["scope"]="Actual local deck parser, exact printing round trips, printing preferences and durable persistence. Native UI tested separately.",["profile"]=path}.ToString());Console.WriteLine(root);

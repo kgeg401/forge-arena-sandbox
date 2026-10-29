@@ -22,6 +22,7 @@ public class ProjectForgeCards {
     }
     static Map<String,Object> card(Card card){
         var original=card.getCurrentState();Map<String,Object> r=new LinkedHashMap<>();
+        r.put("presentationImageKey",original.getImageKey());r.put("presentationState",card.getCurrentStateName().name());
         r.put("name",card.getName());r.put("colorMask",(int)original.getColor().getColor());r.put("coreTypes",original.getType().getCoreTypes().stream().map(Object::toString).sorted().toList());r.put("subtypes",original.getType().getSubtypes().stream().sorted().toList());r.put("power",original.getBasePowerString());r.put("toughness",original.getBaseToughnessString());r.put("keywords",original.getIntrinsicKeywords().stream().map(k->k.getOriginal()).sorted().toList());r.put("imageKey",card.getPaperCard().getImageKey(false));
         r.put("abilities",card.getSpellAbilities().stream().map(ProjectForgeCards::ability).toList());r.put("triggers",card.getTriggers().stream().map(t->t.getMapParams()).toList());var latent=new ArrayList<Object>();for(var entry:card.getSVars().entrySet())if(entry.getValue().startsWith("AB$")){try{var a=forge.game.ability.AbilityFactory.getAbility(entry.getValue(),card);a.setActivatingPlayer(card.getOwner());var row=ability(a);row.put("sourceSVar",entry.getKey());latent.add(row);}catch(Exception ex){latent.add(Map.of("sourceSVar",entry.getKey(),"error",ex.toString()));}}r.put("latentAbilities",latent);
         var latentTriggers=new ArrayList<Object>();for(var entry:card.getSVars().entrySet())if(entry.getValue().startsWith("DB$ ImmediateTrigger") || entry.getValue().startsWith("DB$ DelayedTrigger")){
@@ -30,6 +31,16 @@ public class ProjectForgeCards {
             // TriggerDescription. Mana Drain uses this form for its mana trigger.
             if("DelayedTrigger".equals(params.get("DB")) && !params.containsKey("TriggerDescription") && params.containsKey("SpellDescription"))params.put("TriggerDescription",params.get("SpellDescription"));
             if(params.containsKey("TriggerDescription")){params.put("sourceSVar",entry.getKey());if(params.containsKey("Execute"))params.put("executeRule",card.getSVar(params.get("Execute")));latentTriggers.add(params);}
+        }
+        // Effect abilities create an immutable command-zone object. Its trigger
+        // belongs to the source card's native hidden-ability graph, not a new card.
+        for(var a:card.getSpellAbilities())if(a.getApi()==forge.game.ability.ApiType.Effect && a.hasParam("Triggers") && !(a.hasParam("Name") && a.getParam("Name").startsWith("Emblem"))){
+            for(String key:a.getParam("Triggers").split(",")){
+                var params=new LinkedHashMap<String,String>(forge.game.trigger.TriggerHandler.parseTrigger(card.getSVar(key),card,false).getMapParams());
+                params.put("sourceSVar",key);params.put("sourceAbilityDescription",a.getDescription());
+                if(params.containsKey("Execute"))params.put("executeRule",card.getSVar(params.get("Execute")));
+                latentTriggers.add(params);
+            }
         }r.put("latentTriggers",latentTriggers);
         var emblems=new ArrayList<Object>();for(var a:card.getSpellAbilities())if(a.hasParam("Name") && a.getParam("Name").startsWith("Emblem")){
             var row=new LinkedHashMap<String,Object>();row.put("sourceAbilityDescription",a.getDescription());row.put("name",a.getParam("Name"));row.put("params",a.getMapParams());var triggers=new ArrayList<Object>();
@@ -46,7 +57,7 @@ public class ProjectForgeCards {
         Path runtime=Path.of(args[0]),scope=Path.of(args[1]),out=Path.of(args[2]);
         GuiBase.setInterface(new GuiDesktop(){@Override public String getAssetsDir(){return runtime.toString()+java.io.File.separator;}});
         FModel.initialize(null,null);var input=JsonParser.parseString(Files.readString(scope)).getAsJsonObject();
-        var players=new ArrayList<RegisteredPlayer>();players.add(new RegisteredPlayer(new Deck("Research only")).setPlayer(new ForgeLandEngine.LocalSeat("Local Player")));players.add(new RegisteredPlayer(new Deck("Research only")).setPlayer(new ForgeLandEngine.LocalSeat("Opponent")));
+        var players=new ArrayList<RegisteredPlayer>();players.add(new RegisteredPlayer(new Deck("Research only")).setPlayer(new ForgeLandEngine.LocalSeat("Local Player",true)));players.add(new RegisteredPlayer(new Deck("Research only")).setPlayer(new ForgeLandEngine.LocalSeat("Opponent",false)));
         Game game=new Match(new GameRules(GameType.Constructed),players,"Data projection only").createGame();Player player=game.getPlayers().get(0);
         var cards=new LinkedHashMap<String,Object>();var tokens=new LinkedHashMap<String,Object>();Set<String> names=new TreeSet<>();
         for(var value:input.getAsJsonArray("cards")){

@@ -17,7 +17,7 @@ internal static class SharedAttachmentProtocol
             if(toCard && toPlayer || (string?)card["zone"]!="Battlefield")throw new NotSupportedException("Unmapped attachment outside the battlefield or with ambiguous target");
             int forge=(int)card["forgeId"]!;if(forge<1 || forge>=500000)throw new InvalidDataException("Attachment annotation identity bound exceeded");
             int source=cardId(forge),target=toCard?cardId((int)card["attachedToForgeId"]!):(int)card["attachedToSeat"]!;
-            if(source==target || target<1 || toPlayer && target!=1 && target!=2)throw new InvalidDataException("Invalid native attachment endpoint");
+            if(source==target || target<1 || toPlayer && target>((int?)state["playerCount"]??2))throw new InvalidDataException("Invalid native attachment endpoint");
             result.Add(new JObject{["id"]=1_500_000+forge,["affectorId"]=source,["affectedIds"]=new JArray(target),["type"]=new JArray("AnnotationType_Attachment")});
         }
         return result;

@@ -44,9 +44,9 @@ internal static class SharedChoiceProtocol
     {
         if((string?)option["entityKind"]=="player")
         {
-            int seat=Integer(option["targetSeat"]);if(seat!=1 && seat!=2)throw new InvalidDataException("Unmapped player seat");return seat;
+            int seat=Integer(option["targetSeat"]);if(seat<1 || seat>4)throw new InvalidDataException("Unmapped player seat");return seat;
         }
-        int id=cardId(Integer(option["forgeId"]));if(id<=2)throw new InvalidDataException("Card identity overlaps player seats");return id;
+        int id=cardId(Integer(option["forgeId"]));if(id<=4)throw new InvalidDataException("Card identity overlaps player seats");return id;
     }
     private static (string Zone,string Sub) Group(string name)=>name switch
     {

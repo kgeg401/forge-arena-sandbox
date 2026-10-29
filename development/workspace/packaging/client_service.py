@@ -1,7 +1,7 @@
 """Own local client coordinator. One bounded Forge process for one native session.
 
 The isolated game cannot start subprocesses or contact a match server. This
-coordinator accepts only local deck IDs and two fixed queue identifiers; all
+coordinator accepts only local deck IDs and fixed queue identifiers; all
 decks are revalidated independently before Forge sees them.
 """
 import sys
@@ -51,8 +51,8 @@ def atomic(path,value):
 
 
 def parse_local_deck(deck,catalog,queue):
-    from deck_import import parse_brawl,parse_deck
-    if queue not in ('SandboxPractice','SandboxBrawl'):raise ValueError('Unknown local bot queue')
+    from deck_import import parse_brawl,parse_commander,parse_deck
+    if queue not in ('SandboxPractice','SandboxBrawl','SandboxCommander','SandboxCommanderPod'):raise ValueError('Unknown local bot queue')
     if not isinstance(deck,dict) or not isinstance(deck.get('name'),str):raise ValueError('Invalid saved deck')
     lines=[]
     for pile,title in (('commander','Commander'),('companion','Companion'),('main','Deck'),('sideboard','Sideboard')):
@@ -63,7 +63,7 @@ def parse_local_deck(deck,catalog,queue):
         for key,count in cards.items():
             if key not in catalog or type(count) is not int or not 1<=count<=999:raise ValueError('Unknown or invalid saved printing: '+str(key))
             lines.append(str(count)+' '+catalog[key]['name'])
-    parser=parse_brawl if queue=='SandboxBrawl' else parse_deck
+    parser=parse_commander if queue in ('SandboxCommander','SandboxCommanderPod') else parse_brawl if queue=='SandboxBrawl' else parse_deck
     return parser('\n'.join(lines),deck['name'])
 
 
@@ -115,7 +115,7 @@ class Coordinator:
         if len(matches)!=1:raise ValueError('The selected saved deck no longer exists')
         deck=parse_local_deck(matches[0],self.catalog,queue)
         from deck_import import read_deck
-        opponent=read_deck(self.app/'decks'/('Brawl-Isamaru-Bot.txt' if queue=='SandboxBrawl' else 'White-Lifegain.txt'),'arena-brawl' if queue=='SandboxBrawl' else 'practice')
+        opponent=read_deck(self.app/'decks'/('Brawl-Isamaru-Bot.txt' if queue in ('SandboxBrawl','SandboxCommander','SandboxCommanderPod') else 'White-Lifegain.txt'),'commander-40' if queue in ('SandboxCommander','SandboxCommanderPod') else 'arena-brawl' if queue=='SandboxBrawl' else 'practice')
         self.request_id=request['id'];self.error=None
         self.publish('starting','Starting experimental Forge match — these cards are unverified' if deck.get('experimental') else 'Starting the local Forge bot…',queue=queue,deckName=deck['name'])
         if self.ipc.exists():
@@ -127,7 +127,9 @@ class Coordinator:
             archived=self.lab/('forge-ipc-evidence-'+datetime.now().strftime('%Y%m%d-%H%M%S-%f'))
             self.ipc.rename(archived)
         self.ipc.mkdir()
-        atomic(self.ipc/'scenario.json',dict(scenario='brawl-duel' if queue=='SandboxBrawl' else 'custom-duel',localDeck=deck,opponentDeck=opponent))
+        scenario=dict(scenario='commander-pod' if queue=='SandboxCommanderPod' else 'commander-duel' if queue=='SandboxCommander' else 'brawl-duel' if queue=='SandboxBrawl' else 'custom-duel',localDeck=deck,opponentDeck=opponent)
+        if queue=='SandboxCommanderPod':scenario['opponentDecks']=[opponent,opponent,opponent]
+        atomic(self.ipc/'scenario.json',scenario)
         (self.lab/'enable-forge-land-test.flag').write_text('Authoritative local Forge match')
         cp=';'.join(str(self.root/p) for p in ('build/ForgeBackend/classes','forge-runtime/forge.jar','forge-runtime/gson.jar'))
         self.log=(self.ipc/'engine.log').open('w',encoding='utf8')
