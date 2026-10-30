@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.2.0 alpha 10 - Arena-only Moxfield pool and combat choices
+
+- Samples the 50 most-viewed public Moxfield Commander lists: 1,188 matching Arena identities; 638 outside that catalogue are excluded. Adds 942 experimental names, bringing the client to 370 verified plus 1,285 experimental names. No smoke result is promoted to verified support.
+- Removes redundant mandatory-trigger ordering and forced one-option prompts while retaining manual ordering, optional costs, targets and actual response windows. Connects the original Auto Choose Replacement Effects setting, native divided-damage and pile controls. Automatic replacement ranking uses Forge's chooser; Arena server ranking is not claimed.
+- Fixes shared targeting, X-dependent spell/activation availability, delve, gift costs, Battle protection/defeat, Class levels, colorless/type protection, ninjutsu and temporary token keyword provenance. Adds original life, fixed energy and source-return payment questions.
+- Adds 25 named native scenarios for conditional/context activations, resource rejection and payment decline. Includes 51 payment/effect regression groups, broad cast/land and first-activation walkthroughs, and separate rendered acceptance, including changing the real replacement-order setting inside one match. See [verification and limits](docs/VERIFICATION.md) and [per-card coverage](docs/MOXFIELD-COVERAGE.md).
+- Includes the experimental Commander Pod: one human and three local bots, 40 life, split attacks, commander damage and elimination. Network multiplayer and partner commander pairs remain unfinished.
+- Keeps the existing dedicated launcher and automatic test-channel update path. The actual alpha 9-to-alpha 10 package update and rollback preserve saved test profiles. Recipient-PC installation and complete retail parity are not established by this checkpoint.
+
 ## 0.2.0 alpha 9 - Human gameplay fixes and local Commander
 
 - Adds 40-life Commander Bot and an experimental four-player Commander Pod: one human and three easy Forge bots on the same PC. Includes a shared table, opponent focus, public-zone controls and commander-damage display.

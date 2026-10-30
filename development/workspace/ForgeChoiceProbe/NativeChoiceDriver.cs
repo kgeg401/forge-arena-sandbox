@@ -65,6 +65,19 @@ internal static class NativeChoiceDriver
             }
             if(interaction is SelectNRequest selection){selection.SubmitSelection(assignments.Select(v=>checked((uint)cardId((int)v["forgeId"]!))));return;}
         }
+        if(kind=="assign_damage" && interaction is DistributionRequest distribution)
+        {
+            var offered=((JArray)decision["options"]!).ToDictionary(o=>Integer(o["forgeId"]));var values=new Dictionary<uint,uint>();long total=0;
+            foreach(var value in assignments)
+            {
+                Fields(value,"forgeId","amount");int id=Integer(value["forgeId"]),amount=Integer(value["amount"]);
+                if(!offered.TryGetValue(id,out var option) || amount<1 || amount>distribution.Max)throw new ArgumentException("Invalid distribution recipient or amount");
+                uint native=(string?)option["targetKind"]=="player"?(uint)Integer(option["targetSeat"]):checked((uint)cardId(id));
+                if(!values.TryAdd(native,(uint)amount) || !distribution.LegalTargetIds.Contains(native))throw new ArgumentException("Repeated or illegal distribution recipient");total+=amount;
+            }
+            if(values.Count!=offered.Count || total!=Integer(decision["totalDamage"]))throw new ArgumentException("Distribute the exact total among every selected target");
+            distribution.SubmitDistribution(values);return;
+        }
         if(kind=="assign_damage" && interaction is AssignDamageRequest damage)
         {
             var offered=((JArray)decision["options"]!).ToDictionary(v=>Integer(v["forgeId"]));var seen=new HashSet<int>();var assigner=damage.Assigners.Single().Clone();var values=new List<DamageAssignment>();int total=0;
@@ -92,6 +105,7 @@ internal static class NativeChoiceDriver
         uint Native(JToken value){var option=options.Single(o=>(int)o["choiceId"]! == (int)value["choiceId"]!);if((string?)spec["type"]=="type")return checked((uint)(int)option["nativeTypeId"]!);if((string?)spec["type"]=="card-name")return checked((uint)(int)option["nativeTitleId"]!);if((string?)spec["type"]=="counter-type")return (uint)SharedCounterProtocol.Type((string)option["counterType"]!);if((string?)spec["type"]=="colors")return (uint)SharedChoiceProtocol.ColorType((string)option["color"]!);if(((string?)spec["type"] is "abilities" or "options"))return checked((uint)options.IndexOf(option));return checked((uint)((string?)option["entityKind"]=="player"?(int)option["targetSeat"]!:cardId((int)option["forgeId"]!)));}
         switch(interaction)
         {
+            case SelectNGroupRequest piles:piles.SubmitGroupSelection(assignments.Select(v=>checked((uint)Integer(v["choiceId"]))));break;
             case GroupRequest groups:
                 groups.SubmitGroups(((JArray)spec["groups"]!).Select(g=>
                 {

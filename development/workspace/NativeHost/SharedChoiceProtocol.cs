@@ -77,6 +77,35 @@ internal static class SharedChoiceProtocol
         else if(kind=="confirm")
         {
             payload=new JObject{["recipientIds"]=new JArray(1)};type="GREMessageType_OptionalActionMessage";key="optionalActionMessage";
+            if(spec["lifeAmount"]!=null)
+            {
+                int amount=Integer(spec["lifeAmount"]);string? context=(string?)spec["context"];
+                if(amount<0 || context is not ("life-payment" or "phyrexian-payment"))throw new InvalidDataException("Invalid life-payment presentation context");
+                // Owned pinned Prompts 8167 / LocId 530697: Pay {2, Number} life?
+                // The amount is supplied by Forge's actual cost, never parsed
+                // from a card name or a translated free-text question.
+                // Localization arguments are positional: {2, Number} reads
+                // slot two even though the first source slot is not printed.
+                payload["prompt"]=new JObject{["promptId"]=8167,["parameters"]=new JArray(
+                    new JObject{["parameterName"]="CardId",["type"]="ParameterType_Number",["numberValue"]=cardId(Integer(spec["sourceForgeId"]))},
+                    new JObject{["parameterName"]="Number",["type"]="ParameterType_Number",["numberValue"]=amount})};
+            }
+            else if(spec["energyAmount"]!=null)
+            {
+                int amount=Integer(spec["energyAmount"]);
+                if(amount<=0 || (string?)spec["context"]!="energy-payment")throw new InvalidDataException("Invalid energy-payment presentation context");
+                // Exact original fixed-cost energy questions in the pinned
+                // Prompts table, including their original energy symbols.
+                int energyPrompt=amount switch {1=>1151,2=>1150,3=>12672,4=>13635,_=>0};
+                if(energyPrompt!=0)payload["prompt"]=new JObject{["promptId"]=energyPrompt};
+            }
+            else if((string?)spec["context"]=="return-payment")
+            {
+                // Original Prompts 3641 / LocId 103017 names the actual card
+                // returned as a cost, not the target of the resolving effect.
+                payload["prompt"]=new JObject{["promptId"]=3641,["parameters"]=new JArray(
+                    new JObject{["parameterName"]="CardId",["type"]="ParameterType_Number",["numberValue"]=cardId(Integer(spec["sourceForgeId"]))})};
+            }
         }
         else if(kind=="modes")
         {
@@ -87,6 +116,18 @@ internal static class SharedChoiceProtocol
             var modal=new JObject{["abilityGrpId"]=parent,["minSel"]=min,["maxSel"]=max,["repeatedSelectAllowed"]=repeats,["modalOptions"]=new JArray(modes.Select(id=>new JObject{["grpId"]=id}))};
             payload=new JObject{["castingTimeOptionReq"]=new JArray(new JObject{["ctoId"]=1,["castingTimeOptionType"]="CastingTimeOptionType_Modal",["isRequired"]=true,["affectorId"]=source,["modalReq"]=modal})};
             type="GREMessageType_CastingTimeOptionsReq";key="castingTimeOptionsReq";
+        }
+        else if(kind=="piles")
+        {
+            if(Integer(spec["min"])!=1 || Integer(spec["max"])!=1 || options.Count!=2)throw new InvalidDataException("Choose one of exactly two offered piles");
+            var seen=new HashSet<int>();var groups=new JArray();
+            foreach(var entry in options)
+            {
+                var option=entry.Value;if(option["forgeIds"] is not JArray ids || option["faceDown"]?.Type!=JTokenType.Boolean)throw new InvalidDataException("Pile lacks members or explicit visibility");
+                var native=new JArray();foreach(var id in ids){int forge=Integer(id);if(!seen.Add(forge))throw new InvalidDataException("Pile members overlap");native.Add(cardId(forge));}
+                groups.Add(new JObject{["groupId"]=entry.Key,["ids"]=native,["isFacedown"]=(bool)option["faceDown"]!,["zoneType"]="ZoneType_Revealed"});
+            }
+            payload=new JObject{["minSel"]=1,["maxSel"]=1,["sourceId"]=cardId(Integer(spec["sourceForgeId"])),["groups"]=groups};type="GREMessageType_SelectNGroupReq";key="selectNGroupReq";
         }
         else if(kind is "abilities" or "options")
         {
@@ -156,7 +197,13 @@ internal static class SharedChoiceProtocol
         if(response.GameStateId!=stateId || response.RespId!=requestId)throw new InvalidOperationException("Stale native shared-choice response");
         var spec=Spec(decision);var options=Options(spec);string kind=(string)spec["type"]!;
         var result=new JArray();
-        if(kind=="partition" && response.Type==ClientMessageType.GroupResp)
+        if(kind=="piles" && response.Type==ClientMessageType.SelectNgroupResp)
+        {
+            var ids=response.SelectNGroupResp.Selectedgroupids;
+            if(ids.Count!=1 || ids[0]>int.MaxValue || !options.ContainsKey((int)ids[0]))throw new InvalidOperationException("Select exactly one offered pile");
+            result.Add(new JObject{["choiceId"]=(int)ids[0]});
+        }
+        else if(kind=="partition" && response.Type==ClientMessageType.GroupResp)
         {
             var expected=((JArray)spec["groups"]!).Select(v=>(string)v!).ToArray();var groups=response.GroupResp.Groups;
             // The shipped GroupRequest still copies this legacy field. Validate

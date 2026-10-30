@@ -17,7 +17,14 @@ local Windows example paths and dated counts; use the current public README and
 supported list for release status. Review paths and supply explicit runtime
 configuration before running any research tool on another PC.
 
-The production policy is the370-name `ForgeBackend/bridge_support.json`.
+The verified policy is the 370-name `ForgeBackend/bridge_support.json`.
+The release separately enables 1,285 experimental names (942 new in alpha 10),
+restricted to its pinned Arena catalogue. The generated experimental overlay
+is shipped in `client/ForgeBackend/experimental-admission.json`; it is not a
+claim of exhaustive gameplay support. Source and package checks keep these
+inventories disjoint and verify their exact dependency hashes. See
+[the Moxfield coverage report](../docs/MOXFIELD-COVERAGE.md) for all 50 source
+lists and a per-card distinction between smoke tests and named scenarios.
 `ForgeBackend/draft_policies/paradox-engine.json` is explicitly research-only.
 Its verifier and practice input preserve unfinished work, not passing support.
 A source match, construction pass or generated test cannot grant admission.

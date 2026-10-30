@@ -1,7 +1,7 @@
 """Build an unpublished adapter-only ZIP from explicit, own-file allowlists."""
 import sys
 sys.dont_write_bytecode=True
-from pathlib import Path
+from pathlib import Path, PureWindowsPath, PurePosixPath
 from datetime import datetime, timezone
 import argparse, json, os, shutil, subprocess, zipfile
 from tester_common import sha, version, verify_tree
@@ -51,19 +51,30 @@ def build(tag,output,gameplay_ref=None,headline='Public launcher and automatic u
         from experimental_cards import load_experimental
         experimental=load_experimental(experimental_admission)
         if experimental['policySha256']!=sha(output/'ForgeBackend/bridge_support.json'):raise ValueError('Experimental inventory differs from packaged verified baseline')
-        shutil.copy2(experimental_admission,output/'ForgeBackend/experimental-admission.json')
+        # Evidence hashes are useful in the release; this developer's absolute
+        # machine paths are not. Keep identities and bindings byte-for-byte in
+        # JSON value terms, changing only the projection input labels.
+        source=experimental.get('humanChoices',{}).get('provenance',{}).get('source',{})
+        if 'inputs' in source:
+            portable={}
+            for name,digest in source['inputs'].items():
+                label=PureWindowsPath(name).name if '\\' in name else PurePosixPath(name).name
+                if label in portable:raise ValueError('Ambiguous packaged evidence input name: '+label)
+                portable[label]=digest
+            source['inputs']=portable
+        (output/'ForgeBackend/experimental-admission.json').write_text(json.dumps(experimental,indent=2),encoding='utf8')
     if support_index:
         index=json.loads(Path(support_index).read_text(encoding='utf8'))
         if index.get('schema')!=1 or index.get('provenance',{}).get('policySha256')!=sha(output/'ForgeBackend/bridge_support.json'):
             raise ValueError('Support diagnostics must match the packaged admission policy exactly')
         shutil.copy2(support_index,output/'ForgeBackend/card-support-index.json')
     release_info=dict(version=tag,displayVersion=display_version or tag,headline=headline,testRelease=True,gameplaySource=gameplay_ref,admittedNames=policy['verifiedNames'])
-    if experimental:release_info.update(experimentalAdmission=True,experimentalNames=sorted(experimental['cards']),experimentalStatus='Unverified local opt-in; runtime gaps remain explicit')
+    if experimental:release_info.update(experimentalAdmission=True,experimentalNames=sorted(experimental['cards']),experimentalStatus='Experimental access; runtime gaps remain explicit')
     (output/'release-info.json').write_text(json.dumps(release_info,indent=2))
     docs=output/'docs';docs.mkdir()
-    for file in (REPO/'packaging/public-docs').glob('*.md'):shutil.copy2(file,docs/file.name)
+    for file in [*(REPO/'packaging/public-docs').glob('*.md'),*(REPO/'packaging/public-docs').glob('MOXFIELD-CARD-COVERAGE.csv')]:shutil.copy2(file,docs/file.name)
     if experimental:
-        notice='# Experimental card catalogue\n\nThis build enables '+str(len(experimental['cards']))+' additional experimental card names. The verified catalogue remains '+str(len(policy['verifiedNames']))+' names. See VERIFICATION.md for tested Jace deck scenarios. Permission to start a match is not exhaustive proof of its effects or combos. Actual unmapped mechanics still report a gap.\n\nUse Manage-Updates.ps1 rollback to return to the previous build. Saved decks and profiles are retained.\n'
+        notice='# Experimental card catalogue\n\nThis build enables '+str(len(experimental['cards']))+' additional experimental card names. The verified catalogue remains '+str(len(policy['verifiedNames']))+' names. See docs/VERIFICATION.md and docs/MOXFIELD-COVERAGE.md for tested scenarios and per-card coverage. Permission to start a match is not exhaustive proof of its effects or combos. Actual unmapped mechanics still report a gap.\n\nUse Manage-Updates.ps1 rollback to return to the previous build. Saved decks and profiles are retained.\n'
         (docs/'EXPERIMENTAL.md').write_text(notice+'\n## Remaining hard blockers\n\n'+''.join('- '+name+': '+reason+'\n' for name,reason in experimental['blockedCards'].items()),encoding='utf8')
         for readme in ('README.md','TESTER-README.md'):
             file=output/readme;file.write_text(notice+'\n---\n\n'+file.read_text(encoding='utf8'),encoding='utf8')

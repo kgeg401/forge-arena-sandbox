@@ -1,5 +1,7 @@
 from engine_test_client import Engine
 import json,time
+from runtime_paths import ROOT
+full_human_choices=json.loads((ROOT/'native-lab/bridge-card-manifest.json').read_text()).get('fullHumanChoices') is True
 
 for case in ('resolve','cancel','concede'):
     e=Engine('defend-arrow')
@@ -12,7 +14,10 @@ for case in ('resolve','cancel','concede'):
         e.check('instant becomes available after an attacker is declared',e.state['phase']=='COMBAT_DECLARE_ATTACKERS' and arrow in e.state['legalCasts'])
         parent=e.begin('cast_spell',arrow);progress=e.wait_json(e.ipc/'decision.json');e.state=progress['state'];d=e.state['decision'];token=d['token'];target=d['options'][0]['forgeId']
         e.check('Forge offers only the eligible attacker',d['kind']=='targets' and len(d['options'])==1 and any(c['forgeId']==target and c['attackTarget']==1 for c in e.state['battlefield']))
-        e.check('target choice precedes payment and stack insertion',not e.state['stack'] and all(not c['tapped'] for c in e.state['battlefield'] if c['owner']==1 and c['name']=='Plains') and e.state['hand'][0]['forgeId']==arrow)
+        # Original PlaySpellAbility moves the card to Stack while announcing
+        # it, before costs. The older narrow controller announced it in Hand.
+        pending_zone='stack' if full_human_choices else 'hand'
+        e.check('Target choice precedes payment and retains the original pending source',any(c['forgeId']==arrow for c in e.state[pending_zone]) and all(not c['tapped'] for c in e.state['battlefield'] if c['owner']==1 and c['name']=='Plains') and not e.state['manaTotal'])
         if case=='resolve':
             r=e.send('submit_targets',decisionToken=token);e.check('empty target submission rejected',not r['accepted'])
             idle=next(c['forgeId'] for c in e.state['battlefield'] if c['name']=='Yoked Ox')

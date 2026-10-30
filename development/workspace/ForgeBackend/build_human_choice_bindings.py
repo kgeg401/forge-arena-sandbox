@@ -5,10 +5,13 @@ No private projection or generated game data belongs in a public release.
 from pathlib import Path
 import argparse,hashlib,json,sqlite3,re,html,unicodedata,collections,copy
 from token_presentation_aliases import add_token_presentation_aliases
+from arena_catalog import clean_name
 p=argparse.ArgumentParser(description=__doc__)
 for k in ('database','projection','manifest','output','report'):p.add_argument('--'+k,type=Path,required=True)
+p.add_argument('--allow-incomplete-research',action='store_true',help='Write a research-only candidate with explicit unresolved binding records; never a release manifest')
 args=p.parse_args()
 projection=json.loads(args.projection.read_text(encoding='utf-8-sig'));manifest=json.loads(args.manifest.read_text(encoding='utf-8-sig'))
+if args.allow_incomplete_research and manifest.get('researchOnly') is not True:raise ValueError('Incomplete bindings are permitted only in an explicit research manifest')
 # Older platform-default readers can misdecode the Saga em dash. Canonicalize
 # only that exact byte-decoding artifact before retaining source descriptions.
 def canonical_projection(value):
@@ -28,7 +31,7 @@ for name,source in projection['cards'].items():
     if not source.get('facePresentation'):continue
     parent=manifest['cards'][source['parentName']];row=dict(db.execute('SELECT * FROM Cards WHERE GrpId=?',(parent['grpId'],)).fetchone());linked=[]
     for id in re.findall(r'\d+',row['LinkedFaceGrpIds']):
-        linked.extend(dict(r) for r in db.execute('SELECT c.*,l.Loc AS EnglishName FROM Cards c JOIN Localizations_enUS l ON c.TitleId=l.LocId AND l.Formatted=1 WHERE c.GrpId=? AND l.Loc=?',(int(id),name)))
+        linked.extend(dict(r) for r in db.execute('SELECT c.*,l.Loc AS EnglishName FROM Cards c JOIN Localizations_enUS l ON c.TitleId=l.LocId AND l.Formatted=1 WHERE c.GrpId=?',(int(id),)) if clean_name(r['EnglishName'])==name)
     if len(linked)!=1:raise ValueError('Face has no uniquely linked original Arena identity: '+name)
     row=linked[0];ids=[int(v.split(':')[0]) for v in filter(None,row['AbilityIds'].split(','))];colors=face_values('CardColor',row['Colors'])
     manifest['cards'][name]=dict(grpId=row['GrpId'],titleId=row['TitleId'],types=face_values('CardType',row['Types']),subtypes=face_values('SubType',row['Subtypes']),supertypes=face_values('SuperType',row['Supertypes']),color=next((c for c in colors if c in ('White','Blue','Black','Red','Green')),'Colorless'),colors=colors,colorIdentity=parent.get('colorIdentity',[]),genericCost=0,abilityId=ids[0] if ids else 0,abilityIds=ids,token=False,admitted=False,facePresentation=True,parentName=source['parentName'],forgeScript=parent['forgeScript'],forgeScriptSha256=parent['forgeScriptSha256'],bindingBasis='Original native LinkedFaceGrpIds and exact pinned Forge backside state')
@@ -37,6 +40,13 @@ for source in projection['cards'].values():
     source['triggers']+=source.get('latentTriggers',[])
 def normalized(text,name):
     text=html.unescape(re.sub(r'<[^>]+>',' ',text or '')).replace(name,'CARDNAME')
+    # Exact owned wording changes. These identify presentation records only;
+    # the source engine still determines the effect and all player choices.
+    if name=="Dragonhawk, Fate's Tempest":text=re.sub(r'\bDragonhawk\b','CARDNAME',text)
+    if name=='Subtlety':text=text.replace('on their choice of the top or bottom','on the top or bottom')
+    if name=='The Unagi of Kyoshi Island':text=text.replace('you draw two cards','draw two cards')
+    if name=="Archdruid's Charm":text=text.replace('Then that creature deals damage','It deals damage')
+    text=re.sub(r'^Ward\s*[—-]\s*','Ward ',text)
     # New Forge prefixes Saga descriptions with the chapter; Arena stores the
     # same effect text under the chapter's separate original ability identity.
     text=re.sub(r'^[IVX]+(?:\s*,\s*[IVX]+)*\s*(?:[\u2014\u2013-]|\u00e2\u20ac\u201d)\s*','',text)
@@ -45,9 +55,23 @@ def normalized(text,name):
     text=re.sub(r'\([^()]*\)','',text)
     text=text.replace('enters the battlefield','enters').replace("exile all cards from target player's graveyard", "exile target player's graveyard")
     text=text.replace('NICKNAME','CARDNAME')
-    text=re.sub(r'\bthis (?:artifact|creature|enchantment|token)\b','CARDNAME',text,flags=re.I)
+    text=re.sub(r'\bthis (?:artifact|creature|enchantment|token|card)\b','CARDNAME',text,flags=re.I)
     text=re.sub(r'\s+([.,;:])',r'\1',text)
-    return re.sub(r'\s+',' ',unicodedata.normalize('NFKC',text)).strip().rstrip('.').lower()
+    return re.sub(r'\s+',' ',unicodedata.normalize('NFKC',text)).strip().rstrip('.').lower().replace("exile all cards from target player's graveyard", "exile target player's graveyard")
+
+def modal_text_matches(native,mode,name):
+    text=html.unescape(re.sub(r'<[^>]+>',' ',native)).strip()
+    params=mode.get('params',{})
+    if 'ModeCost' in params:
+        # Tiered and Spree put a label/cost prefix on the native child record.
+        # Strip it only after verifying the exact source mode cost and label.
+        label=re.escape(params['PrecostDesc']) if 'PrecostDesc' in params else r'\+'
+        separator=r'\s*[—-]\s*' if 'PrecostDesc' in params else r'\s*'
+        match=re.fullmatch(label+separator+r'\{([^{}]+)\}\s*[—-]\s*(.*)',text,re.S)
+        if not match:return False
+        if match[1].replace('o','')!=''.join(params['ModeCost'].split()):return False
+        text=match[2]
+    return normalized(text,name)==normalized(mode['description'],name)
 def ability_rows(card):
     pending=list(card['abilityIds']);seen=set();rows=[]
     while pending:
@@ -91,6 +115,12 @@ for name,source in projection['cards'].items():
         if not matches and len(printed)==1 and len(same_role)==1:matches=printed;basis='sole printed ability of this role in both pinned card definitions'
         if not matches and ability['mana'] and not native and card.get('manaColor') and len(same_role)==1:
             description_map[desc]=card['abilityId'];mana_map[desc]=card['abilityId'];counts['verified implicit mana']+=1;continue
+        if not matches and ability['mana'] and not native and len(same_role)==1 and 'Basic' in card['supertypes'] and card['types']==['Land'] and len(card['subtypes'])==1:
+            basic=manifest['cards'].get(card['subtypes'][0]);basic_source=projection['cards'].get(card['subtypes'][0],{})
+            baseline=[a for a in basic_source.get('abilities',[]) if a['mana'] and a['activated']]
+            if basic and basic.get('manaColor') and len(baseline)==1 and baseline[0]['params']==ability['params'] and baseline[0]['costs']==ability['costs']:
+                card['manaColor']=basic['manaColor'];card['abilityId']=basic['abilityId']
+                description_map[desc]=basic['abilityId'];mana_map[desc]=basic['abilityId'];counts['source-checked implicit basic subtype mana']+=1;continue
         if len(matches)==1:
             r=matches[0];description_map[desc]=r['Id'];counts['activated '+basis]+=1
             if ability['mana']:mana_map[desc]=r['Id']
@@ -100,6 +130,13 @@ for name,source in projection['cards'].items():
         desc=trigger.get('TriggerDescription','');native=[r for r in rows if r['Category']==2]
         chapter=re.sub(r'^(?:I|II|III|IV|V)\s*[—-]\s*','',desc) if trigger.get('Chapter') else desc
         matches=[r for r in native if normalized(chapter,name)==normalized(r['EnglishText'],name)]
+        if not matches and card['types']==['Battle'] and 'Siege' in card['subtypes'] and trigger==dict(Mode='CounterRemovedOnce',ValidCard='Card.Self',Secondary='True',CounterType='DEFENSE',Remaining='0',TriggerZones='Battlefield',TriggerDescription='When CARDNAME is defeated, exile it, then cast it transformed.'):
+            # Pinned CardFactoryUtil.setupSiegeAbility supplies this implicit
+            # rules trigger. Arena uses its generic Siege Defeated keyword,
+            # which is not a printed AbilityIds entry on an individual battle.
+            siege=list(db.execute("SELECT a.Id FROM Abilities a JOIN Localizations_enUS l ON a.TextId=l.LocId AND l.Formatted=1 WHERE a.Category=3 AND l.Loc='Siege Defeated'"))
+            if len(siege)!=1:raise ValueError('Ambiguous native Siege Defeated identity')
+            trigger_map[desc]=siege[0]['Id'];counts['source-checked implicit Siege defeat']+=1;continue
         if not matches and re.search(r'UntapUpTo\$\s*True\b',trigger.get('executeRule','')):
             matches=[r for r in native if normalized(chapter,name)==normalized(r['EnglishText'],name).replace('untap up to ','untap ')]
             if len(matches)==1:counts['native up-to wording checked against source UntapUpTo rule']+=1
@@ -141,7 +178,7 @@ for name,source in projection['cards'].items():
         for parent in parents:
             ids={int(x) for x in re.findall(r'\d+',parent['ModalChildIds'])};children=[r for r in rows if r['Id'] in ids];mapped=[]
             for mode in ability.get('modes',[]):
-                matched=[r for r in children if normalized(r['EnglishText'],name)==normalized(mode['description'],name)]
+                matched=[r for r in children if modal_text_matches(r['EnglishText'],mode,name)]
                 if len(matched)==1:mapped.append(dict(forgeDescription=re.sub(r'\s+',' ',unicodedata.normalize('NFKC',mode['description'])).strip(),nativeAbilityId=matched[0]['Id']))
             if len(mapped)==len(ability.get('modes',[])) and mapped:candidates.append(dict(parentAbilityId=parent['Id'],choices=mapped))
         if len(candidates)==1:card['modalBinding']=candidates[0];counts['modal cards bound']+=1
@@ -218,10 +255,23 @@ for script,source in projection['tokens'].items():
         if mask!=source['colorMask'] or body(row['Power'])!=body(source.get('power')) or body(row['Toughness'])!=body(source.get('toughness')):continue
         ids=[int(v.split(':')[0]) for v in filter(None,row['AbilityIds'].split(','))]
         texts=[r[0] for id in ids for r in db.execute('SELECT l.Loc FROM Abilities a JOIN Localizations_enUS l ON a.TextId=l.LocId AND l.Formatted=1 WHERE a.Id=?',(id,))]
-        keywords={normalized(k,name) for k in source['keywords']}
+        source_keywords=source['keywords']
+        if source.get('generatedCopy'):
+            # Forge's exact copy retains the graveyard keyword; Arena's linked
+            # token art record omits it. Its original source ability is bound
+            # explicitly below rather than invented or silently discarded.
+            source_keywords=[k for k in source_keywords if k.split(':',1)[0] not in ('Eternalize','Embalm')]
+        keywords={normalized(k.split(':')[1]+'walk' if k.startswith('Landwalk:') and k.split(':')[1] in ('Plains','Island','Swamp','Mountain','Forest') else k,name) for k in source_keywords}
         if not keywords.issubset({normalized(t,name) for t in texts}):continue
         candidates.append(row)
     linked=[r for r in candidates if r['GrpId'] in tokens_linked]
+    if source.get('generatedCopy'):
+        parent=manifest['cards'][source['sourceCardName']]
+        ability=parent['abilityBindings']['descriptions'].get(source['sourceAbilityDescription'])
+        linked=[r for r in candidates if any(v['name']==source['sourceCardName'] and v['abilityId']==ability for v in tokens_linked.get(r['GrpId'],[]))]
+        if len(linked)!=1:
+            unbound_tokens.append(dict(script=script,reason='Generated copy lacks one exact original source-ability token link'));continue
+        candidates=linked
     if source.get('parentTokenScript') and 'token:'+source['parentTokenScript'] in manifest['cards']:
         parent=manifest['cards']['token:'+source['parentTokenScript']];raw=db.execute('SELECT LinkedFaceGrpIds FROM Cards WHERE GrpId=?',(parent['grpId'],)).fetchone()[0];face_ids={int(x) for x in re.findall(r'\d+',raw)}
         linked=[r for r in candidates if r['GrpId'] in face_ids]
@@ -234,6 +284,17 @@ for script,source in projection['tokens'].items():
     key='token:'+script
     if key not in manifest['cards']:continue
     card=manifest['cards'][key];rows=ability_rows(card);desc_map={};api_map={}
+    if source.get('generatedCopy'):
+        parent=manifest['cards'][source['sourceCardName']];inherited=[]
+        source_descriptions={a['description'] for a in source['abilities'] if a['activated']}
+        for a in projection['cards'][source['sourceCardName']]['abilities']:
+            if a['description'] not in source_descriptions or not a['activated']:continue
+            identity=parent['abilityBindings']['descriptions'].get(a['description'])
+            if identity and identity not in card['abilityIds']:
+                inherited.append(identity);card['abilityIds'].append(identity)
+        card['sourceCopyName']=source['sourceCardName'];card['retainedSourceAbilityIds']=inherited
+        card['bindingBasis']+='; original copy-factory prototype and exact source-ability token link; retained copy abilities use their original source IDs'
+        rows=ability_rows(card)
     for a in source['abilities']:
         if not a['activated']:continue
         native=[r for r in rows if r['Category']==1 and bool(r['SubCategory']==1)==a['mana']]
@@ -273,6 +334,14 @@ for color in ('white','blue','black','red','green'):
     ids=[r[0] for r in db.execute('SELECT a.Id FROM Abilities a JOIN Localizations_enUS l ON a.TextId=l.LocId AND l.Formatted=1 WHERE a.Category=3 AND l.Loc=?',(text,))]
     if len(ids)!=1:raise ValueError('Ambiguous original keyword '+text)
     manifest['keywordAbilityIds']['hexproof:'+color]=ids[0]
+# Pinned ProtectEffect emits Protection:<CardType> for card types and
+# Protection from <quality> otherwise. Bind exact owned keyword records;
+# never reuse a color icon for a different protection quality.
+protection_types={'artifact':'artifacts','battle':'battles','creature':'creatures','enchantment':'enchantments','instant':'instants','land':'lands','planeswalker':'planeswalkers','sorcery':'sorceries','kindred':'kindreds','conspiracy':'conspiracies','dungeon':'dungeons','phenomenon':'phenomena','plane':'planes','scheme':'schemes','vanguard':'vanguards'}
+for key,text in [('protection from colorless','Protection from colorless'),*[(f'protection:{kind}','Protection from '+plural) for kind,plural in protection_types.items()]]:
+    rows=[r[0] for r in db.execute('SELECT a.Id FROM Abilities a JOIN Localizations_enUS l ON a.TextId=l.LocId AND l.Formatted=1 WHERE a.Category=3 AND l.Loc=?',(text,))]
+    if len(rows)!=1:raise ValueError('Ambiguous original protection keyword '+text)
+    manifest['keywordAbilityIds'][key]=rows[0]
 if 'Underworld Breach' in projection['cards']:
     # Its owned static ability explicitly references this generic keyword;
     # individual escape costs are supplied by the original Forge keyword.
@@ -291,10 +360,23 @@ if 'Narset Transcendent' in projection['cards']:
     for card in manifest['cards'].values():
         card.setdefault('abilityBindings',{}).setdefault('keywords',{})['REBOUND']=rebound
         card['abilityBindings']['reboundDelayedTrigger']=delayed[0]['Id']
+# Printed parameterized keywords have their own ability ID (for example a
+# particular Escape cost) and an original BaseId. Keep that exact relationship
+# for the independent native keyword checker; do not replace the printed rule.
+known_keywords=set(manifest['keywordAbilityIds'].values())
+for card in manifest['cards'].values():
+    bases={}
+    for identity in card['abilityIds']:
+        row=db.execute('SELECT BaseId FROM Abilities WHERE Id=? AND Category=3',(identity,)).fetchone()
+        if row and row[0] in known_keywords:bases[str(identity)]=row[0]
+    if bases:card.setdefault('abilityBindings',{})['printedKeywordBases']=bases
 manifest['humanChoiceBindingProvenance']=dict(projectionSha256=hashlib.sha256(args.projection.read_bytes()).hexdigest(),databaseSha256=hashlib.sha256(args.database.read_bytes()).hexdigest(),source=provenance,gameplayVerified=False)
 args.report.write_text(json.dumps(dict(counts=counts,missing=missing,unboundTokens=unbound_tokens,missingModes=modal_missing,missingEmblems=emblem_missing),indent=2))
 print(json.dumps(dict(counts=counts,missing=len(missing),unboundTokens=len(unbound_tokens),missingModes=len(modal_missing),missingEmblems=len(emblem_missing))))
 
-if missing or unbound_tokens or modal_missing or emblem_missing:raise SystemExit(1)
+if missing or unbound_tokens or modal_missing or emblem_missing:
+    if not args.allow_incomplete_research:raise SystemExit(1)
+    manifest['researchUnresolvedBindings']=dict(abilities=missing,tokens=unbound_tokens,modes=modal_missing,emblems=emblem_missing)
+    manifest['researchBindingStatus']='Incomplete research candidate. Unresolved bindings are not supported-card evidence.'
 pending=args.output.with_suffix(args.output.suffix+'.pending')
 pending.write_text(json.dumps(manifest,indent=2));pending.replace(args.output)

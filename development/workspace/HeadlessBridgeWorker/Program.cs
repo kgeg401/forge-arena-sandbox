@@ -70,12 +70,19 @@ internal static class Program
                         if(choice.IsChoiceSelection && choice.IdType==IdType.PromptParameterIndex)Record("original-choice-ui",NativeChoicePresentation.Verify(choice,latest));
                     }
                     Record("native-update",new JObject{["stateId"]=presented,["interaction"]=interaction?.GetType().Name,
+                        ["promptId"]=interaction?.Prompt?.PromptId,
+                        ["promptParameters"]=interaction?.Prompt==null?new JArray():new JArray(interaction.Prompt.Parameters.Select(p=>new JObject{["name"]=p.ParameterName,["type"]=p.Type.ToString(),["number"]=p.NumberValue})),
                         ["cards"]=new JArray(latest.AllCards.Select(p=>new JObject{["id"]=p.Key,["grpId"]=p.Value.BaseGrpId,["keywordGrants"]=new JArray(p.Value.AbilityAdders.Select(g=>new JObject{["abilityId"]=g.AbilityId,["sourceId"]=g.AddedById,["layerId"]=g.LayeredEffectId})),["counters"]=new JArray(p.Value.Counters.Select(c=>new JObject{["type"]=c.Key.ToString(),["count"]=c.Value}))})),
                         ["events"]=new JArray(update.Changes.Select(c=>c.GetType().Name))});
                 }
             }
         }
-        var bridge=new ForgeLandBridge(root,local,message=>Record("bridge-log",new JValue(message)),()=>presented,()=>false,ipc);
+        var scenario=JObject.Parse(File.ReadAllText(Path.Combine(ipc,"scenario.json")));
+        if(scenario["autoOrderTriggers"]!=null && scenario["autoOrderTriggers"]!.Type!=JTokenType.Boolean)throw new InvalidDataException("Research trigger preference must be boolean");
+        bool autoOrderTriggers=(bool?)scenario["autoOrderTriggers"]??true;
+        if(scenario["autoChooseReplacementEffects"]!=null && scenario["autoChooseReplacementEffects"]!.Type!=JTokenType.Boolean)throw new InvalidDataException("Research replacement preference must be boolean");
+        bool autoChooseReplacementEffects=(bool?)scenario["autoChooseReplacementEffects"]??false;
+        var bridge=new ForgeLandBridge(root,local,message=>Record("bridge-log",new JValue(message)),()=>presented,()=>false,ipc,autoOrderTriggers:()=>autoOrderTriggers,autoChooseReplacementEffects:()=>autoChooseReplacementEffects);
         JObject Status()=>new JObject{["schema"]=1,["worker"]=worker,["session"]=bridge.Session,["nativeStateId"]=presented,["nativeMessageId"]=interaction?.OriginalMessage.MsgId,["updateOrdinal"]=updateOrdinal,["interaction"]=interaction?.GetType().Name,["gap"]=bridge.Gap,["state"]=bridge.ResearchState,["podDetails"]=bridge.IsCommanderPod?bridge.PodDetails():null};
         var observedCopyIds=new Dictionary<int,uint>();
         void ValidateModel()
@@ -123,6 +130,9 @@ internal static class Program
             {
                 uint id=checked((uint)bridge.ResearchInstanceId((int)card["forgeId"]!));
                 if(!latest.AllCards.TryGetValue(id,out var native))throw new InvalidOperationException("Visible Forge object is absent from the native model");
+                if((string?)card["zone"]=="Battlefield" && native.ProtectorId!=(uint)((int?)card["protectorSeat"]??0))throw new InvalidOperationException("Native battle protector differs from Forge");
+                if(card["baseDefense"]!=null){int defense=(int)card["defense"]!;if((string?)card["zone"]!="Battlefield" && int.TryParse((string?)card["baseDefense"],out int printedDefense))defense=printedDefense;if(native.Defense!=(uint)defense)throw new InvalidOperationException("Native battle defense differs from Forge");}
+                if(card["classLevel"]!=null && native.ClassLevel!=(int)card["classLevel"]!)throw new InvalidOperationException("Native Class level differs from Forge");
                 if(card["namedCardTitleIds"] is JArray namedTitles && !native.ReferencedCardTitleIds.SetEquals(namedTitles.Select(v=>(uint)v)))throw new InvalidOperationException("Native named-card identities differ from Forge");
                 if((string?)card["objectKind"]=="emblem" && native.ObjectType!=GameObjectType.Emblem)throw new InvalidOperationException("Source emblem lost its original native object type");
                 if((string?)card["objectKind"]!="emblem" && card["currentTypes"] is JArray currentTypes)
@@ -145,12 +155,14 @@ internal static class Program
                 }
                 if(card["rulesKeywords"] is JArray rulesKeywords)
                 {
-                    var known=bridge.ResearchKnownKeywords.ToHashSet();var effective=bridge.ResearchPrintedAbilities((string?)card["presentationKey"] ?? (string)card["name"]!).Where(known.Contains).ToHashSet();
+                    string name=(string?)card["presentationKey"] ?? (string)card["name"]!;
+                    uint Canonical(uint ability)=>bridge.ResearchCanonicalKeyword(name,ability);
+                    var known=bridge.ResearchKnownKeywords.ToHashSet();var effective=bridge.ResearchPrintedAbilities(name).Select(Canonical).Where(known.Contains).ToHashSet();
                     foreach(var modification in native.AbilityModifications)
                     {
                         if(modification.Type==AbilityModification.ModType.RemoveAll)effective.Clear();
-                        else if(modification.Type==AbilityModification.ModType.Removed)effective.Remove(modification.AbilityId);
-                        else if(modification.Type==AbilityModification.ModType.Added && known.Contains(modification.AbilityId))effective.Add(modification.AbilityId);
+                        else if(modification.Type==AbilityModification.ModType.Removed)effective.Remove(Canonical(modification.AbilityId));
+                        else if(modification.Type==AbilityModification.ModType.Added && known.Contains(Canonical(modification.AbilityId)))effective.Add(Canonical(modification.AbilityId));
                     }
                     var expectedKeywords=rulesKeywords.Select(k=>bridge.ResearchKnownKeyword((string)k!)).Where(k=>k.HasValue).Select(k=>k!.Value).ToHashSet();
                     if(!effective.SetEquals(expectedKeywords))throw new InvalidOperationException("Native keyword modifier order disagrees with actual active Forge keywords");
@@ -255,6 +267,7 @@ internal static class Program
                             if(count<(int)decision["minTargets"]! || count>(int)decision["maxTargets"]!)throw new InvalidOperationException("Native target submit is disabled outside the required bounds");submit.SubmitTargets();
                         }
                         else if(op=="cancel_targets" && interaction is SelectTargetsRequest cancel)cancel.Cancel();
+                        else if(op=="cancel_assign_damage" && interaction is DistributionRequest distribution)distribution.Cancel();
                         else if(interaction is ActionsAvailableRequest actions)
                         {
                             if(op=="pass_priority")actions.SubmitPass();

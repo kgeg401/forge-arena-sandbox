@@ -14,6 +14,12 @@ inputs={str(f):hashlib.sha256(f.read_bytes()).hexdigest() for f in (Path(__file_
 started=time.time()
 def Engine(*args,**kw):return NativeEngine(*args,worker=a.worker,managed=a.managed,fixture=a.fixture,**kw)
 
+def assert_life_prompt(e,amount):
+    updates=[r['value'] for line in (e.native_folder/'native-model.jsonl').read_text(encoding='utf-8-sig').splitlines() for r in [json.loads(line)] if r['kind']=='native-update' and r['value'].get('promptId')==8167]
+    assert updates,'Original native request lost the life-payment question'
+    parameters=updates[-1]['promptParameters']
+    assert len(parameters)==2 and parameters[0]['name']=='CardId' and parameters[0]['type']=='Number' and parameters[0]['number']>4 and parameters[1]==dict(name='Number',type='Number',number=amount),updates[-1]
+
 def action(e,op,card=0,plans=None,plan_queue=None,**fields):
     prior=e.state.get('decision') or {};seen={prior.get('token')} if op.startswith('submit_') else set()
     shared=plan_queue is not None;plans=plan_queue if shared else list(plans or []);root=e.begin(op,card,**fields);pending=[root];deadline=time.monotonic()+30
@@ -76,7 +82,7 @@ def resolve(e,plans=None):
 def check_payments_and_search():
  results=[]
  cases=[
-  dict(id='village-rites-sacrifice',card='Village Rites',lands=['Swamp'],battlefield=['Grizzly Bears'],library=['Forest','Plains'],plans=[dict(type='cards-effect',name='Grizzly Bears')],check='sacrifice'),
+  dict(id='village-rites-sacrifice',card='Village Rites',lands=['Swamp'],battlefield=['Grizzly Bears'],library=['Forest','Plains'],plans=[],check='sacrifice'),
   dict(id='finale-x',card='Finale of Devastation',lands=['Forest','Forest','Plains','Plains'],battlefield=[],library=['Grizzly Bears'],plans=[dict(type='number',number=2)],check='search'),
   dict(id='chord-x-convoke',card='Chord of Calling',lands=['Forest']*3,battlefield=['Grizzly Bears','Grizzly Bears'],library=['Grizzly Bears'],plans=[dict(type='number',number=2),dict(type='cards-effect',all=True),dict(type='options',label='Green'),dict(type='options',label='Green')],check='search')
  ]
@@ -189,6 +195,7 @@ def check_phyrexian_compleated():
    action(e,'pass_priority');j=next(c for c in e.state['battlefield'] if c['name']=='Jace, the Perfected Mind')
    assert e.state['life']==(18 if pay_life else 20),e.state['life'];assert j['loyalty']==(3 if pay_life else 5),j['loyalty']
    assert presented_loyalty()==(3 if pay_life else 5),'Battlefield presentation must retain actual compleated counters'
+   assert_life_prompt(e,2)
    r=dict(id='jace-compleated-life' if pay_life else 'jace-compleated-mana',passed=True,evidence=str(e.ipc))
   except BaseException as ex:r=dict(id=str(pay_life),passed=False,error=str(ex),evidence=str(e.ipc) if e else '')
   finally:
@@ -212,7 +219,7 @@ def check_food():
 def check_card_naming():
  e=Engine('card-family',fixtureHand=['Anointed Peacekeeper'],fixtureLands=['Plains']*3,fixtureOpponentHand=['Grizzly Bears'],fixtureLibrary=['Plains']*10)
  try:
-  action(e,'cast_spell',e.state['hand'][0]['forgeId']);action(e,'pass_priority',plans=[dict(type='entities',name='Opponent'),dict(type='look',none=True),dict(type='card-name',name='Grizzly Bears')])
+  action(e,'cast_spell',e.state['hand'][0]['forgeId']);action(e,'pass_priority',plans=[dict(type='look',none=True),dict(type='card-name',name='Grizzly Bears')])
   p=next(c for c in e.state['battlefield'] if c['name']=='Anointed Peacekeeper')
   assert p['namedCards']==['Grizzly Bears'] and len(p['namedCardTitleIds'])==1
   r=dict(id='native-anointed-peacekeeper-name',passed=True,evidence=str(e.ipc));(E/'card-name-native-result.json').write_text(json.dumps(r,indent=2));print(json.dumps(r))
@@ -320,7 +327,7 @@ def check_faces():
 
 def check_rituals():
     results=[]
-    for name,amount,plans in [('Dark Ritual',3,[]),('Culling the Weak',4,[dict(type='cards-effect',name='Grizzly Bears')])]:
+    for name,amount,plans in [('Dark Ritual',3,[]),('Culling the Weak',4,[])]:
      e=Engine('card-family',fixtureHand=[name],fixtureLands=['Swamp'],fixtureBattlefield=['Grizzly Bears'],fixtureLibrary=['Plains']*10)
      try:
       action(e,'cast_spell',e.state['hand'][0]['forgeId'],plans);action(e,'pass_priority');assert e.state['manaTotal']==amount;assert sum(m['count'] for m in e.state['mana'])==amount;assert len({m['id'] for m in e.state['mana']})==len(e.state['mana'])
@@ -396,7 +403,7 @@ def check_incubator():
 def check_orc():
     e=Engine('card-family',fixtureHand=['Orcish Bowmasters'],fixtureLands=['Swamp']*2,fixtureOpponentBattlefield=['Grizzly Bears'],fixtureLibrary=['Plains']*10)
     try:
-     action(e,'cast_spell',e.state['hand'][0]['forgeId']);action(e,'pass_priority',plans=[dict(type='targets',name='Grizzly Bears',seat=2)]);action(e,'pass_priority',plans=[dict(type='entities',name='Orc Army Token')])
+     action(e,'cast_spell',e.state['hand'][0]['forgeId']);action(e,'pass_priority',plans=[dict(type='targets',name='Grizzly Bears',seat=2)]);action(e,'pass_priority')
      c=next(c for c in e.state['battlefield'] if c['name']=='Orc Army Token');assert c['power']==c['toughness']==1,c;assert next(x for x in e.state['battlefield'] if x['name']=='Grizzly Bears')['damage']==1
      r=dict(id='native-bowmasters-damage-amass',passed=True,evidence=str(e.ipc));(E/'orc-native-result.json').write_text(json.dumps(r,indent=2));print(json.dumps(r))
     finally:e.close()
@@ -407,7 +414,7 @@ def check_teferi_emblem():
     try:
      t=next(c for c in e.state['battlefield'] if c['name']=='Teferi, Hero of Dominaria');offer=next(a for a in e.state['legalActivations'] if a['forgeId']==t['forgeId'] and a['api']=='Effect')
      action(e,'activate_ability',t['forgeId'],abilityId=offer['abilityId']);action(e,'pass_priority');assert any(c.get('objectKind')=='emblem' for c in e.state['command']),e.state['command']
-     action(e,'cast_spell',e.state['hand'][0]['forgeId']);action(e,'pass_priority',plans=[dict(type='options',index=0),dict(type='targets',name='Grizzly Bears',seat=2),dict(type='targets',name='Ornithopter',seat=2)])
+     action(e,'cast_spell',e.state['hand'][0]['forgeId']);action(e,'pass_priority',plans=[dict(type='targets',name='Grizzly Bears',seat=2),dict(type='targets',name='Ornithopter',seat=2)])
      for _ in range(5):
       if not e.state['stackAbilities'] and not e.state['stack']:break
       action(e,'pass_priority')
@@ -434,7 +441,16 @@ def check_emblem_creators():
      if not d.get('emblemPresentation'):continue
      name=d['parentName'];e=None
      try:
-      e=Engine('card-family',fixtureHand=[],fixtureLands=[],fixtureBattlefield=[name],fixtureCounters=[dict(seat=1,cardName=name,occurrence=0,type='LOYALTY',count=99)],fixtureLibrary=['Plains']*10)
+      if name=='Jace, Telepath Unbound':
+       # A back face cannot be admitted as an independent initial card. Reach
+       # it through the original front's loot/exile/return sequence instead.
+       e=Engine('card-family',fixtureHand=[],fixtureLands=[],fixtureBattlefield=['Jace, Vryn\'s Prodigy','Doubling Season'],fixtureBattlefieldReady=True,fixtureGraveyard=['Forest']*5,fixtureLibrary=['Plains']*10)
+       front=next(c for c in e.state['battlefield'] if c['name']=="Jace, Vryn's Prodigy")
+       offer=next(o for o in e.state['legalActivations'] if o['forgeId']==front['forgeId'] and o['api']=='Draw')
+       action(e,'activate_ability',front['forgeId'],abilityId=offer['abilityId']);resolve(e)
+       assert next(c for c in e.state['battlefield'] if c['name']==name)['loyalty']==10
+      else:
+       e=Engine('card-family',fixtureHand=[],fixtureLands=[],fixtureBattlefield=[name],fixtureCounters=[dict(seat=1,cardName=name,occurrence=0,type='LOYALTY',count=99)],fixtureLibrary=['Plains']*10)
       c=next(c for c in e.state['battlefield'] if c['name']==name);action(e,'activate_ability',c['forgeId'],abilityId=d['sourceCreatingAbilityId']);action(e,'pass_priority')
       assert any(c.get('presentationKey')==key for c in e.state['command']),e.state['command']
       r=dict(id=name,passed=True,evidence=str(e.ipc))
@@ -502,9 +518,9 @@ def check_chandra_sweeper():
     e=Engine('card-family',fixtureHand=[],fixtureLands=[],fixtureBattlefield=['Chandra, Awakened Inferno','Grizzly Bears','Llanowar Elves'],fixtureOpponentBattlefield=['Grizzly Bears','Ornithopter'],fixtureCounters=[dict(seat=1,cardName='Chandra, Awakened Inferno',occurrence=0,type='LOYALTY',count=6)],fixtureLibrary=['Plains']*10)
     try:
      c=next(c for c in e.state['battlefield'] if c['name']=='Chandra, Awakened Inferno');a=next(a for a in e.state['legalActivations'] if a['forgeId']==c['forgeId'] and a['api']=='DamageAll')
-     action(e,'activate_ability',c['forgeId'],abilityId=a['abilityId']);action(e,'pass_priority',plans=[dict(type='order',all=True)])
+     action(e,'activate_ability',c['forgeId'],abilityId=a['abilityId']);action(e,'pass_priority')
      assert not any('Creature' in c['currentTypes'] for c in e.state['battlefield']);assert len([c for c in e.state['graveyard'] if c['name']=='Grizzly Bears'])==2
-     r=dict(id='native-chandra-multiplayer-public-graveyard-order',passed=True,evidence=str(e.ipc));(E/'chandra-sweeper-native-result.json').write_text(json.dumps(r,indent=2));print(json.dumps(r))
+     r=dict(id='native-chandra-public-graveyard-no-irrelevant-order-prompt',passed=True,evidence=str(e.ipc));(E/'chandra-sweeper-native-result.json').write_text(json.dumps(r,indent=2));print(json.dumps(r))
     finally:e.close()
     if "results" in locals():assert all(r["passed"] for r in results),results
 
@@ -547,7 +563,7 @@ def check_dauthi():
      action(e,'cast_spell',e.state['hand'][0]['forgeId'],[dict(type='targets',name='Veil of Summer',seat=2)]);action(e,'pass_priority')
      stolen=next(c for c in e.state['exile'] if c['name']=='Veil of Summer');assert any(c['type']=='VOID' and c['count']==1 for c in stolen['counters']),stolen
      v=next(c for c in e.state['battlefield'] if c['name']=='Dauthi Voidwalker');a=next(a for a in e.state['legalActivations'] if a['forgeId']==v['forgeId'])
-     action(e,'activate_ability',v['forgeId'],abilityId=a['abilityId']);action(e,'pass_priority',plans=[dict(type='cards-effect',name='Veil of Summer')])
+     action(e,'activate_ability',v['forgeId'],abilityId=a['abilityId']);action(e,'pass_priority')
      assert stolen['forgeId'] in e.state['legalCasts'],e.state['unavailableActions']
      action(e,'cast_spell',stolen['forgeId']);action(e,'pass_priority');assert not e.state['hand'] and e.state['manaTotal']==0
      assert any(c['name']=='Veil of Summer' and c['owner']==2 for c in e.state['graveyard'])
@@ -625,7 +641,9 @@ def check_combat_context():
         _,d=e.pass_or_decision()
         if d:
          assert e.state['decision']['kind']=='attackers',e.state['decision'];r=e.send('select_attackers',decisionToken=d['token'],assignments=[dict(forgeId=c['forgeId'],targetSeat=2)]);assert r['accepted'],r
-         queue=[dict(type='confirm',accept=True),dict(type='entities',name='Opponent')];action(e,'submit_attackers',plan_queue=queue,decisionToken=d['token']);resolve(e,queue);break
+         # Creating the Warrior is optional; choosing its only legal defender
+         # in this duel is forced and must not add a second confirmation.
+         queue=[dict(type='confirm',accept=True)];action(e,'submit_attackers',plan_queue=queue,decisionToken=d['token']);resolve(e,queue);break
        else:raise AssertionError('No first combat')
        warriors=[x for x in e.state['battlefield'] if x.get('token') and 'Warrior' in x['currentSubtypes']];assert len(warriors)==1 and warriors[0]['attackTarget']==2,warriors
        offer=next(a for a in e.state['legalActivations'] if a['forgeId']==c['forgeId'] and a['api']=='UntapAll');action(e,'activate_ability',c['forgeId'],abilityId=offer['abilityId']);action(e,'pass_priority')
@@ -663,7 +681,7 @@ def check_facebreaker():
      c=next(c for c in e.state['battlefield'] if c['name']=='Warren Soultrader');a=next(a for a in e.state['legalActivations'] if a['forgeId']==c['forgeId'])
      action(e,'activate_ability',c['forgeId'],[dict(type='confirm',accept=True),dict(type='cards-effect',name='Grizzly Bears')],abilityId=a['abilityId']);action(e,'pass_priority')
      c=next(c for c in e.state['battlefield'] if c['name']=='Professional Face-Breaker');a=next(a for a in e.state['legalActivations'] if a['forgeId']==c['forgeId'])
-     action(e,'activate_ability',c['forgeId'],[dict(type='cards-effect',name='Treasure Token')],abilityId=a['abilityId']);action(e,'pass_priority')
+     action(e,'activate_ability',c['forgeId'],abilityId=a['abilityId']);action(e,'pass_priority')
      top=next(c for c in e.state['exile'] if c['name']=='Elvish Mystic');assert top['forgeId'] in e.state['legalCasts'];action(e,'cast_spell',top['forgeId']);action(e,'pass_priority')
      assert any(c['name']=='Elvish Mystic' for c in e.state['battlefield']);assert not any(c['name']=='Treasure Token' for c in e.state['battlefield'])
      r=dict(id='native-facebreaker-sacrifice-treasure-exile-and-cast',passed=True,evidence=str(e.ipc));(E/'facebreaker-native-result.json').write_text(json.dumps(r,indent=2));print(json.dumps(r))
@@ -676,7 +694,7 @@ def check_mana_recovery():
      source=next(c for c in e.state['battlefield'] if c['name']=='Gilded Goose');goose=next(c for c in e.state['hand'] if c['name']=='Gilded Goose');action(e,'cast_spell',goose['forgeId']);resolve(e)
      assert any(c['name']=='Food Token' for c in e.state['battlefield']);elf=next(c for c in e.state['hand'] if c['name']=='Llanowar Elves')
      try:
-      action(e,'cast_spell',elf['forgeId'],[dict(type='options',contains='Gilded Goose #'+str(source['forgeId'])),dict(type='cards-effect',name='Food Token'),dict(type='colors',label='white')])
+      action(e,'cast_spell',elf['forgeId'],[dict(type='colors',label='white')])
       raise AssertionError('White mana must not pay a green cost')
      except RuntimeError as ex:assert 'Forge human' in str(ex) or 'Human play was canceled' in str(ex),str(ex)
      assert not e.state.get('decision') and not e.state['fidelityGap'];assert any(c['forgeId']==elf['forgeId'] for c in e.state['hand']);assert e.state['manaTotal']==1 and e.state['mana'][0]['color']==1
@@ -728,7 +746,7 @@ def check_generated_token_triggers():
         token=next(c for c in e.state['battlefield'] if c.get('presentationKey')=='token:u_2_2_illusion_illusory');action(e,'cast_spell',e.state['hand'][0]['forgeId'],[dict(type='targets',name=token['name'],seat=1)]);resolve(e)
         assert not any(c['forgeId']==token['forgeId'] for c in e.state['battlefield']);assert any(t['kind']=='spell-resolved' and t['hasFizzled'] for t in e.state['researchTrace'])
        else:
-        action(e,'cast_spell',e.state['hand'][0]['forgeId']);resolve(e,[dict(type='options',index=0)]*3)
+        action(e,'cast_spell',e.state['hand'][0]['forgeId']);resolve(e)
         token=next(c for c in e.state['battlefield'] if c.get('presentationKey')=='token:u_2_2_spirit_vigilance_drawcounter');assert token['power']==token['toughness']==4,token;assert next(c for c in e.state['battlefield'] if c['name']==parent)['loyalty']==5
       results.append(dict(id='native-token-trigger-'+name,passed=True,evidence=str(e.ipc)))
      except Exception as ex:results.append(dict(id='native-token-trigger-'+name,passed=False,error=str(ex),evidence=str(e.ipc) if e else ''))
@@ -835,7 +853,7 @@ def check_discard_hand_zero_cost():
       else:settings=dict(fixtureHand=[],fixtureLands=['Swamp'],fixtureBattlefield=['Grim Hireling'],fixtureOpponentBattlefield=['Grizzly Bears'],fixtureLibrary=['Plains']*10)
       e=Engine('card-family',**settings);source="Lion's Eye Diamond" if name=='diamond' else 'Grim Hireling';c=next(c for c in e.state['battlefield'] if c['name']==source)
       if name=='diamond':
-       a=next(a for a in e.state['legalManaOffers'] if a['forgeId']==c['forgeId']);action(e,'activate_mana',c['forgeId'],[dict(type='confirm',accept=True),dict(type='order',all=True),dict(type='colors',label='green')],abilityId=a['abilityId'])
+       a=next(a for a in e.state['legalManaOffers'] if a['forgeId']==c['forgeId']);action(e,'activate_mana',c['forgeId'],[dict(type='confirm',accept=True),dict(type='colors',label='green')],abilityId=a['abilityId'])
        assert not e.state['hand'] and e.state['manaTotal']==3 and all(m['color']==16 for m in e.state['mana']);assert {"Lion's Eye Diamond",'Divination','Forest'}<={c['name'] for c in e.state['graveyard']}
       else:
        a=next(a for a in e.state['legalActivations'] if a['forgeId']==c['forgeId']);action(e,'activate_ability',c['forgeId'],[dict(type='targets',name='Grizzly Bears',seat=2)],abilityId=a['abilityId']);resolve(e);target=next(c for c in e.state['battlefield'] if c['name']=='Grizzly Bears');assert target['power']==target['toughness']==2
@@ -887,7 +905,7 @@ def check_sprawl_attachment():
     e=Engine('card-family',fixtureHand=['Utopia Sprawl'],fixtureLands=['Forest']*2,fixtureLibrary=['Plains']*10)
     try:
      forest=next(c for c in e.state['battlefield'] if c['name']=='Forest');spell=next(c for c in e.state['hand'] if c['name']=='Utopia Sprawl')
-     action(e,'cast_spell',spell['forgeId'],[dict(type='targets',ids=[forest['forgeId']])]);resolve(e,[dict(type='entities',name='Forest'),dict(type='colors',label='blue')])
+     action(e,'cast_spell',spell['forgeId'],[dict(type='targets',ids=[forest['forgeId']])]);resolve(e,[dict(type='colors',label='blue')])
      aura=next(c for c in e.state['battlefield'] if c['name']=='Utopia Sprawl');assert aura['attachedToForgeId']==forest['forgeId'] and [c.lower() for c in aura['chosenColors']]==['blue']
      # Pick the untouched enchanted Forest explicitly; other mana sources may
      # have paid the Aura's cost. Advance normally if that Forest was tapped.
@@ -914,7 +932,7 @@ def check_replacement_labels():
  for first,squirrels in [('Chatterfang, Squirrel General',1),('Peregrin Took',2)]:
   e=Engine('card-family',fixtureHand=['Prosperous Innkeeper'],fixtureLands=['Forest']*2,fixtureBattlefield=['Chatterfang, Squirrel General','Peregrin Took'],fixtureLibrary=['Plains']*10)
   try:
-   action(e,'cast_spell',e.state['hand'][0]['forgeId']);resolve(e,[dict(type='options',label=first)]+([dict(type='options',label='Prosperous Innkeeper (#1)')] if squirrels==2 else []))
+   action(e,'cast_spell',e.state['hand'][0]['forgeId']);resolve(e,[dict(type='options',label=first)])
    counts={n:sum(c['name']==n for c in e.state['battlefield']) for n in ['Treasure Token','Food Token','Squirrel Token']};assert counts=={'Treasure Token':1,'Food Token':1,'Squirrel Token':squirrels},counts
    # Inspect the native translation's actual button strings, not just source text.
    native=[json.loads(x) for x in (e.native_folder/'native-model.jsonl').read_text(encoding="utf-8-sig").splitlines()];labels=[r['value']['labels'] for r in native if r['kind']=='original-choice-ui'];assert ['Chatterfang, Squirrel General','Peregrin Took'] in labels,labels

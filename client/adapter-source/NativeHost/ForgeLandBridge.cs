@@ -44,6 +44,8 @@ internal sealed class ForgeLandBridge
     private readonly AutomaticPassPacing _passPacing = new AutomaticPassPacing();
     private readonly Func<uint?> _presentedState;
     private readonly Func<bool> _submitAutomaticPass;
+    private readonly Func<bool> _autoOrderTriggers;
+    private readonly Func<bool> _autoChooseReplacementEffects;
     private bool _automaticSuspended;
     private bool _quietAdvance;
     private int _yieldTurn=-1;
@@ -64,6 +66,7 @@ internal sealed class ForgeLandBridge
     internal int[] ResearchRemovedAbilities(JToken card,JToken removal)=>SharedKeywordProtocol.RemovedAbilities(card,removal,_keywordBindings,_cardManifest);
     internal IEnumerable<uint> ResearchPrintedAbilities(string name)=>((JArray)Definition(name)["abilityIds"]!).Select(v=>(uint)v).Concat(new[]{(uint)Identity(name).Ability}).Where(v=>v!=0).Distinct();
     internal IEnumerable<uint> ResearchKnownKeywords=>_keywordBindings.Properties().Select(p=>(uint)p.Value);
+    internal uint ResearchCanonicalKeyword(string name,uint ability)=>Definition(name)["abilityBindings"]?["printedKeywordBases"]?[ability.ToString(System.Globalization.CultureInfo.InvariantCulture)] is JToken value?(uint)value:ability;
     internal uint? ResearchKnownKeyword(string keyword)=>_keywordBindings[SharedKeywordProtocol.Key(keyword)] is JToken value?(uint)value:null;
     internal JObject ResearchState => (JObject)_state.DeepClone();
     public string Session => _session;
@@ -98,7 +101,7 @@ internal sealed class ForgeLandBridge
         return string.Join("\n",lines).TrimEnd();
     }
 
-    public ForgeLandBridge(string root, LocalGreConnection connection, System.Action<string> log, Func<uint?> presentedState, Func<bool> submitAutomaticPass,string? researchIpc=null, Func<double>? seconds=null)
+    public ForgeLandBridge(string root, LocalGreConnection connection, System.Action<string> log, Func<uint?> presentedState, Func<bool> submitAutomaticPass,string? researchIpc=null, Func<double>? seconds=null, Func<bool>? autoOrderTriggers=null, Func<bool>? autoChooseReplacementEffects=null)
     {
         if(researchIpc!=null)
         {
@@ -107,6 +110,8 @@ internal sealed class ForgeLandBridge
             if((bool?)researchManifest["researchOnly"]!=true || File.Exists(Path.Combine(root,"MTGA.exe")) || !Path.GetFullPath(researchIpc).StartsWith(allowed,StringComparison.OrdinalIgnoreCase))throw new InvalidOperationException("Explicit IPC override requires a private headless research runtime");
         }
         var clock=System.Diagnostics.Stopwatch.StartNew();_seconds=seconds??(()=>clock.Elapsed.TotalSeconds);
+        _autoOrderTriggers=autoOrderTriggers??(()=>true);
+        _autoChooseReplacementEffects=autoChooseReplacementEffects??(()=>false);
         _ipc=researchIpc??Path.Combine(root,"forge-ipc");_wire=Path.Combine(_ipc,"native-wire.jsonl");_connection=connection;_log=log;_presentedState=presentedState;_submitAutomaticPass=submitAutomaticPass;_fullControl=File.Exists(Path.Combine(root,"full-control-test.flag"));
         _state=JObject.Parse(ReadShared(Path.Combine(_ipc,"state.json")));
         var manifest=JObject.Parse(File.ReadAllText(Path.Combine(root,"bridge-card-manifest.json")));
@@ -234,7 +239,11 @@ internal sealed class ForgeLandBridge
             if((string?)card["zone"]!="Battlefield" && int.TryParse((string?)card["baseLoyalty"],System.Globalization.NumberStyles.Integer,System.Globalization.CultureInfo.InvariantCulture,out int printed))loyalty=printed;
             result["loyalty"]=new JObject{["value"]=loyalty};
         }
-        if(((JArray)Definition(name)["types"]!).Any(t=>(string)t! =="Battle") && card["defense"]!=null)result["defense"]=new JObject{["value"]=(int)card["defense"]!};
+        if(((JArray)Definition(name)["types"]!).Any(t=>(string)t! =="Battle") && card["defense"]!=null){
+            int defense=(int)card["defense"]!;
+            if((string?)card["zone"]!="Battlefield" && int.TryParse((string?)card["baseDefense"],System.Globalization.NumberStyles.Integer,System.Globalization.CultureInfo.InvariantCulture,out int printed))defense=printed;
+            result["defense"]=new JObject{["value"]=defense};
+        }
         if((bool?)card["token"]==true)result["type"]="GameObjectType_Token";
         SharedCharacteristicsProtocol.Apply(result,card,_typeBindings);
         bool creature=card["currentTypes"] is JArray currentTypes?currentTypes.Any(t=>(string)t! == "Creature"):((JArray)Definition(name)["types"]!).Any(t=>(string)t! == "Creature");
@@ -373,6 +382,10 @@ internal sealed class ForgeLandBridge
         foreach(var card in VisibleCards(_state).Where(c=>(bool?)c["commander"]==true))
             result.Add(new JObject{["id"]=910000+(int)card["forgeId"]!,["affectedIds"]=new JArray(Id(card)),["type"]=new JArray("AnnotationType_Designation"),
                 ["details"]=new JArray(Detail("DesignationType",(int)Designation.Commander),Detail("CostIncrease",(int?)card["commanderTax"] ?? 0),Detail("grpid",Identity(PresentationKey(card)).Grp),Detail("ColorIdentity",CommanderColorIdentity((string)card["name"]!)))});
+        foreach(var card in ((JArray)_state["battlefield"]!).Where(c=>(int?)c["protectorSeat"]>0))
+            result.Add(new JObject{["id"]=930000+(int)card["forgeId"]!,["affectorId"]=Id(card),["affectedIds"]=new JArray((int)card["protectorSeat"]!),["type"]=new JArray("AnnotationType_Designation"),["details"]=new JArray(Detail("DesignationType",(int)Designation.Protector))});
+        foreach(var card in VisibleCards(_state).Where(c=>(int?)c["classLevel"]>0))
+            result.Add(new JObject{["id"]=940000+(int)card["forgeId"]!,["affectorId"]=Id(card),["affectedIds"]=new JArray(Id(card)),["type"]=new JArray("AnnotationType_ClassLevel"),["details"]=new JArray(Detail("Level",(int)card["classLevel"]!))});
         foreach(var card in ((JArray)_state["stack"]!).Concat((JArray)_state["stackAbilities"]!))
         {
             var targets=(JArray?)card["targetForgeIds"] ?? new JArray();var seats=(JArray?)card["targetSeats"] ?? new JArray();if(targets.Count+seats.Count==0)continue;
@@ -393,8 +406,18 @@ internal sealed class ForgeLandBridge
         else if((string)Decision["kind"]! == "assign_damage")
         {
             int source=_ids[(int)Decision["sourceForgeId"]!];int total=(int)Decision["totalDamage"]!;
+            if((string?)Decision["policy"]=="divided-spell")
+            {
+                // Spell/ability division uses Arena's battlefield spinners,
+                // not the combat damage-order browser.
+                var targets=new JArray(((JArray)Decision["options"]!).Select(TargetId));
+                message=Envelope("GREMessageType_DistributionReq",new JObject{["sourceId"]=source,["minAmount"]=total,["maxAmount"]=total,["minPerTarget"]=1,["targetIds"]=targets,["validSelectedTargetIds"]=targets.DeepClone()},"distributionReq");
+                message["allowCancel"]=(bool?)Decision["canCancel"]==true?"AllowCancel_Abort":"AllowCancel_No";
+                message["prompt"]=new JObject{["promptId"]=8,["parameters"]=new JArray(new JObject{["parameterName"]="CardId",["type"]="ParameterType_Number",["numberValue"]=source})};
+                _requestId=(uint)message["msgId"]!;return message;
+            }
             var assigner=new JObject{["instanceId"]=source,["totalDamage"]=total,
-                ["assignments"]=new JArray(((JArray)Decision["options"]!).Select(o=>new JObject{["instanceId"]=TargetId(o),["minDamage"]=(int?)o["lethalDamage"] ?? 0,["maxDamage"]=total,["assignedDamage"]=(int)o["assignedDamage"]!})),
+                ["assignments"]=new JArray(((JArray)Decision["options"]!).Select(o=>new JObject{["instanceId"]=TargetId(o),["minDamage"]=(int?)o["minimumDamage"] ?? (int?)o["lethalDamage"] ?? 0,["maxDamage"]=total,["assignedDamage"]=(int)o["assignedDamage"]!})),
                 ["decisionPrompt"]=new JObject{["promptId"]=8,["parameters"]=new JArray(new JObject{["parameterName"]="CardId",["type"]="ParameterType_Number",["numberValue"]=source})}};
             message=Envelope("GREMessageType_AssignDamageReq",new JObject{["damageAssigners"]=new JArray(assigner)},"assignDamageReq");
         }
@@ -518,7 +541,7 @@ internal sealed class ForgeLandBridge
             return;
         }
         bool conceding=command.Type==ClientMessageType.ConcedeReq;
-        bool cancelling=command.Type==ClientMessageType.CancelActionReq && DecisionKind=="targets";
+        bool cancelling=command.Type==ClientMessageType.CancelActionReq && (DecisionKind=="targets" || DecisionKind=="assign_damage" && (string?)Decision?["policy"]=="divided-spell");
         if(conceding && GameOver)return;
         if(!conceding && (_pending!=null || command.GameStateId!=_stateId || (!cancelling && command.RespId!=_requestId)))
             throw new InvalidOperationException("Rejected pending/stale native response.");
@@ -538,7 +561,17 @@ internal sealed class ForgeLandBridge
                 if(answer!=OptionResponse.AllowYes && answer!=OptionResponse.CancelNo)throw new InvalidOperationException("Invalid commander return response");
                 _pendingOp="submit_commander_return";assignments.Add(new JObject{["returnToCommand"]=answer==OptionResponse.AllowYes});
             }
-            else if(kind=="assign_damage" && command.Type==ClientMessageType.AssignDamageResp)
+            else if(kind=="assign_damage" && cancelling)
+            {
+                if((bool?)Decision["canCancel"]!=true)throw new InvalidOperationException("Mandatory allocation cannot be canceled");
+                _pendingOp="cancel_assign_damage";
+            }
+            else if(kind=="assign_damage" && (string?)Decision["policy"]=="divided-spell" && command.Type==ClientMessageType.DistributionResp)
+            {
+                _pendingOp="submit_assign_damage";
+                foreach(var value in command.DistributionResp.Distributions)assignments.Add(new JObject{["forgeId"]=ForgeId(checked((int)value.InstanceId)),["amount"]=checked((int)value.Amount)});
+            }
+            else if(kind=="assign_damage" && (string?)Decision["policy"]!="divided-spell" && command.Type==ClientMessageType.AssignDamageResp)
             {
                 var assigners=command.AssignDamageResp.Assigners;
                 if(assigners.Count!=1 || assigners[0].InstanceId!=_ids[(int)Decision["sourceForgeId"]!] || assigners[0].TotalDamage!=(int)Decision["totalDamage"]!)throw new InvalidOperationException("Native damage source/total does not match the pending Forge choice.");
@@ -625,7 +658,7 @@ internal sealed class ForgeLandBridge
         }
         _automaticSuspended=false;_pending="arena_"+Guid.NewGuid().ToString("N");BeginRulesWait();
         var request=new JObject{["id"]=_pending,["session"]=_session,["op"]=_pendingOp,["seat"]=1,["forgeId"]=_pendingForgeId,["nativeStateId"]=_stateId,["nativeResponseId"]=_requestId,["nativeArenaId"]=nativeId};
-        request.Merge(fields);var path=Path.Combine(_ipc,"requests",_pending+".json");File.WriteAllText(path+".tmp",request.ToString());File.Move(path+".tmp",path);
+        request.Merge(fields);request["autoOrderTriggers"]=_autoOrderTriggers();request["autoChooseReplacementEffects"]=_autoChooseReplacementEffects();var path=Path.Combine(_ipc,"requests",_pending+".json");File.WriteAllText(path+".tmp",request.ToString());File.Move(path+".tmp",path);
         _log("Sent native "+_pendingOp+" choice to Forge: "+_pendingForgeId);
     }
 
@@ -811,6 +844,10 @@ internal sealed class ForgeLandBridge
             ["actions"]=new JArray(Offers().Select(a=>new JObject{["seatId"]=1,["action"]=a.DeepClone()})) };
         if(GameOver || (string?)prior["stage"] != (string?)_state["stage"])delta["gameInfo"]=GameInfo();
         foreach(uint id in retiredCounters)((JArray)delta["diffDeletedPersistentAnnotationIds"]!).Add(id);
+        foreach(var card in ((JArray)prior["battlefield"]!).Where(c=>(int?)c["protectorSeat"]>0 && !((JArray)_state["battlefield"]!).Any(n=>(int)n["forgeId"]! == (int)c["forgeId"]! && (int?)n["protectorSeat"]>0)))
+            ((JArray)delta["diffDeletedPersistentAnnotationIds"]!).Add(930000+(int)card["forgeId"]!);
+        foreach(var card in VisibleCards(prior).Where(c=>(int?)c["classLevel"]>0 && !VisibleCards(_state).Any(n=>(int)n["forgeId"]! == (int)c["forgeId"]! && (int?)n["classLevel"]>0)))
+            ((JArray)delta["diffDeletedPersistentAnnotationIds"]!).Add(940000+(int)card["forgeId"]!);
         foreach(uint id in retiredAttachments)((JArray)delta["diffDeletedPersistentAnnotationIds"]!).Add(id);
         foreach(uint id in retiredKeywords)((JArray)delta["diffDeletedPersistentAnnotationIds"]!).Add(id);
         if(GameOver)
@@ -841,6 +878,8 @@ internal sealed class ForgeLandBridge
         _quietAdvance=false;_pendingOp="pass_priority";_pendingForgeId=0;
         _pending="rules_"+Guid.NewGuid().ToString("N");BeginRulesWait();
         var request=new JObject{["id"]=_pending,["session"]=_session,["op"]=_pendingOp,["seat"]=1,["forgeId"]=0,["nativeStateId"]=_stateId,["nativeResponseId"]=0,["automaticRulesStep"]=true};
+        request["autoOrderTriggers"]=_autoOrderTriggers();
+        request["autoChooseReplacementEffects"]=_autoChooseReplacementEffects();
         var path=Path.Combine(_ipc,"requests",_pending+".json");File.WriteAllText(path+".tmp",request.ToString());File.Move(path+".tmp",path);
         File.AppendAllText(_wire,new JObject{["direction"]="internal-rules",["session"]=_session,["utc"]=DateTime.UtcNow,["request"]=request}.ToString(Formatting.None)+Environment.NewLine);
         _log("Forge automatic progression without an unnecessary native action prompt");
@@ -886,7 +925,9 @@ internal sealed class ForgeLandBridge
         if(recipient.Type==DamageRecType.PlanesWalker)
         {
             int target=_ids.Single(pair=>pair.Value==(int)recipient.PlaneswalkerInstanceId).Key;
-            return new JObject{["forgeId"]=attacker,["targetSeat"]=(int)Cards(_state).Single(c=>(int)c["forgeId"]! == target)["controller"]!,["targetForgeId"]=target};
+            var option=((JArray)Decision!["options"]!).Single(c=>(int)c["forgeId"]! == attacker);
+            var offered=((JArray)option["attackTargets"]!).Single(c=>(int)c["targetForgeId"]! == target);
+            return new JObject{["forgeId"]=attacker,["targetSeat"]=(int)offered["targetSeat"]!,["targetForgeId"]=target};
         }
         throw new NotSupportedException("Unmapped attack recipient: "+recipient.Type);
     }

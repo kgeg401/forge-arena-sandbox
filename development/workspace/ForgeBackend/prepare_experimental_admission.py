@@ -7,12 +7,18 @@ from build_card_coverage import norm,modal_binding,mode_text
 from runtime_paths import DB,FORGE_SCRIPTS,SUPPORT_POLICY
 
 
-def prepare(decks_path,output):
+def prepare(decks_path,output,cards_path=None):
     if output.exists():raise ValueError('Preserve previous experimental inventories; select a fresh output')
-    decks=json.loads(decks_path.read_text(encoding='utf-8-sig'))
+    decks=json.loads(decks_path.read_text(encoding='utf-8-sig')) if decks_path else {}
     policy=json.loads(SUPPORT_POLICY.read_text())
     verified=set(policy['verifiedNames']);needed={d['commander'] for d in decks.values()}|{c['name'] for d in decks.values() for c in d['cards']}
     commanders={d['commander'] for d in decks.values()}
+    if cards_path:
+        if decks_path:raise ValueError('Provide decks or an explicit research card list, not both')
+        names=json.loads(cards_path.read_text(encoding='utf-8-sig'))
+        if not isinstance(names,list) or not all(isinstance(n,str) and n.strip()==n and n for n in names) or len(names)!=len(set(names)):
+            raise ValueError('Research card list must contain unique nonempty exact names')
+        needed=set(names)
     db=sqlite3.connect(DB.as_uri()+'?mode=ro',uri=True);db.row_factory=sqlite3.Row
     enums={(r['Type'],r['Value']):r['Loc'] for r in db.execute('SELECT e.Type,e.Value,l.Loc FROM Enums e JOIN Localizations_enUS l ON l.LocId=e.LocId AND l.Formatted=1')}
     def enum_values(kind,text):return [enums[kind,int(v)] for v in filter(None,text.split(','))]
@@ -28,6 +34,7 @@ def prepare(decks_path,output):
             if not names:continue
             source[path]=(text,hashlib.sha256(raw).hexdigest())
             for name in names:scripts[norm(name.strip())].append(path)
+            if len(names)>1:scripts[norm(' // '.join(n.strip() for n in names))].append(path)
     cards={};blocked={}
     for name in sorted(needed-verified):
         options=groups.get(name,[]);matches=sorted(set(scripts.get(norm(name),[])))
@@ -87,10 +94,11 @@ def prepare(decks_path,output):
         cards[name]=card
     result=dict(schema=1,enabled=True,status='User-authorized experimental admission; no gameplay verification or promotion claim',
                 sourceDatabaseSha256=hashlib.sha256(DB.read_bytes()).hexdigest(),sourceForgeScriptsSha256=hashlib.sha256(FORGE_SCRIPTS.read_bytes()).hexdigest(),
-                policySha256=hashlib.sha256(SUPPORT_POLICY.read_bytes()).hexdigest(),requestedDecksSha256=hashlib.sha256(decks_path.read_bytes()).hexdigest(),cards=cards,blockedCards=blocked)
+                policySha256=hashlib.sha256(SUPPORT_POLICY.read_bytes()).hexdigest(),cards=cards,blockedCards=blocked)
+    result['requestedCardsSha256' if cards_path else 'requestedDecksSha256']=hashlib.sha256((cards_path or decks_path).read_bytes()).hexdigest()
     output.parent.mkdir(parents=True,exist_ok=True);output.write_text(json.dumps(result,indent=2),encoding='utf8')
     print(json.dumps(dict(experimental=len(cards),verifiedUnchanged=len(verified),commanders=[n for n,c in cards.items() if c.get('commanderAdmitted')],blocked=blocked,output=str(output)),indent=2))
 
 
 if __name__=='__main__':
-    p=argparse.ArgumentParser(description=__doc__);p.add_argument('--decks',type=Path,required=True);p.add_argument('--output',type=Path,required=True);a=p.parse_args();prepare(a.decks,a.output)
+    p=argparse.ArgumentParser(description=__doc__);source=p.add_mutually_exclusive_group(required=True);source.add_argument('--decks',type=Path);source.add_argument('--cards',type=Path,help='Exact Arena names for private research, without pretending they form a playable deck');p.add_argument('--output',type=Path,required=True);a=p.parse_args();prepare(a.decks,a.output,a.cards)

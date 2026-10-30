@@ -172,6 +172,9 @@ public sealed class Plugin : BaseUnityPlugin
                   UnityEngine.UI.Button? SpinnerButton(SpinnerAnimated spinner,bool up)=>typeof(SpinnerAnimated).GetField(up?"_upButton":"_downButton",System.Reflection.BindingFlags.Instance|System.Reflection.BindingFlags.NonPublic)?.GetValue(spinner) as UnityEngine.UI.Button;
                   bool Available(UnityEngine.UI.Selectable? control)=>control!=null && control.gameObject.activeInHierarchy && control.IsInteractable();
                   var damageControls=new{autoAssign=damageToggle==null?null:new{value=damageToggle.isOn,enabled=Available(damageToggle)},spinners=damageSpinners?.Select(v=>new{instanceId=v.Key,value=v.Value.Value,increase=Available(SpinnerButton(v.Value,true)),decrease=Available(SpinnerButton(v.Value,false))}).ToArray()};
+                  var distributionController=activeWorkflow?.GetType().Name=="DistributionWorkflow"?activeWorkflow.GetType().GetField("_spinnerController",System.Reflection.BindingFlags.Instance|System.Reflection.BindingFlags.NonPublic)?.GetValue(activeWorkflow):null;
+                  var distributionSpinners=distributionController?.GetType().GetField("_activeSpinners",System.Reflection.BindingFlags.Instance|System.Reflection.BindingFlags.NonPublic)?.GetValue(distributionController) as Dictionary<uint,SpinnerAnimated>;
+                  var distributionControls=distributionSpinners?.Select(v=>new{instanceId=v.Key,value=v.Value.Value,increase=Available(SpinnerButton(v.Value,true)),decrease=Available(SpinnerButton(v.Value,false))}).ToArray();
                   int? HandlerCount(string name)=>mulliganBrowser==null?null:(mulliganBrowser.GetType().GetField(name,System.Reflection.BindingFlags.Instance|System.Reflection.BindingFlags.NonPublic)?.GetValue(mulliganBrowser) as Delegate)?.GetInvocationList().Length ?? 0;
                   bool? KeepTargetsCurrent()=>mulliganBrowser==null?null:(mulliganBrowser.GetType().GetField("KeepPressed",System.Reflection.BindingFlags.Instance|System.Reflection.BindingFlags.NonPublic)?.GetValue(mulliganBrowser) as Delegate)?.GetInvocationList().All(d=>ReferenceEquals(d.Target,activeWorkflow));
                   GreClient.Rules.BaseUserRequest? observedRequest=null;
@@ -181,7 +184,7 @@ public sealed class Plugin : BaseUnityPlugin
                 var hits=new List<RaycastResult>();
                 var point=new Vector2((float?)action["x"]??0,(float?)action["y"]??0);
                 if(EventSystem.current!=null && action["x"]!=null)EventSystem.current.RaycastAll(new PointerEventData(EventSystem.current){position=point},hits);
-                  File.WriteAllText(Path.Combine(_root,"native-action-probe.json"),JsonConvert.SerializeObject(new{utc=DateTime.UtcNow,workflow=activeWorkflow?.GetType().Name,applied=activeWorkflow?.AppliedState.ToString(),nativeState=game?.CurrentGameState?.Id,orderCardIds,damageAssignments,damageControls,nativeRequest=observedRequest==null?null:new{type=observedRequest.GetType().Name,state=observedRequest.OriginalMessage.GameStateId,message=observedRequest.OriginalMessage.MsgId,submitListeners=observedRequest.OnSubmit?.GetInvocationList().Length ?? 0},uiButtons=uiButtonInfo,mulliganHandlers=new{browser=mulliganBrowser?.GetType().Name,keep=HandlerCount("KeepPressed"),mulligan=HandlerCount("MulliganPressed"),keepTargetsCurrent=KeepTargetsCurrent()},buttons=activeWorkflow?.Buttons?.WorkflowButtons.Select(b=>new{text=b.ButtonText.ToString(),tag=b.Tag.ToString(),enabled=b.Enabled}).ToArray(),screen=new{width=Screen.width,height=Screen.height},focused=Application.isFocused,inputModule=EventSystem.current?.currentInputModule?.GetType().FullName,
+                  File.WriteAllText(Path.Combine(_root,"native-action-probe.json"),JsonConvert.SerializeObject(new{utc=DateTime.UtcNow,workflow=activeWorkflow?.GetType().Name,applied=activeWorkflow?.AppliedState.ToString(),nativeState=game?.CurrentGameState?.Id,orderCardIds,damageAssignments,damageControls,distributionControls,nativeRequest=observedRequest==null?null:new{type=observedRequest.GetType().Name,state=observedRequest.OriginalMessage.GameStateId,message=observedRequest.OriginalMessage.MsgId,submitListeners=observedRequest.OnSubmit?.GetInvocationList().Length ?? 0},uiButtons=uiButtonInfo,mulliganHandlers=new{browser=mulliganBrowser?.GetType().Name,keep=HandlerCount("KeepPressed"),mulligan=HandlerCount("MulliganPressed"),keepTargetsCurrent=KeepTargetsCurrent()},buttons=activeWorkflow?.Buttons?.WorkflowButtons.Select(b=>new{text=b.ButtonText.ToString(),tag=b.Tag.ToString(),enabled=b.Enabled}).ToArray(),screen=new{width=Screen.width,height=Screen.height},focused=Application.isFocused,inputModule=EventSystem.current?.currentInputModule?.GetType().FullName,
                     mouse=UnityEngine.InputSystem.Mouse.current?.position.ReadValue().ToString(),hovered=Wotc.Mtga.CustomInput.CustomUIInputModule.GetHovered().Select(g=>g.name).ToArray(),inputEvents=NativeInputDiagnostics.Events.ToArray(),
                     raycasters=UnityEngine.Object.FindObjectsByType<BaseRaycaster>(FindObjectsSortMode.None).Select(r=>new{name=r.name,type=r.GetType().Name,enabled=r.enabled,camera=r.eventCamera?.name}).ToArray(),
                     raycast=hits.Select(h=>new{name=h.gameObject.name,module=h.module.GetType().Name,card=h.gameObject.GetComponentInParent<DuelScene_CDC>()?.InstanceId,distance=h.distance}).ToArray(),
@@ -230,6 +233,17 @@ public sealed class Plugin : BaseUnityPlugin
                           if(!Available(button))throw new NativeQaRejectedException("Original damage spinner button is disabled.");
                           button!.onClick.Invoke();
                       }
+                  }
+                  else if((string?)action["op"]=="distribution_spinner")
+                  {
+                      if(activeWorkflow?.GetType().Name!="DistributionWorkflow" || activeWorkflow.AppliedState!=InteractionAppliedState.Applied || game?.CurrentGameState?.Id!=(uint?)action["nativeState"])throw new NativeQaRejectedException("Native distribution context changed; inspect again.");
+                      uint instance=(uint)action["instanceId"]!;
+                      if(distributionSpinners==null || !distributionSpinners.TryGetValue(instance,out var spinner) || spinner.Value!=(int?)action["expectedValue"])throw new NativeQaRejectedException("Original distribution spinner changed or is unavailable.");
+                      string? direction=(string?)action["direction"];
+                      if(direction!="increase" && direction!="decrease")throw new NativeQaRejectedException("Unknown distribution spinner direction.");
+                      var button=SpinnerButton(spinner,direction=="increase");
+                      if(!Available(button))throw new NativeQaRejectedException("Original distribution spinner button is disabled.");
+                      button!.onClick.Invoke();
                   }
                   else if((string?)action["op"]!="inspect")throw new NativeQaRejectedException("Unknown native QA operation.");
                   if((string?)action["op"]!="inspect")QaResult(true);
@@ -339,7 +353,7 @@ public sealed class Plugin : BaseUnityPlugin
                 if(workflow==null || workflow.AppliedState!=Wotc.Mtga.DuelScene.Interactions.InteractionAppliedState.Applied)return false;
                 workflow.OnAutoYieldEnabled();
                 return true;
-            });
+            },autoOrderTriggers:()=>MDNPlayerPrefs.AutoOrderTriggers,autoChooseReplacementEffects:()=>MDNPlayerPrefs.AutoChooseReplacementEffects);
         manager.Initialize(_connection, papa.CardDatabase);
         // Multiplayer layout captures the local seat during scene initialization.
         HarmonyLib.AccessTools.Property(typeof(MatchManager),"LocalPlayerSeatId").SetValue(manager,1u,null);

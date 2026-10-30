@@ -31,7 +31,7 @@ BASICS={'Forest','Mountain','Plains','Island','Swamp'}
 def sha(path):return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
-def run_case(case,factory):
+def run_case(case,factory,full_human_choices=False):
     e=None
     try:
         expected_found=next((i for i,n in enumerate(case['library']) if (n in BASICS)==(case['kind']=='Land')),None)
@@ -50,8 +50,8 @@ def run_case(case,factory):
                 if message and message['parentRequestId']==parent:
                     e.state=message['state'];d=e.state['decision'];fields=dict(decisionToken=d['token']);check('No callback is silently delegated',not e.state['fidelityGap'])
                     check('Every decision uses the explicit shared contract',d['kind']=='choice');spec=d['choice'];seen.append(spec['type'])
-                    if spec['type']=='abilities':
-                        check('Original source descriptions and native prompt are preserved',[o['label'] for o in spec['options']]==['Land','Nonland'] and spec['nativePromptId']==12340 and spec['min']==spec['max']==1)
+                    if spec['type']==('options' if full_human_choices else 'abilities'):
+                        check('Original source descriptions and native prompt are preserved',[o['label'] for o in spec['options']]==['Land','Nonland'] and spec['nativePromptId']==(23 if full_human_choices else 12340) and spec['min']==spec['max']==1)
                         selected=next(o['choiceId'] for o in spec['options'] if o['label']==case['kind'])
                         for assignments in ([],[dict(choiceId=selected)]*2,[dict(choiceId=999)],[dict(choiceId=1.5)]):
                             check('Invalid native ability choices do not consume the handler',not e.send('submit_choice',assignments=assignments,**fields)['accepted'] and e.state['decision']['token']==d['token'])
@@ -73,7 +73,8 @@ def run_case(case,factory):
         check('Untouched original suffix remains the actual library prefix',actual[:len(untouched)]==[original[i] for i in untouched])
         check('Randomized bottom preserves every and only the unchosen original objects',sorted(actual[len(untouched):])==sorted(original[i] for i in remainder))
         check('Native reveal showed the complete independent prefix once in order',revealed==[original[i] for i in revealed_indices])
-        check('No hidden extra choice or missing generic decision occurs',seen.count('abilities')==1 and set(seen)<={'abilities','look'})
+        choice_type='options' if full_human_choices else 'abilities'
+        check('No hidden extra choice or missing generic decision occurs',seen.count(choice_type)==1 and set(seen)<={choice_type,'look'})
         rows=[json.loads(line) for line in (e.native_folder/'native-model.jsonl').read_text().splitlines()];ui=[r['value'] for r in rows if r['kind']=='original-choice-ui']
         check('Original native UI translator preserves both labels and selects its prompt-button workflow',bool(ui) and all(r['labels']==['Land','Nonland'] and r['nativeIds']==[0,1] and r['originalPromptButtonsSelected'] and not r['rendererStarted'] for r in ui))
         check('Exhaustive reveal without a draw never falsely loses the game',not e.state['gameOver'] and not e.state['fidelityGap'])
@@ -92,9 +93,10 @@ def main():
     prep=json.loads((ROOT.parent/'preparation.json').read_text());source=ROOT.parent/'sources/ForgeBackend/ForgeLandEngine.java';assert sha(source)==prep['sourceSha256']
     a.output.mkdir(parents=True,exist_ok=False);hashes={str(f):sha(f) for f in a.worker.parent.glob('*.dll')};hashes[str(a.managed/'Core.dll')]=sha(a.managed/'Core.dll');rows=[]
     factory=lambda scenario,**settings:NativeEngine(scenario,worker=a.worker,managed=a.managed,fixture=a.fixture,**settings)
+    full_human_choices=json.loads((ROOT/'native-lab/bridge-card-manifest.json').read_text()).get('fullHumanChoices') is True
     for case in CASES:
         if a.case and case['id'] not in a.case:continue
-        row=run_case(case,factory);rows.append(row);print(json.dumps({k:v for k,v in row.items() if k!='traceback'}),flush=True)
+        row=run_case(case,factory,full_human_choices);rows.append(row);print(json.dumps({k:v for k,v in row.items() if k!='traceback'}),flush=True)
     if any(sha(Path(path))!=digest for path,digest in hashes.items()) or sha(source)!=prep['sourceSha256']:raise RuntimeError('Pinned test bytes changed during run')
     result=dict(passed=all(r['passed'] for r in rows),cases=rows,sourceSha256=prep['sourceSha256'],nativeBinaries=hashes,finishedUtc=datetime.now(timezone.utc).isoformat(),scope=__doc__,renderedAcceptance=False,optionLanguage='Source-checked English; localized option labels are not yet mapped')
     (a.output/'report.json').write_text(json.dumps(result,indent=2));raise SystemExit(0 if result['passed'] else 1)

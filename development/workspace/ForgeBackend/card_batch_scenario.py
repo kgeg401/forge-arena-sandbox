@@ -192,7 +192,10 @@ def execute(case,engine_factory=None):
                 parent=e.begin('cast_spell',identity)
                 progress=e.wait_json(e.ipc/'decision.json');e.state=progress['state'];d=e.state['decision']
                 check('target','Target request belongs to this cast',progress['parentRequestId']==parent)
-                check('cost','Target decision precedes payment',e.state['battlefield']==before['battlefield'] and e.state['stack']==before['stack'])
+                # The original Human casting path moves the proposed card to
+                # the stack zone before targets (601.2a/c), but has not paid
+                # costs or inserted a resolvable stack entry yet.
+                check('cost','Target decision precedes payment',all(e.state[k]==before[k] for k in ('battlefield','manaTotal','life','graveyard','exile','stackOrder')))
                 choose(step['targetPlan'],d);r=e.finish(parent)
                 if step['targetPlan'].get('cancel'):
                     check('target','Canceled cast preserves card and sources',r['accepted'] and e.state['hand']==before['hand'] and e.state['battlefield']==before['battlefield'] and e.state['stack']==before['stack'])

@@ -1,4 +1,102 @@
-# Current gameplay alpha: 0.2.0-alpha.9
+# Current gameplay alpha: 0.2.0-alpha.10
+
+The verified baseline remains **370 names**. **1,285 additional names are enabled
+experimentally**, for 1,655 admitted primary names. This release adds 942 names
+from the Arena-compatible portion of Moxfield's 50 most-viewed public Commander
+decks captured on 30 October 2026. Its pinned Forge dependency remains the
+official 2.0.16 snapshot from 25 October. The card pool is restricted to identities
+in the owned, pinned Arena catalogue; that is not a retail-format legality claim.
+
+See [Moxfield coverage](MOXFIELD-COVERAGE.md) for the captured deck links and
+[per-card evidence](MOXFIELD-CARD-COVERAGE.csv). The 1,188-card pool has complete
+identity/presentation bindings; 1,173 generic cast/land walkthroughs complete,
+and 15 require dedicated scenarios. Of 284 first-activation attempts, 215 complete
+and 69 need particular fixtures. Those are bounded smoke tests, not exhaustive
+effect verification, and none promotes an experimental card to verified.
+
+## Changes and direct evidence
+
+- Mandatory triggers use the native Auto Order Triggers preference. Default
+  ordering avoids a needless prompt; manual ordering remains available. Forced
+  one-option choices and irrelevant graveyard ordering advance automatically.
+  Genuine targets, optional choices, library ordering and response windows remain.
+- The original Auto Choose Replacement Effects preference is now forwarded too.
+  Automatic mode uses Forge's pinned replacement chooser; this is not a claim
+  that its ranking matches Arena's server heuristic. Manual mode preserves the
+  ordering picker. Native tests cover both Coldsteel Heart modes, the actual
+  color decision, Chatterfang/Took token outcomes and a live preference change.
+  A rendered two-copy Coldsteel Heart sequence also passes after toggling the
+  actual setting inside the same match. Manual effects from the same source
+  still use numbered labels; their presentation is not fully reconstructed.
+- Mixed spell/permanent targeting, relationship-dependent target legality,
+  divided spell damage, cancellation, gift-dependent availability and X targets
+  use the original Forge rules. The native spell-damage spinners replace the
+  inappropriate combat-order browser. Five damage scenarios and cancellation
+  pass native handlers, including an actual rendered Inferno allocation.
+- Twenty-four dedicated card scenarios pass native handlers for counters,
+  redirects, copying/control, gift, kicked Sowing Mycospawn, Peerless Recycling,
+  Stolen by the Fae and Warping Wail modes. Six delve cases and both Sauron's
+  Ransom pile selections pass; the original pile browser was visually checked.
+- Invasion of Ikoria uses its chosen protector as the attack destination,
+  retains defense counters and transforms through its actual defeat trigger.
+  Eleven native checks cover X=2, search, attacking the player's own Battle,
+  six damage, Zilortha and no damage redirected to the opposing player.
+- Eleven ninjutsu scenarios cover nine names, combat timing, return payments,
+  reduced costs and Yuriko from both hand and command zone. Twenty-eight
+  hand/graveyard scenarios cover cycling, typecycling, channel, unearth,
+  graveyard activation and eternalize. Sokenzan's temporary token haste retains
+  its real source and expires; Fanatic of Rhonas uses its original eternalized
+  token presentation and original copy-factory characteristics.
+- Protection tests cover colorless and card-type choices, restrictions and
+  expiration. Wizard Class tests cover levels, draws, targets, bounce/reset and
+  expired level-three behavior. Rendered acceptance confirms level-two draws,
+  level three, two genuine target clicks and the resulting two +1/+1 counters.
+- Eleven conditional-activation cases cover Wirewood Symbiote's once-per-turn
+  limit, Inventors' Fair's artifact condition/search, Chthonian Nightmare's
+  actual energy/sacrifice/return costs, Shifting Woodland's copy and expiration,
+  Mycosynth Gardens at X=0 and X=2, and Bolas's Citadel's ten-permanent sacrifice.
+  Insufficient mana/energy are rejected without spending resources; declining
+  energy retains the original objects and permits retry. X-dependent targeting
+  is checked before announcement without choosing X for the player.
+- Fourteen context cases cover six/seven-card threshold boundaries, Dinosaur
+  recovery, Haywire Mite's exclusion of creature artifacts and actual death
+  trigger, Kogla/Plaza protection and expiration, Volatile Fault's search and
+  Treasure, Mistveil Plains' white-permanent condition and actual bottom-card
+  draws, one/two-attacker Minas Tirith history, and Swarmyard regeneration
+  replacing a real Doom Blade without a death trigger.
+- Rendered normal combat with Magda and Toski advances through four mandatory
+  triggers to the next playable main phase without confirmation clicks. Eight
+  separate turn-flow modes preserve stops, responses, yield and Resolve All.
+- Normal-match regression covers opening/starting-player, draw, counters,
+  targets, damage and twelve shuffled duel seeds. Eight Emry regressions pass.
+  Paradox Engine remains a disabled research draft and is not added here.
+- Conceding before the opening play/draw choice now returns cleanly through
+  Forge's startup callback without drawing hands or terminating the rules owner.
+  Starting-player and target-cancellation scenarios were rerun after that fix.
+- Life and Phyrexian payment confirmations now carry the actual Forge cost
+  into Arena's original localized question. The first rendered check caught
+  a positional-parameter error that parser-only tests missed; the corrected
+  prompt is checked separately on screen. Other optional-effect wording is
+  not yet fully mapped to retail prompts. Original fixed energy questions for
+  one through four energy and source-card return-payment wording are connected;
+  arbitrary higher energy amounts do not yet have a mapped amount-specific
+  retail question. Rendered Chthonian Nightmare acceptance confirms the original
+  two-energy symbols and named return question, one remaining energy, the
+  sacrificed Elf, Nightmare in hand and the returned 2/2 Grizzly Bears.
+- Seven four-player regressions pass, covering blockers, split attacks, targets,
+  commander return/tax, 40-life boundaries, mulligans, elimination and yield.
+  A separate 100-turn native pod ends through commander damage. Its Plains-only
+  test opponents validate protocol and elimination, not realistic bot strength.
+
+The pod remains **one human and three local Forge bots**, not network multiplayer.
+Home Resume keeps the same running match; closing the client ends it. Partner
+commander pairs, every card combination, complete Arena presentation parity and
+installation on another person's PC are not established by these checks.
+Package/update acceptance is recorded separately in the release notes.
+
+---
+
+# Historical gameplay alpha: 0.2.0-alpha.9
 
 The verified baseline remains 370 names; 343 other names are enabled experimentally. The current dependency is the pinned official Forge 2.0.16 snapshot from 25 October. Earlier sections below describe historical releases and their original scope.
 

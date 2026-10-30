@@ -1,0 +1,60 @@
+{
+  "schema": 1,
+  "parentControllerClassSha256": "27f3df623714e84f050c3532069c312ccb8548cb96766c852bd61599dd87da55",
+  "delegators": [
+    {
+      "signature": "public final <T extends forge.game.GameEntity> T forge.game.player.PlayerController.chooseSingleEntityForEffect(forge.util.collect.FCollectionView<T>,forge.game.spellability.SpellAbility,java.lang.String,boolean,java.util.Map<java.lang.String, java.lang.Object>)",
+      "dispatchTarget": "Guarded virtual overload of chooseSingleEntityForEffect"
+    },
+    {
+      "signature": "public final <T extends forge.game.GameEntity> T forge.game.player.PlayerController.chooseSingleEntityForEffect(forge.util.collect.FCollectionView<T>,forge.game.spellability.SpellAbility,java.lang.String,java.util.Map<java.lang.String, java.lang.Object>)",
+      "dispatchTarget": "Guarded virtual overload of chooseSingleEntityForEffect"
+    },
+    {
+      "signature": "public final boolean forge.game.player.PlayerController.chooseBinary(forge.game.spellability.SpellAbility,java.lang.String,forge.game.player.PlayerController$BinaryChoiceType)",
+      "dispatchTarget": "Guarded virtual overload of chooseBinary"
+    },
+    {
+      "signature": "public final boolean forge.game.player.PlayerController.confirmAction(forge.game.spellability.SpellAbility,forge.game.player.PlayerActionConfirmMode,java.lang.String,forge.game.card.Card,java.util.Map<java.lang.String, java.lang.Object>)",
+      "dispatchTarget": "Guarded virtual overload of confirmAction"
+    },
+    {
+      "signature": "public final boolean forge.game.player.PlayerController.confirmAction(forge.game.spellability.SpellAbility,forge.game.player.PlayerActionConfirmMode,java.lang.String,java.util.Map<java.lang.String, java.lang.Object>)",
+      "dispatchTarget": "Guarded virtual overload of confirmAction"
+    },
+    {
+      "signature": "public final boolean forge.game.player.PlayerController.payManaCost(forge.game.cost.CostPartMana,forge.game.spellability.SpellAbility,java.lang.String,forge.game.mana.ManaConversionMatrix,boolean)",
+      "dispatchTarget": "Guarded virtual overload of payManaCost"
+    },
+    {
+      "signature": "public final int forge.game.player.PlayerController.chooseSprocket(forge.game.card.Card)",
+      "dispatchTarget": "Guarded virtual overload of chooseSprocket"
+    },
+    {
+      "signature": "public final java.lang.String forge.game.player.PlayerController.chooseSector(forge.game.card.Card,java.lang.String)",
+      "dispatchTarget": "Guarded virtual overload of chooseSector"
+    },
+    {
+      "signature": "public final java.lang.String forge.game.player.PlayerController.chooseSomeType(java.lang.String,forge.game.spellability.SpellAbility,java.util.Collection<java.lang.String>)",
+      "dispatchTarget": "Guarded virtual overload of chooseSomeType"
+    },
+    {
+      "signature": "public final void forge.game.player.PlayerController.reveal(forge.game.card.CardCollectionView,forge.game.zone.ZoneType,forge.game.player.Player)",
+      "dispatchTarget": "Owned parent bytecode delegates to guarded reveal overload; original object identities remain chooser-only"
+    },
+    {
+      "signature": "public final void forge.game.player.PlayerController.reveal(forge.game.card.CardCollectionView,forge.game.zone.ZoneType,forge.game.player.Player,java.lang.String)",
+      "dispatchTarget": "Owned parent bytecode delegates to guarded reveal overload; original object identities remain chooser-only"
+    },
+    {
+      "signature": "public final void forge.game.player.PlayerController.reveal(java.util.List<forge.game.card.CardView>,forge.game.zone.ZoneType,forge.game.player.PlayerView,java.lang.String)",
+      "dispatchTarget": "Owned parent bytecode delegates to guarded reveal overload; original object identities remain chooser-only"
+    },
+    {
+      "signature": "public final void forge.game.player.PlayerController.reveal(forge.game.player.DelayedReveal)",
+      "dispatchTarget": "Owned parent bytecode delegates to guarded reveal overload; original object identities remain chooser-only"
+    }
+  ],
+  "review": "All 13 final helpers inspected again with javap -c from owned Forge 2.0.16 snapshot (20261025) on 2026-10-30. Each forwards to a guarded virtual overload; DelayedReveal loops over zones and delegates to guarded reveal. No inherited AI choice is accepted.",
+  "scope": "Exact parent bytecode only; a changed class requires fresh review."
+}

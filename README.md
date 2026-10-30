@@ -3,7 +3,7 @@
 A local Magic sandbox using your installed Arena's original screens, cards and
 animations. Forge runs the bot and supported rules.
 
-**[Download the gameplay alpha for Windows](https://github.com/kgeg401/forge-arena-sandbox/releases/tag/v0.2.0-alpha.9)**
+**[Download the gameplay alpha for Windows](https://github.com/kgeg401/forge-arena-sandbox/releases/tag/v0.2.0-alpha.10)**
 
 Download **ForgeArenaSandbox-Windows.zip** from that release. GitHub's **Code >
 Download ZIP** contains source code, not the installable client.
@@ -49,7 +49,9 @@ Upgraded installations retain their existing deck names and libraries.
 
 ## Alpha limits
 
-**370 main-deck card names remain in the verified baseline.** Another **343 names** are enabled experimentally, including the Jace Superfriends starter. Admission and per-card smoke checks are not proof of every effect or interaction. Runtime gaps remain explicit; see [supported cards](docs/SUPPORTED-CARDS.md) and [verification](docs/VERIFICATION.md).
+**370 main-deck card names remain in the verified baseline.** Another **1,285 names** are enabled experimentally, including the Jace Superfriends starter and 942 additions from the Arena-compatible portion of Moxfield's 50 most-viewed Commander decks. Admission and per-card smoke checks are not proof of every effect or interaction. See [the Moxfield card coverage](docs/MOXFIELD-COVERAGE.md), [supported cards](docs/SUPPORTED-CARDS.md) and [verification](docs/VERIFICATION.md).
+
+Mandatory triggers now use the original **Auto Order Triggers** preference and advance without an ordering prompt by default. **Auto Choose Replacement Effects** also works, using Forge's automatic chooser while retaining the manual override. Genuine target selections, optional effects and response windows remain. This release also connects the original spell-damage allocation controls and adds shared support for several targeting, channel, cycling, ninjutsu, Class and Battle scenarios.
 
 All four queues create local games against Forge bots. Four-player Commander means one human and three bots on this PC. Network multiplayer, online matchmaking, retail account services, full card coverage and complete retail UI parity are unfinished. Packs use custom sandbox collation, without retail wildcard rewards, bonus sheets or duplicate protection. Opening a card does not enable its rules.
 

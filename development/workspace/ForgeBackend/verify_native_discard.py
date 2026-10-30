@@ -29,7 +29,7 @@ CASES=[
 def sha(path):return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
-def run_case(case,factory):
+def run_case(case,factory,full_human_choices=False):
     e=None
     try:
         own=case.get('own',[]);enemy=case.get('enemy',[])
@@ -84,7 +84,11 @@ def run_case(case,factory):
         remaining=[c['forgeId'] for c in e.state['hidden'] if c['zone']=='Hand' and c['owner']==2] if enemy else [c['forgeId'] for c in e.state['hand']]
         check('Every unselected original card stays in its real hand',remaining==retained)
         check('Actual spell life cost matches the independent oracle',e.state['life']==case['life'] and e.state['opponentLife']==20)
-        expected=['target']+(['look'] if enemy else [])+(['discard'] if selected else [])+(['order'] if len(selected)>1 else [])
+        # These fixtures contain no graveyard-order-sensitive cards. The full
+        # human controller therefore skips ordering, and a single mandatory
+        # discard from a one-card hand has no choice. Keep reveal acknowledgments.
+        forced_single=full_human_choices and len(eligible)==len(selected)==1
+        expected=['target']+(['look'] if enemy else [])+(['discard'] if selected and not forced_single else [])+(['order'] if len(selected)>1 and not full_human_choices else [])
         check('The complete expected reveal/discard sequence occurs',seen==expected)
         check('No fidelity gap or unintended match outcome',not e.state['fidelityGap'] and not e.state['gameOver'])
         return dict(id=case['id'],passed=True,checks=len(e.checks),evidence=str(e.ipc))
@@ -103,9 +107,10 @@ def main():
     prep=json.loads((ROOT.parent/'preparation.json').read_text());source=ROOT.parent/'sources/ForgeBackend/ForgeLandEngine.java';assert sha(source)==prep['sourceSha256']
     a.output.mkdir(parents=True,exist_ok=False);hashes={str(f):sha(f) for f in a.worker.parent.glob('*.dll')};rows=[]
     factory=lambda scenario,**settings:NativeEngine(scenario,worker=a.worker,managed=a.managed,fixture=a.fixture,**settings)
+    full_human_choices=json.loads((ROOT/'native-lab/bridge-card-manifest.json').read_text()).get('fullHumanChoices') is True
     for case in CASES:
         if a.case and case['id'] not in a.case:continue
-        row=run_case(case,factory);rows.append(row);print(json.dumps({k:v for k,v in row.items() if k!='traceback'}),flush=True)
+        row=run_case(case,factory,full_human_choices);rows.append(row);print(json.dumps({k:v for k,v in row.items() if k!='traceback'}),flush=True)
     if any(sha(Path(path))!=digest for path,digest in hashes.items()) or sha(source)!=prep['sourceSha256']:raise RuntimeError('Pinned test bytes changed during run')
     result=dict(passed=all(r['passed'] for r in rows),cases=rows,sourceSha256=prep['sourceSha256'],nativeBinaries=hashes,finishedUtc=datetime.now(timezone.utc).isoformat(),scope=__doc__)
     (a.output/'report.json').write_text(json.dumps(result,indent=2));raise SystemExit(0 if result['passed'] else 1)

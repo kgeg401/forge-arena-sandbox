@@ -49,11 +49,20 @@ def apply_human_choices(manifest,overlay):
             raise ValueError('Human choice binding identity drift: '+name)
         if not isinstance(value.get('fields'),dict) or not set(value['fields'])<=allowed:
             raise ValueError('Human choice bindings cannot change card admission or characteristics: '+name)
+    def has_source_card(name,seen=None):
+        if name in manifest['cards']:return True
+        seen=set() if seen is None else seen
+        if name in seen:return False
+        seen.add(name);face=objects.get(name)
+        return bool(isinstance(face,dict) and face.get('facePresentation') is True and has_source_card(face.get('parentName'),seen))
     for name,value in objects.items():
         if name in manifest['cards'] or value.get('admitted') is not False or not any(value.get(k) is True for k in ('token','facePresentation','emblemPresentation')):
             raise ValueError('Only additional presentation objects may be supplied: '+name)
         if type(value.get('grpId')) is not int or value['grpId']<=0:raise ValueError('Missing original presentation identity: '+name)
-        if (value.get('facePresentation') or value.get('emblemPresentation')) and value.get('parentName') not in manifest['cards']:
+        # A transforming planeswalker's emblem can name its back face, which
+        # is added in this same overlay. Require an acyclic face chain ending
+        # at an existing card, and validate it before making any mutations.
+        if (value.get('facePresentation') or value.get('emblemPresentation')) and not has_source_card(value.get('parentName')):
             raise ValueError('Presentation object lacks its original source card: '+name)
     for key in ('keywordAbilityIds','typeEnumIds','cardNameIds'):
         if not isinstance(overlay.get(key),dict):raise ValueError('Missing owned human choice dictionary: '+key)

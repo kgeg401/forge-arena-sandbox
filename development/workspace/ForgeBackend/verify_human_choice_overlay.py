@@ -24,4 +24,13 @@ for label in ('database-drift','script-drift','printing-drift','admission-overwr
     else:raise AssertionError('Invalid binding accepted: '+label)
     results.append(dict(check='Reject '+label+' before mutating the manifest',passed=True))
 report=dict(passed=True,results=results,inputs={str(f):hashlib.sha256(f.read_bytes()).hexdigest() for f in (a.base,a.experimental,Path(__file__),Path(__file__).with_name('experimental_cards.py'))})
+faces=[n for n,c in experimental['humanChoices']['presentationObjects'].items() if c.get('facePresentation')]
+for label in ('missing-source-face','cyclic-source-face') if faces else ():
+    overlay=copy.deepcopy(experimental['humanChoices']);name=faces[0]
+    overlay['presentationObjects'][name]['parentName']=name if label=='cyclic-source-face' else '__absent_source__'
+    candidate=copy.deepcopy(base)
+    try:apply_human_choices(candidate,overlay)
+    except ValueError:assert candidate==base
+    else:raise AssertionError('Invalid face ancestry accepted: '+label)
+    results.append(dict(check='Reject '+label+' before mutating the manifest',passed=True))
 a.output.write_text(json.dumps(report,indent=2));print(json.dumps(dict(passed=True,checks=len(results),newAdmissions=0)))

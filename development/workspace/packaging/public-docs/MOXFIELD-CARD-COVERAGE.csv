@@ -1,0 +1,1189 @@
+Arena name,Deck appearances,Cast or land smoke test,First activation smoke test,Named native scenarios,Coverage limit
+Abrade,3,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Abrupt Decay,7,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Academy Manufactor,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Accursed Marauder,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Ad Nauseam,11,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Adaptive Automaton,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Adarkar Wastes,2,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Aerid Konstrari,1,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Aether Channeler,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Aether Spellbomb,4,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Aetherize,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Agadeem's Awakening,3,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Agatha's Soul Cauldron,3,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Agna Qel'a,1,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Akroma's Will,2,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Alchemist's Retrieval,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Allosaurus Shepherd,3,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Amphibian Downpour,2,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+An Offer You Can't Refuse,12,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+"Anax, Hardened in the Forge",1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Ancient Copper Dragon,2,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Ancient Gold Dragon,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Ancient Tomb,32,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Angel of the Ruins,1,walkthrough-completed,needs-specific-fixture,plains,Not exhaustive effect or interaction verification
+Angrath's Marauders,2,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Anguished Unmaking,2,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Animate Dead,8,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Anje's Ravager,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Arasta of the Endless Web,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Arcane Bombardment,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Arcane Signet,34,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Arch of Orazca,1,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Archdruid's Charm,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Archivist of Oghma,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Archmage Emeritus,3,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Archmage's Charm,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Archon of Cruelty,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Archon of Emeria,2,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Arena of Glory,2,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Arid Mesa,17,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Artifist Acumen,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Artist's Talent,1,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Ash Barrens,2,walkthrough-completed,needs-specific-fixture,basic,Not exhaustive effect or interaction verification
+"Ashaya, Soul of the Wild",1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+"Ashling, Flame Dancer",1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Asmodeus the Archfiend,3,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Assassin's Trophy,5,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Assemble the Legion,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Atzocan Seer,1,walkthrough-completed,needs-specific-fixture,seer,Not exhaustive effect or interaction verification
+Austere Command,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Avacyn's Pilgrim,2,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Avatar's Wrath,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Aven Interrupter,2,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Aven Mindcensor,2,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Axgard Cavalry,1,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Azorius Signet,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Badgermole Cub,2,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Badlands,11,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+"Baird, Steward of Argive",1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Banisher Priest,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Banner of Kinship,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Barad-dûr,1,walkthrough-completed,needs-specific-fixture,,Not exhaustive effect or interaction verification
+Baral's Expertise,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Barbarian Ring,1,walkthrough-completed,needs-specific-fixture,ring; ring-six,Not exhaustive effect or interaction verification
+Barkchannel Pathway,2,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Barkform Harvester,2,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Baron Helmut Zemo,1,walkthrough-completed,needs-specific-fixture,,Not exhaustive effect or interaction verification
+Barren Moor,1,walkthrough-completed,needs-specific-fixture,cycle,Not exhaustive effect or interaction verification
+Bartolomé del Presidio,2,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Bastion of Remembrance,2,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Battlefield Forge,5,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Bayou,11,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Beastmaster Ascension,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Beledros Witherbloom,1,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Bellowing Aegisaur,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Bender's Waterskin,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Beseech the Mirror,9,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Bident of Thassa,1,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Big Score,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Bile Blight,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Binding the Old Gods,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Biosynthic Burst,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Birds of Paradise,15,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+"Birgi, God of Storytelling",5,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Birthing Ritual,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Bitter Triumph,2,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Black Market,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Black Market Connections,3,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Blade Historian,2,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Blade Splicer,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Blasphemous Act,2,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Blast Zone,1,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Blazemire Verge,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Bleachbone Verge,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Blightstep Pathway,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Blinkmoth Nexus,1,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Blood Artist,3,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Blood Crypt,8,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Bloodchief Ascension,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Bloodghast,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Bloodletter of Aclazotz,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Bloodline Keeper,1,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Bloodstained Mire,25,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Bloodthirsty Adversary,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Bloodthirsty Conqueror,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Bloom Tender,5,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Blossoming Tortoise,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Boggart Trawler,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Bojuka Bog,3,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Bolas's Citadel,1,walkthrough-completed,needs-specific-fixture,citadel,Not exhaustive effect or interaction verification
+Bolt Hound,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Bomat Courier,1,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Bonehoard Dracosaur,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Borne Upon a Wind,10,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+"Boromir, Warden of the Tower",1,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Boros Charm,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Boros Signet,2,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+"Boseiju, Who Endures",12,walkthrough-completed,needs-specific-fixture,destroy,Not exhaustive effect or interaction verification
+Botanical Sanctum,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Bothersome Noisemaker,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+"Braids, Arisen Nightmare",3,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Brain Freeze,7,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Brainstorm,7,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Branching Evolution,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Brash Taunter,1,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Breeding Pool,5,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Bribery,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Brightclimb Pathway,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Bringer of the Last Gift,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Broken Wings,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Brushland,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Buried Alive,3,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Cache Grab,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Call of the Ring,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Canopy Vista,2,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Canyon Slough,1,walkthrough-completed,needs-specific-fixture,cycle,Not exhaustive effect or interaction verification
+Carpet of Flowers,9,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Cartouche of Strength,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Castle Ardenvale,1,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Castle Garenbrig,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Castle Locthwain,1,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Casualties of War,2,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Cavern of Souls,12,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Cavern-Hoard Dragon,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Caves of Koilos,2,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Cemetery Gatekeeper,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Cephalid Coliseum,4,walkthrough-completed,needs-specific-fixture,coliseum; coliseum-six,Not exhaustive effect or interaction verification
+"Chainer, Nightmare Adept",1,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Chalice of the Void,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Champion of Dusk,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Chandra's Ignition,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Changeling Outcast,4,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Chaos Warp,4,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Charge Through,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Chart a Course,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Chasm Skulker,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+"Chatterfang, Squirrel General",2,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Chatterstorm,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Chittering Witch,1,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Chitterspitter,1,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Choose Your Weapon,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Chord of Calling,4,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Chromatic Orrery,3,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Chrome Mox,35,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Chthonian Nightmare,1,walkthrough-completed,needs-specific-fixture,nightmare; nightmare-expensive; nightmare-decline,Not exhaustive effect or interaction verification
+Cinder Glade,2,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Circuit Mender,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Claim the Firstborn,2,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Clarion Conqueror,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Clarion Spirit,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+"Clavileño, First of the Blessed",1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Clearwater Pathway,2,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Clever Impersonator,2,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Clifftop Retreat,4,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Cloudblazer,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Collector's Cage,1,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Colossal Skyturtle,1,walkthrough-completed,needs-specific-fixture,regrow; bounce,Not exhaustive effect or interaction verification
+Combat Celebrant,2,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Comeuppance,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Command Beacon,7,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Command Tower,40,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Commandeer,6,needs-specific-fixture,not selected,commandeer,Not exhaustive effect or interaction verification
+Conqueror's Flail,1,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Consider,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Consult the Star Charts,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Consuming Tide,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Contagion Clasp,1,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Cool but Rude,1,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Copy Enchantment,2,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Cordial Vampire,2,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Cori Mountain Monastery,1,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Coveted Jewel,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Crash Through,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Creeping Bloodsucker,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Crimson Wisps,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Crippling Fear,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Crop Rotation,10,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Crossway Troublemakers,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Cruel Celebrant,2,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Crux of Fate,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Cryptolith Rite,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Culling Ritual,6,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Culling the Weak,13,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Cultivate,3,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Curiosity,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Cursed Mirror,3,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Cut Down,2,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Cyclonic Rift,7,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Damage Control Crew,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Damn,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Damping Sphere,2,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Dark Confidant,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Dark Petition,2,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Dark Ritual,18,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Darkbore Pathway,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Darkslick Shores,2,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Darksteel Citadel,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Dauthi Voidwalker,5,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Dawnbringer Cleric,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Daze,3,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Deadly Dispute,2,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Deadly Rollick,6,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Deafening Silence,2,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Deathgorge Scavenger,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Deathrite Shaman,9,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Decisive Denial,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Deep Analysis,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Defend the Rider,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Defense Grid,3,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Deflecting Palm,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Deflecting Swat,17,needs-specific-fixture,not selected,swat,Not exhaustive effect or interaction verification
+Delighted Halfling,9,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+"Delney, Streetwise Lookout",1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Demonic Counsel,2,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Demonic Tutor,22,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+"Derevi, Empyrial Tactician",2,walkthrough-completed,needs-specific-fixture,,Not exhaustive effect or interaction verification
+Descendants' Path,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Despark,1,needs-specific-fixture,not selected,despark,Not exhaustive effect or interaction verification
+Devastating Onslaught,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Devilish Valet,2,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Devoted Druid,1,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Diabolic Intent,12,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Dig Through Time,2,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Dimir Signet,2,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Dina's Guidance,2,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Dire-Strain Rampage,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Disciple of Freyalise,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Disenchant,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Dismember,6,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Dispel,9,needs-specific-fixture,not selected,dispel,Not exhaustive effect or interaction verification
+Displacer Kitten,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Disruptor Flute,2,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+"Doc Aurlock, Grizzled Genius",1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Dockside Extortionist,3,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+"Doctor Doom, Unrivaled",1,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Doomsday,3,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Dovin's Veto,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Dracogenesis,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Draconic Visitor,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Dragon Fodder,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Dragon's Rage Channeler,2,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Dragon-Cursed Halls,2,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+"Dragonhawk, Fate's Tempest",1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Dragonlord Dromoka,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Dragonlord Kolaghan,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Dragonskull Summit,2,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Dramatic Reversal,8,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+"Drana, Liberator of Malakir",1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Drannith Magistrate,4,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Drover of the Mighty,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Drowned Catacomb,2,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Dualcaster Mage,2,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Duelist's Heritage,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Dusk Legion Zealot,2,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Duskwatch Recruiter,1,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Dwarven Mauler,2,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Earthshaker Dreadmaw,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Eidolon of Rhetoric,2,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+"Eiganjo, Seat of the Empire",1,walkthrough-completed,needs-specific-fixture,combat-damage,Not exhaustive effect or interaction verification
+Eladamri's Call,2,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Eldritch Evolution,7,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+"Electro, Assaulting Battery",1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Electrostatic Field,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+"Elenda, the Dusk Rose",1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+"Elspeth, Sun's Champion",1,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Elvish Mystic,9,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Emergence Zone,12,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Emiel the Blessed,1,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Emperor of Bones,1,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+End-Raze Forerunners,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Endurance,3,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Enduring Vitality,3,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Enlightened Tutor,8,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Entomb,9,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Epic Experiment,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+"Erkenbrand, Lord of Westfold",1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+"Esika, God of the Tree",1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Esper Sentinel,7,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Essence Flux,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+"Etali, Primal Conqueror",1,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+"Etali, Primal Storm",1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Etchings of the Chosen,1,walkthrough-completed,needs-specific-fixture,,Not exhaustive effect or interaction verification
+Eternal Witness,3,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Evangel of Heliod,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Evolving Wilds,6,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Expedite,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Expedition Map,1,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Exploration,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Explore,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Expressive Iteration,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Exquisite Blood,2,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Fabled Passage,1,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Fabricate,2,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Fae Flight,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Faeburrow Elder,3,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Faerie Mastermind,5,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Faerie Seer,3,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Faithless Looting,3,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Falkenrath Noble,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Falkenrath Pit Fighter,1,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Fallaji Vanguard,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Fanatic of Rhonas,1,walkthrough-completed,needs-specific-fixture,eternalize,Not exhaustive effect or interaction verification
+Farseek,3,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Fear of Impostors,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Feed the Swarm,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Fell the Profane,3,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Fetid Pools,1,walkthrough-completed,needs-specific-fixture,cycle,Not exhaustive effect or interaction verification
+Fiend Hunter,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Fierce Guardianship,20,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Fiery Confluence,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Fiery Islet,4,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Final Parting,3,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Finale of Devastation,6,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Finale of Promise,2,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Finale of Revelation,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Find // Finality,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Firdoch Core,3,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Fire Covenant,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Fire Magic,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Flamebraider,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Flare of Denial,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Flare of Duplication,6,needs-specific-fixture,not selected,flare,Not exhaustive effect or interaction verification
+Flare of Fortitude,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Flare of Malice,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Flashback,3,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Flesh Duplicate,3,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Flooded Strand,25,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+"Florian, Voldaren Scion",1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Flumph,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Flusterstorm,21,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Flywheel Racer,2,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Fomori Vault,5,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Force of Negation,17,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Force of Vigor,3,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Force of Will,21,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Forensic Gadgeteer,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Forerunner of the Legion,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Forest,13,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Forgotten Ancient,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Formidable Speaker,2,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Forsaken Miner,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Fortified Village,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Fourth Bridge Prowler,2,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Fracture,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Frantic Search,2,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Fraying Sanity,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Frostboil Snarl,2,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Fury,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Furycalm Snarl,2,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+"Fíli and Kíli, Joyous",2,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Gaea's Cradle,11,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Gaea's Gift,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Galadriel's Dismissal,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Galvanic Blast,2,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Galvanic Iteration,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Gamble,13,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Game Trail,2,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+"Garruk, Cursed Huntsman",1,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Geist of Saint Thalia,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Geistwave,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Gemstone Caverns,35,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Gene Pollinator,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+General's Enforcer,1,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Generous Plunderer,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Get Lost,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Ghostfire Slice,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Gifted Aetherborn,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Gilded Goose,1,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Gingerbrute,2,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Gitaxian Probe,9,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Giver of Runes,1,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Glacial Fortress,2,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Gleaming Splendor,4,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Go for the Throat,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Goblin Electromancer,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Goblin Engineer,2,walkthrough-completed,needs-specific-fixture,,Not exhaustive effect or interaction verification
+Goblin Matron,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+God-Pharaoh's Statue,2,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Godless Shrine,3,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+"Godo, Bandit Warlord",1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Gods Willing,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Goldhound,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Goldmeadow Nomad,1,walkthrough-completed,needs-specific-fixture,,Not exhaustive effect or interaction verification
+Goldspan Dragon,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Golgari Signet,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Grafdigger's Cage,6,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Grand Abolisher,4,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Grasp of Darkness,2,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Gray Merchant of Asphodel,4,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Great Furnace,3,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Great Hall of the Citadel,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Great Train Heist,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Green Sun's Zenith,6,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Grief,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Grim Hireling,2,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Grim Monolith,20,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Grim Servant,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Grim Tutor,3,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+"Grishnákh, Brash Instigator",1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+"Grist, the Hunger Tide",1,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Guardian Project,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Guttersnipe,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+"Gwenom, Remorseless",1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Hall of Echoes,1,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Hallowed Fountain,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Hanged Executioner,1,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+"Hapatra, the Desert Fang",1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Hardened Scales,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Harmonic Prodigy,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Harmonize,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Harrow,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Haughty Djinn,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Haunted Mire,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Haunted Ridge,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Haywire Mite,2,walkthrough-completed,needs-specific-fixture,mite,Not exhaustive effect or interaction verification
+Heat Shimmer,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+"Helga, Skittish Seer",1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Helm of the Host,2,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Heroes' Hangout,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Heroic Reinforcements,2,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Hexing Squelcher,8,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Hidden Strings,3,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+High Fae Trickster,2,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+High Noon,1,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+High-Speed Hoverbike,1,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Hinterland Harbor,3,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Hoarding Broodlord,5,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Honored Crop-Captain,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Honored Dreyleader,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Hop to It,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Hope of Ghirapur,5,walkthrough-completed,needs-specific-fixture,,Not exhaustive effect or interaction verification
+Hullbreacher,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Hullbreaker Horror,6,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Humble Defector,1,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Hunter's Insight,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Hunter's Talent,1,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Hydroelectric Specimen,3,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Hyrax Tower Scout,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Icetill Explorer,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Ifnir Deadlands,1,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Ignoble Hierarch,6,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Impassioned Orator,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+"Inalla, Archmage Ritualist",1,walkthrough-completed,needs-specific-fixture,,Not exhaustive effect or interaction verification
+Incinerator of the Guilty,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Incubation Druid,1,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Indulgent Aristocrat,2,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Inexorable Tide,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Infectious Bite,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Inferno Titan,1,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Ingenious Infiltrator,2,walkthrough-completed,needs-specific-fixture,draw,Not exhaustive effect or interaction verification
+Ingenious Prodigy,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Inkmoth Nexus,1,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Insatiable Avarice,4,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Insidious Fungus,1,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Inspiring Call,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Inspiring Overseer,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Intangible Virtue,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Into the Flood Maw,6,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Invasion of Ikoria,3,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Inventors' Fair,3,walkthrough-completed,needs-specific-fixture,fair-active; fair-inactive,Not exhaustive effect or interaction verification
+Invigorating Surge,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Ipnu Rivulet,4,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+"Irma, Part-Time Mutant",2,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Island,17,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Isolated Chapel,2,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+"Itzquinth, Firstborn of Gishath",1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+"Ivora, Insatiable Heir",1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Ixalli's Lorekeeper,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Izzet Signet,3,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+"Jace, Vryn's Prodigy",1,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+"Jaxis, the Troublemaker",1,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Jazal Goldmane,1,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Jeska's Will,10,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Jet Medallion,3,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Jolly Gerbils,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+"Jolrael, Mwonvuli Recluse",1,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Jungle Hollow,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+"Junji, the Midnight Sky",1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Junk Winder,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+"K'rrik, Son of Yawgmoth",3,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Kaalia of the Vast,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+"Kaito, Bane of Nightmares",1,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+"Karn, the Great Creator",1,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Karplusan Forest,2,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+"Katilda, Dawnhart Prime",1,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+"Kavaron, Memorial World",2,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+"Kaza, Roil Chaser",1,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+"Kefka, Court Mage",1,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Ketria Triome,1,walkthrough-completed,needs-specific-fixture,cycle,Not exhaustive effect or interaction verification
+Kinjalli's Sunwing,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+"Kinnan, Bonder Prodigy",4,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+"Kiora, Behemoth Beckoner",1,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Kitesail Cleric,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Knight of the Reliquary,1,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+"Kogla, the Titan Ape",1,walkthrough-completed,needs-specific-fixture,kogla,Not exhaustive effect or interaction verification
+"Korvold, Fae-Cursed King",3,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+"Kraum, Ludevic's Opus",2,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+"Kutzil, Malamet Exemplar",1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+"Kwain, Itinerant Meddler",1,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Laboratory Maniac,2,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Last March of the Ents,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+"Lathliss, Dragon Queen",1,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Lazotep Plating,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Ledger Shredder,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Legion Extruder,2,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Legion Leadership,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Legion Lieutenant,2,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Legolas's Quick Reflexes,3,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+"Lena, Selfless Champion",2,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Leyline of Abundance,1,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Life // Death,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Lifecraft Engine,2,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Lifecrafter's Bestiary,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Light Up the Stage,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Lightning Bolt,5,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Lightning Greaves,1,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+"Lightning, Army of One",1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Lion's Eye Diamond,17,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Lively Dirge,3,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+"Lizard, Connors's Curse",1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Llanowar Elves,9,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Llanowar Wastes,4,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Long River's Pull,1,walkthrough-completed,not selected,pull-plain; pull-gift,Not exhaustive effect or interaction verification
+Loran of the Third Path,2,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Lost in the Maze,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+"Lotho, Corrupt Shirriff",6,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Lotus Petal,31,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Loyal Warhound,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Luminous Broodmoth,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Lórien Revealed,1,walkthrough-completed,needs-specific-fixture,island,Not exhaustive effect or interaction verification
+M.O.D.O.K.,1,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Maelstrom of the Spirit Dragon,1,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Maelstrom Pulse,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+"Magda, Brazen Outlaw",3,walkthrough-completed,needs-specific-fixture,,Not exhaustive effect or interaction verification
+"Magda, the Hoardmaster",2,walkthrough-completed,needs-specific-fixture,,Not exhaustive effect or interaction verification
+Mage's Attendant,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Magus of the Moon,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Majestic Heliopterus,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Make a Stand,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Make Your Move,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Malakir Rebirth,3,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Malevolent Hermit,1,walkthrough-completed,needs-specific-fixture,hermit,Not exhaustive effect or interaction verification
+Mana Confluence,26,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Mana Crypt,8,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Mana Drain,9,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Mana Vault,29,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Manamorphose,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+"Mangara, the Diplomat",2,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Manglehorn,2,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Manifold Key,4,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Marang River Regent,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Marauding Blight-Priest,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Marauding Raptor,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+March of Swirling Mist,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Mardu Devotee,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Markov Baron,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Marsh Flats,23,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Martyr of Dusk,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+"Marvin, Murderous Mimic",2,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Mask of Griselbrand,1,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Masked Meower,1,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Maskwood Nexus,3,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Massacre Wurm,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Mastermind's Acquisition,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+"Mauhúr, Uruk-hai Captain",1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Mausoleum Secrets,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Mausoleum Wanderer,1,walkthrough-completed,needs-specific-fixture,wanderer,Not exhaustive effect or interaction verification
+"Mavren Fein, Dusk Apostle",1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Mayhem Devil,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Mayhem Patrol,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Memorial to Glory,1,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Memory Lapse,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Metallic Mimic,2,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Meteor Sword,1,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Meticulous Archive,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+"Midgar, City of Mako",1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Midnight Clock,1,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Might of the Meek,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Migration Path,1,walkthrough-completed,needs-specific-fixture,cycle,Not exhaustive effect or interaction verification
+"Miirym, Sentinel Wyrm",1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+"Minas Morgul, Dark Fortress",1,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Minas Tirith,1,walkthrough-completed,needs-specific-fixture,minas; minas-one,Not exhaustive effect or interaction verification
+Mind Stone,5,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Mindbreak Trap,13,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Mindless Conscription,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Mirage Mirror,2,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Mirrormade,4,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Miscast,4,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Mishra's Bauble,3,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Mishra's Workshop,2,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Mist-Syndicate Naga,1,walkthrough-completed,needs-specific-fixture,copy,Not exhaustive effect or interaction verification
+Mistrise Village,1,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Mistveil Plains,1,walkthrough-completed,needs-specific-fixture,mistveil; mistveil-one,Not exhaustive effect or interaction verification
+Misty Rainforest,28,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Mizzix's Mastery,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Mnemonic Betrayal,3,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Mockingbird,7,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+"Mog, Moogle Warrior",1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Moldervine Reclamation,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Molten Duplication,4,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Molten Gatekeeper,1,walkthrough-completed,needs-specific-fixture,unearth,Not exhaustive effect or interaction verification
+Momentous Fall,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Monument to Endurance,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Moon-Circuit Hacker,2,walkthrough-completed,needs-specific-fixture,draw,Not exhaustive effect or interaction verification
+Moonsilver Key,2,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Morbid Opportunist,2,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Mother of Runes,1,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Mount Doom,2,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Mountain,16,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Mox Amber,17,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Mox Diamond,32,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Mox Opal,21,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Multiversal Passage,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Murmuring Mystic,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Mutavault,3,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+My Precious,1,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Myojin of Night's Reach,1,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Myr Convert,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Mystic Monastery,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Mystic Remora,21,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Mystic Sanctuary,3,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Mystical Tutor,17,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Nadier's Nightblade,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+"Najeela, the Blade-Blossom",1,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Narset's Reversal,1,needs-specific-fixture,not selected,reversal,Not exhaustive effect or interaction verification
+"Narset, Parter of Veils",1,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Natural Order,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Nature's Claim,2,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Nature's Rhythm,5,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Nazgûl,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Necroblossom Snarl,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Necrodominance,2,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Necromancy,6,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Necropotence,15,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Needleverge Pathway,2,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Negate,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Neoform,2,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+"Neriv, Heart of the Storm",1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Nested Shambler,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Nesting Grounds,1,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+"Nezahal, Primal Tide",2,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Niblis of Frost,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+"Nicol Bolas, Dragon-God",1,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Night's Whisper,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Nighthawk Scavenger,2,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Ninja of the Deep Hours,2,walkthrough-completed,needs-specific-fixture,draw; reduced,Not exhaustive effect or interaction verification
+"Niv-Mizzet, Parun",2,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+No Witnesses,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Noble Hierarch,4,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Nomad Outpost,2,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Noose Constrictor,1,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Notion Thief,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Nowhere to Run,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Noxious Revival,6,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Nurturing Peatland,4,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+"Nykthos, Shrine to Nyx",4,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Oath of Teferi,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Oathsworn Vampire,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Ocelot Pride,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Ogre Slumlord,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+"Ojer Kaslem, Deepest Growth",1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+"Okoye, Dora Milaje Leader",1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Old Gnawbone,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Oltec Matterweaver,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Opposition Agent,9,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Opt,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Opulent Palace,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Orcish Bowmasters,12,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Orcish Medicine,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Orcish Siegemaster,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Origin of Metalbending,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Orim's Chant,2,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Ornithopter,5,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Ornithopter of Paradise,3,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+"Orvar, the All-Form",1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Orzhov Signet,2,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+"Otawara, Soaring City",17,walkthrough-completed,needs-specific-fixture,bounce,Not exhaustive effect or interaction verification
+Otepec Huntmaster,1,walkthrough-completed,needs-specific-fixture,,Not exhaustive effect or interaction verification
+Overgrown Tomb,8,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Pact of Negation,18,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Panharmonicon,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+"Pantlaza, Sun-Favored",1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Party Thrasher,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Path to Exile,5,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Peer into the Abyss,6,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Peerless Recycling,1,needs-investigation,not selected,recycling-gift; recycling-plain,Not exhaustive effect or interaction verification
+Pentad Prism,2,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Persist,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Peter Parker's Camera,3,walkthrough-completed,needs-specific-fixture,,Not exhaustive effect or interaction verification
+Petrified Hamlet,2,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Phantasmal Image,3,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+"Phelia, Exuberant Shepherd",1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Phial of Galadriel,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Phyrexian Metamorph,3,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Phyrexian Revoker,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Phyrexian Tower,6,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Pia and Kiran Nalaar,1,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Pia Nalaar,1,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+"Pia, Aether Ascetic",1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Pinnacle Monk,4,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+"Pippin, Guard of the Citadel",1,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Pitiless Plunderer,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Plaguecrafter,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Plains,10,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Plateau,8,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Plaza of Heroes,2,walkthrough-completed,needs-specific-fixture,plaza,Not exhaustive effect or interaction verification
+Plumb the Forbidden,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Plumecreed Escort,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Plundering Barbarian,2,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Poison-Tip Archer,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Polluted Delta,30,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Ponder,5,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Pongify,4,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Portal to Phyrexia,2,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Powerbalance,2,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Prairie Stream,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Preacher of the Schism,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Preordain,3,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Primeval Herald,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Prismatic Vista,12,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Professional Face-Breaker,4,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Prosperous Innkeeper,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Prosperous Thief,2,walkthrough-completed,needs-specific-fixture,treasure,Not exhaustive effect or interaction verification
+Psychosis Crawler,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Pteramander,1,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Pugnacious Hammerskull,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Pull from Tomorrow,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Putrefy,2,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Pym Particles,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Pyretic Ritual,2,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Pyrokinesis,3,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Qarsi Revenant,1,walkthrough-completed,needs-specific-fixture,,Not exhaustive effect or interaction verification
+Quartzwood Crasher,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Radiant Destiny,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Radical Idea,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+"Ragavan, Nimble Pilferer",14,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Raging Regisaur,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Raging Swordtooth,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Raise the Alarm,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Rakdos Charm,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Rakdos Signet,2,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Rampaging Brontodon,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Rampant Growth,3,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Ramunap Ruins,2,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Ranger-Captain of Eos,6,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Ranging Raptors,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Rapid Hybridization,2,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Raucous Theater,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Ravenous Squirrel,1,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+"Razaketh, the Foulblooded",4,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Razorverge Thicket,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Realm-Cloaked Giant,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Reanimate,10,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Reckless Barbarian,3,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Recruiter of the Guard,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Redirect Lightning,7,needs-specific-fixture,not selected,lightning,Not exhaustive effect or interaction verification
+Reflecting Pool,3,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Regal Force,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Regisaur Alpha,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Regrowth,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Relic of Legends,4,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Relic of Sauron,1,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Reliquary Tower,2,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Repulsive Mutation,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Resculpt,3,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Rest in Peace,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Restoration Angel,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Retraction Helix,2,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Return of the Wildspeaker,2,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Return the Favor,3,needs-investigation,not selected,favor-redirect; favor-copy,Not exhaustive effect or interaction verification
+Rhystic Study,18,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Rhythm of the Wild,2,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+"Rionya, Fire Dancer",1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Ripjaw Raptor,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Rishkar's Expertise,2,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+"Rishkar, Peema Renegade",2,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Rite of Oblivion,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Rites of Flourishing,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Rivendell,1,walkthrough-completed,needs-specific-fixture,,Not exhaustive effect or interaction verification
+Roaming Throne,5,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Rogue's Passage,5,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Roiling Vortex,1,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Rootbound Crag,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Rowdy Research,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+"Roxanne, Starfall Savant",1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Ruby Medallion,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+"Ruby, Daring Tracker",1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Ruinous Ultimatum,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Run Away Together,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Runaway Steam-Kin,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Runic Armasaur,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Ruthless Lawbringer,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Ruthless Technomancer,2,walkthrough-completed,needs-specific-fixture,,Not exhaustive effect or interaction verification
+Sacred Foundry,3,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Sacrifice,6,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Saheeli Rai,1,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Saiba Cryptomancer,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Sakashima of a Thousand Faces,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+"Samut, Tyrant of Naktamun",5,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+"Samut, Vizier of Naktamun",1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Sanctum Seeker,2,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Sapphire Medallion,2,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Saruman's Trickery,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+"Saruman, the White Hand",1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+"Satoru, the Infiltrator",1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Sauron's Ransom,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+"Sauron, the Dark Lord",1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Savage Stomp,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Savai Triome,2,walkthrough-completed,needs-specific-fixture,cycle,Not exhaustive effect or interaction verification
+Savannah,5,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Saw in Half,7,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Scalding Tarn,28,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Scale Up,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Scheming Symmetry,4,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Scholar of the Ages,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Scour for Scrap,3,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Scourge of Valkas,1,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Scrubland,7,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Sculpting Steel,3,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Sea Gate Restoration,4,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Seachrome Coast,2,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Seasoned Pyromancer,1,walkthrough-completed,needs-specific-fixture,grave-token,Not exhaustive effect or interaction verification
+Seasons Past,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Seat of the Synod,2,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Secluded Courtyard,2,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Second Harvest,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Secret Identity,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Secret Rendezvous,2,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Secure the Wastes,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Seething Song,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Selfless Spirit,1,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+"Selvala, Heart of the Wilds",3,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Serra Ascendant,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Sevinne's Reclamation,5,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Sewer-veillance Cam,2,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Shadow of Mortality,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Shadowspear,1,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Shadrix Silverquill,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Shamanic Revelation,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+"Shang-Chi, Master of Kung Fu",1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Shared Animosity,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Shared Summons,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Shark Typhoon,1,walkthrough-completed,needs-specific-fixture,shark0; shark2,Not exhaustive effect or interaction verification
+Shattered Acolyte,1,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Shattered Landscape,1,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Shattered Sanctum,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Shatterskull Smashing,4,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+"Sheoldred, the Apocalypse",3,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Shifting Ceratops,1,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Shifting Woodland,4,walkthrough-completed,needs-specific-fixture,woodland,Not exhaustive effect or interaction verification
+Shineshadow Snarl,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Shivan Reef,5,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Sidequest: Play Blitzball,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+"Sidisi, Undead Vizier",1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Siege Smash,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Siege-Gang Commander,1,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Sign in Blood,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Silence,8,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Silent Clearing,1,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Silver-Fur Master,1,walkthrough-completed,needs-specific-fixture,plain,Not exhaustive effect or interaction verification
+Simic Ascendancy,1,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Simic Signet,2,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Sink into Stupor,9,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Six,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Sizzling Soloist,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Skirk Prospector,2,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+"Skrelv, Defector Mite",2,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Skullclamp,5,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Skullsnatcher,2,walkthrough-completed,needs-specific-fixture,exile,Not exhaustive effect or interaction verification
+Skyclave Apparition,2,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Skyfisher Spider,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Slip Out the Back,2,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Smaug the Magnificent,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+"Smaug, Wicked Worm",1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Smoldering Marsh,2,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Smothering Tithe,7,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Smuggler's Copter,2,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Smuggler's Surprise,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Snow-Covered Forest,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Snow-Covered Island,4,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Snow-Covered Mountain,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Snow-Covered Swamp,4,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Snubhorn Sentry,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Snuff Out,3,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+"Sokenzan, Crucible of Defiance",2,walkthrough-completed,needs-specific-fixture,spirits,Not exhaustive effect or interaction verification
+Sol Ring,48,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Solemn Simulacrum,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Solitude,2,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Solve the Equation,2,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Soul-Guide Lantern,1,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Soulless Jailer,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Sowing Mycospawn,2,needs-investigation,not selected,mycospawn-kicked; mycospawn-plain,Not exhaustive effect or interaction verification
+Spectral Sailor,3,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Spell Pierce,2,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Spell Snare,1,needs-specific-fixture,not selected,snare,Not exhaustive effect or interaction verification
+Sphinx of Enlightenment,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Spider-Punk,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Spire of Industry,3,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Spirit of the Labyrinth,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Spirited Companion,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Springleaf Drum,8,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Spry and Mighty,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Squirrel Sovereign,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Staff of Compleation,1,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Staff of Domination,1,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Stalactite Dagger,2,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Starting Town,7,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Static Prison,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Steam Vents,6,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Steely Resolve,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+"Stella Lee, Wild Card",1,walkthrough-completed,needs-specific-fixture,,Not exhaustive effect or interaction verification
+Stern Dismissal,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Stern Scolding,1,needs-specific-fixture,not selected,scolding,Not exhaustive effect or interaction verification
+"Sting, the Glinting Dagger",2,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Stolen by the Fae,1,needs-investigation,not selected,stolen,Not exhaustive effect or interaction verification
+Stomping Ground,5,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Storm's Wrath,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Storm-Kiln Artist,2,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Strike It Rich,3,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Strix Serenade,2,needs-specific-fixture,not selected,serenade,Not exhaustive effect or interaction verification
+Stroke of Midnight,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Stubborn Denial,2,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Stump Stomp,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Subtlety,3,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+"Suki, Courageous Rescuer",1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Sulfur Falls,4,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Sulfurous Springs,4,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Sun Titan,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Sunbaked Canyon,2,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Sunbillow Verge,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Sundering Eruption,2,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Sundown Pass,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Sunken Hollow,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Sunpetal Grove,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Survival of the Fittest,4,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Swamp,16,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Swan Song,18,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Swarmyard,1,walkthrough-completed,needs-specific-fixture,swarmyard,Not exhaustive effect or interaction verification
+Swiftfoot Boots,2,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Sword of Feast and Famine,1,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Swords to Plowshares,8,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Sylvan Library,6,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Sylvan Safekeeper,4,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Sylvan Scrying,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Taiga,7,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Tail Swipe,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Tainted Pact,14,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+"Takenuma, Abandoned Mire",5,walkthrough-completed,needs-specific-fixture,mill-return,Not exhaustive effect or interaction verification
+"Talion, the Kindly Lord",1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Talisman of Conviction,3,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Talisman of Creativity,4,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Talisman of Curiosity,4,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Talisman of Dominance,5,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Talisman of Hierarchy,4,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Talisman of Indulgence,6,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Talisman of Progress,2,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Talisman of Resilience,2,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+"Talrand, Sky Summoner",1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+"Tam, Mindful First-Year",1,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+"Tamiyo, Field Researcher",1,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+"Tannuk, Steadfast Second",1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Tarnished Citadel,7,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+"Tasigur, the Golden Fang",1,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Tataru Taru,3,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Team Tactics,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Tear Asunder,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Teferi's Protection,2,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+"Teferi, Master of Time",1,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+"Teferi, Time Raveler",1,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Temple Altisaur,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Temple Garden,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Temple of Deceit,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Temple of Enlightenment,2,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Temple of Epiphany,2,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Temple of Malady,2,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Temple of Malice,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Temple of Mystery,2,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Temple of Plenty,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Temple of Silence,2,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Temple of Triumph,2,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Temporal Manipulation,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Temporal Trespass,2,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Temur Ascendancy,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Temur Battle Rage,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Temur Battlecrier,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Terramorphic Expanse,6,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Terror of the Peaks,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+"Tetsuko Umezawa, Fugitive",3,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Tezzeret's Gambit,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+"Tezzeret, Cruel Captain",8,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+"Thalia, Guardian of Thraben",1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Thassa's Oracle,10,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+The Black Gate,1,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+The Cabbage Merchant,5,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+The Gitrog Monster,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+The Great Goblin,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+The Master of Lake-town,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+The Mycosynth Gardens,1,walkthrough-completed,needs-specific-fixture,gardens-zero; gardens-two; gardens-unpayable,Not exhaustive effect or interaction verification
+The Notary Hobbits,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+The One Ring,17,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+The Queen of Dale,3,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+The Soul Stone,1,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+The Unagi of Kyoshi Island,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+The Vision and Scarlet Witch,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Theorist's Sanctum,1,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Thieves' Guild Enforcer,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Think Twice,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Third Path Iconoclast,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Thopter Engineer,2,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Thorn of Amethyst,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Thousand-Faced Shadow,2,walkthrough-completed,needs-specific-fixture,shadow,Not exhaustive effect or interaction verification
+Thrashing Brontodon,1,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+"Thrasios, Triton Hero",3,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Three Tree City,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Three Tree Mascot,2,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Thriving Bluff,2,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Thriving Grove,2,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Thriving Heath,3,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Thriving Isle,2,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Thunderherd Migration,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Thundering Falls,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Thundering Spineback,1,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+"Théoden, King of Rohan",1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Tiamat,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Tibalt's Trickery,5,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Tidespout Tyrant,2,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Time Warp,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Time Wipe,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Timetwister,5,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Tireless Provisioner,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Tireless Tracker,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Tishana's Tidebinder,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Tooth and Nail,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Topiary Stomper,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Topplegeist,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Tormod's Crypt,2,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Torpor Orb,2,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+"Toski, Bearer of Secrets",1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Touch the Spirit Realm,2,walkthrough-completed,needs-specific-fixture,blink,Not exhaustive effect or interaction verification
+Toxic Deluge,4,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+"Toxrill, the Corrosive",1,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Trailblazer's Boots,1,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Tranquil Thicket,1,walkthrough-completed,needs-specific-fixture,cycle,Not exhaustive effect or interaction verification
+Trash the Town,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Treasure Cruise,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Treasure Vault,4,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Triskaidekaphile,1,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Trophy Mage,2,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Tropical Island,8,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Tundra,7,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Turntimber Symbiosis,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Twilight Prophet,2,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Twinflame Tyrant,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Twinshot Sniper,2,walkthrough-completed,needs-specific-fixture,damage,Not exhaustive effect or interaction verification
+Tymna the Weaver,3,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+"Tyvar, Jubilant Brawler",2,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+"Ulamog, the Infinite Gyre",1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Ulcerate,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Unclaimed Territory,2,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Undercity Sewers,2,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Underground Mortuary,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Underground River,4,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Underground Sea,12,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Underworld Breach,10,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Unearth,2,walkthrough-completed,needs-specific-fixture,cycle,Not exhaustive effect or interaction verification
+Unholy Heat,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Universal Automaton,5,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Unlicensed Hearse,2,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Unmarked Grave,5,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Unsubstantiate,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Untimely Malfunction,4,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Unwanted Remake,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Unwinding Clock,2,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Up the Beanstalk,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Urabrask,1,walkthrough-completed,needs-specific-fixture,,Not exhaustive effect or interaction verification
+"Urborg, Tomb of Yawgmoth",4,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Ureni of the Unwritten,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Urza's Bauble,2,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Urza's Cave,2,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Urza's Saga,17,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+"Urza, Lord High Artificer",3,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Utopia Sprawl,3,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Utter End,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Valakut Awakening,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Valley Floodcaller,7,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Vampire Gourmand,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Vampire of the Dire Moon,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Vampire Socialite,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Vampiric Tutor,21,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Vault of Whispers,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Veil of Summer,10,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+"Venser, Shaper Savant",1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Verdant Catacombs,23,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Verdant Sun's Avatar,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Vexing Bauble,8,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Vile Entomber,3,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+"Vilis, Broker of Blood",3,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Village Rites,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Vineglimmer Snarl,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+"Vito, Thorn of the Dusk Rose",1,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Voice of Victory,5,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Volatile Fault,2,walkthrough-completed,needs-specific-fixture,fault,Not exhaustive effect or interaction verification
+Volatile Stormdrake,2,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Volcanic Island,11,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Volcanic Torrent,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Voldaren Estate,2,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Voltage Surge,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Voltaic Servant,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+"Vona, Butcher of Magan",1,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Vryn Wingmare,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Wakening Sun's Avatar,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Waltz of Rage,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+"Wan Shi Tong, Librarian",4,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Warlord's Fury,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Warping Wail,1,needs-specific-fixture,not selected,wail-counter; wail-exile; wail-token,Not exhaustive effect or interaction verification
+Warren Soultrader,2,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Wastewood Verge,2,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Water Wings,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Waterlogged Grove,5,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Watery Grave,8,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Wayfarer's Bauble,2,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Wayward Swordtooth,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Wear // Tear,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Wear Down,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Weathered Runestone,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Welcoming Vampire,2,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Wheel of Fortune,5,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Whir of Invention,6,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Wild Shape,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Winding Constrictor,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Winds of Abandon,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Winds of Rebuke,2,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Windswept Heath,19,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+"Winota, Joiner of Forces",2,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Wirewood Symbiote,1,walkthrough-completed,needs-specific-fixture,wirewood,Not exhaustive effect or interaction verification
+Wishclaw Talisman,11,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Witch Enchanter,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Witch-king of Angmar,1,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Witherbloom Apprentice,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Wizard Class,1,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Wizard's Staff,1,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Woe Strider,1,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Wolfwillow Haven,1,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Wooded Foothills,22,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Woodland Cemetery,2,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Worldly Tutor,9,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Worn Powerstone,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Xander's Lounge,1,walkthrough-completed,needs-specific-fixture,cycle,Not exhaustive effect or interaction verification
+"Xenagos, God of Revels",1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Xorn,2,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+"Yahenni, Undying Partisan",1,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Yavimaya Coast,4,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+"Yavimaya, Cradle of Growth",2,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Yawgmoth's Will,5,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+"Yawgmoth, Thran Physician",1,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+Yotian Frontliner,1,walkthrough-completed,needs-specific-fixture,unearth; unearth-bounce,Not exhaustive effect or interaction verification
+You Come to a River,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+You See a Guard Approach,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Young Pyromancer,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Young Wolf,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+"Yuriko, the Tiger's Shadow",3,walkthrough-completed,needs-specific-fixture,reveal; commander,Not exhaustive effect or interaction verification
+"Zacama, Primal Calamity",1,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification
+"Zetalpa, Primal Dawn",1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Zoyowa's Justice,2,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Zulaport Cutthroat,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Zurgo and Ojutai,1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+"Zurzoth, Chaos Rider",1,walkthrough-completed,not selected,,Not exhaustive effect or interaction verification
+Óin the Brave,2,walkthrough-completed,activation-walkthrough-completed,,Not exhaustive effect or interaction verification

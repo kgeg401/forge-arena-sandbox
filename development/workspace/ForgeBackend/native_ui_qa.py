@@ -37,7 +37,7 @@ def objects():
     return cards
 
 x=inspect();op=sys.argv[1] if len(sys.argv)>1 else 'inspect'
-summary=dict(workflow=x['workflow'],state=x['nativeState'],orderCardIds=x.get('orderCardIds'),damageAssignments=x.get('damageAssignments'),damageControls=x.get('damageControls'),buttons=x.get('buttons'),uiButtons=x.get('uiButtons'),clickable=[v for v in x['views'] if v['click'] and v['active']])
+summary=dict(workflow=x['workflow'],state=x['nativeState'],orderCardIds=x.get('orderCardIds'),damageAssignments=x.get('damageAssignments'),damageControls=x.get('damageControls'),distributionControls=x.get('distributionControls'),buttons=x.get('buttons'),uiButtons=x.get('uiButtons'),clickable=[v for v in x['views'] if v['click'] and v['active']])
 if op=='inspect':print(json.dumps(summary,indent=2));raise SystemExit(0)
 if '--expected-state' in sys.argv and x['nativeState']!=int(sys.argv[sys.argv.index('--expected-state')+1]):
     raise RuntimeError('Native QA observation changed before publication; inspect again')
@@ -46,8 +46,8 @@ if op=='button':
     matches=[b for b in x['buttons'] if b['enabled'] and b['text']==sys.argv[2]]
     if len(matches)!=1:raise RuntimeError('Button is not uniquely observed/enabled: '+sys.argv[2])
     action.update(op='button',text=matches[0]['text'],tag=matches[0]['tag'])
-elif op=='ui':
-    matches=[b for b in x['uiButtons'] if b['enabled'] and b['key']==sys.argv[2]]
+elif op in ('ui','ui-path'):
+    matches=[b for b in x['uiButtons'] if b['enabled'] and b['key' if op=='ui' else 'path']==sys.argv[2]]
     if len(matches)!=1:raise RuntimeError('UI key is not uniquely observed/enabled')
     action.update(op='ui_button',path=matches[0]['path'])
 elif op=='damage-toggle':
@@ -60,6 +60,12 @@ elif op=='damage-spinner':
     matches=[v for v in (x.get('damageControls') or {}).get('spinners',[]) if v['instanceId']==int(sys.argv[2]) and v[direction]]
     if x['workflow']!='AssignDamageWorkflow' or len(matches)!=1:raise RuntimeError('Original damage spinner is not uniquely enabled')
     action.update(op='damage_spinner',instanceId=matches[0]['instanceId'],expectedValue=matches[0]['value'],direction=direction)
+elif op=='distribution-spinner':
+    direction=sys.argv[3]
+    if direction not in ('increase','decrease'):raise ValueError('Select increase or decrease')
+    matches=[v for v in x.get('distributionControls') or [] if v['instanceId']==int(sys.argv[2]) and v[direction]]
+    if x['workflow']!='DistributionWorkflow' or len(matches)!=1:raise RuntimeError('Original distribution spinner is not uniquely enabled')
+    action.update(op='distribution_spinner',instanceId=matches[0]['instanceId'],expectedValue=matches[0]['value'],direction=direction)
 elif op in ('keep','mulligan','play'):
     keys=('DuelScene/Browsers/StartingPlayer_PlayFirst',) if op=='play' else ('DuelScene/StartingPlayer/KeepPlural','DuelScene/StartingPlayer/KeepSingular') if op=='keep' else ('DuelScene/StartingPlayer/FreeMulligan_ButtonText','DuelScene/StartingPlayer/Mulligan_ButtonText')
     matches=[b for b in x['uiButtons'] if b['enabled'] and b['key'] in keys]

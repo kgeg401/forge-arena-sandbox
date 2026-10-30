@@ -105,6 +105,17 @@ public final class ForgeLandEngine {
     static boolean warmResearch;
     static boolean researchAdmission;
     static boolean fullHumanChoices;
+    static boolean autoOrderTriggers=true;
+    static boolean autoChooseReplacementEffects=false;
+    static void applyTurnPreferences(JsonObject settings){
+        if(settings==null)return;
+        for(String key:List.of("autoOrderTriggers","autoChooseReplacementEffects"))if(settings.has(key)){
+            JsonElement value=settings.get(key);
+            if(!value.isJsonPrimitive() || !value.getAsJsonPrimitive().isBoolean())throw new IllegalArgumentException("Turn preference must be boolean: "+key);
+        }
+        if(settings.has("autoOrderTriggers"))autoOrderTriggers=settings.get("autoOrderTriggers").getAsBoolean();
+        if(settings.has("autoChooseReplacementEffects"))autoChooseReplacementEffects=settings.get("autoChooseReplacementEffects").getAsBoolean();
+    }
     static boolean researchOpponentAttackAll;
     static boolean researchOpponentBlockAll;
     static final Deque<String> researchOpponentSpellPlan=new ArrayDeque<>();
@@ -146,6 +157,7 @@ public final class ForgeLandEngine {
     static boolean targetCancelled;
     static int targetSourceId,targetSourceAbilityId,targetMinimum,targetMaximum;
     static JsonObject targetSourceContext;
+    static java.util.function.Function<JsonArray,JsonArray> targetOptionRefresh;
     static boolean mandatoryTriggerTarget;
     static int actionProbeDepth;
     static final Map<String,Map<String,Object>> unavailableActions=new LinkedHashMap<>();
@@ -159,6 +171,8 @@ public final class ForgeLandEngine {
         }finally{actionProbeDepth--;unsupportedDecision=previous;}
     }
     static int damageSourceId,damageTotal;
+    static boolean damageCanCancel;
+    static String damagePolicy="combat";
     static int commanderDecisionId;
     static String commanderDecisionZone;
     static String orderDecisionZone;
@@ -200,13 +214,16 @@ public final class ForgeLandEngine {
         return source.getId();
     }
     static final Map<Integer,Integer> researchEffectOrigins=new LinkedHashMap<>();
-    static int keywordLayerSource(long staticId,forge.game.spellability.SpellAbilityStackInstance resolving){
+    static int keywordLayerSource(long staticId,int resolving){
         if(staticId!=0)for(Card source:game.getCardsInGame())for(var ability:source.getStaticAbilities())if(ability.getId()==staticId)return keywordPresentationSource(source);
-        return resolving!=null?keywordPresentationSource(resolving.getSourceCard()):0;
+        return resolving;
     }
     static void rememberKeywordSources(Card card){
-        if(!researchAdmission)return;
         var resolving=game.getStack().isResolving()?game.getStack().peek():null;
+        rememberKeywordSources(card,resolving==null?0:keywordPresentationSource(resolving.getSourceCard()));
+    }
+    static void rememberKeywordSources(Card card,int resolving){
+        if(!researchAdmission)return;
         for(var cell:card.getChangedCardKeywords().cellSet()){
             var change=cell.getValue();int defaultSource=keywordLayerSource(cell.getColumnKey(),resolving);
             if(change.isRemoveAllKeywords() || !change.getRemoveKeywords().isEmpty() || !change.getRemovedKeywordInstances().isEmpty())rememberKeywordLayer(keywordLayerKey(card,cell.getRowKey(),cell.getColumnKey(),-1),defaultSource);
@@ -252,7 +269,17 @@ public final class ForgeLandEngine {
             // new total; the event's field named amount is not a delta.
             event(Map.of("kind","counter-change","targetSeat",seatId(e.receiver().getId()),"counterType",counterKey(e.type()),"before",e.oldValue(),"after",e.amount(),"sourceStackForgeId",resolvingSource()));
         }
-        @Subscribe public void resolved(GameEventSpellResolved e){researchEvent(Map.of("kind","spell-resolved","sourceForgeId",e.spell().getHostCard().getId(),"hasFizzled",e.hasFizzled()));}
+        @Subscribe public void resolved(GameEventSpellResolved e){
+            // TokenEffectBase adds temporary keywords after moveToPlay without
+            // a stats-change event. Observe those layers at the original
+            // resolution event while its actual source is still available.
+            if(researchAdmission && !e.hasFizzled()){
+                int id=e.spell().getHostCard().getId(),source=0;
+                for(Card card:game.getCardsInGame())if(card.getId()==id){source=keywordPresentationSource(card);break;}
+                if(source!=0)for(Card card:game.getCardsInGame())rememberKeywordSources(card,source);
+            }
+            researchEvent(Map.of("kind","spell-resolved","sourceForgeId",e.spell().getHostCard().getId(),"hasFizzled",e.hasFizzled()));
+        }
         @Subscribe public void sacrificed(GameEventCardSacrificed e){event(Map.of("kind","sacrificed","sourceForgeId",e.card().getId()));}
         @Subscribe public void zoneChanged(GameEventCardChangeZone e){
             if(e.from()!=null && e.to()!=null)researchEvent(Map.of("kind","zone-change","forgeId",e.card().getId(),"ownerSeat",seatId(e.card().getOwner().getId()),"from",e.from().zoneType().name(),"to",e.to().zoneType().name()));
@@ -398,7 +425,7 @@ public final class ForgeLandEngine {
     static boolean payHumanMana(forge.game.mana.ManaCostBeingPaid cost,SpellAbility source,boolean effect,forge.game.mana.ManaConversionMatrix conversion){
         if(cost.isPaid())return true;
         for(var shard:new ArrayList<>(cost.getUnpaidShards()))if(shard.isPhyrexian()){
-            boolean life=local.canPayLife(2,effect,source) && booleanChoice(source,"Pay 2 life instead of "+shard+" for "+source.getHostCard().getName()+"?","phyrexian-payment");
+            boolean life=local.canPayLife(2,effect,source) && booleanChoice(source,"Pay 2 life instead of "+shard+" for "+source.getHostCard().getName()+"?","phyrexian-payment",2);
             cost.decreaseShard(shard,1);
             if(life){source.setSpendPhyrexianMana(true);local.payLife(2,source,effect);}
             else cost.increaseShard(forge.card.mana.ManaCostShard.parseNonGeneric(shard.toShortString().replace("/P","").replace("P","")),1);
@@ -425,7 +452,7 @@ public final class ForgeLandEngine {
             if(local.getManaPool().payManaCostFromPool(cost,source,false,source.getPayingMana()))return true;
             offered=availableManaAbilities();
             if(offered.isEmpty()){
-                if(cost.containsPhyrexianMana() && local.canPayLife(2,effect,source) && booleanChoice(source,"Pay 2 life for Phyrexian mana?","phyrexian-payment")){
+                if(cost.containsPhyrexianMana() && local.canPayLife(2,effect,source) && booleanChoice(source,"Pay 2 life for Phyrexian mana?","phyrexian-payment",2)){
                     if(!cost.payPhyrexian())return false;local.payLife(2,source,effect);continue;
                 }
                 return false;
@@ -451,6 +478,12 @@ public final class ForgeLandEngine {
             if(!cost.canPay(ability,player,isEffect()))return null;
             if(cost instanceof forge.game.cost.CostTap || cost instanceof forge.game.cost.CostUntap)return forge.game.cost.PaymentDecision.number(1);
             if(cost instanceof forge.game.cost.CostPartMana)return forge.game.cost.PaymentDecision.number(0);
+            if(cost instanceof forge.game.cost.CostPromiseGift gift){
+                // The earlier optional-cost decision already chose to gift.
+                // Match HumanCostDecision: this selects only its recipient.
+                Player recipient=player.getController().chooseSingleEntityForEffect(gift.getPotentialPlayers(player,ability),null,ability,"Choose an opponent to promise a gift",false,null,null);
+                return recipient==null?null:forge.game.cost.PaymentDecision.players(List.of(recipient));
+            }
             if(cost instanceof forge.game.cost.CostSacrifice){
                 if(cost.payCostFromSource())return forge.game.cost.PaymentDecision.card(source);
                 CardCollection candidates=valid(CardLists.filter(player.getCardsIn(ZoneType.Battlefield),CardPredicates.canBeSacrificedBy(ability,isEffect())),cost);
@@ -493,8 +526,16 @@ public final class ForgeLandEngine {
             if(cost instanceof forge.game.cost.CostPayLife){
                 int n=cost.getAbilityAmount(ability);
                 if(!player.canPayLife(n,isEffect(),ability))return null;
-                if(n==0 || ability.getPayCosts()!=null && ability.getPayCosts().isMandatory() || booleanChoice(ability,"Pay "+n+" life for "+source.getName()+"?","life-payment"))return forge.game.cost.PaymentDecision.number(n);
+                if(n==0 || ability.getPayCosts()!=null && ability.getPayCosts().isMandatory() || booleanChoice(ability,"Pay "+n+" life for "+source.getName()+"?","life-payment",n))return forge.game.cost.PaymentDecision.number(n);
                 return null;
+            }
+            if(cost instanceof forge.game.cost.CostPayEnergy){
+                // Original HumanCostDecision returns the chosen amount; the
+                // original CostPayEnergy.payAsDecided spends it (and owns the
+                // rollback). Availability probes must never spend counters.
+                int n=cost.getAbilityAmount(ability);
+                if(!player.canPayEnergy(n))return null;
+                return n==0 || booleanChoice(ability,"Pay "+n+" energy for "+source.getName()+"?","energy-payment",n)?forge.game.cost.PaymentDecision.number(n):null;
             }
             if(cost instanceof forge.game.cost.CostTapType){
                 CardCollection candidates=valid(player.getCardsIn(ZoneType.Battlefield),cost);
@@ -556,6 +597,11 @@ public final class ForgeLandEngine {
         @Override public forge.game.cost.PaymentDecision visit(forge.game.cost.CostBlight cost){return decide(cost);}
     }
 
+    static boolean automaticGraveyardOrder(ZoneType destination,SpellAbility cause,Player chooser){
+        // Forge's human OWN_CARDS ordering policy: only ask when its rules
+        // engine detects an order-sensitive card, or the effect is ReorderZone.
+        return destination==ZoneType.Graveyard && (cause==null || cause.getApi()!=forge.game.ability.ApiType.ReorderZone) && !game.isGraveyardOrdered(chooser);
+    }
     static class PassiveController extends PlayerControllerAi {
         private Boolean bufferedKeep;
         private final boolean humanSeat;
@@ -643,13 +689,14 @@ public final class ForgeLandEngine {
         @Override public boolean playChosenSpellAbility(SpellAbility chosen){
             if(getPlayer()!=local || !normalGame())return super.playChosenSpellAbility(chosen);
             if(fullHumanChoices){
+                targetCancelled=false;
                 if(chosen.isSpell())chosen=chooseHumanCastAbility(chosen.getHostCard());
                 else if(chosen.isLandAbility())chosen=chooseHumanLandAbility(chosen.getHostCard());
                 boolean played=chosen!=null && (chosen.isLandAbility()?playHumanLand(chosen):forge.game.player.PlaySpellAbility.playSpellAbility(this,local,chosen));
                 // Canceling the offered prepayment targets is a successful UI
                 // action. Forge correctly returns false for the unplayed ability;
                 // do not turn that explicit cancellation into a rejected command.
-                boolean canceled=targetCancelled && currentRequest!=null && "cancel_targets".equals(currentRequest.get("op").getAsString());
+                boolean canceled=targetCancelled;
                 if(!played && !canceled)failedPlays.put(currentRequest.get("id").getAsString(),"Human play could not complete its original Forge costs");
                 return played;
             }
@@ -671,7 +718,11 @@ public final class ForgeLandEngine {
             waitForDecision("starting_player",options,values->{
                 if(values.size()!=1)throw new IllegalArgumentException("Choose exactly one starting seat");
                 int seat=values.get(0).getAsJsonObject().get("startingSeat").getAsInt();if(seat<1 || seat>seatPlayers.size())throw new IllegalArgumentException("Starting seat was not offered");startingSeat=seat;
-            });return playerAtSeat(startingSeat);
+            });
+            // Concession may end the decision without selecting a seat. The
+            // original GameAction checks game-over immediately after this
+            // callback, before opening hands; return a real roster object.
+            return game.isGameOver()?getPlayer():playerAtSeat(startingSeat);
         }
         @Override public boolean mulliganKeepHand(Player first,int cardsToReturn){
             if(getPlayer()!=local){boolean keep=super.mulliganKeepHand(first,cardsToReturn);int id=seat(getPlayer());seatKept.put(id,keep);if(!keep)seatMulligans.merge(id,1,Integer::sum);if(getPlayer()==opponent){opponentKept=keep;opponentMulligans=seatMulligans.getOrDefault(id,0);}return keep;}
@@ -719,6 +770,7 @@ public final class ForgeLandEngine {
         }
         @Override public CardCollectionView orderMoveToZoneList(CardCollectionView cards,ZoneType destination,SpellAbility cause){
             if(getPlayer()!=local)return super.orderMoveToZoneList(cards,destination,cause);
+            if(fullHumanChoices && automaticGraveyardOrder(destination,cause,getPlayer()))return new CardCollection(cards);
             if(fullHumanChoices && destination==ZoneType.Graveyard){
                 for(Card c:cards)if(!MAPPED_OBJECTS.contains(presentationKey(c)))throw new UnsupportedOperationException("Unmapped graveyard ordering identity: "+presentationKey(c));
                 CardCollection ordered=new CardCollection();
@@ -766,6 +818,11 @@ public final class ForgeLandEngine {
                         JsonObject r=new JsonObject();r.addProperty("targetSeat",seat(defending));r.addProperty("targetForgeId",pw.getId());recipients.add(r);
                     }
                 }
+                // A battle's protector, not its controller, defends it. A local
+                // player's Siege is therefore a legal attack destination too.
+                for(Card battle:game.getCardsIn(ZoneType.Battlefield))if(battle.isBattle() && battle.getProtectingPlayer()!=null && p.getOpponents().contains(battle.getProtectingPlayer()) && CombatUtil.canAttack(c,battle)){
+                    JsonObject r=new JsonObject();r.addProperty("targetSeat",seat(battle.getProtectingPlayer()));r.addProperty("targetForgeId",battle.getId());recipients.add(r);
+                }
                 if(recipients.size()>0){JsonObject option=new JsonObject();option.addProperty("forgeId",c.getId());option.addProperty("targetSeat",recipients.get(0).getAsJsonObject().get("targetSeat").getAsInt());option.add("attackTargets",recipients);options.add(option);}
             }
             waitForDecision("attackers",options,assignments->{
@@ -804,7 +861,7 @@ public final class ForgeLandEngine {
             }
             if(!trample && recipients.size()<=1){Map<Card,Integer> forced=new LinkedHashMap<>();forced.put(recipients.isEmpty()?null:recipients.get(0),total);return forced;}
             if(!overrideOrder && recipients.size()>1){unsupportedDecision="Unmapped ordered combat damage choice";throw new UnsupportedOperationException(unsupportedDecision);}
-            damageSourceId=source.getId();damageTotal=total;
+            damageSourceId=source.getId();damageTotal=total;damagePolicy="combat";
             JsonArray options=new JsonArray();Map<Integer,Card> offered=new LinkedHashMap<>();Map<Card,Integer> lethal=new LinkedHashMap<>();int unassigned=total;
             // Recovered native priority: lethal in displayed order, then the
             // remainder to the last recipient. This only suggests UI values;
@@ -867,6 +924,13 @@ public final class ForgeLandEngine {
         int optionLimit=fullHumanChoices && type.equals("card-name")?32768:1024;
         if(minimum<0 || maximum<minimum || maximum>1024 || offered.size()>optionLimit || (!repeats && minimum>offered.size()))throw new UnsupportedOperationException("Invalid or unbounded shared selection");
         if(maximum==0)return new ArrayList<>();
+        // No decision exists when Forge offers exactly one required object.
+        // Optional selections and multi-object permutations still prompt.
+        // Keep explicit look/reveal acknowledgement for private information.
+        if(minimum==1 && maximum==1 && offered.size()==1 && !type.equals("look")){
+            researchCallbackAudit.add("forced-single-choice:"+type);
+            return new ArrayList<>(offered);
+        }
         JsonObject spec=choiceSpec(type,prompt);for(var field:context.entrySet())spec.add(field.getKey(),field.getValue());spec.addProperty("min",minimum);spec.addProperty("max",repeats?maximum:Math.min(maximum,offered.size()));spec.addProperty("repeats",repeats);
         for(int i=0;i<offered.size();i++){JsonObject option=describe.apply(offered.get(i));option.addProperty("choiceId",i+1);spec.getAsJsonArray("options").add(option);}
         List<T> result=new ArrayList<>();
@@ -906,8 +970,12 @@ public final class ForgeLandEngine {
         sharedDecision(spec,values->{if(values==null || values.size()!=1)throw new IllegalArgumentException("Choose exactly one number");JsonObject value=values.get(0).getAsJsonObject();choiceFields(value,"number");int number=choiceInteger(value,"number");if(number<minimum || number>maximum)throw new IllegalArgumentException("Number is outside Forge bounds");result[0]=number;});return result[0];
     }
     static boolean booleanChoice(SpellAbility source,String prompt,String context){
+        return booleanChoice(source,prompt,context,null);
+    }
+    static boolean booleanChoice(SpellAbility source,String prompt,String context,Integer paymentAmount){
         if(scenario.equals("card-family") && fixtureConfig!=null && fixtureConfig.has("traceChoices") && fixtureConfig.get("traceChoices").getAsBoolean())researchEvent(Map.of("kind","choice-callsite","context",context,"prompt",prompt,"callers",StackWalker.getInstance().walk(s->s.limit(10).map(Object::toString).toList())));
         JsonObject spec=choiceSpec("confirm",prompt);spec.addProperty("context",context);boolean[] result={false};
+        if(paymentAmount!=null){if(paymentAmount<0 || !Set.of("life-payment","phyrexian-payment","energy-payment").contains(context))throw new IllegalArgumentException("Invalid explicit payment presentation");spec.addProperty(context.equals("energy-payment")?"energyAmount":"lifeAmount",paymentAmount);}
         for(var field:choiceSource(source).entrySet())spec.add(field.getKey(),field.getValue());
         sharedDecision(spec,values->{if(values==null || values.size()!=1)throw new IllegalArgumentException("Choose exactly one confirmation");JsonObject value=values.get(0).getAsJsonObject();choiceFields(value,"accept");JsonElement accept=value.get("accept");if(!accept.isJsonPrimitive() || !accept.getAsJsonPrimitive().isBoolean())throw new IllegalArgumentException("Confirmation must be boolean");result[0]=accept.getAsBoolean();});return result[0];
     }
@@ -922,7 +990,11 @@ public final class ForgeLandEngine {
             if(abilities.isEmpty())return;
             if(fullHumanChoices){
                 List<SpellAbility> remaining=new ArrayList<>(abilities),ordered=new ArrayList<>();
-                while(remaining.size()>1){
+                // Arena's native Auto Order Triggers preference is forwarded
+                // with local input. Preserve Forge's stable offered order by
+                // default; manual mode keeps the explicit permutation.
+                if(autoOrderTriggers && remaining.size()>1)researchCallbackAudit.add("auto-order-triggers:"+remaining.size());
+                while(!autoOrderTriggers && remaining.size()>1){
                     SpellAbility next=sourceOrderChoice("Choose the ability that resolves next",remaining,a->a.getHostCard(),Object::toString).get(0);
                     ordered.add(next);remaining.remove(next);
                 }
@@ -989,8 +1061,18 @@ public final class ForgeLandEngine {
         }
         @Override public String chooseProtectionType(SpellAbility source,List<String> options){
             if(getPlayer()!=local)return super.chooseProtectionType(source,options);
-            for(String option:options)if(!Set.of("white","blue","black","red","green").contains(option.toLowerCase(Locale.ROOT)))throw new UnsupportedOperationException("Non-color protection selection needs an explicit native binding: "+option);
-            return selectChoice("colors","Choose a protection color",options,1,1,false,color->{JsonObject value=new JsonObject();value.addProperty("color",color.toLowerCase(Locale.ROOT));value.addProperty("label",color);return value;},choiceSource(source)).get(0);
+            if(options.stream().allMatch(option->Set.of("white","blue","black","red","green","colorless").contains(option.toLowerCase(Locale.ROOT))))
+                return selectChoice("colors","Choose protection",options,1,1,false,color->{JsonObject value=new JsonObject();value.addProperty("color",color.toLowerCase(Locale.ROOT));value.addProperty("label",color);return value;},choiceSource(source)).get(0);
+            JsonObject ids=TYPE_ENUM_IDS.getAsJsonObject("CardType");
+            JsonObject context=choiceSource(source);context.addProperty("typeKind","CardType");
+            List<String> offered=new ArrayList<>(),outside=new ArrayList<>();
+            for(String option:options){
+                if(ids!=null && ids.has(option.toLowerCase(Locale.ROOT)))offered.add(option);
+                else if(option.equals("Stickers"))outside.add(option);
+                else throw new UnsupportedOperationException("Unmapped protection type: "+option);
+            }
+            if(!outside.isEmpty()){context.add("typesAbsentFromInstalledArena",JSON.toJsonTree(outside));researchCallbackAudit.add("Arena protection type catalogue excludes: "+outside);}
+            return selectChoice("type","Choose a protection card type",offered,1,1,false,label->{JsonObject value=new JsonObject();value.addProperty("nativeTypeId",ids.get(label.toLowerCase(Locale.ROOT)).getAsInt());value.addProperty("label",label);return value;},context).get(0);
         }
         private List<forge.card.MagicColor.Color> colorChoice(String prompt,forge.card.ColorSet colors,int minimum,int maximum,boolean colorless,JsonObject context){
             List<forge.card.MagicColor.Color> options=new ArrayList<>(colors.getOrderedColors());
@@ -1014,6 +1096,7 @@ public final class ForgeLandEngine {
         }
         HeadlessChoiceController(Game g,Player p,LobbyPlayer l){super(g,p,l);}
         @Override public CardCollectionView orderMoveToZoneList(CardCollectionView cards,ZoneType destination,SpellAbility cause){
+            if(getPlayer()==local && automaticGraveyardOrder(destination,cause,getPlayer()))return new CardCollection(cards);
             if(getPlayer()!=local || destination==ZoneType.Graveyard && cards.stream().noneMatch(c->c.isInZone(ZoneType.Library)))return super.orderMoveToZoneList(cards,destination,cause);
             if(destination!=ZoneType.Library && destination!=ZoneType.Graveyard && destination!=ZoneType.Exile){unsupportedDecision="Unmapped shared ordering destination "+destination;throw new UnsupportedOperationException(unsupportedDecision);}
             if(cards.size()<2)return new CardCollection(cards);
@@ -1021,7 +1104,7 @@ public final class ForgeLandEngine {
             List<Card> offered=new ArrayList<>();for(Card card:cards)offered.add(card);
             return new CardCollection(selectChoice("order","Order cards for "+destination.name(),offered,offered.size(),offered.size(),false,c->entityDescription(c,true),context));
         }
-        private JsonObject entityDescription(GameEntity entity,boolean visible){
+        protected JsonObject entityDescription(GameEntity entity,boolean visible){
             JsonObject value=new JsonObject();value.addProperty("privateToSeat",1);
             if(entity instanceof Card card){value.addProperty("forgeId",card.getId());value.addProperty("entityKind","card");value.addProperty("label",visible?card.getName():"Hidden card");value.addProperty("identityVisible",visible);}
             else if(entity instanceof Player player){value.addProperty("entityKind","player");value.addProperty("targetSeat",seat(player));value.addProperty("label",player==local?"You":player.getName());}
@@ -1029,7 +1112,12 @@ public final class ForgeLandEngine {
             return value;
         }
         private <T extends GameEntity> List<T> entityChoice(String type,String prompt,Iterable<T> offered,int minimum,int maximum,SpellAbility source,DelayedReveal reveal){
-            List<T> options=new ArrayList<>();for(T entity:offered)options.add(entity);
+            List<T> options=new ArrayList<>();for(T entity:offered){
+                // ChooseSourceEffect supplies negative-id display separators.
+                // Its own loop rejects them; they are not selectable objects.
+                if(source!=null && source.getApi()==forge.game.ability.ApiType.ChooseSource && entity instanceof Card card && card.getId()>=-4 && card.getId()<=-1 && Set.of("--PERMANENTS:--","--SPELLS ON THE STACK:--","--OBJECTS REFERRED TO ON THE STACK:--","--CARDS IN THE COMMAND ZONE:--").contains(card.getName()))continue;
+                options.add(entity);
+            }
             JsonObject context=choiceSource(source);JsonArray revealed=new JsonArray();
             // Human Forge temporarily exposes exactly these supplied views to
             // the chooser. They are not added to the public game snapshot.
@@ -1106,6 +1194,20 @@ public final class ForgeLandEngine {
     }
     static class ResearchStrictController extends HeadlessChoiceController {
         ResearchStrictController(forge.game.Game g,forge.game.player.Player p,forge.LobbyPlayer l){super(g,p,l);}
+        // Forge 2.0.16 added sticker callbacks. Stickers are outside our Arena
+        // catalogue; never inherit the AI's answer for a human if one appears.
+        @Override public Card chooseCardToKeepStickers(CardCollectionView cards){
+            if(getPlayer()!=local)return super.chooseCardToKeepStickers(cards);
+            unsupportedDecision="Stickers are outside the Arena-only card pool";throw new UnsupportedOperationException(unsupportedDecision);
+        }
+        @Override public forge.game.card.sticker.Sticker chooseSticker(List<forge.game.card.sticker.Sticker> choices,Card card,SpellAbility ability,boolean optional){
+            if(getPlayer()!=local)return super.chooseSticker(choices,card,ability,optional);
+            unsupportedDecision="Stickers are outside the Arena-only card pool";throw new UnsupportedOperationException(unsupportedDecision);
+        }
+        @Override public int chooseStickerNamePosition(forge.game.card.sticker.Sticker sticker,Card card){
+            if(getPlayer()!=local)return super.chooseStickerNamePosition(sticker,card);
+            unsupportedDecision="Stickers are outside the Arena-only card pool";throw new UnsupportedOperationException(unsupportedDecision);
+        }
         @Override public boolean applyManaToCost(forge.game.mana.ManaCostBeingPaid a0,forge.game.spellability.SpellAbility a1,java.lang.String a2,forge.game.mana.ManaConversionMatrix a3,boolean a4) {
             if(getPlayer()!=local){return super.applyManaToCost(a0,a1,a2,a3,a4);}
             if(fullHumanChoices)return payHumanMana(a0,a1,a4,a3);
@@ -1113,7 +1215,16 @@ public final class ForgeLandEngine {
         }
         @Override public boolean chooseCardsPile(forge.game.spellability.SpellAbility a0,forge.game.card.CardCollectionView a1,forge.game.card.CardCollectionView a2,java.lang.String a3) {
             if(getPlayer()!=local){return super.chooseCardsPile(a0,a1,a2,a3);}
-            unsupportedDecision="Unmapped human callback: public boolean forge.ai.PlayerControllerAi.chooseCardsPile(forge.game.spellability.SpellAbility,forge.game.card.CardCollectionView,forge.game.card.CardCollectionView,java.lang.String)";throw new UnsupportedOperationException(unsupportedDecision);
+            if(!Set.of("False","True","One").contains(a3))throw new UnsupportedOperationException("Unknown Forge pile visibility "+a3);
+            List<CardCollectionView> piles=List.of(a1,a2);JsonObject context=choiceSource(a0);JsonArray revealed=new JsonArray();
+            for(int i=0;i<2;i++)if(a3.equals("False") || i==1 && a3.equals("One"))for(Card card:piles.get(i))revealed.add(entityDescription(card,true));
+            context.add("revealed",revealed);
+            int chosen=selectChoice("piles","Choose a pile",List.of(0,1),1,1,false,index->{
+                JsonObject option=new JsonObject();option.addProperty("label","Pile "+(index+1));
+                option.addProperty("faceDown",a3.equals("True") || index==0 && a3.equals("One"));
+                JsonArray ids=new JsonArray();for(Card card:piles.get(index))ids.add(card.getId());option.add("forgeIds",ids);return option;
+            },context).get(0);
+            return chosen==0;
         }
         @Override public boolean chooseFlipResult(forge.game.spellability.SpellAbility a0,forge.game.player.Player a1,boolean a2) {
             if(getPlayer()!=local){return super.chooseFlipResult(a0,a1,a2);}
@@ -1209,11 +1320,23 @@ public final class ForgeLandEngine {
         }
         @Override public forge.game.card.CardCollectionView chooseCardsForCost(forge.game.card.CardCollectionView a0,forge.game.spellability.SpellAbility a1,forge.game.cost.CostPartWithList a2,int a3,boolean a4,java.lang.String a5) {
             if(getPlayer()!=local){return super.chooseCardsForCost(a0,a1,a2,a3,a4,a5);}
-            unsupportedDecision="Unmapped human callback: public forge.game.card.CardCollectionView forge.ai.PlayerControllerAi.chooseCardsForCost(forge.game.card.CardCollectionView,forge.game.spellability.SpellAbility,forge.game.cost.CostPartWithList,int,boolean,java.lang.String)";throw new UnsupportedOperationException(unsupportedDecision);
+            if(a3<0 || a3>a0.size())return null;
+            if(a4 && !booleanChoice(a1,a5,"optional-card-cost"))return null;
+            List<Card> offered=new ArrayList<>();for(Card card:a0)offered.add(card);
+            return new CardCollection(selectChoice("cards-effect",a5,offered,a3,a3,false,c->entityDescription(c,true),choiceSource(a1)));
         }
-        @Override public forge.game.card.CardCollectionView chooseCardsToDelve(int a0,forge.game.card.CardCollection a1) {
-            if(getPlayer()!=local){return super.chooseCardsToDelve(a0,a1);}
-            unsupportedDecision="Unmapped human callback: public forge.game.card.CardCollectionView forge.ai.PlayerControllerAi.chooseCardsToDelve(int,forge.game.card.CardCollection)";throw new UnsupportedOperationException(unsupportedDecision);
+        @Override public CardCollectionView chooseCardsToDelve(int genericAmount,CardCollection graveyard) {
+            if(getPlayer()!=local)return super.chooseCardsToDelve(genericAmount,graveyard);
+            int maximum=Math.min(Math.max(0,genericAmount),graveyard.size());
+            if(maximum==0)return CardCollection.EMPTY;
+            List<Card> offered=new ArrayList<>();for(Card card:graveyard)offered.add(card);
+            // CostAdjustment asks this callback even for its test-only cost
+            // estimate. Any eligible subset of this size reduces the same
+            // generic amount; the original test flag prevents zone movement.
+            // This estimate must never become the player's actual selection.
+            if(actionProbeDepth>0)return new CardCollection(offered.subList(0,maximum));
+            JsonObject context=new JsonObject();context.addProperty("destination","Exile");context.addProperty("paymentKind","delve");
+            return new CardCollection(selectChoice("cards-effect","Choose cards to exile for delve",offered,0,maximum,false,c->entityDescription(c,true),context));
         }
         @Override public forge.game.card.CardCollectionView chooseCardsToDiscardUnlessType(int a0,forge.game.card.CardCollectionView a1,java.lang.String[] a2,forge.game.spellability.SpellAbility a3) {
             if(getPlayer()!=local){return super.chooseCardsToDiscardUnlessType(a0,a1,a2,a3);}
@@ -1253,6 +1376,15 @@ public final class ForgeLandEngine {
             if(getPlayer()!=local){return super.chooseSingleReplacementEffect(a0);}
             if(fullHumanChoices){
                 if(a0.size()==1)return a0.get(0);
+                if(autoChooseReplacementEffects){
+                    // Explicit native automation preference: reuse the pinned
+                    // Forge chooser, including prevention/regeneration priority.
+                    // This does not claim Arena's server-side ranking heuristic.
+                    var chosen=super.chooseSingleReplacementEffect(a0);
+                    if(!a0.contains(chosen))throw new UnsupportedOperationException("Automatic replacement chose an unoffered effect");
+                    researchCallbackAudit.add("auto-replacement:"+chosen.getHostCard().getName());
+                    return chosen;
+                }
                 return sourceOrderChoice("Choose which replacement applies next",a0,e->e.getHostCard(),Object::toString).get(0);
             }
             // Original Human controller returns the sole offered effect before
@@ -1331,7 +1463,8 @@ public final class ForgeLandEngine {
         }
         @Override public java.lang.String chooseKeywordForPump(java.util.List<java.lang.String> a0,forge.game.spellability.SpellAbility a1,java.lang.String a2,forge.game.card.Card a3) {
             if(getPlayer()!=local){return super.chooseKeywordForPump(a0,a1,a2,a3);}
-            unsupportedDecision="Unmapped human callback: public java.lang.String forge.ai.PlayerControllerAi.chooseKeywordForPump(java.util.List<java.lang.String>,forge.game.spellability.SpellAbility,java.lang.String,forge.game.card.Card)";throw new UnsupportedOperationException(unsupportedDecision);
+            if(a0.isEmpty())return null;
+            return optionChoice(a2,a0,1,1,keyword->keyword,a1).get(0);
         }
         @Override public java.lang.String chooseRollSwapValue(java.util.List<java.lang.String> a0,java.lang.Integer a1,int a2,int a3) {
             if(getPlayer()!=local){return super.chooseRollSwapValue(a0,a1,a2,a3);}
@@ -1503,6 +1636,8 @@ public final class ForgeLandEngine {
         if(researchAdmission){result.put("currentTypes",c.getType().getCoreTypes().stream().map(Object::toString).toList());result.put("currentSupertypes",c.getType().getSupertypes().stream().map(Object::toString).toList());result.put("currentSubtypes",new ArrayList<>(c.getType().getSubtypes()));}
         result.put("counters",counters(c));result.put("loyalty",c.getCurrentLoyalty());result.put("defense",c.getCurrentDefense());
         if(c.isPlaneswalker())result.put("baseLoyalty",c.getBaseLoyalty());
+        if(c.isBattle()){result.put("baseDefense",c.getCurrentState().getBaseDefense());result.put("protectorSeat",seat(c.getProtectingPlayer()));}
+        if(c.isClassCard())result.put("classLevel",c.getClassLevel());
         keywordPresentation(c,result);
         if(researchAdmission)result.put("rulesKeywords",c.getKeywords().stream().map(k->k.getOriginal()).toList());
         List<String> chosenColors=new ArrayList<>();if(c.hasChosenColor())for(String color:c.getChosenColors())chosenColors.add(color);result.put("chosenColors",chosenColors);
@@ -1617,9 +1752,50 @@ public final class ForgeLandEngine {
         boolean commander=commanderGame() && c.isRealCommander() && BRAWL_COMMANDERS.contains(c.getName());
         if(!admitted && !commander)return choices;
         for(SpellAbility a:c.getAllPossibleAbilities(local,false))if(a.isSpell()){
-            a.setActivatingPlayer(local);if(a.canPlay() && canPayHumanCosts(a) && hasAvailableTargets(a))choices.add(a);
+            a.setActivatingPlayer(local);if(a.canPlay() && canPayHumanCosts(a) && hasHumanAnnouncementTargets(a))choices.add(a);
         }
         return choices;
+    }
+    static boolean hasHumanAnnouncementTargets(SpellAbility ability){
+        if(hasAvailableTargets(ability))return true;
+        // Optional gift can replace a narrow target clause with a broader
+        // subability. Probe the original cost copy, then leave the real choice
+        // to PlaySpellAbility's announcement/payment sequence.
+        var probe=ability.copy();
+        for(var optional:GameActionUtil.getOptionalCostValues(probe))if(optional.getType()==forge.game.spellability.OptionalCost.PromiseGift){
+            var giftedHost=forge.game.card.CardCopyService.getLKICopy(ability.getHostCard());
+            if(giftedHost.getView()==ability.getHostCard().getView())throw new UnsupportedOperationException("Gift availability needs an independent card view");
+            var gifted=GameActionUtil.addOptionalCosts(probe.copy(giftedHost,local,false),List.of(optional));
+            // Count$PromisedGift reads the host's cast ability, not its gift
+            // recipient. Attach only on the detached preview card.
+            giftedHost.setCastSA(gifted);
+            if(!canPayHumanCosts(gifted))continue;
+            var gift=gifted.getPayCosts().getCostParts().stream().filter(p->p instanceof forge.game.cost.CostPromiseGift).map(p->(forge.game.cost.CostPromiseGift)p).findFirst().orElseThrow();
+            for(Player recipient:gift.getPotentialPlayers(local,gifted)){
+                giftedHost.setPromisedGift(recipient);
+                if(targetChainHasCandidates(gifted))return true;
+            }
+        }
+        // An unannounced X is not zero for availability purposes. For an exact
+        // mana-value target, the finite set of current card mana values covers
+        // every possible satisfying X; do not choose X for the player.
+        if(ability.getPayCosts()!=null && ability.getPayCosts().hasXInAnyCostPart() && ability.getParamOrDefault("ValidTgts","").contains("cmcEQX")){
+            var bounds=forge.game.ability.AbilityUtils.getAnnouncementBounds(ability,"X");Set<Integer> values=new TreeSet<>();
+            for(Card card:game.getCardsInGame())values.add(card.getCMC());
+            for(int x:values)if(x>=bounds.getMinimum() && x<=bounds.getMaximum()){
+                var announced=ability.copy();announced.setXManaCostPaid(x);
+                if(canPayHumanCosts(announced) && targetChainHasCandidates(announced))return true;
+            }
+        }
+        return false;
+    }
+    static boolean targetChainHasCandidates(SpellAbility ability){
+        int depth=0;
+        for(var part=ability;part!=null;part=part.getSubAbility()){
+            if(++depth>64)throw new UnsupportedOperationException("Availability target chain exceeds its bound");
+            if(part.usesTargeting() && part.getMinTargets()>0 && part.getTargetRestrictions().getNumCandidates(part)<part.getMinTargets())return false;
+        }
+        return true;
     }
     static SpellAbility chooseHumanCastAbility(Card c){
         List<SpellAbility> choices=probeAction(c,"cast-options",()->humanCastOptions(c));
@@ -1674,7 +1850,7 @@ public final class ForgeLandEngine {
     }
     static SpellAbility activatedAbility(Card c,int nativeId){
         if(!ADMITTED_CARDS.contains(c.getName()) && !(fullHumanChoices && MAPPED_OBJECTS.contains(presentationKey(c))) || c.getController()!=local || !fullHumanChoices && !c.isInZone(ZoneType.Battlefield))return null;
-        for(var a:c.getSpellAbilities())if(a.isActivatedAbility() && !a.isManaAbility() && nativeAbility(a,false)==nativeId){a.setActivatingPlayer(local);if(a.canPlay() && canPayHumanCosts(a) && hasAvailableTargets(a))return a;}
+        for(var a:c.getSpellAbilities())if(a.isActivatedAbility() && !a.isManaAbility() && nativeAbility(a,false)==nativeId){a.setActivatingPlayer(local);if(a.canPlay() && canPayHumanCosts(a) && (fullHumanChoices?hasHumanAnnouncementTargets(a):hasAvailableTargets(a)))return a;}
         return null;
     }
     static boolean hasAvailableTargets(SpellAbility a){return !a.usesTargeting() || fullHumanChoices && a.getMinTargets()==0 || a.getTargetRestrictions().getNumCandidates(a)>0;}
@@ -1726,51 +1902,98 @@ public final class ForgeLandEngine {
         mandatoryTriggerTarget=root.isTrigger() && root.isMandatory();
         targetSourceId=spell.getHostCard().getId();targetSourceAbilityId=nativeAbility(root,root.isTrigger());targetMinimum=spell.getMinTargets();targetMaximum=spell.getMaxTargets();targetCancelled=false;
         if(exactCount!=null)targetMinimum=targetMaximum=exactCount;
+        if(spell.isDividedAsYouChoose()){
+            Integer total=spell.getDividedValue();
+            if(total==null || total<0)throw new UnsupportedOperationException("Forge did not initialize the divided allocation");
+            // Like TargetSelection, zero to divide ends targeting immediately.
+            if(total==0){spell.resetTargets();return true;}
+            targetMaximum=Math.min(targetMaximum,total);
+        }
         if(targetMaximum==0){spell.resetTargets();return true;}
         if(root.isTrigger() && targetSourceAbilityId==0)throw new UnsupportedOperationException("Unmapped native triggered target ability from "+spell.getHostCard().getName());
         JsonArray options=new JsonArray();
-        if(spell.getTargetRestrictions().getZone().equals(List.of(ZoneType.Stack))){
-            Map<Integer,SpellAbility> offered=new LinkedHashMap<>();
+        Map<Integer,forge.game.GameObject> offered=new LinkedHashMap<>();
+        if(spell.getTargetRestrictions().getZone().contains(ZoneType.Stack)){
             for(var entry:game.getStack())if(spell.canTargetSpellAbility(entry.getSpellAbility()) && (filter==null || filter.test(entry.getSpellAbility()))){
                 if(!fullHumanChoices && !entry.isSpell())throw new UnsupportedOperationException("Stack ability targeting needs a separate native ability identity");
                 SpellAbility target=entry.getSpellAbility();int id=entry.isSpell()?target.getHostCard().getId():-1-entry.getId();offered.put(id,target);
                 JsonObject option=new JsonObject();option.addProperty("forgeId",id);option.addProperty("stackInstanceId",entry.getId());option.addProperty("targetKind","spell");options.add(option);
             }
-            if(options.size()<targetMinimum)return false;
-            if(fullHumanChoices && options.isEmpty() && targetMinimum==0){spell.resetTargets();return true;}
-            waitForDecision("targets",options,values->{
-                if(values.size()<targetMinimum || values.size()>targetMaximum)throw new IllegalArgumentException("Spell target count outside Forge bounds");
-                var previous=spell.getTargets().clone();spell.resetTargets();
-                try{
-                List<SpellAbility> chosen=new ArrayList<>();Set<Integer> seen=new HashSet<>();
-                for(JsonElement value:values){int id=choiceInteger(value.getAsJsonObject(),"forgeId");SpellAbility target=offered.get(id);
-                    boolean stillOnStack=false;for(var entry:game.getStack())if(entry.getSpellAbility()==target)stillOnStack=true;
-                    if(target==null || !seen.add(id) || !stillOnStack || !spell.canTargetSpellAbility(target) || filter!=null && !filter.test(target))throw new IllegalArgumentException("Forge rejected spell target");chosen.add(target);spell.getTargets().add(target);}
-                if(!spell.isTargetNumberValid())throw new IllegalArgumentException("Forge rejected submitted spell target");
-                }catch(RuntimeException ex){spell.setTargets(previous);throw ex;}
-            });return !targetCancelled && !game.isGameOver() && spell.isTargetNumberValid();
         }
-        if(spell.getTargetRestrictions().getZone().contains(ZoneType.Stack))throw new UnsupportedOperationException("Mixed stack/permanent targets require an explicit combined target interface");
-        Map<Integer,GameEntity> candidates=new LinkedHashMap<>();
+        if(!spell.getTargetRestrictions().getZone().equals(List.of(ZoneType.Stack)))
         for(GameEntity target:spell.getTargetRestrictions().getAllCandidates(spell)){
+            // A spell on the stack is targeted as its live SpellAbility, never
+            // as the host card (nor the card currently being announced).
+            if(target instanceof Card card && card.isInZone(ZoneType.Stack))continue;
             if(filter!=null && !filter.test(target))continue;
             JsonObject o=new JsonObject();int id;
             if(target instanceof Card card){id=card.getId();o.addProperty("targetKind","card");}
             else if(target instanceof Player player){int seat=seat(player);id=-1000000-seat;o.addProperty("targetKind","player");o.addProperty("targetSeat",seat);}
             else throw new UnsupportedOperationException("Unmapped target entity type");
-            candidates.put(id,target);o.addProperty("forgeId",id);options.add(o);
+            if(offered.putIfAbsent(id,target)!=null)throw new IllegalStateException("Duplicate target identity");o.addProperty("forgeId",id);options.add(o);
         }
         if(options.size()<targetMinimum)return false;
         if(fullHumanChoices && options.isEmpty() && targetMinimum==0){spell.resetTargets();return true;}
-        waitForDecision("targets",options,values->{
-            if(values.size()<targetMinimum || values.size()>targetMaximum)throw new IllegalArgumentException("Forge target count is outside its bounds");
-            var previous=spell.getTargets().clone();spell.resetTargets();
+        targetOptionRefresh=values->{
+            var selected=validatedHumanTargets(spell,values,offered,filter,false);var previous=spell.getTargets();spell.setTargets(selected);
             try{
-            Set<Integer> unique=new HashSet<>();List<GameEntity> chosen=new ArrayList<>();
-            for(JsonElement value:values){int id=value.getAsJsonObject().get("forgeId").getAsInt();if(!unique.add(id))throw new IllegalArgumentException("duplicate target");GameEntity entity=candidates.get(id);if(entity==null || !spell.canTarget(entity))throw new IllegalArgumentException("Forge rejected target");chosen.add(entity);spell.getTargets().add(entity);}
-            if(!spell.isTargetNumberValid())throw new IllegalArgumentException("Forge rejected submitted targets");
-            }catch(RuntimeException ex){spell.setTargets(previous);throw ex;}
-        });return !targetCancelled && !game.isGameOver() && spell.isTargetNumberValid();
+                Set<Integer> ids=new HashSet<>();for(JsonElement value:values)ids.add(choiceInteger(value.getAsJsonObject(),"forgeId"));
+                JsonArray legal=new JsonArray();for(JsonElement value:options){int id=value.getAsJsonObject().get("forgeId").getAsInt();
+                    if(ids.contains(id) || values.size()<targetMaximum && humanCanTarget(spell,offered.get(id),filter))legal.add(value.deepCopy());
+                }return legal;
+            }finally{spell.setTargets(previous);}
+        };
+        try{waitForDecision("targets",options,values->spell.setTargets(validatedHumanTargets(spell,values,offered,filter,true)));}
+        finally{targetOptionRefresh=null;}
+        if(targetCancelled || game.isGameOver() || !spell.isTargetNumberValid())return false;
+        if(spell.isDividedAsYouChoose())assignDividedTargets(spell);
+        return !targetCancelled && !game.isGameOver();
+    }
+    static boolean humanCanTarget(SpellAbility spell,forge.game.GameObject target,java.util.function.Predicate<forge.game.GameObject> filter){
+        if(target==null || filter!=null && !filter.test(target))return false;
+        if(target instanceof SpellAbility ability){
+            boolean live=false;for(var entry:game.getStack())if(entry.getSpellAbility()==ability)live=true;
+            return live && spell.canTargetSpellAbility(ability);
+        }
+        return target instanceof GameEntity entity && spell.canTarget(entity);
+    }
+    static forge.game.spellability.TargetChoices validatedHumanTargets(SpellAbility spell,JsonArray values,Map<Integer,forge.game.GameObject> offered,java.util.function.Predicate<forge.game.GameObject> filter,boolean complete){
+        if(values.size()>targetMaximum || complete && values.size()<targetMinimum)throw new IllegalArgumentException("Forge target count is outside its bounds");
+        var previous=spell.getTargets();spell.resetTargets();
+        try{
+            Set<Integer> unique=new HashSet<>();
+            for(JsonElement value:values){int id=choiceInteger(value.getAsJsonObject(),"forgeId");var target=offered.get(id);
+                if(!unique.add(id) || !humanCanTarget(spell,target,filter))throw new IllegalArgumentException("Forge rejected target or target combination");
+                spell.getTargets().add(target);
+            }
+            if(complete && !spell.isTargetNumberValid())throw new IllegalArgumentException("Forge rejected submitted targets");
+            return spell.getTargets().clone();
+        }finally{spell.setTargets(previous);}
+    }
+    static void assignDividedTargets(SpellAbility spell){
+        int total=spell.getDividedValue(),count=spell.getTargets().size();
+        if(count==0)return; // "up to" permits choosing none.
+        if(count>total)throw new IllegalArgumentException("Every divided target needs at least one");
+        if(count==1 || count==total){for(var target:spell.getTargets())spell.addDividedAllocation(target,count==1?total:1);return;}
+        if(spell.getApi()!=forge.game.ability.ApiType.DealDamage)throw new UnsupportedOperationException("Native divided allocation is only connected for damage");
+        damageSourceId=spell.getHostCard().getId();damageTotal=total;damagePolicy="divided-spell";damageCanCancel=!(spell.getRootAbility().isTrigger() && spell.getRootAbility().isMandatory());
+        Map<Integer,forge.game.GameObject> offered=new LinkedHashMap<>();JsonArray options=new JsonArray();int index=0;
+        for(var target:spell.getTargets()){
+            JsonObject option=new JsonObject();int id;
+            if(target instanceof Card card){id=card.getId();option.addProperty("targetKind","card");}
+            else if(target instanceof Player player){int seat=seat(player);id=-1000000-seat;option.addProperty("targetKind","player");option.addProperty("targetSeat",seat);}
+            else throw new UnsupportedOperationException("Divided damage requires a card or player recipient");
+            offered.put(id,target);option.addProperty("forgeId",id);option.addProperty("minimumDamage",1);option.addProperty("assignedDamage",++index==count?total-count+1:1);options.add(option);
+        }
+        waitForDecision("assign_damage",options,values->{
+            if(values==null || values.size()!=offered.size())throw new IllegalArgumentException("Assign to every chosen target exactly once");
+            Map<Integer,Integer> selected=new LinkedHashMap<>();long sum=0;
+            for(JsonElement raw:values){JsonObject value=raw.getAsJsonObject();choiceFields(value,"forgeId","amount");int id=choiceInteger(value,"forgeId"),amount=choiceInteger(value,"amount");
+                if(!offered.containsKey(id) || selected.putIfAbsent(id,amount)!=null || amount<1 || amount>total)throw new IllegalArgumentException("Invalid divided allocation");sum+=amount;
+            }
+            if(sum!=total)throw new IllegalArgumentException("Assign the exact announced total");
+            for(var entry:selected.entrySet())spell.addDividedAllocation(offered.get(entry.getKey()),entry.getValue());
+        });
     }
     static String fidelityGap() {
         if(!unsupportedDecision.isEmpty())return unsupportedDecision;
@@ -1838,6 +2061,7 @@ public final class ForgeLandEngine {
                         try{
                             if(!SESSION.equals(request.get("session").getAsString()))throw new IllegalArgumentException("stale session");
                             if(request.get("seat").getAsInt()!=1)throw new IllegalArgumentException("wrong player");
+                            applyTurnPreferences(request);
                             String op=request.get("op").getAsString();
                             if(!op.equals("snapshot") && !op.equals("concede") && !fidelityGap().isEmpty())throw new UnsupportedOperationException(fidelityGap());
                             if(op.equals("snapshot")){remember(request,response(request,true,"snapshot at priority"));}
@@ -1882,7 +2106,7 @@ public final class ForgeLandEngine {
             if(kind.equals("order_cards")){decision.addProperty("count",options.size());decision.addProperty("destination",orderDecisionZone);decision.addProperty("orderSemantics","movement insertion order; graveyard bottom to top");}
             if(kind.startsWith("mulligan"))decision.addProperty("mulligans",mulligans);
             if(kind.equals("targets")){decision.addProperty("sourceForgeId",targetSourceId);decision.addProperty("sourceAbilityId",targetSourceAbilityId);decision.addProperty("minTargets",targetMinimum);decision.addProperty("maxTargets",targetMaximum);decision.addProperty("canCancel",!mandatoryTriggerTarget);if(targetSourceContext!=null && targetSourceContext.has("pendingCopyObject"))decision.add("pendingCopyObject",targetSourceContext.get("pendingCopyObject").deepCopy());}
-            if(kind.equals("assign_damage")){decision.addProperty("sourceForgeId",damageSourceId);decision.addProperty("totalDamage",damageTotal);decision.addProperty("policy","Explicit modern allocation; positive trample-to-player requires lethal on every blocker. Banding and legacy multi-block ordering remain unsupported.");}
+            if(kind.equals("assign_damage")){decision.addProperty("sourceForgeId",damageSourceId);decision.addProperty("totalDamage",damageTotal);decision.addProperty("policy",damagePolicy);decision.addProperty("canCancel",damagePolicy.equals("divided-spell") && damageCanCancel);}
             if(kind.equals("commander_return")){decision.addProperty("sourceForgeId",commanderDecisionId);decision.addProperty("fromZone",findCard(commanderDecisionId).getZone().getZoneType().name());decision.addProperty("choiceZone",commanderDecisionZone);}
             finishLiveRequests();
             // A resolving spell may ask several consecutive questions. Publish
@@ -1907,6 +2131,7 @@ public final class ForgeLandEngine {
                         try {
                             if(!SESSION.equals(request.get("session").getAsString()))throw new IllegalArgumentException("stale session");
                             if(request.get("seat").getAsInt()!=1)throw new IllegalArgumentException("wrong decision player");
+                            applyTurnPreferences(request);
                             String op=request.get("op").getAsString();
                             if(op.equals("snapshot")){reply=response(request,true,"snapshot during decision");}
                             else if(op.equals("concede")){
@@ -1915,8 +2140,8 @@ public final class ForgeLandEngine {
                             }
                             else {
                                 if(!decision.get("token").getAsString().equals(request.get("decisionToken").getAsString()))throw new IllegalArgumentException("stale decision token");
-                                if(op.equals("cancel_targets") && kind.equals("targets")){
-                                    if(mandatoryTriggerTarget)throw new IllegalArgumentException("A mandatory triggered target choice cannot be canceled");
+                                if(op.equals("cancel_targets") && kind.equals("targets") || op.equals("cancel_assign_damage") && kind.equals("assign_damage") && damagePolicy.equals("divided-spell")){
+                                    if(kind.equals("targets")?mandatoryTriggerTarget:!damageCanCancel)throw new IllegalArgumentException("A mandatory triggered choice cannot be canceled");
                                     targetCancelled=true;deferredSubmissions.add(request.deepCopy());done=true;reply=null;
                                 }
                                 else if(op.equals("select_"+kind) && !kind.equals("choice") && !kind.equals("assign_damage") && !kind.equals("order_cards")){
@@ -1937,6 +2162,7 @@ public final class ForgeLandEngine {
                                         for(int i=assignments.size()-1;i>=0;i--)if(assignments.get(i).getAsJsonObject().get("forgeId").getAsInt()==cardId)assignments.remove(i);
                                         if(!kind.equals("targets") || !chosen.has("selected") || chosen.get("selected").getAsBoolean())assignments.add(chosen.deepCopy());
                                     }
+                                    if(kind.equals("targets") && targetOptionRefresh!=null)decision.add("options",targetOptionRefresh.apply(assignments));
                                     decision.add("assignments",assignments);reply=response(request,true,"updated "+kind+" selection");publishDecision();
                                 } else if(op.equals("submit_"+kind)){
                                     if(kind.equals("choice") || kind.equals("mulligan") || kind.equals("starting_player") || kind.equals("assign_damage") || kind.equals("commander_return") || kind.equals("order_cards")){submit.accept(request.getAsJsonArray("assignments"));}
@@ -1992,8 +2218,17 @@ public final class ForgeLandEngine {
         }
         result.put("castOffers",castOffers);
         List<Object> activations=new ArrayList<>();
-        if(priorityReady)for(ZoneType z:fullHumanChoices?new ZoneType[]{ZoneType.Battlefield,ZoneType.Hand,ZoneType.Graveyard,ZoneType.Exile,ZoneType.Command}:new ZoneType[]{ZoneType.Battlefield})for(Card c:local.getCardsIn(z))for(var a:c.getSpellAbilities())if(a.isActivatedAbility() && !a.isManaAbility()){
-            int nativeId=nativeAbility(a,false);if(nativeId!=0){var offer=probeAction(c,"activate",()->activatedAbility(c,nativeId)==null?null:Map.<String,Object>of("forgeId",c.getId(),"abilityId",nativeId,"api",a.getApi().name(),"manaCost",manaCost(a),"tap",a.getPayCosts().hasTapCost()));if(offer!=null)activations.add(offer);}
+        if(priorityReady)for(ZoneType z:fullHumanChoices?new ZoneType[]{ZoneType.Battlefield,ZoneType.Hand,ZoneType.Graveyard,ZoneType.Exile,ZoneType.Command}:new ZoneType[]{ZoneType.Battlefield})for(Card c:local.getCardsIn(z)){
+            // Commander ninjutsu has separate hand/command Forge abilities but
+            // one native identity. Offer the currently legal variant once and
+            // use that variant's actual cost, not the inactive zone's sibling.
+            Set<Integer> offeredIds=new LinkedHashSet<>();
+            for(var a:c.getSpellAbilities())if(a.isActivatedAbility() && !a.isManaAbility()){
+                int nativeId=nativeAbility(a,false);if(nativeId!=0 && offeredIds.add(nativeId)){
+                    var offer=probeAction(c,"activate",()->{var legalAbility=activatedAbility(c,nativeId);return legalAbility==null?null:Map.<String,Object>of("forgeId",c.getId(),"abilityId",nativeId,"api",legalAbility.getApi().name(),"manaCost",manaCost(legalAbility),"tap",legalAbility.getPayCosts().hasTapCost());});
+                    if(offer!=null)activations.add(offer);
+                }
+            }
         }
         result.put("legalActivations",activations);
         result.put("legalCasts",legalCasts);result.put("stack",zone(ZoneType.Stack));
@@ -2057,6 +2292,8 @@ public final class ForgeLandEngine {
         boolean accepted=false;String reason="unsupported operation";
         try {
             if(!SESSION.equals(request.get("session").getAsString()))throw new IllegalArgumentException("stale session");
+            if(request.get("seat").getAsInt()!=1)throw new IllegalArgumentException("wrong player");
+            applyTurnPreferences(request);
             String op=request.get("op").getAsString();
             if(game.isGameOver() && !op.equals("snapshot"))throw new IllegalStateException("game is over");
             if(researchAdmission && !op.equals("snapshot") && !op.equals("concede") && !fidelityGap().isEmpty())throw new UnsupportedOperationException(fidelityGap());
@@ -2085,7 +2322,11 @@ public final class ForgeLandEngine {
                 Card chosenCard=selected;
                 SpellAbility spell=chosenCard==null?null:probeAction(chosenCard,"cast",()->{var a=castAbility(chosenCard);if(a!=null)manaCost(a);return a;});
                 if(spell==null)reason="Forge rejected unavailable supported creature spell";
-                else if(fullHumanChoices){spell=chooseHumanCastAbility(chosenCard);accepted=spell!=null && forge.game.player.PlaySpellAbility.playSpellAbility(local.getController(),local,spell);reason=accepted?"Forge human casting path completed":"Forge human casting path canceled or rejected";}
+                else if(fullHumanChoices){
+                    targetCancelled=false;spell=chooseHumanCastAbility(chosenCard);boolean played=spell!=null && forge.game.player.PlaySpellAbility.playSpellAbility(local.getController(),local,spell);
+                    boolean canceled=targetCancelled;
+                    accepted=played || canceled;reason=played?"Forge human casting path completed":canceled?"Controller canceled pending cast before payment":"Forge human casting path canceled or rejected";
+                }
                 else if(!selectHumanTargets(spell)){accepted=targetCancelled;reason=targetCancelled?"Controller canceled pending cast before payment":"Target selection ended without casting";}
                 else if(ComputerUtil.playStack(spell,local,game)){game.getPhaseHandler().setPriority(local);accepted=true;reason="Forge paid spell cost and placed supported spell on stack";}
                 else reason="Forge could not pay casting cost";
@@ -2120,7 +2361,11 @@ public final class ForgeLandEngine {
                 Card chosenCard=selected;
                 SpellAbility activation=chosenCard==null?null:probeAction(chosenCard,"activate",()->activatedAbility(chosenCard,request.get("abilityId").getAsInt()));
                 if(activation==null)reason="Forge rejected unavailable supported activation";
-                else if(fullHumanChoices){accepted=forge.game.player.PlaySpellAbility.playSpellAbility(local.getController(),local,activation);reason=accepted?"Forge human activation completed":"Forge human activation canceled or rejected";}
+                else if(fullHumanChoices){
+                    targetCancelled=false;boolean played=forge.game.player.PlaySpellAbility.playSpellAbility(local.getController(),local,activation);
+                    boolean canceled=targetCancelled;
+                    accepted=played || canceled;reason=played?"Forge human activation completed":canceled?"Controller canceled pending activation before payment":"Forge human activation canceled or rejected";
+                }
                 else if(!selectHumanTargets(activation)){accepted=targetCancelled;reason=targetCancelled?"Controller canceled pending activation before payment":"Target selection ended without activation";}
                 else if(ComputerUtil.playStack(activation,local,game)){game.getPhaseHandler().setPriority(local);accepted=true;reason="Forge paid activation cost and placed supported ability on stack";}
                 else reason="Forge could not pay activation cost";
@@ -2162,7 +2407,10 @@ public final class ForgeLandEngine {
         loadAdmission(manifest);
         researchAdmission=manifest.has("researchOnly") && manifest.get("researchOnly").getAsBoolean() || manifest.has("experimentalAdmission") && manifest.get("experimentalAdmission").getAsBoolean();
         fullHumanChoices=researchAdmission && manifest.has("fullHumanChoices") && manifest.get("fullHumanChoices").getAsBoolean();
+        autoOrderTriggers=true;
+        autoChooseReplacementEffects=false;
         if(Files.exists(ipc.resolve("scenario.json"))){JsonObject config=JsonParser.parseString(Files.readString(ipc.resolve("scenario.json"))).getAsJsonObject();fixtureConfig=config;scenario=config.get("scenario").getAsString();if(config.has("localDeck"))localDeck=config.getAsJsonObject("localDeck");if(config.has("opponentDeck"))opponentDeck=config.getAsJsonObject("opponentDeck");if(config.has("opponentDecks"))podOpponentDecks=config.getAsJsonArray("opponentDecks");if(config.has("randomSeed"))randomSeed=config.get("randomSeed").getAsLong();if(config.has("startingPlayerPolicy"))startingPlayerPolicy=config.get("startingPlayerPolicy").getAsString();}
+        applyTurnPreferences(fixtureConfig);
         if(scenario.equals("card-family") && (!manifest.has("researchOnly") || !manifest.get("researchOnly").getAsBoolean()))throw new IllegalArgumentException("Card-family fixtures require an explicit research-only manifest");
         if(fixtureConfig!=null && (fixtureConfig.has("fixtureAttacker") || fixtureConfig.has("fixtureBlockers")) && (!Set.of("attack-double-blocked","defend").contains(scenario) || !manifest.has("researchOnly") || !manifest.get("researchOnly").getAsBoolean()))throw new IllegalArgumentException("Combat fixture overrides require an explicit research-only combat scenario");
         if(fixtureConfig!=null && fixtureConfig.has("fixtureOpponentBattlefield") && !scenario.equals("card-family"))throw new IllegalArgumentException("Research opponent overrides require the card-family scenario");
