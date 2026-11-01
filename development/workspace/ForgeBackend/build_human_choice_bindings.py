@@ -148,6 +148,29 @@ for name,source in projection['cards'].items():
             elif len(native)==1:matches=native
         if len(matches)==1:trigger_map[desc]=matches[0]['Id'];counts['trigger exact']+=1
         else:missing.append(dict(name=name,kind='trigger',description=desc,matches=[r['Id'] for r in matches],native=[dict(id=r['Id'],text=r['EnglishText']) for r in native]))
+    for effect in source.get('optionalAttackCostTriggers',[]):
+        desc=effect['description'];body=effect['params'].get('SpellDescription',desc)
+        # Forge's original optional-cost effect includes its reflexive preface;
+        # Arena keeps that preface on the printed rule and the body on its
+        # linked hidden trigger. Match only a unique original linked record.
+        body=re.sub(r'^When you do,\s*','',body)
+        matches=[r for r in rows if r['Category']==2 and not r['PrintedRoot'] and normalized(body,name)==normalized(r['EnglishText'],name)]
+        if len(matches)==1:
+            description_map[desc]=matches[0]['Id']
+            trigger_map[effect['params'].get('SpellDescription',desc)]=matches[0]['Id']
+            counts['source-checked optional attack cost trigger']+=1
+        else:
+            missing.append(dict(name=name,kind='optional-attack-cost-trigger',description=desc,matches=[r['Id'] for r in matches]))
+    for effect in source.get('latentAbilities',[]):
+        params=effect.get('params',{});desc=params.get('TriggerDescription','')
+        if effect.get('api')!='ImmediateTrigger' or not desc.startswith('When you do, '):continue
+        # A paid reflexive trigger is distinct from its printed parent. The
+        # linked native child stores the effect body without the same preface.
+        body=re.sub(r'^When you do,\s*','',desc)
+        matches=[r for r in rows if r['Category']==2 and not r['PrintedRoot'] and normalized(body,name)==normalized(r['EnglishText'],name)]
+        if len(matches)==1:
+            trigger_map[desc]=matches[0]['Id'];counts['source-checked immediate reflexive trigger']+=1
+        else:missing.append(dict(name=name,kind='immediate-reflexive-trigger',description=desc,matches=[r['Id'] for r in matches]))
     bindings['descriptions']=description_map;bindings['triggerDescriptions']=trigger_map;bindings['manaDescriptions']=mana_map
     apis=collections.defaultdict(list)
     for a in source['abilities']:

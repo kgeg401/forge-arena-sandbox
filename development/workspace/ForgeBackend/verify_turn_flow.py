@@ -16,6 +16,7 @@ def main():
     p=argparse.ArgumentParser(description=__doc__)
     for name in ('config','policy','probe','managed','fixture','output'):
         p.add_argument('--'+name,type=Path,required=True)
+    p.add_argument('--mode',action='append',choices=('flow','combat','stop','response','no-response','yield','yield-turn','resolve-all','combat-presentation'))
     a=p.parse_args()
     os.environ.update(FORGE_ARENA_CONFIG=str(a.config),FORGE_ARENA_POLICY=str(a.policy))
     from engine_test_client import Engine
@@ -23,7 +24,8 @@ def main():
     from headless_resources import run_owned
     a.output.mkdir(parents=True,exist_ok=False)
     results=[]
-    for mode,scenario in (('flow','starter'),('combat','attack-open'),('stop','starter'),('response','counter-ready'),('no-response','counter-ready-white'),('yield','starter'),('yield-turn','starter'),('resolve-all','counter-ready')):
+    for mode,scenario in (('flow','starter'),('combat','attack-open'),('stop','starter'),('response','counter-ready'),('no-response','counter-ready-white'),('yield','starter'),('yield-turn','starter'),('resolve-all','counter-ready'),('combat-presentation','attack-open')):
+        if (a.mode and mode not in a.mode) or (not a.mode and mode=='combat-presentation'):continue
         e=Engine(scenario)
         report=a.output/(mode+'.json')
         try:

@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.2.0 alpha 11 - Solo reanimation Horde and combat progression
+
+- Adds Zombie Horde (Solo) and Zombie Horde (Commander Deck). Use existing practice or 99-card-plus-commander decks, 40 survivor life and three preparation turns against a shuffled 200-card Zombie/Horror Horde.
+- The Horde has 120 physical Zombie token cards and 80 themed creatures/spells, including 52 revival copies. Actual Forge targets, response windows, graveyard returns, mass reanimation, death triggers, haste attacks and damage-to-mill rules are connected.
+- Fixes targeted free casts, Horde-controlled mass-return ordering and Undead Butler's separately linked reflexive trigger. A no-target revival spell is explicitly discarded as a Horde variant rather than stranding an exhausted hand.
+- Connects optional human Exert choices and fixes stale priority controls after native combat-damage presentation. Keeps original targets, optional payments and response windows.
+- Adds 11 experimental Arena card names. The verified baseline stays 370; the experimental inventory is 1,296 names. Existing identities and 139 additional presentation objects are preserved. No new name is promoted to fully verified support.
+- Bounded native-handler revival cases, seven final Horde regressions, original rendered Commander opening, exact package checks, and disposable update/rollback checks pass. A pass-only survivor loses a genuine ordinary 200-card game; broad deck balance and every possible revival chain remain unverified.
+- Solo Horde only. Paid Horde activations/flashback, cooperative Horde, network play and durable match saves remain unfinished. Existing Forge/Arena prerequisites and automatic test-channel updates are unchanged.
+
 ## 0.2.0 alpha 10 - Arena-only Moxfield pool and combat choices
 
 - Samples the 50 most-viewed public Moxfield Commander lists: 1,188 matching Arena identities; 638 outside that catalogue are excluded. Adds 942 experimental names, bringing the client to 370 verified plus 1,285 experimental names. No smoke result is promoted to verified support.

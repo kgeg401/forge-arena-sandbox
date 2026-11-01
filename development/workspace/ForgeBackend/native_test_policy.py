@@ -1,6 +1,6 @@
 """Explicit bounded test-only decision policy; never used by the player client."""
 import json,time
-def execute(e,trace,op,card=0,_attack_seat=None,_target_seat=2,_choice_policy=None,_target_policy=None,_damage_policy=None,_attack_policy=None,**fields):
+def execute(e,trace,op,card=0,_attack_seat=None,_target_seat=2,_choice_policy=None,_target_policy=None,_damage_policy=None,_attack_policy=None,_block_policy=None,**fields):
  old=e.state.get('decision') or {};seen={old.get('token')} if op.startswith('submit_') else set();root=e.begin(op,card,**fields);pending=[root];root_state=None;completed_states={};deadline=time.monotonic()+35
  while time.monotonic()<deadline:
   if e.process.poll() is not None:raise RuntimeError((e.ipc/'engine.log').read_text()[-2500:])
@@ -62,7 +62,12 @@ def execute(e,trace,op,card=0,_attack_seat=None,_target_seat=2,_choice_policy=No
     if _attack_policy is not None:assignments=_attack_policy(spec,e.state)
     trace.append(dict(kind='attacker-assignments',assignments=assignments))
     reply=e.send('select_attackers',assignments=assignments,**fields);assert reply['accepted'],reply['reason'];pending.append(e.begin('submit_attackers',**fields))
-   elif kind=='blockers':pending.append(e.begin('submit_blockers',**fields))
+   elif kind=='blockers':
+    if _block_policy is not None:
+     assignments=_block_policy(spec,e.state)
+     trace.append(dict(kind='blocker-assignments',assignments=assignments))
+     reply=e.send('select_blockers',assignments=assignments,**fields);assert reply['accepted'],reply['reason']
+    pending.append(e.begin('submit_blockers',**fields))
    elif kind=='mulligan':pending.append(e.begin('submit_mulligan',assignments=[dict(keep=True)],**fields))
    elif kind=='starting_player':pending.append(e.begin('submit_starting_player',assignments=[dict(startingSeat=1)],**fields))
    elif kind=='commander_return':pending.append(e.begin('submit_commander_return',assignments=[dict(returnToCommand=True)],**fields))

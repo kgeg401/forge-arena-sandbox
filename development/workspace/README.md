@@ -5,13 +5,24 @@ one human and three Forge bots. See [the pod implementation and validation
 notes](docs/commander-pod.md). This is not a claim that the published download
 already contains this checkpoint.
 
-Current verified production policy: **370 Arena main-deck card names**, plus the
-separately verified Brawl commanders and token. The latest local delivery added
-92 names over the278-name checkpoint. Full catalogue support remains unfinished.
+The release catalogue has a **370-name verified baseline** and **1,296 additional
+experimental primary names**. Experimental admission permits testing; it does
+not certify every card effect or interaction. See the
+[latest catalogue evidence](packaging/public-docs/VERIFICATION.md).
+
+The alpha 11 changes also connect optional Exert choices and repair a pause
+after combat-damage presentation. The [combat checkpoint](docs/combat-exert-20261101.md)
+records the tested sequences and remaining limits. Editing this workspace does
+not update the installed client or public download.
+
+Local development also includes **solo Zombie Horde**, including a queue for
+your saved 99-card-plus-commander decks. See [the Horde rules and tested
+boundaries](packaging/public-docs/ZOMBIE-HORDE.md). Alpha 11 includes this
+experimental mode in the regular client.
 
 The public player download and automatic-update channel are maintained at
 [forge-arena-sandbox](https://github.com/kgeg401/forge-arena-sandbox). The
-published consolidated update is `0.2.0-alpha.5`. Players install Arena
+available version is identified by that repository's release page. Players install Arena
 separately, then run Setup.exe from the Windows release ZIP. The setup includes
 Forge and the pinned runtimes; saved data stays outside version folders.
 
@@ -41,10 +52,11 @@ source scans or generated cases never grants card admission. A release requires
 reviewed rules/native evidence, a committed production policy, package checks,
 activation/rollback, actual installed-client acceptance and profile preservation.
 
-The latest delivery passed477 targeted effect scenarios,25 production regression
-stages and a complete31-turn native match using original Arena controls. These
-are bounded checks, not proof of all possible card interactions or complete
-retail UI/animation parity. Multiplayer remains unfinished.
+The earlier 370-name delivery passed 477 targeted effect scenarios, 25 production
+regression stages and a complete 31-turn native match. Newer scenario evidence is
+recorded in the linked verification notes. These are bounded checks, not proof of
+all possible interactions or complete retail UI/animation parity. Multiplayer
+remains unfinished.
 
 Developer tools include historical default Windows paths. Use the explicit
 portable `FORGE_ARENA_CONFIG`/policy options supported by each tool and review

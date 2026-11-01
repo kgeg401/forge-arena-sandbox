@@ -42,6 +42,11 @@ internal sealed class ForgeLandBridge
     private readonly SettingsMessage _settings=new SettingsMessage();
     private bool _hasSettings;
     private readonly AutomaticPassPacing _passPacing = new AutomaticPassPacing();
+    private bool _combatPriorityRefresh;
+    private bool _renderedCombatPresentation;
+    // Parser-only workers have no Unity combat animation lifecycle. Preserve
+    // their existing request contract; the actual Unity host opts in explicitly.
+    public void EnableRenderedCombatPresentation() => _renderedCombatPresentation=true;
     private readonly Func<uint?> _presentedState;
     private readonly Func<bool> _submitAutomaticPass;
     private readonly Func<bool> _autoOrderTriggers;
@@ -330,7 +335,7 @@ internal sealed class ForgeLandBridge
     private JObject TurnInfo() => NativeTurnProtocol.Info(_state);
 
     private static JToken? PlayerState(JObject state,int seat)=>((JArray?)state["players"])?.SingleOrDefault(p=>(int)p["seat"]! == seat);
-    private static int PlayerLife(JObject state,int seat)=>(int?)PlayerState(state,seat)?["life"] ?? (int)state[seat==1?"life":"opponentLife"]!;
+    private static int PlayerLife(JObject state,int seat)=>seat==2 && state["horde"] is JObject horde?(int)horde["remainingCards"]!:(int?)PlayerState(state,seat)?["life"] ?? (int)state[seat==1?"life":"opponentLife"]!;
     private bool PlayerLost(int seat)=>(bool?)PlayerState(_state,seat)?["lost"] ?? (bool?)_state[seat==1?"localLost":"opponentLost"] ?? false;
 
     private JArray Players()
@@ -341,8 +346,10 @@ internal sealed class ForgeLandBridge
             int seat=(int)player["systemSeatNumber"]!;bool local=seat==1;
             var authoritative=((JArray?)_state["players"])?.SingleOrDefault(p=>(int)p["seat"]! == seat);
             bool lost=(bool?)authoritative?["lost"] ?? (bool?)_state[local?"localLost":"opponentLost"] ?? false;
-            player["lifeTotal"]=authoritative?["life"]?.DeepClone() ?? (local ? _state["life"]!.DeepClone() : _state["opponentLife"]!.DeepClone());
+            // Horde has no life total; its clearly labelled badge counts actual library cards.
+            player["lifeTotal"]=PlayerLife(_state,seat);
             player["startingLifeTotal"]=(int?)authoritative?["startingLifeTotal"] ?? (int?)_state[local?"startingLifeTotal":"opponentStartingLifeTotal"] ?? ((string?)_state["format"]=="commander-40"?40:(string?)_state["format"]=="arena-brawl"?25:20);
+            if(seat==2 && _state["horde"] is JObject horde)player["startingLifeTotal"]=(int)horde["initialCards"]!;
             ((JObject)player).Remove("pendingMessageType");
             if(!lost && (string?)Decision?["kind"]=="starting_player" && local)player["pendingMessageType"]="ClientMessageType_ChooseStartingPlayerResp";
             else if(!lost && (string?)_state["stage"]=="Mulligan" && (local || !((bool?)authoritative?["kept"] ?? (bool?)_state["opponentKept"] ?? false)))player["pendingMessageType"]="ClientMessageType_MulliganResp";
@@ -367,7 +374,7 @@ internal sealed class ForgeLandBridge
         info["matchID"]="forge-"+_session;info["stage"]=GameOver?"GameStage_GameOver":(string?)_state["stage"]=="Mulligan" || (string?)_state["stage"]=="BeforeMulligan"?"GameStage_Start":"GameStage_Play";
         // A local sandbox has no multi-game series scoring. SingleElimination
         // would make the shipped workflow auto-choose Play and hide its browser.
-        if(Scenario=="opening-duel" || Scenario=="spell-duel" || Scenario=="trigger-duel" || Scenario=="blue-duel" || Scenario=="custom-duel" || Scenario=="brawl-duel" || Scenario=="commander-duel" || Scenario=="commander-pod")info["matchWinCondition"]="MatchWinCondition_None";
+        if(Scenario=="zombie-horde" || Scenario=="opening-duel" || Scenario=="spell-duel" || Scenario=="trigger-duel" || Scenario=="blue-duel" || Scenario=="custom-duel" || Scenario=="brawl-duel" || Scenario=="commander-duel" || Scenario=="commander-pod")info["matchWinCondition"]="MatchWinCondition_None";
         if((string?)_state["format"]=="arena-brawl" || (string?)_state["format"]=="commander-40"){info["variant"]=(string?)_state["format"]=="commander-40"?"GameVariant_Commander":"GameVariant_Brawl";info["deckConstraintInfo"]=new JObject{["minDeckSize"]=100,["maxDeckSize"]=100,["maxSideboardSize"]=0};}
         info["matchState"]=GameOver?"MatchState_MatchComplete":"MatchState_GameInProgress";
         info.Remove("results");
@@ -666,6 +673,25 @@ internal sealed class ForgeLandBridge
     {
         if(_pending==null)
         {
+            if(_combatPriorityRefresh)
+            {
+                // The owned ActionsAvailableWorkflow refuses the frame carrying
+                // combat damage. Wait for that frame's native presentation, then
+                // expose the SAME Forge priority window on a clean view state.
+                // No rules pass, damage replay or fixed phase delay is involved.
+                if(_presentedState()!=_stateId)return;
+                _combatPriorityRefresh=false;
+                uint previous=_stateId++;
+                Queue(Parse(Envelope("GREMessageType_GameStateMessage",new JObject
+                {
+                    ["type"]="GameStateType_Diff",["gameStateId"]=_stateId,
+                    ["prevGameStateId"]=previous,["pendingMessageCount"]=1,
+                    ["turnInfo"]=TurnInfo()
+                },"gameStateMessage")));
+                Queue(Parse(ActionRequest()));
+                _log("Combat presentation completed; native request retains current Forge priority");
+                return;
+            }
             if(_quietAdvance)
             {
                 if(!ShouldAutoPass(false))
@@ -728,6 +754,7 @@ internal sealed class ForgeLandBridge
     }
     private void AdoptState(JObject nextState)
     {
+        _combatPriorityRefresh=false;
         int previousMana=ManaTotal;var prior=_state;var oldIds=new Dictionary<int,int>(_ids);long previousEventId=_lastEventId;_state=nextState;
         Gap=(string?)_state["fidelityGap"];if(string.IsNullOrEmpty(Gap))Gap=null;
         UpdateYieldSettings(prior);
@@ -836,7 +863,9 @@ internal sealed class ForgeLandBridge
         var concealed=VisibleCards(prior).Where(c=>(bool?)c["privateChoice"]==true && !visibleIds.Contains((int)c["forgeId"]!)).Select(c=>Cards(_state).Single(n=>(int)n["forgeId"]! == (int)c["forgeId"]!)).Select(c=>new JObject
             {["instanceId"]=Id(c),["grpId"]=0,["overlayGrpId"]=0,["name"]=0,["type"]="GameObjectType_Card",["zoneId"]=ZoneId(c),["ownerSeatId"]=(int)c["owner"]!,["controllerSeatId"]=(int)c["controller"]!,["visibility"]="Visibility_Hidden"});
         bool quiet=!GameOver && ShouldAutoPass(false);
-        var delta=new JObject { ["type"]="GameStateType_Diff",["gameStateId"]=_stateId,["prevGameStateId"]=previous,["pendingMessageCount"]=quiet || LocalPodEliminated?0:1,
+        bool combatPriority=_renderedCombatPresentation && !quiet && !GameOver && !LocalPodEliminated && Decision==null && ((bool?)_state["canPass"]??false)
+            && ((JArray?)_state["events"]??new JArray()).Any(e=>(long)e["id"]!>previousEventId && (string?)e["kind"]=="damage" && (bool?)e["combat"]==true);
+        var delta=new JObject { ["type"]="GameStateType_Diff",["gameStateId"]=_stateId,["prevGameStateId"]=previous,["pendingMessageCount"]=quiet || LocalPodEliminated || combatPriority?0:1,
             ["zones"]=Zones(retired),["players"]=Players(),["turnInfo"]=TurnInfo(),["gameObjects"]=new JArray(nowVisible.Select(CardObject).Concat(concealed)),["annotations"]=annotations,
             ["persistentAnnotations"]=new JArray(TargetAnnotations().Concat(nextCounterState).Concat(nextAttachmentState).Concat(nextKeywordState)),
             ["diffDeletedInstanceIds"]=new JArray(resolvedAbilities.Select(a=>oldIds[(int)a["forgeId"]!]).Concat(vanishedTokens).Concat(vanishedCopies).Concat(eliminatedObjects).Distinct()),
@@ -859,7 +888,8 @@ internal sealed class ForgeLandBridge
         }
         Queue(Parse(Envelope("GREMessageType_GameStateMessage",delta,"gameStateMessage")));
         _quietAdvance=quiet;
-        if(quiet)_requestId=0;
+        if(combatPriority){_combatPriorityRefresh=true;_requestId=0;}
+        else if(quiet)_requestId=0;
         else if(!GameOver && !LocalPodEliminated)Queue(Parse(ActionRequest()));
         else if(LocalPodEliminated && !GameOver)_requestId=0;
         else Queue(Parse(Envelope("GREMessageType_IntermissionReq",new JObject

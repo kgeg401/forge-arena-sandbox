@@ -25,6 +25,16 @@ public class ProjectForgeCards {
         r.put("presentationImageKey",original.getImageKey());r.put("presentationState",card.getCurrentStateName().name());
         r.put("name",card.getName());r.put("colorMask",(int)original.getColor().getColor());r.put("coreTypes",original.getType().getCoreTypes().stream().map(Object::toString).sorted().toList());r.put("subtypes",original.getType().getSubtypes().stream().sorted().toList());r.put("power",original.getBasePowerString());r.put("toughness",original.getBaseToughnessString());r.put("keywords",original.getIntrinsicKeywords().stream().map(k->k.getOriginal()).sorted().toList());r.put("imageKey",card.getPaperCard().getImageKey(false));
         r.put("abilities",card.getSpellAbilities().stream().map(ProjectForgeCards::ability).toList());r.put("triggers",card.getTriggers().stream().map(t->t.getMapParams()).toList());var latent=new ArrayList<Object>();for(var entry:card.getSVars().entrySet())if(entry.getValue().startsWith("AB$")){try{var a=forge.game.ability.AbilityFactory.getAbility(entry.getValue(),card);a.setActivatingPlayer(card.getOwner());var row=ability(a);row.put("sourceSVar",entry.getKey());latent.add(row);}catch(Exception ex){latent.add(Map.of("sourceSVar",entry.getKey(),"error",ex.toString()));}}r.put("latentAbilities",latent);
+        // Optional attack costs keep their reflexive effect in a StaticAbility
+        // SVar, outside Card.getTriggers(). Recover that original effect without
+        // declaring an attack or paying its cost in this data-only projection.
+        var attackCostTriggers=new ArrayList<Object>();
+        for(var st:card.getStaticAbilities())if(st.checkMode(forge.game.staticability.StaticAbilityMode.OptionalAttackCost) && st.hasParam("Trigger")){
+            var effect=st.getPayingTrigSA();if(effect==null)throw new IllegalStateException("Optional attack cost has no source effect");
+            var row=ability(effect);row.put("sourceSVar",st.getParam("Trigger"));row.put("sourceCost",st.getParam("Cost"));
+            attackCostTriggers.add(row);
+        }
+        r.put("optionalAttackCostTriggers",attackCostTriggers);
         var latentTriggers=new ArrayList<Object>();for(var entry:card.getSVars().entrySet())if(entry.getValue().startsWith("DB$ ImmediateTrigger") || entry.getValue().startsWith("DB$ DelayedTrigger")){
             var params=new LinkedHashMap<String,String>();for(String field:entry.getValue().split("\\|")){String[] pair=field.split("\\$",2);if(pair.length==2)params.put(pair[0].trim(),pair[1].trim());}
             // DelayedTriggerEffect promotes SpellDescription to the eventual

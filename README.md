@@ -3,7 +3,7 @@
 A local Magic sandbox using your installed Arena's original screens, cards and
 animations. Forge runs the bot and supported rules.
 
-**[Download the gameplay alpha for Windows](https://github.com/kgeg401/forge-arena-sandbox/releases/tag/v0.2.0-alpha.10)**
+**[Download the gameplay alpha for Windows](https://github.com/kgeg401/forge-arena-sandbox/releases/tag/v0.2.0-alpha.11)**
 
 Download **ForgeArenaSandbox-Windows.zip** from that release. GitHub's **Code >
 Download ZIP** contains source code, not the installable client.
@@ -34,6 +34,7 @@ Allow space for an independent Arena copy; setup checks the required space.
 - **Home > Play > Brawl:** choose Brawl Bot and **Jace Superfriends Brawl**, **Emry Brawl**, or **Isamaru Brawl**.
   These use 99 cards plus a commander, 25 life and a free first mulligan.
 - **Commander:** in the Brawl tab choose **Commander Bot (40 Life)** for one opponent, or **Commander Pod (4 Players)** for you and three easy Forge bots. These use 40 life, commander tax and 21 commander combat damage. The four-player table and public-zone controls are experimental.
+- **Zombie Horde:** choose **Zombie Horde (Commander Deck)** under Brawl to use a saved commander deck, or **Zombie Horde (Solo)** under Play for a practice deck. You start at 40 life with three preparation turns against a 200-card Zombie/Horror Horde containing 52 revival cards. See [Horde rules and limits](docs/ZOMBIE-HORDE.md).
 - **New practice decks:** visit Decks for **Fire and Growth** and **Trample and Growth**.
 - **Decks:** create, import Arena deck text, edit, duplicate, export and delete
   local decks. The Brawl editor has the original commander slot.
@@ -49,11 +50,11 @@ Upgraded installations retain their existing deck names and libraries.
 
 ## Alpha limits
 
-**370 main-deck card names remain in the verified baseline.** Another **1,285 names** are enabled experimentally, including the Jace Superfriends starter and 942 additions from the Arena-compatible portion of Moxfield's 50 most-viewed Commander decks. Admission and per-card smoke checks are not proof of every effect or interaction. See [the Moxfield card coverage](docs/MOXFIELD-COVERAGE.md), [supported cards](docs/SUPPORTED-CARDS.md) and [verification](docs/VERIFICATION.md).
+**370 main-deck card names remain in the verified baseline.** Another **1,296 names** are enabled experimentally, including the Jace Superfriends starter, 942 additions from the Arena-compatible portion of Moxfield's 50 most-viewed Commander decks, and 11 Zombie/Horror/reanimation cards in alpha 11. Admission and per-card smoke checks are not proof of every effect or interaction. See [the Moxfield card coverage](docs/MOXFIELD-COVERAGE.md), [supported cards](docs/SUPPORTED-CARDS.md) and [verification](docs/VERIFICATION.md).
 
 Mandatory triggers now use the original **Auto Order Triggers** preference and advance without an ordering prompt by default. **Auto Choose Replacement Effects** also works, using Forge's automatic chooser while retaining the manual override. Genuine target selections, optional effects and response windows remain. This release also connects the original spell-damage allocation controls and adds shared support for several targeting, channel, cycling, ninjutsu, Class and Battle scenarios.
 
-All four queues create local games against Forge bots. Four-player Commander means one human and three bots on this PC. Network multiplayer, online matchmaking, retail account services, full card coverage and complete retail UI parity are unfinished. Packs use custom sandbox collation, without retail wildcard rewards, bonus sheets or duplicate protection. Opening a card does not enable its rules.
+All queues create local games. Horde is solo against a scripted format using Forge's rules and AI choices; four-player Commander means one human and three bots on this PC. Network multiplayer, online matchmaking, retail account services, full card coverage and complete retail UI parity are unfinished. Packs use custom sandbox collation, without retail wildcard rewards, bonus sheets or duplicate protection. Opening a card does not enable its rules.
 
 Home can park and resume the same running practice match. Closing the client ends that match; durable match saves are not implemented. Decks, packs and preferences persist separately.
 

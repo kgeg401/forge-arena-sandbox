@@ -72703,6 +72703,475 @@
         "153327": "{o1}, {oT}, Discard a card: Draw a card.",
         "9": "Haste"
       }
+    },
+    "Gravedigger": {
+      "grpId": 67876,
+      "titleId": 2240,
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Zombie"
+      ],
+      "supertypes": [],
+      "genericCost": 3,
+      "printedManaText": "o3oB",
+      "color": "Black",
+      "colors": [
+        "Black"
+      ],
+      "colorIdentity": [
+        "B"
+      ],
+      "abilityId": 1157,
+      "abilityIds": [
+        1157
+      ],
+      "forgeScript": "g/gravedigger.txt",
+      "forgeScriptSha256": "e1abd89f8a075eda914f9a26a2b18afc7f731f572f698c357ffeb69b7ee8c8ad",
+      "token": false,
+      "admitted": true,
+      "candidate": false,
+      "experimental": true,
+      "verified": false,
+      "abilityBindings": {},
+      "coloredCost": [
+        {
+          "color": "Black",
+          "count": 1
+        }
+      ],
+      "nativeAbilityTexts": {
+        "1157": "When CARDNAME enters, you may return target creature card from your graveyard to your hand."
+      }
+    },
+    "Ghoulraiser": {
+      "grpId": 72300,
+      "titleId": 38802,
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Zombie"
+      ],
+      "supertypes": [],
+      "genericCost": 1,
+      "printedManaText": "o1oBoB",
+      "color": "Black",
+      "colors": [
+        "Black"
+      ],
+      "colorIdentity": [
+        "B"
+      ],
+      "abilityId": 99343,
+      "abilityIds": [
+        99343
+      ],
+      "forgeScript": "g/ghoulraiser.txt",
+      "forgeScriptSha256": "05005b35662c36119d2a71dd29e226d8e9393bff9a12c6a3633a046a8f548bc0",
+      "token": false,
+      "admitted": true,
+      "candidate": false,
+      "experimental": true,
+      "verified": false,
+      "abilityBindings": {},
+      "coloredCost": [
+        {
+          "color": "Black",
+          "count": 2
+        }
+      ],
+      "nativeAbilityTexts": {
+        "99343": "When CARDNAME enters, return a Zombie card at random from your graveyard to your hand."
+      }
+    },
+    "Rise from the Grave": {
+      "grpId": 67914,
+      "titleId": 741,
+      "types": [
+        "Sorcery"
+      ],
+      "subtypes": [],
+      "supertypes": [],
+      "genericCost": 4,
+      "printedManaText": "o4oB",
+      "color": "Black",
+      "colors": [
+        "Black"
+      ],
+      "colorIdentity": [
+        "B"
+      ],
+      "abilityId": 2159,
+      "abilityIds": [
+        2159
+      ],
+      "forgeScript": "r/rise_from_the_grave.txt",
+      "forgeScriptSha256": "fe50ec6eecc9fed39ccea1032c1d5b6f1836841dfd8e79bb2671cdc4fafe27f1",
+      "token": false,
+      "admitted": true,
+      "candidate": false,
+      "experimental": true,
+      "verified": false,
+      "abilityBindings": {},
+      "coloredCost": [
+        {
+          "color": "Black",
+          "count": 1
+        }
+      ],
+      "nativeAbilityTexts": {
+        "2159": "Put target creature card from a graveyard onto the battlefield under your control. That creature is a black Zombie in addition to its other colors and types."
+      }
+    },
+    "Diregraf Rebirth": {
+      "grpId": 78585,
+      "titleId": 530513,
+      "types": [
+        "Sorcery"
+      ],
+      "subtypes": [],
+      "supertypes": [],
+      "genericCost": 3,
+      "printedManaText": "o3oBoG",
+      "color": "Black",
+      "colors": [
+        "Black",
+        "Green"
+      ],
+      "colorIdentity": [
+        "B",
+        "G"
+      ],
+      "abilityId": 145396,
+      "abilityIds": [
+        145396,
+        26819,
+        145397
+      ],
+      "forgeScript": "d/diregraf_rebirth.txt",
+      "forgeScriptSha256": "43e4bf4b752ae1bb0f884f6ed600a8f1ada4a961324fb7ec91c953c3bee1de29",
+      "token": false,
+      "admitted": true,
+      "candidate": false,
+      "experimental": true,
+      "verified": false,
+      "abilityBindings": {},
+      "coloredCost": [
+        {
+          "color": "Black",
+          "count": 1
+        },
+        {
+          "color": "Green",
+          "count": 1
+        }
+      ],
+      "nativeAbilityTexts": {
+        "145396": "This spell costs {o1} less to cast for each creature that died this turn.",
+        "26819": "Return target creature card from your graveyard to the battlefield.",
+        "145397": "Flashback {o5oBoG}",
+        "35": "Flashback"
+      }
+    },
+    "Rise of the Dark Realms": {
+      "grpId": 72333,
+      "titleId": 42885,
+      "types": [
+        "Sorcery"
+      ],
+      "subtypes": [],
+      "supertypes": [],
+      "genericCost": 7,
+      "printedManaText": "o7oBoB",
+      "color": "Black",
+      "colors": [
+        "Black"
+      ],
+      "colorIdentity": [
+        "B"
+      ],
+      "abilityId": 20362,
+      "abilityIds": [
+        20362
+      ],
+      "forgeScript": "r/rise_of_the_dark_realms.txt",
+      "forgeScriptSha256": "f6c66e2c12af29e4bb1efdfa670b460965485544c00ed1b51007398d8281fc10",
+      "token": false,
+      "admitted": true,
+      "candidate": false,
+      "experimental": true,
+      "verified": false,
+      "abilityBindings": {},
+      "coloredCost": [
+        {
+          "color": "Black",
+          "count": 2
+        }
+      ],
+      "nativeAbilityTexts": {
+        "20362": "Put all creature cards from all graveyards onto the battlefield under your control."
+      }
+    },
+    "Mire Triton": {
+      "grpId": 70616,
+      "titleId": 419971,
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Zombie",
+        "Merfolk"
+      ],
+      "supertypes": [],
+      "genericCost": 1,
+      "printedManaText": "o1oB",
+      "color": "Black",
+      "colors": [
+        "Black"
+      ],
+      "colorIdentity": [
+        "B"
+      ],
+      "abilityId": 1,
+      "abilityIds": [
+        1,
+        136756
+      ],
+      "forgeScript": "m/mire_triton.txt",
+      "forgeScriptSha256": "6a6105bed0984b4af2fa87a26c9e8c723f2b103950f9cae07031012d1a19020e",
+      "token": false,
+      "admitted": true,
+      "candidate": false,
+      "experimental": true,
+      "verified": false,
+      "abilityBindings": {},
+      "coloredCost": [
+        {
+          "color": "Black",
+          "count": 1
+        }
+      ],
+      "nativeAbilityTexts": {
+        "1": "Deathtouch",
+        "136756": "When CARDNAME enters, mill two cards and you gain 2 life."
+      }
+    },
+    "Undead Butler": {
+      "grpId": 78933,
+      "titleId": 546082,
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Zombie"
+      ],
+      "supertypes": [],
+      "genericCost": 1,
+      "printedManaText": "o1oB",
+      "color": "Black",
+      "colors": [
+        "Black"
+      ],
+      "colorIdentity": [
+        "B"
+      ],
+      "abilityId": 101371,
+      "abilityIds": [
+        101371,
+        146707
+      ],
+      "forgeScript": "u/undead_butler.txt",
+      "forgeScriptSha256": "13071f7fd7fbb8d989d7f836e0f9f13120f3563b5d21acc10da167624d3aba6f",
+      "token": false,
+      "admitted": true,
+      "candidate": false,
+      "experimental": true,
+      "verified": false,
+      "abilityBindings": {},
+      "coloredCost": [
+        {
+          "color": "Black",
+          "count": 1
+        }
+      ],
+      "nativeAbilityTexts": {
+        "101371": "When CARDNAME enters, mill three cards.",
+        "146707": "When CARDNAME dies, you may exile it. When you do, return target creature card from your graveyard to your hand.",
+        "146876": "Return target creature card from your graveyard to your hand."
+      }
+    },
+    "Death Baron": {
+      "grpId": 67860,
+      "titleId": 8027,
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Zombie",
+        "Wizard"
+      ],
+      "supertypes": [],
+      "genericCost": 1,
+      "printedManaText": "o1oBoB",
+      "color": "Black",
+      "colors": [
+        "Black"
+      ],
+      "colorIdentity": [
+        "B"
+      ],
+      "abilityId": 5179,
+      "abilityIds": [
+        5179
+      ],
+      "forgeScript": "d/death_baron.txt",
+      "forgeScriptSha256": "e7612461901f7bde0001a6cef95a8ffb2e21a70442a0e5f7a509ffd5c979e849",
+      "token": false,
+      "admitted": true,
+      "candidate": false,
+      "experimental": true,
+      "verified": false,
+      "abilityBindings": {},
+      "coloredCost": [
+        {
+          "color": "Black",
+          "count": 2
+        }
+      ],
+      "nativeAbilityTexts": {
+        "5179": "Skeletons you control and other Zombies you control get <nobr>+1/+1</nobr> and have deathtouch.",
+        "1": "Deathtouch"
+      }
+    },
+    "Lord of the Accursed": {
+      "grpId": 73890,
+      "titleId": 76553,
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Zombie"
+      ],
+      "supertypes": [],
+      "genericCost": 2,
+      "printedManaText": "o2oB",
+      "color": "Black",
+      "colors": [
+        "Black"
+      ],
+      "colorIdentity": [
+        "B"
+      ],
+      "abilityId": 87904,
+      "abilityIds": [
+        87904,
+        87905
+      ],
+      "forgeScript": "l/lord_of_the_accursed.txt",
+      "forgeScriptSha256": "24f1745e92cd0e29f2156c993d10da02c947f842eb19640938c9f5a08a2655ed",
+      "token": false,
+      "admitted": true,
+      "candidate": false,
+      "experimental": true,
+      "verified": false,
+      "abilityBindings": {},
+      "coloredCost": [
+        {
+          "color": "Black",
+          "count": 1
+        }
+      ],
+      "nativeAbilityTexts": {
+        "87904": "Other Zombies you control get <nobr>+1/+1</nobr>.",
+        "87905": "{o1oB}, {oT}: All Zombies gain menace until end of turn.",
+        "142": "Menace"
+      }
+    },
+    "Phyrexian Rager": {
+      "grpId": 72328,
+      "titleId": 4951,
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Phyrexian",
+        "Horror"
+      ],
+      "supertypes": [],
+      "genericCost": 2,
+      "printedManaText": "o2oB",
+      "color": "Black",
+      "colors": [
+        "Black"
+      ],
+      "colorIdentity": [
+        "B"
+      ],
+      "abilityId": 88159,
+      "abilityIds": [
+        88159
+      ],
+      "forgeScript": "p/phyrexian_rager.txt",
+      "forgeScriptSha256": "8ffc2ecbfc86ce473c2c84296418e3f71083ecce42122ab2a1f0e1ff4eaafea2",
+      "token": false,
+      "admitted": true,
+      "candidate": false,
+      "experimental": true,
+      "verified": false,
+      "abilityBindings": {},
+      "coloredCost": [
+        {
+          "color": "Black",
+          "count": 1
+        }
+      ],
+      "nativeAbilityTexts": {
+        "88159": "When CARDNAME enters, you draw a card and you lose 1 life."
+      }
+    },
+    "Phyrexian Gargantua": {
+      "grpId": 72327,
+      "titleId": 7207,
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Phyrexian",
+        "Horror"
+      ],
+      "supertypes": [],
+      "genericCost": 4,
+      "printedManaText": "o4oBoB",
+      "color": "Black",
+      "colors": [
+        "Black"
+      ],
+      "colorIdentity": [
+        "B"
+      ],
+      "abilityId": 88787,
+      "abilityIds": [
+        88787
+      ],
+      "forgeScript": "p/phyrexian_gargantua.txt",
+      "forgeScriptSha256": "bf95aa3befc259ee607498dd8b984183d5e12c0d540879aee7c402d3455b0c01",
+      "token": false,
+      "admitted": true,
+      "candidate": false,
+      "experimental": true,
+      "verified": false,
+      "abilityBindings": {},
+      "coloredCost": [
+        {
+          "color": "Black",
+          "count": 2
+        }
+      ],
+      "nativeAbilityTexts": {
+        "88787": "When CARDNAME enters, you draw two cards and you lose 2 life."
+      }
     }
   },
   "moxfieldProvenance": {
@@ -79362,6 +79831,205 @@
             },
             "reboundDelayedTrigger": 213
           }
+        }
+      },
+      "Combat Celebrant": {
+        "grpId": 73926,
+        "forgeScriptSha256": "453aed45d4cfda881678f78546d31246989deb812151224756a96eae7677129d",
+        "fields": {
+          "abilityBindings": {
+            "activated": {},
+            "descriptions": {
+              "When you do, untap all other creatures you control and after this phase, there is an additional combat phase.": 88482
+            },
+            "triggerDescriptions": {
+              "When you do, untap all other creatures you control and after this phase, there is an additional combat phase.": 88482
+            },
+            "manaDescriptions": {},
+            "keywords": {},
+            "reboundDelayedTrigger": 213,
+            "trigger": 88482
+          }
+        }
+      },
+      "Gravedigger": {
+        "grpId": 67876,
+        "forgeScriptSha256": "e1abd89f8a075eda914f9a26a2b18afc7f731f572f698c357ffeb69b7ee8c8ad",
+        "fields": {
+          "abilityBindings": {
+            "activated": {},
+            "descriptions": {},
+            "triggerDescriptions": {
+              "When CARDNAME enters, you may return target creature card from your graveyard to your hand.": 1157
+            },
+            "manaDescriptions": {},
+            "trigger": 1157,
+            "keywords": {}
+          },
+          "targetPromptId": 10
+        }
+      },
+      "Ghoulraiser": {
+        "grpId": 72300,
+        "forgeScriptSha256": "05005b35662c36119d2a71dd29e226d8e9393bff9a12c6a3633a046a8f548bc0",
+        "fields": {
+          "abilityBindings": {
+            "activated": {},
+            "descriptions": {},
+            "triggerDescriptions": {
+              "When CARDNAME enters, return a Zombie card at random from your graveyard to your hand.": 99343
+            },
+            "manaDescriptions": {},
+            "trigger": 99343,
+            "keywords": {}
+          },
+          "targetPromptId": 10
+        }
+      },
+      "Rise from the Grave": {
+        "grpId": 67914,
+        "forgeScriptSha256": "fe50ec6eecc9fed39ccea1032c1d5b6f1836841dfd8e79bb2671cdc4fafe27f1",
+        "fields": {
+          "abilityBindings": {
+            "activated": {},
+            "descriptions": {},
+            "triggerDescriptions": {},
+            "manaDescriptions": {},
+            "keywords": {}
+          },
+          "targetPromptId": 10
+        }
+      },
+      "Diregraf Rebirth": {
+        "grpId": 78585,
+        "forgeScriptSha256": "43e4bf4b752ae1bb0f884f6ed600a8f1ada4a961324fb7ec91c953c3bee1de29",
+        "fields": {
+          "abilityBindings": {
+            "activated": {},
+            "descriptions": {},
+            "triggerDescriptions": {},
+            "manaDescriptions": {},
+            "keywords": {}
+          },
+          "targetPromptId": 10
+        }
+      },
+      "Rise of the Dark Realms": {
+        "grpId": 72333,
+        "forgeScriptSha256": "f6c66e2c12af29e4bb1efdfa670b460965485544c00ed1b51007398d8281fc10",
+        "fields": {
+          "abilityBindings": {
+            "activated": {},
+            "descriptions": {},
+            "triggerDescriptions": {},
+            "manaDescriptions": {},
+            "keywords": {}
+          },
+          "targetPromptId": 10
+        }
+      },
+      "Mire Triton": {
+        "grpId": 70616,
+        "forgeScriptSha256": "6a6105bed0984b4af2fa87a26c9e8c723f2b103950f9cae07031012d1a19020e",
+        "fields": {
+          "abilityBindings": {
+            "activated": {},
+            "descriptions": {},
+            "triggerDescriptions": {
+              "When CARDNAME enters, mill two cards and you gain 2 life.": 136756
+            },
+            "manaDescriptions": {},
+            "trigger": 136756,
+            "keywords": {
+              "DEATHTOUCH": 1
+            }
+          },
+          "targetPromptId": 10
+        }
+      },
+      "Undead Butler": {
+        "grpId": 78933,
+        "forgeScriptSha256": "13071f7fd7fbb8d989d7f836e0f9f13120f3563b5d21acc10da167624d3aba6f",
+        "fields": {
+          "abilityBindings": {
+            "activated": {},
+            "descriptions": {},
+            "triggerDescriptions": {
+              "When CARDNAME enters, mill three cards. (Put the top three cards of your library into your graveyard.)": 101371,
+              "When CARDNAME dies, you may exile it. When you do, return target creature card from your graveyard to your hand.": 146707,
+              "When you do, return target creature card from your graveyard to your hand.": 146876
+            },
+            "manaDescriptions": {},
+            "keywords": {}
+          },
+          "targetPromptId": 10
+        }
+      },
+      "Death Baron": {
+        "grpId": 67860,
+        "forgeScriptSha256": "e7612461901f7bde0001a6cef95a8ffb2e21a70442a0e5f7a509ffd5c979e849",
+        "fields": {
+          "abilityBindings": {
+            "activated": {},
+            "descriptions": {},
+            "triggerDescriptions": {},
+            "manaDescriptions": {},
+            "keywords": {}
+          },
+          "targetPromptId": 10
+        }
+      },
+      "Lord of the Accursed": {
+        "grpId": 73890,
+        "forgeScriptSha256": "24f1745e92cd0e29f2156c993d10da02c947f842eb19640938c9f5a08a2655ed",
+        "fields": {
+          "abilityBindings": {
+            "activated": {
+              "PumpAll": 87905
+            },
+            "descriptions": {
+              "{1}{B}, {T}: All Zombies gain menace until end of turn.": 87905,
+              "All Zombies gain menace until end of turn.": 87905
+            },
+            "triggerDescriptions": {},
+            "manaDescriptions": {},
+            "keywords": {}
+          },
+          "targetPromptId": 10
+        }
+      },
+      "Phyrexian Rager": {
+        "grpId": 72328,
+        "forgeScriptSha256": "8ffc2ecbfc86ce473c2c84296418e3f71083ecce42122ab2a1f0e1ff4eaafea2",
+        "fields": {
+          "abilityBindings": {
+            "activated": {},
+            "descriptions": {},
+            "triggerDescriptions": {
+              "When CARDNAME enters, you draw a card and you lose 1 life.": 88159
+            },
+            "manaDescriptions": {},
+            "trigger": 88159,
+            "keywords": {}
+          },
+          "targetPromptId": 10
+        }
+      },
+      "Phyrexian Gargantua": {
+        "grpId": 72327,
+        "forgeScriptSha256": "bf95aa3befc259ee607498dd8b984183d5e12c0d540879aee7c402d3455b0c01",
+        "fields": {
+          "abilityBindings": {
+            "activated": {},
+            "descriptions": {},
+            "triggerDescriptions": {
+              "When CARDNAME enters, you draw two cards and you lose 2 life.": 88787
+            },
+            "manaDescriptions": {},
+            "trigger": 88787,
+            "keywords": {}
+          },
+          "targetPromptId": 10
         }
       }
     },
@@ -87231,7 +87899,35 @@
         },
         "compiler": "javac 17.0.20.1"
       },
-      "gameplayVerified": false
+      "gameplayVerified": false,
+      "incrementalUpdates": [
+        {
+          "baseOverlaySha256": "bc34a39f7aa79b4fdee1bb0c667de6e7c787a7725e80898286a0b849ce9a7fc8",
+          "deltaOverlaySha256": "fa62a8609ec8dc32a39c384f5f42a936bb4fdfbea26de47383bb643e05a55b28",
+          "projectionSha256": "69f97d7a9c9057b1b5cffcd8a9907423c50a99dbbb402f73ca7f95735bec18a8",
+          "changedCards": [
+            "Combat Celebrant"
+          ]
+        },
+        {
+          "baseOverlaySha256": "c6d3df864c0166b9638207b77f1826a40c828dbb9891b933efaf66ec5f673610",
+          "deltaOverlaySha256": "88c58024f5329d337eb7b7c50bb1c6fc4ef13e5f45a0f556e3a919fd10e457e2",
+          "projectionSha256": "66e145a9512c40b6e600063ee921d7347416e1368c78bb99f654807a24f88cc5",
+          "changedCards": [
+            "Death Baron",
+            "Diregraf Rebirth",
+            "Ghoulraiser",
+            "Gravedigger",
+            "Lord of the Accursed",
+            "Mire Triton",
+            "Phyrexian Gargantua",
+            "Phyrexian Rager",
+            "Rise from the Grave",
+            "Rise of the Dark Realms",
+            "Undead Butler"
+          ]
+        }
+      ]
     },
     "sourceDatabaseSha256": "1be0105411ad989ca60e233f1341eaaa9276e3a679c89f1ef6f07e07ede10d25",
     "sourceForgeScriptsSha256": "dffcf416dd40dfa881400df60e5191520b0dfb30fcaaac2c378b5415b927d6e2",

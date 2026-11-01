@@ -174,7 +174,7 @@ internal static class SharedChoiceProtocol
         }
         else if(kind=="order")
         {
-            if((string?)spec["destination"]!="Library" && (string?)spec["destination"]!="Graveyard" && (string?)spec["destination"]!="Exile")throw new NotSupportedException("Unmapped ordering zone");
+            if((string?)spec["destination"]!="Library" && (string?)spec["destination"]!="Graveyard" && (string?)spec["destination"]!="Exile" && (string?)spec["destination"]!="Battlefield")throw new NotSupportedException("Unmapped ordering zone");
             payload=new JObject{["ids"]=new JArray(options.Values.Select(o=>NativeId(o,cardId))),["orderingContext"]="OrderingContext_None"};type="GREMessageType_OrderReq";key="orderReq";
         }
         else throw new NotSupportedException("Native shared choice requires an explicit presentation binding: "+kind);

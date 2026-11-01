@@ -31,7 +31,15 @@ internal static class Program
     }
     private static void Write(string path,JToken value)
     {
-        string temporary=path+".pending";File.WriteAllText(temporary,value.ToString(Formatting.None));File.Move(temporary,path,true);
+        string temporary=path+".pending";File.WriteAllText(temporary,value.ToString(Formatting.None));
+        // A Windows reader can briefly hold the old JSON without delete sharing.
+        // Retain the complete pending write and retry that same atomic replace.
+        for(int attempt=0;;attempt++)
+        {
+            try{File.Move(temporary,path,true);return;}
+            catch(IOException) when(attempt<11){Thread.Sleep(10);}
+            catch(UnauthorizedAccessException) when(attempt<11){Thread.Sleep(10);}
+        }
     }
     private static JObject Read(string path)
     {
@@ -120,7 +128,12 @@ internal static class Program
                 foreach(var player in roster)
                 {
                     var native=latest.GetPlayerById((uint)player["seat"]!);
-                    if(native==null || native.LifeTotal!=(int)player["life"]!)throw new InvalidOperationException("Native player roster/life differs from Forge at seat "+player["seat"]);
+                    int expected=(int)player["life"]!;
+                    if((int)player["seat"]! ==2 && state["horde"] is JObject horde){
+                        expected=(int)horde["remainingCards"]!;
+                        if(expected!=((JArray)state["hidden"]!).Count(c=>(string?)c["zone"]=="Library" && (int)c["owner"]! ==2))throw new InvalidOperationException("Horde resource differs from actual hidden library identities");
+                    }
+                    if(native==null || native.LifeTotal!=expected)throw new InvalidOperationException("Native player life or labelled Horde library resource differs from Forge at seat "+player["seat"]);
                     if((bool?)state["pod"]==true && (bool?)player["lost"]==true && native.Status!=PlayerStatus.Removed)throw new InvalidOperationException("Eliminated pod player remains active in the native model");
                 }
             }
@@ -143,7 +156,13 @@ internal static class Program
                 }
                 if(card["keywordGrants"] is JArray keywordGrants)
                 {
-                    var expectedGrants=keywordGrants.Select(g=>(Ability:checked((uint)bridge.ResearchKeywordId((string)g["keyword"]!)),Source:checked((uint)bridge.ResearchInstanceId((int)g["sourceForgeId"]!)),Layer:(uint)g["layerId"]!)).OrderBy(g=>g.Layer).ToArray();
+                    int KeywordSource(JToken grant)
+                    {
+                        if((string?)grant["sourceKind"]!="horde-format-rule")return bridge.ResearchInstanceId((int)grant["sourceForgeId"]!);
+                        if((string?)state["scenario"]!="zombie-horde" || (int?)grant["sourceSeat"]!=2 || (int?)grant["sourceForgeId"]!=(int?)state["horde"]?["rulesEffectForgeId"] || (string?)grant["keyword"]!="Haste")throw new InvalidOperationException("Invalid declared Horde format keyword origin");
+                        return 2;
+                    }
+                    var expectedGrants=keywordGrants.Select(g=>(Ability:checked((uint)bridge.ResearchKeywordId((string)g["keyword"]!)),Source:checked((uint)KeywordSource(g)),Layer:(uint)g["layerId"]!)).OrderBy(g=>g.Layer).ToArray();
                     var actualGrants=native.AbilityAdders.Select(g=>(Ability:g.AbilityId,Source:g.AddedById,Layer:g.LayeredEffectId)).OrderBy(g=>g.Layer).ToArray();
                     if(!expectedGrants.SequenceEqual(actualGrants))throw new InvalidOperationException("Native active keyword identities, grant sources or layer lifetimes differ from Forge");
                 }

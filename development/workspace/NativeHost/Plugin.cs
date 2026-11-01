@@ -354,6 +354,7 @@ public sealed class Plugin : BaseUnityPlugin
                 workflow.OnAutoYieldEnabled();
                 return true;
             },autoOrderTriggers:()=>MDNPlayerPrefs.AutoOrderTriggers,autoChooseReplacementEffects:()=>MDNPlayerPrefs.AutoChooseReplacementEffects);
+        _forge?.EnableRenderedCombatPresentation();
         manager.Initialize(_connection, papa.CardDatabase);
         // Multiplayer layout captures the local seat during scene initialization.
         HarmonyLib.AccessTools.Property(typeof(MatchManager),"LocalPlayerSeatId").SetValue(manager,1u,null);
@@ -361,7 +362,7 @@ public sealed class Plugin : BaseUnityPlugin
         manager.LocalPlayerInfo.TeamId = 1;
         manager.OpponentInfo.SeatId = 2;
         manager.OpponentInfo.TeamId = 2;
-        if(_forge?.Scenario=="brawl-duel" || _forge?.Scenario=="commander-duel" || _forge?.IsCommanderPod==true)
+        if(_forge?.Scenario=="brawl-duel" || _forge?.Scenario=="commander-duel" || _forge?.Scenario=="zombie-horde" || _forge?.IsCommanderPod==true)
         {
             manager.LocalPlayerInfo.Commanders=_forge.Commanders(1);
             manager.OpponentInfo.Commanders=_forge.Commanders(2);
@@ -375,6 +376,7 @@ public sealed class Plugin : BaseUnityPlugin
         var opponentPortrait=ProfileUtilities.GetAvatarBustImagePath(papa.AssetLookupSystem,manager.OpponentInfo.AvatarSelection);
         if(string.IsNullOrEmpty(localPortrait) || string.IsNullOrEmpty(opponentPortrait))throw new NotSupportedException("Installed native avatar portrait mapping is unavailable.");
         _events.Add("Native avatar portraits: "+localPortrait+" | "+opponentPortrait);
+        if(_forge?.Scenario=="zombie-horde")manager.OpponentInfo.ScreenName=_forge.PlayerName(2);
         manager.Players.Add(manager.LocalPlayerInfo);
         manager.Players.Add(manager.OpponentInfo);
         if(_forge?.IsCommanderPod==true)

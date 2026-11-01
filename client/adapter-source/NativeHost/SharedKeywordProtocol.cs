@@ -43,7 +43,12 @@ internal static class SharedKeywordProtocol
             foreach(var grant in (JArray?)card["keywordGrants"]??new JArray())
             {
                 if(grant["layerId"]?.Type!=JTokenType.Integer || (int)grant["layerId"]!<1 || (int)grant["layerId"]!>100000)throw new InvalidDataException("Keyword annotation identity bound exceeded");
-                int source=cardId((int)grant["sourceForgeId"]!),target=cardId((int)card["forgeId"]!),ability=Ability((string)grant["keyword"]!,bindings),layer=(int)grant["layerId"]!;
+                int source;
+                if((string?)grant["sourceKind"]=="horde-format-rule"){
+                    if((string?)state["scenario"]!="zombie-horde" || (int?)grant["sourceSeat"]!=2 || (int?)grant["sourceForgeId"]!=(int?)state["horde"]?["rulesEffectForgeId"] || (string?)grant["keyword"]!="Haste")throw new InvalidDataException("Invalid Horde format keyword source");
+                    source=2; // The native player owns this declared format rule; no invented card asset.
+                }else source=cardId((int)grant["sourceForgeId"]!);
+                int target=cardId((int)card["forgeId"]!),ability=Ability((string)grant["keyword"]!,bindings),layer=(int)grant["layerId"]!;
                 result.Add(((long)grant["timestamp"]!,layer,new JObject{["id"]=3_000_000_000u+(uint)layer,["affectorId"]=source,["affectedIds"]=new JArray(target),["type"]=new JArray("AnnotationType_AddAbility"),["details"]=new JArray(Detail("grpid",ability),Detail("count",1),Detail("effect_id",layer))}));
             }
             foreach(var removal in (JArray?)card["keywordRemovals"]??new JArray())

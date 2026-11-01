@@ -34,6 +34,8 @@ public final class ForgeLandEngine {
     static final Map<Integer,Integer> seatMulligans=new HashMap<>();
     static final Map<Integer,Boolean> seatKept=new HashMap<>();
     static boolean commanderPod;
+    static boolean zombieHorde;
+    static HordeRules horde;
     static JsonArray podOpponentDecks;
     static int seatId(int forgePlayerId){for(int i=0;i<seatPlayers.size();i++)if(seatPlayers.get(i).getId()==forgePlayerId)return i+1;throw new IllegalArgumentException("Unknown Forge player id: "+forgePlayerId);}
     static int seat(Player p){return p==null?0:seatId(p.getId());}
@@ -120,7 +122,129 @@ public final class ForgeLandEngine {
     static boolean researchOpponentBlockAll;
     static final Deque<String> researchOpponentSpellPlan=new ArrayDeque<>();
     static final List<String> researchCallbackAudit=new ArrayList<>();
-    static boolean normalGame(){return scenario.equals("opening-duel") || scenario.equals("spell-duel") || scenario.equals("trigger-duel") || scenario.equals("blue-duel") || scenario.equals("custom-duel") || scenario.equals("brawl-duel") || scenario.equals("commander-duel") || scenario.equals("commander-pod");}
+    static boolean normalGame(){return zombieHorde || scenario.equals("opening-duel") || scenario.equals("spell-duel") || scenario.equals("trigger-duel") || scenario.equals("blue-duel") || scenario.equals("custom-duel") || scenario.equals("brawl-duel") || scenario.equals("commander-duel") || scenario.equals("commander-pod");}
+    /** Solo Horde format rules; all card resolution, damage and movement remain Forge-owned. */
+    static final class HordeRules {
+        static final String TOKEN="token:b_2_2_zombie";
+        static final Map<String,Integer> DECK=Map.ofEntries(
+            Map.entry(TOKEN,120),Map.entry("Gravedigger",12),Map.entry("Ghoulraiser",12),
+            Map.entry("Rise from the Grave",8),Map.entry("Diregraf Rebirth",8),Map.entry("Rise of the Dark Realms",4),
+            Map.entry("Mire Triton",6),Map.entry("Undead Butler",8),Map.entry("Death Baron",4),Map.entry("Lord of the Accursed",4),
+            Map.entry("Phyrexian Rager",4),Map.entry("Phyrexian Gargantua",2),Map.entry("Walking Corpse",4),Map.entry("Rotting Mastodon",4));
+        static final Set<String> FIXTURE_CARDS=Set.of("Scathe Zombies","Those Who Serve","Lazotep Behemoth");
+        final Set<Integer> physicalCards=new HashSet<>();
+        final Set<Integer> attempted=new HashSet<>();
+        Card ruleEffect;int survivorsTurns,waves,lastWaveTurn=-1,initialCards,damageMilled;boolean prepared,initialized,finished;
+        forge.item.PaperToken sourceToken;PaperCard physicalPrinting;int initialTokenCards;
+        Deck deck(){
+            if(!fullHumanChoices || !MAPPED_OBJECTS.contains(TOKEN))throw new IllegalArgumentException("Horde needs the original mapped Zombie token and full human controls");
+            sourceToken=Objects.requireNonNull(StaticData.instance().getAllTokens().getToken("b_2_2_zombie"));
+            physicalPrinting=new PaperCard(sourceToken.getRules(),sourceToken.getEdition(),forge.card.CardRarity.Common);
+            List<String> pool=new ArrayList<>();
+            for(var row:DECK.entrySet().stream().sorted(Map.Entry.comparingByKey()).toList())for(int i=0;i<row.getValue();i++)pool.add(row.getKey());
+            if(pool.size()!=200)throw new IllegalStateException("Horde production deck must contain exactly 200 cards");
+            Collections.shuffle(pool,forge.util.MyRandom.getRandom());
+            if(fixtureConfig!=null && fixtureConfig.has("hordeFixturePool")){
+                if(!researchAdmission)throw new IllegalArgumentException("Horde initial-order fixtures are research-only");
+                var values=fixtureConfig.getAsJsonArray("hordeFixturePool");if(values.isEmpty() || values.size()>200)throw new IllegalArgumentException("Bounded initial Horde order required");
+                pool.clear();for(var value:values)pool.add(value.getAsString());
+            }
+            Deck deck=new Deck("200-card Zombie and Horror Reanimation Horde");
+            for(String name:pool){
+                if(name.equals(TOKEN))deck.getMain().add(physicalPrinting,1);
+                else{if((!DECK.containsKey(name) && !(researchAdmission && FIXTURE_CARDS.contains(name))) || !ADMITTED_CARDS.contains(name))throw new IllegalArgumentException("Horde card lacks existing Arena admission: "+name);deck.getMain().add(Objects.requireNonNull(FModel.getMagicDb().getCommonCards().getCard(name)),1);}
+            }
+            initialCards=pool.size();initialTokenCards=(int)pool.stream().filter(TOKEN::equals).count();return deck;
+        }
+        boolean physicalToken(Card c){return physicalCards.contains(c.getId());}
+
+        void initialize(){
+            if(initialized)return;initialized=true;
+            if(opponent.getCardsIn(ZoneType.Library).size()!=initialCards)throw new IllegalStateException("Actual Horde library differs from the constructed initial deck");
+            for(Card c:opponent.getCardsIn(ZoneType.Library)){if(c.getPaperCard().equals(physicalPrinting))physicalCards.add(c.getId());if(physicalToken(c)){c.setGamePieceType(forge.card.GamePieceType.CARD);c.setTokenCard(true);c.setImageKey(sourceToken.getImageKey(false));}}
+            if(physicalCards.size()!=initialTokenCards)throw new IllegalStateException("Physical Horde token-card identities were not conserved during deck creation");
+            ruleEffect=new Card(game.nextCardId(),game);ruleEffect.setName("Zombie Horde format rules");ruleEffect.setOwner(opponent);ruleEffect.setGamePieceType(forge.card.GamePieceType.EFFECT);
+            ruleEffect.addReplacementEffect(forge.game.replacement.ReplacementHandler.parseReplacement("Event$ GameLoss | ActiveZones$ Command | ValidPlayer$ You | Layer$ CantHappen",ruleEffect,true));
+            ruleEffect.addReplacementEffect(forge.game.replacement.ReplacementHandler.parseReplacement("Event$ BeginPhase | ActiveZones$ Command | ValidPlayer$ You | Phase$ Draw | Skip$ True",ruleEffect,true));
+            ruleEffect.addStaticAbility("Mode$ Continuous | EffectZone$ Command | Affected$ Creature.YouCtrl | AddKeyword$ Haste | Description$ Horde creatures have haste.");
+            ruleEffect.addStaticAbility("Mode$ Continuous | EffectZone$ Command | Affected$ You | SetMaxHandSize$ Unlimited | Description$ Horde cards returned to hand wait for the next wave.");
+            game.getAction().moveToCommand(ruleEffect,null);opponentKept=true;seatKept.put(2,true);
+            event(Map.of("kind","horde-initialized","cards",initialCards,"preparationTurns",3,"survivorLife",local.getStartingLife()));
+        }
+        void turn(forge.game.event.GameEventTurnBegan e){
+            if(e.turnOwner().getId()==local.getId()){
+                survivorsTurns++;
+                if(!prepared){prepared=true;game.getPhaseHandler().addExtraTurn(local);game.getPhaseHandler().addExtraTurn(local);}
+            }
+        }
+        void damage(forge.game.event.GameEventPlayerDamaged e){
+            if(e.target().getId()!=opponent.getId() || e.amount()<=0)return;
+            int before=opponent.getCardsIn(ZoneType.Library).size();
+            // The owned Player.mill implementation requires an actual root
+            // ability and MillEffect supplies its simultaneous-zone bookkeeping.
+            // Resolve the declared format rule through that original effect.
+            var prior=opponent.getCardsIn(ZoneType.Library).stream().map(Card::getId).toList();
+            try{
+                var mill=forge.game.ability.AbilityFactory.getAbility("DB$ Mill | Defined$ You | NumCards$ "+e.amount(),ruleEffect);
+                mill.setActivatingPlayer(opponent);forge.game.ability.AbilityUtils.resolve(mill);
+            }catch(RuntimeException error){unsupportedDecision="Horde damage-to-mill rule failed: "+error;throw error;}
+            var remaining=opponent.getCardsIn(ZoneType.Library).stream().map(Card::getId).collect(java.util.stream.Collectors.toSet());
+            var milled=prior.stream().filter(id->!remaining.contains(id)).toList();damageMilled+=milled.size();
+            event(Map.of("kind","horde-damage-mill","damage",e.amount(),"milled",milled,"before",before,"remaining",remaining.size()));
+        }
+        boolean victory(){
+            if(!initialized || finished || game.isGameOver() || game.getAge()!=GameStage.Play || !game.getStack().isEmpty() || game.getStack().isResolving())return false;
+            if(!opponent.getCardsIn(ZoneType.Library).isEmpty() || !opponent.getCardsIn(ZoneType.Hand).isEmpty() || !opponent.getCardsIn(ZoneType.Battlefield).isEmpty())return false;
+            finished=true;game.getAction().exileEffect(ruleEffect);
+            if(!opponent.loseConditionMet(GameLossReason.SpellEffect,"Zombie Horde exhausted"))throw new IllegalStateException("Horde completion did not reach its actual Forge outcome");
+            game.getAction().checkGameOverCondition();event(Map.of("kind","horde-defeated","waves",waves));return true;
+        }
+        List<SpellAbility> choose(){
+            if(victory() || game.isGameOver())return null;
+            if(game.getPhaseHandler().getPlayerTurn()!=opponent || game.getPhaseHandler().getPhase()!=PhaseType.MAIN1 || !game.getStack().isEmpty())return null;
+            int turn=game.getPhaseHandler().getTurn();
+            if(turn!=lastWaveTurn){
+                lastWaveTurn=turn;attempted.clear();waves++;List<Integer> revealed=new ArrayList<>();
+                while(!opponent.getCardsIn(ZoneType.Library).isEmpty()){
+                    Card c=opponent.getCardsIn(ZoneType.Library).getFirst();boolean token=physicalToken(c);revealed.add(c.getId());game.getAction().moveToHand(c,null);if(!token)break;
+                }
+                event(Map.of("kind","horde-wave","wave",waves,"turn",turn,"revealed",revealed,"remaining",opponent.getCardsIn(ZoneType.Library).size()));
+            }
+            List<SpellAbility> spells=new ArrayList<>();
+            for(Card c:opponent.getCardsIn(ZoneType.Hand))if(attempted.add(c.getId())){
+                var spell=c.getFirstSpellAbility();if(spell==null || !spell.isSpell())throw new UnsupportedOperationException("Horde card has no real spell: "+c.getName());
+                spell.setActivatingPlayer(opponent);spells.add(spell);
+            }
+            return spells.isEmpty()?null:spells;
+        }
+        boolean cast(PlayerController controller,SpellAbility spell){
+            int id=spell.getHostCard().getId();
+            for(SpellAbility part=spell;part!=null;part=part.getSubAbility())if(part.usesTargeting() && part.getMinTargets()>0 && part.getTargetRestrictions().getNumCandidates(part)<part.getMinTargets()){
+                // Explicit Horde variant: a revealed spell with no legal targets
+                // is discarded, rather than trapping the exhausted Horde in hand.
+                game.getAction().moveToGraveyard(spell.getHostCard(),spell);
+                event(Map.of("kind","horde-uncastable-discard","sourceForgeId",id,"name",spell.getHostCard().getName(),"reason","no-legal-targets","wave",waves));return true;
+            }
+            // The Horde wave is a format play effect: its permanent spells may
+            // share a stack, as original PlayEffect casts do. Other restrictions
+            // and actual response-stack resolution remain Forge-owned.
+            spell.setCastFromPlayEffect(true);PlaySpellAbility.playSaWithoutPayingManaCost(controller,spell,true);
+            boolean onStack=false;for(var entry:game.getStack())if(entry.isSpell() && entry.getSourceCard().getId()==id)onStack=true;
+            if(!onStack)throw new UnsupportedOperationException("Horde spell did not enter the real response stack: "+spell.getHostCard().getName());
+            event(Map.of("kind","horde-free-cast","sourceForgeId",id,"wave",waves));return true;
+        }
+        Map<String,Object> state(){var value=new LinkedHashMap<String,Object>(Map.of("solo",true,"initialCards",initialCards,"remainingCards",opponent.getCardsIn(ZoneType.Library).size(),"wave",waves,"survivorTurns",survivorsTurns,"preparationTurnsRemaining",Math.max(0,3-survivorsTurns),"damageMilled",damageMilled,"hasLifeTotal",false,"finished",finished,"initialized",initialized));value.put("rulesEffectForgeId",ruleEffect==null?0:ruleEffect.getId());return value;}
+        @SuppressWarnings("unchecked") void presentation(Card c,Map<String,Object> value){
+            var grants=(List<Map<String,Object>>)value.get("keywordGrants");
+            if(grants!=null && ruleEffect!=null)for(int i=0;i<grants.size();i++){
+                var grant=grants.get(i);
+                if(((Number)grant.get("sourceForgeId")).intValue()==ruleEffect.getId() && grant.get("keyword").equals("Haste")){
+                    var tagged=new LinkedHashMap<String,Object>(grant);tagged.put("sourceKind","horde-format-rule");tagged.put("sourceSeat",2);grants.set(i,tagged);
+                }
+            }
+            if(physicalToken(c))value.put("hordePhysicalTokenCard",true);
+        }
+    }
     static void validateDeck(JsonObject deck){
         if(deck==null || !deck.has("cards") || !deck.get("cards").isJsonArray())throw new IllegalArgumentException("Imported deck requires a cards array");
         boolean brawl=deck.has("format") && Set.of("arena-brawl","commander-40").contains(deck.get("format").getAsString());
@@ -204,6 +328,7 @@ public final class ForgeLandEngine {
         if(!keywordLayerIds.containsKey(key)){if(keywordLayerIds.size()>=100000)throw new UnsupportedOperationException("Keyword layer evidence bound exceeded");keywordLayerIds.put(key,keywordLayerIds.size()+1);}
     }
     static int keywordPresentationSource(Card source){
+        if(horde!=null && horde.ruleEffect!=null && source.getId()==horde.ruleEffect.getId())return source.getId();
         Set<Integer> seen=new HashSet<>();int original=source.getId();
         while(fullHumanChoices && source.isImmutable() && !source.isEmblem()){
             if(!seen.add(source.getId()) || seen.size()>16)return 0;
@@ -254,6 +379,8 @@ public final class ForgeLandEngine {
         grants.sort(Comparator.comparingLong(v->((Number)v.get("timestamp")).longValue()));removals.sort(Comparator.comparingLong(v->((Number)v.get("timestamp")).longValue()));result.put("keywordGrants",grants);result.put("keywordRemovals",removals);result.put("keywordPresentationGaps",gaps);
     }
     public static class EventRecorder {
+        @Subscribe public void hordeStarted(GameEventGameStarted e){if(horde!=null)try{horde.initialize();}catch(RuntimeException error){unsupportedDecision="Horde initialization failed: "+error;throw error;}}
+        @Subscribe public void hordeTurn(GameEventTurnBegan e){if(horde!=null)horde.turn(e);}
         @Subscribe public void characteristics(GameEventCardStatsChanged e){if(researchAdmission)for(CardView view:e.cards())for(Card card:game.getCardsInGame())if(card.getId()==view.getId()){rememberKeywordSources(card);break;}}
         @Subscribe public void attachment(GameEventCardAttachment e){
             Map<String,Object> value=new LinkedHashMap<>();value.put("kind","attachment-change");value.put("sourceForgeId",e.equipment().getId());
@@ -298,7 +425,7 @@ public final class ForgeLandEngine {
             List<Integer> targets=new ArrayList<>();if(e.si()!=null && e.si().getTargetCards()!=null)for(CardView c:e.si().getTargetCards())targets.add(c.getId());
             spellTargets.put(e.sa().getHostCard().getId(),List.copyOf(targets));
         }
-        @Subscribe public void playerDamage(GameEventPlayerDamaged e){event(Map.of("kind","damage","sourceForgeId",e.source().getId(),"targetSeat",seatId(e.target().getId()),"amount",e.amount(),"combat",e.combat()));}
+        @Subscribe public void playerDamage(GameEventPlayerDamaged e){if(horde!=null)horde.damage(e);event(Map.of("kind","damage","sourceForgeId",e.source().getId(),"targetSeat",seatId(e.target().getId()),"amount",e.amount(),"combat",e.combat()));}
         @Subscribe public void cardDamage(GameEventCardDamaged e){
             // This Forge event omits the combat flag. Ordinary spell/ability
             // damage occurs synchronously while the stack is resolving;
@@ -678,6 +805,7 @@ public final class ForgeLandEngine {
         }
         @Override public List<SpellAbility> chooseSpellAbilityToPlay(){
             if(commanderPod && local!=null && local.hasLost())waitForPodExit();
+            if(horde!=null){if(getPlayer()==opponent)return horde.choose();if(horde.victory())return null;}
             if(getPlayer()==local && normalGame())return waitForPriority();
             if(getPlayer()!=local && fullHumanChoices && scenario.equals("card-family") && !researchOpponentSpellPlan.isEmpty()){
                 for(Card card:getPlayer().getCardsIn(ZoneType.Hand))if(card.getName().equals(researchOpponentSpellPlan.peekFirst()))for(SpellAbility a:card.getAllPossibleAbilities(getPlayer(),false))if(a.isSpell() && !a.usesTargeting()){
@@ -687,6 +815,7 @@ public final class ForgeLandEngine {
             return aiDuel() && getPlayer()!=local?super.chooseSpellAbilityToPlay():null;
         }
         @Override public boolean playChosenSpellAbility(SpellAbility chosen){
+            if(horde!=null && getPlayer()==opponent)return horde.cast(this,chosen);
             if(getPlayer()!=local || !normalGame())return super.playChosenSpellAbility(chosen);
             if(fullHumanChoices){
                 targetCancelled=false;
@@ -711,6 +840,7 @@ public final class ForgeLandEngine {
             return played;
         }
         @Override public Player chooseStartingPlayer(boolean firstGame){
+            if(zombieHorde){startingSeat=1;startingPlayerPolicy="local-first";return local;}
             if(!normalGame())return super.chooseStartingPlayer(firstGame);
             if(startingPlayerPolicy.equals("local-first")){startingSeat=1;return local;}
             if(getPlayer()!=local){Player chosen=super.chooseStartingPlayer(firstGame);startingSeat=seat(chosen);return chosen;}
@@ -725,6 +855,7 @@ public final class ForgeLandEngine {
             return game.isGameOver()?getPlayer():playerAtSeat(startingSeat);
         }
         @Override public boolean mulliganKeepHand(Player first,int cardsToReturn){
+            if(zombieHorde && getPlayer()==opponent){opponentKept=true;seatKept.put(2,true);return true;}
             if(getPlayer()!=local){boolean keep=super.mulliganKeepHand(first,cardsToReturn);int id=seat(getPlayer());seatKept.put(id,keep);if(!keep)seatMulligans.merge(id,1,Integer::sum);if(getPlayer()==opponent){opponentKept=keep;opponentMulligans=seatMulligans.getOrDefault(id,0);}return keep;}
             if(bufferedKeep!=null){boolean keep=bufferedKeep;bufferedKeep=null;return keep;}
             return askMulligan(cardsToReturn);
@@ -804,6 +935,7 @@ public final class ForgeLandEngine {
             });return chosen;
         }
         @Override public void declareAttackers(Player p,Combat combat){
+            if(horde!=null && p==opponent){for(Card c:p.getCreaturesInPlay())if(CombatUtil.canAttack(c,local))combat.addAttacker(c,local);return;}
             if(p!=local){
                 if(aiDuel()){super.declareAttackers(p,combat);return;}
                 if(scenario.startsWith("defend") || researchOpponentAttackAll)for(Card c:p.getCreaturesInPlay())if(CombatUtil.canAttack(c,local))combat.addAttacker(c,local);
@@ -832,6 +964,7 @@ public final class ForgeLandEngine {
             });
         }
         @Override public void declareBlockers(Player p,Combat combat){
+            if(horde!=null && p==opponent)return;
             if(p!=local){
                 if(aiDuel()){super.declareBlockers(p,combat);return;}
                 if(scenario.contains("blocked") || researchOpponentBlockAll)for(Card c:p.getCreaturesInPlay())for(Card a:combat.getAttackers())if(CombatUtil.canBlock(a,c,combat)){combat.addBlocker(a,c);break;}
@@ -1096,10 +1229,16 @@ public final class ForgeLandEngine {
         }
         HeadlessChoiceController(Game g,Player p,LobbyPlayer l){super(g,p,l);}
         @Override public CardCollectionView orderMoveToZoneList(CardCollectionView cards,ZoneType destination,SpellAbility cause){
+            // The pinned utility treats legacy GainControl$ True as a defined
+            // player while the actual reanimation effect correctly uses its
+            // activating player. Keep the Horde's timestamp ordering with its
+            // real AI controller instead of asking the survivor to order it.
+            if(horde!=null && getPlayer()==local && destination==ZoneType.Battlefield && cause!=null && cause.getActivatingPlayer()==opponent && "True".equals(cause.getParam("GainControl")))
+                return opponent.getController().orderMoveToZoneList(cards,destination,cause);
+            if(cards.size()<2)return new CardCollection(cards);
             if(getPlayer()==local && automaticGraveyardOrder(destination,cause,getPlayer()))return new CardCollection(cards);
             if(getPlayer()!=local || destination==ZoneType.Graveyard && cards.stream().noneMatch(c->c.isInZone(ZoneType.Library)))return super.orderMoveToZoneList(cards,destination,cause);
-            if(destination!=ZoneType.Library && destination!=ZoneType.Graveyard && destination!=ZoneType.Exile){unsupportedDecision="Unmapped shared ordering destination "+destination;throw new UnsupportedOperationException(unsupportedDecision);}
-            if(cards.size()<2)return new CardCollection(cards);
+            if(destination!=ZoneType.Library && destination!=ZoneType.Graveyard && destination!=ZoneType.Exile && destination!=ZoneType.Battlefield){unsupportedDecision="Unmapped shared ordering destination "+destination;throw new UnsupportedOperationException(unsupportedDecision);}
             JsonObject context=choiceSource(cause);context.addProperty("destination",destination.name());context.addProperty("orderSemantics","Forge effect movement order; no implicit reversal");
             List<Card> offered=new ArrayList<>();for(Card card:cards)offered.add(card);
             return new CardCollection(selectChoice("order","Order cards for "+destination.name(),offered,offered.size(),offered.size(),false,c->entityDescription(c,true),context));
@@ -1507,6 +1646,16 @@ public final class ForgeLandEngine {
         }
         @Override public java.util.List<forge.game.card.Card> exertAttackers(java.util.List<forge.game.card.Card> a0) {
             if(getPlayer()!=local){return super.exertAttackers(a0);}
+            if(fullHumanChoices){
+                // PhaseHandler offers only declared attackers with an optional
+                // CostExert. Match the original human 0..N selection contract;
+                // Forge owns the cost, trigger, extra phases and skipped untap.
+                if(a0.isEmpty())return new ArrayList<>();
+                JsonObject context=new JsonObject();context.addProperty("context","exert-attackers");context.addProperty("sourceForgeId",a0.get(0).getId());
+                return selectChoice("cards-effect","Choose attackers to exert",new ArrayList<>(a0),0,a0.size(),false,c->{
+                    JsonObject option=new JsonObject();option.addProperty("forgeId",c.getId());option.addProperty("entityKind","card");option.addProperty("label",c.getName());option.addProperty("privateToSeat",1);option.addProperty("identityVisible",true);return option;
+                },context);
+            }
             unsupportedDecision="Unmapped human callback: public java.util.List<forge.game.card.Card> forge.ai.PlayerControllerAi.exertAttackers(java.util.List<forge.game.card.Card>)";throw new UnsupportedOperationException(unsupportedDecision);
         }
         @Override public java.util.List<forge.game.cost.CostPart> orderCosts(java.util.List<forge.game.cost.CostPart> a0) {
@@ -1594,6 +1743,7 @@ public final class ForgeLandEngine {
         @Override public Player createIngamePlayer(Game g,int id){Player p=new Player(getName(),g,id);p.setFirstController(researchAdmission && humanSeat?new ResearchStrictController(g,p,this):new PassiveController(g,p,this));return p;}
     }
     static String presentationKey(Card c){
+        if(horde!=null && horde.physicalToken(c))return HordeRules.TOKEN;
         if(fullHumanChoices && c.isEmblem() && c.getEffectSourceAbility()!=null){
             var creator=c.getEffectSourceAbility();
             // A borrowed ability still creates its original emblem. Nicol
@@ -1639,6 +1789,7 @@ public final class ForgeLandEngine {
         if(c.isBattle()){result.put("baseDefense",c.getCurrentState().getBaseDefense());result.put("protectorSeat",seat(c.getProtectingPlayer()));}
         if(c.isClassCard())result.put("classLevel",c.getClassLevel());
         keywordPresentation(c,result);
+        if(horde!=null)horde.presentation(c,result);
         if(researchAdmission)result.put("rulesKeywords",c.getKeywords().stream().map(k->k.getOriginal()).toList());
         List<String> chosenColors=new ArrayList<>();if(c.hasChosenColor())for(String color:c.getChosenColors())chosenColors.add(color);result.put("chosenColors",chosenColors);
         GameEntity attachment=c.getEntityAttachedTo();
@@ -2192,6 +2343,7 @@ public final class ForgeLandEngine {
         List<Integer> legal=new ArrayList<>();
         if(priorityReady)for(Card c:fullHumanChoices?humanActionCards():local.getCardsIn(ZoneType.Hand))if(fullHumanChoices?!humanLandOptions(c).isEmpty():c.isLand()&&ability(c).canPlay())legal.add(c.getId());
         Map<String,Object> result=new LinkedHashMap<>();
+        if(horde!=null)result.put("horde",horde.state());
         result.put("session",SESSION);result.put("scenario",scenario);result.put("events",events);result.put("decision",decision);result.put("phase",phaseName());result.put("stage",game.getAge().name());result.put("mulligans",mulligans);
         if(researchAdmission){result.put("keywordPresentationSchema",1);result.put("researchControls",Map.of("strictHumanCallbacks",local.getController() instanceof ResearchStrictController,"auditedAutomaticDecisions",researchCallbackAudit,"effectPresentationOrigins",researchEffectOrigins,"controllerIdentities",seatPlayers.stream().map(p->Map.of("seat",seat(p),"controllerIsAI",p.getController().isAI(),"playerIsAI",p.isAI())).toList()));result.put("researchTrace",researchTrace);}
         result.put("format",commanderMode?"commander-40":arenaBrawl?"arena-brawl":"practice");result.put("startingLifeTotal",local.getStartingLife());result.put("opponentStartingLifeTotal",opponent.getStartingLife());result.put("commanderDamageLimit",commanderMode?21:0);
@@ -2423,10 +2575,15 @@ public final class ForgeLandEngine {
                 String policy=fixtureConfig.get("fixtureOpponentPolicy").getAsString();if(!Set.of("passive","attack-all","block-all").contains(policy))throw new IllegalArgumentException("Unknown research opponent policy");researchOpponentAttackAll=policy.equals("attack-all");researchOpponentBlockAll=policy.equals("block-all");
             }
         }
-        arenaBrawl=scenario.equals("brawl-duel");commanderPod=scenario.equals("commander-pod");commanderMode=scenario.equals("commander-duel") || commanderPod;
+        zombieHorde=scenario.equals("zombie-horde");horde=zombieHorde?new HordeRules():null;
+        if(fixtureConfig!=null && fixtureConfig.has("hordeFixturePool") &&
+           (!zombieHorde || !manifest.has("researchOnly") || !manifest.get("researchOnly").getAsBoolean()))
+            throw new IllegalArgumentException("Horde pool fixtures require an explicitly research-only Horde runtime");
+        arenaBrawl=scenario.equals("brawl-duel");commanderPod=scenario.equals("commander-pod");commanderMode=scenario.equals("commander-duel") || commanderPod || zombieHorde && localDeck!=null && localDeck.has("commander");
         if(!Set.of("coin-toss","local-first").contains(startingPlayerPolicy))throw new IllegalArgumentException("Unknown starting-player policy");
-        if(!Set.of("starter","attack-open","attack-multi","attack-blocked","defend","duel","mixed-duel","opening-duel","spell-duel","trigger-duel","trigger-orator","trigger-orator-double","hare-chain","blue-duel","blue-bounce","blue-wrong-color","custom-duel","brawl-duel","commander-duel","commander-pod","card-family","counter-ready","counter-ready-white","counter-ready-idle","defend-arrow","lethal-win","defend-lethal","discard","vanilla-costs","defend-ox","attack-swift","attack-double-blocked","draw-ready","draw-wrong-color").contains(scenario))throw new IllegalArgumentException("Unsupported scenario: "+scenario);
-        if(scenario.equals("custom-duel") || commanderGame()){validateDeck(localDeck);if(opponentDeck==null)opponentDeck=localDeck.deepCopy();validateDeck(opponentDeck);if(commanderGame()){String format=commanderMode?"commander-40":"arena-brawl";if(!localDeck.has("format") || !opponentDeck.has("format") || !format.equals(localDeck.get("format").getAsString()) || !format.equals(opponentDeck.get("format").getAsString()))throw new IllegalArgumentException("Commander queue and both deck policies must match");}else if(localDeck.has("format") || opponentDeck.has("format"))throw new IllegalArgumentException("Commander decks require their matching scenario");}
+        if(!Set.of("zombie-horde","starter","attack-open","attack-multi","attack-blocked","defend","duel","mixed-duel","opening-duel","spell-duel","trigger-duel","trigger-orator","trigger-orator-double","hare-chain","blue-duel","blue-bounce","blue-wrong-color","custom-duel","brawl-duel","commander-duel","commander-pod","card-family","counter-ready","counter-ready-white","counter-ready-idle","defend-arrow","lethal-win","defend-lethal","discard","vanilla-costs","defend-ox","attack-swift","attack-double-blocked","draw-ready","draw-wrong-color").contains(scenario))throw new IllegalArgumentException("Unsupported scenario: "+scenario);
+        if(zombieHorde){validateDeck(localDeck);if(opponentDeck!=null)throw new IllegalArgumentException("Horde opponent is generated by its fixed Arena-only pool");}
+        else if(scenario.equals("custom-duel") || commanderGame()){validateDeck(localDeck);if(opponentDeck==null)opponentDeck=localDeck.deepCopy();validateDeck(opponentDeck);if(commanderGame()){String format=commanderMode?"commander-40":"arena-brawl";if(!localDeck.has("format") || !opponentDeck.has("format") || !format.equals(localDeck.get("format").getAsString()) || !format.equals(opponentDeck.get("format").getAsString()))throw new IllegalArgumentException("Commander queue and both deck policies must match");}else if(localDeck.has("format") || opponentDeck.has("format"))throw new IllegalArgumentException("Commander decks require their matching scenario");}
         else if(localDeck!=null || opponentDeck!=null)throw new IllegalArgumentException("Imported decks require custom-duel");
         if(commanderPod){
             if(podOpponentDecks==null){podOpponentDecks=new JsonArray();for(int i=0;i<3;i++)podOpponentDecks.add(opponentDeck.deepCopy());}
@@ -2445,9 +2602,10 @@ public final class ForgeLandEngine {
         if(commanderGame())rules.setAppliedVariants(EnumSet.of(commanderMode?GameType.Commander:GameType.Brawl));
         if(normalGame())rules.setGamesPerMatch(1);
         List<RegisteredPlayer> players=new ArrayList<>();
-        for(String name:commanderPod?new String[]{"Local Player","Bot 1","Bot 2","Bot 3"}:new String[]{"Local Player","Opponent"}){
+        for(String name:commanderPod?new String[]{"Local Player","Bot 1","Bot 2","Bot 3"}:new String[]{"Local Player",zombieHorde?"Zombie Horde (cards left)":"Opponent"}){
             Deck deck=new Deck("Local vanilla practice deck");
-            if(scenario.equals("custom-duel") || commanderGame()){
+            if(zombieHorde && !players.isEmpty())deck=horde.deck();
+            else if(scenario.equals("custom-duel") || commanderGame() || zombieHorde){
                 JsonObject imported=players.isEmpty()?localDeck:commanderPod?podOpponentDecks.get(players.size()-1).getAsJsonObject():opponentDeck;
                 for(JsonElement item:imported.getAsJsonArray("cards")){JsonObject entry=item.getAsJsonObject();String cardName=entry.get("name").getAsString();deck.getMain().add(Objects.requireNonNull(FModel.getMagicDb().getCommonCards().getCard(cardName),"Forge card missing: "+cardName),entry.get("count").getAsInt());}
                 if(commanderGame())deck.getOrCreate(DeckSection.Commander).add(Objects.requireNonNull(FModel.getMagicDb().getCommonCards().getCard(imported.getAsJsonObject("commander").get("name").getAsString())),1);
@@ -2455,7 +2613,8 @@ public final class ForgeLandEngine {
                 String[] names=scenario.equals("blue-duel")?new String[]{"Plains","Island","Savannah Lions","Yoked Ox","Oreskos Swiftclaw","Divine Arrow","Impassioned Orator","Unsummon"}:scenario.equals("trigger-duel")?new String[]{"Plains","Savannah Lions","Yoked Ox","Oreskos Swiftclaw","Divine Arrow","Impassioned Orator"}:scenario.equals("spell-duel")?new String[]{"Plains","Savannah Lions","Yoked Ox","Oreskos Swiftclaw","Divine Arrow"}:new String[]{"Plains","Savannah Lions","Yoked Ox","Oreskos Swiftclaw"};
                 for(String cardName:names){int count=scenario.equals("blue-duel")?(cardName.equals("Plains") || cardName.equals("Island")?12:6):cardName.equals("Plains")?24:scenario.equals("trigger-duel")?(cardName.equals("Yoked Ox") || cardName.equals("Divine Arrow")?6:8):scenario.equals("spell-duel")?9:12;deck.getMain().add(Objects.requireNonNull(FModel.getMagicDb().getCommonCards().getCard(cardName)),count);}
             }
-            RegisteredPlayer registered=commanderGame()?RegisteredPlayer.forVariants(commanderPod?4:2,EnumSet.of(commanderMode?GameType.Commander:GameType.Brawl),deck,Collections.emptyList(),false,Collections.emptyList(),new forge.deck.CardPool()):new RegisteredPlayer(deck);
+            RegisteredPlayer registered=commanderGame() && !(zombieHorde && !players.isEmpty())?RegisteredPlayer.forVariants(commanderPod?4:2,EnumSet.of(commanderMode?GameType.Commander:GameType.Brawl),deck,Collections.emptyList(),false,Collections.emptyList(),new forge.deck.CardPool()):new RegisteredPlayer(deck);
+            if(zombieHorde){registered.setStartingLife(players.isEmpty()?40:20);if(!players.isEmpty())registered.setStartingHand(0);}
             players.add(registered.setPlayer(new LocalSeat(name,players.isEmpty())));
         }
         Match match=new Match(rules,players,"Arena local practice");

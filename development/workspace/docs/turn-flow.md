@@ -1,5 +1,9 @@
 # Turn flow — 0.2.0-alpha.6
 
+For the newer **unreleased** damage-presentation and Exert work, see the
+[1 November combat checkpoint](combat-exert-20261101.md). The release-specific
+record below is retained as historical evidence.
+
 Empty rules steps advance after native presentation completes, without a repeated
 650 ms delay or a new user-facing action request at every substep. Forge retains
 every rules step. Internal automatic rules requests are logged separately from

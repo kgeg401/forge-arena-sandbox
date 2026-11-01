@@ -73,6 +73,7 @@ internal static class Program
             actions.SubmitPass();Forward();return true;
         }
         bridge=new ForgeLandBridge(root,local,_=>{},()=>presentationReady?presented:null,AutoPass,ipc, mode=="delayed-response" ? ()=>clock : null);
+        if(mode=="combat-presentation")bridge.EnableRenderedCombatPresentation();
         void Settings(SettingsMessage settings){local.SendMessage(new ClientToGREMessage{Type=ClientMessageType.SetSettingsReq,SetSettingsReq=new SetSettingsReq{Settings=settings}});Drain();}
         void Tick(){bridge.Poll();Drain();if(bridge.Gap!=null)throw new InvalidOperationException(bridge.Gap);}
         void Until(Func<bool> condition)
@@ -171,6 +172,35 @@ internal static class Program
                     Check("Forge resolves the unanswerable creature normally",((JArray)bridge.ResearchState["battlefield"]!).Any(c=>(int)c["owner"]! ==2 && (string?)c["name"]=="Savannah Lions"));
                 }
                 File.WriteAllText(args[5],new JObject{["passed"]=true,["checks"]=new JArray(checks),["automaticPasses"]=passes,["scope"]="Real Forge stack/payment legality and native handlers; no rendered UI."}.ToString());return 0;
+            }
+            if(mode=="combat-presentation")
+            {
+                // Readiness here is controlled, not a claim about Unity timing.
+                // Rules and native parsing/requests still run independently.
+                Settings(new SettingsMessage{AutoPassOption=AutoPassOption.FullControl});
+                while(bridge.DecisionKind!="attackers")Manual(ActionType.Pass);
+                if(request is not DeclareAttackerRequest declaration)throw new InvalidOperationException("Expected real attacker declaration");
+                var selection=declaration.Attackers.Select(a=>{var copy=a.Clone();copy.SelectedDamageRecipient=copy.LegalDamageRecipients.Single(d=>d.Type==DamageRecType.Player && d.PlayerSystemSeatId==2).Clone();return copy;}).ToArray();
+                uint? old=presented;declaration.UpdateAttacker(selection);Forward();Until(()=>presented!=old && request is DeclareAttackerRequest);
+                old=presented;((DeclareAttackerRequest)request!).SubmitAttackers();Forward();Until(()=>presented!=old && bridge.PendingResearchRequestId==null);
+                presentationReady=false;
+                while(bridge.Phase!="COMBAT_DAMAGE")Manual(ActionType.Pass);
+                Check("Actual Forge combat dealt two damage before presentation refresh",(int)bridge.ResearchState["opponentLife"]! ==18 && latest!.GetPlayerById(2).LifeTotal==18);
+                Check("Damage frame has no unusable immediate priority workflow",request==null);
+                string rulesBefore=bridge.ResearchState.ToString();uint? damageState=presented;
+                int requestsBefore=Directory.GetFiles(Path.Combine(ipc,"requests"),"*.json").Length;
+                for(int i=0;i<40;i++)Tick();
+                Check("Unpresented damage cannot release priority or advance rules",presented==damageState && request==null && bridge.ResearchState.ToString()==rulesBefore);
+                Check("Waiting for damage presentation sends no duplicate rules requests",Directory.GetFiles(Path.Combine(ipc,"requests"),"*.json").Length==requestsBefore);
+                presentationReady=true;Until(()=>presented!=damageState && request is ActionsAvailableRequest);
+                Check("Ready presentation yields one clean native view state",presented==damageState+1 && bridge.ResearchState.ToString()==rulesBefore);
+                Check("Same original native priority remains usable",request is ActionsAvailableRequest ready && ready.CanPass && ready.OriginalMessage.GameStateId==presented && bridge.Phase=="COMBAT_DAMAGE");
+                uint? refreshed=presented;int automaticBefore=passes.Count;
+                for(int i=0;i<40;i++)Tick();
+                Check("Repeated polling neither replays damage nor bypasses full control",presented==refreshed && passes.Count==automaticBefore && bridge.ResearchState.ToString()==rulesBefore);
+                Manual(ActionType.Pass);
+                Check("Only the original player's pass advances past combat damage",bridge.Phase=="COMBAT_END" && (int)bridge.ResearchState["opponentLife"]! ==18);
+                File.WriteAllText(args[5],new JObject{["passed"]=true,["checks"]=new JArray(checks),["nativeUpdates"]=transitions,["scope"]="Real Forge combat and original native parser/requests with explicitly controlled presentation readiness; actual Unity validation is separate."}.ToString());return 0;
             }
             Settings(new SettingsMessage{AutoPassOption=AutoPassOption.Clear});
             for(int i=0;i<30;i++)Tick();Check("Playable main-phase actions remain a player stop",attempts==0 && bridge.Phase=="MAIN1");

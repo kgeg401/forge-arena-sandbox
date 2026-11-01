@@ -98,7 +98,10 @@
     "experimental shared table and public zones",
     "native commander slot and local format choice",
     "local sandbox pack opening",
-    "native local deck browser"
+    "native local deck browser",
+    "solo 40-life 200-card Zombie/Horror reanimation Horde",
+    "Horde with saved 99-card-plus-commander decks",
+    "optional human Exert choices"
   ],
   "excluded": [
     "network multiplayer",

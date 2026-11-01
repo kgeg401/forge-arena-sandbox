@@ -1,4 +1,36 @@
-# Current gameplay alpha: 0.2.0-alpha.10
+# Current gameplay alpha: 0.2.0-alpha.11
+
+The verified baseline remains **370 names**. **1,296 additional names** are
+enabled experimentally, for **1,666 admitted primary names**. Alpha 11 adds
+11 Arena-present Zombie/Horror/reanimation cards while preserving all prior
+card identities and presentation objects. The pinned Forge dependency and
+Arena requirements are unchanged.
+
+## Alpha 11: solo Horde and combat progression
+
+- Solo Horde supports practice decks and saved 99-card-plus-commander decks.
+  The survivor starts at 40 life, with three preparation turns against a
+  200-card Zombie/Horror deck containing 52 revival copies. See
+  [the exact deck, rules and limitations](ZOMBIE-HORDE.md).
+- Bounded original-handler cases cover targeted revival, graveyard-to-hand
+  returns, mass revival under Horde control, Undead Butler's reflexive trigger,
+  Horror drawing, lord buffs and no-target spells. Original Horde regressions
+  cover milling, counters, bounce/recast, clearing the Horde, and a complete
+  ordinary 200-card game lost by a pass-only survivor. These are mechanic
+  fixtures and one ordinary game, not a balance or all-deck certification.
+- The original rendered Commander opening showed the real command zone,
+  40 survivor life and the 200-card Horde. A saved Emry deck's command cast,
+  cost reduction and self-mill were separately checked in the earlier prototype.
+- Optional Exert selections and their original reflexive effects are connected.
+  Six native-handler cases pass 60 assertions. Combat damage waits for native
+  presentation to become idle before offering priority, avoiding stale controls.
+  Eight turn-flow modes, 19 presentation-contract assertions and bounded
+  rendered damage, instant-response, first-strike and death sequences pass.
+- Exact packaged rules binaries match the tested source build. Experimental
+  admission does not promote any name to the verified baseline. Existing
+  catalogue, network-play and durable-match-save limitations remain.
+
+## Earlier alpha 10 evidence
 
 The verified baseline remains **370 names**. **1,285 additional names are enabled
 experimentally**, for 1,655 admitted primary names. This release adds 942 names
