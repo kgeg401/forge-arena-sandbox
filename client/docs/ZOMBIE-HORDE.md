@@ -52,6 +52,11 @@ cards too. Your own life, damage, draws and losses follow the normal rules.
 
 ## Verification checkpoint — 2026-11-01
 
+Alpha 12 also tests Ghoulraiser returning a physical Zombie token from the
+graveyard: its temporary reveal retains the exact original token identity,
+the acknowledgement completes, and the permission does not expose other
+hidden cards or persist afterward. This fixes a native presentation stall.
+
 The 40-life/200-card update passed an actual Commander opening in the original
 rendered client. Separate native-parser tests observed Gravedigger and Ghoulraiser
 returns, both targeted reanimation spells, mass revival under the Horde's

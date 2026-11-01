@@ -112,7 +112,7 @@ internal static class Program
             foreach(var card in hidden)
             {
                 int forge=(int)card["forgeId"]!;uint id=checked((uint)bridge.ResearchInstanceId(forge));
-                uint expected=temporaryViews.TryGetValue(forge,out var view)?checked((uint)bridge.ResearchPrintingId((string)view["name"]!)):0;
+                uint expected=temporaryViews.TryGetValue(forge,out var view)?checked((uint)bridge.ResearchPrintingId((string?)view["presentationKey"] ?? (string)view["name"]!)):0;
                 if(latest.AllCards.TryGetValue(id,out var native)){if(native.BaseGrpId!=expected)throw new InvalidOperationException("Native hidden/temporary identity differs from the explicit chooser visibility");}
                 else if(expected!=0)throw new InvalidOperationException("Explicitly revealed card is absent from the native model");
             }

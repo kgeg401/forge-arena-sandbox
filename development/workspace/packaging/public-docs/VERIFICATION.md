@@ -1,4 +1,19 @@
-# Current gameplay alpha: 0.2.0-alpha.11
+# Current gameplay alpha: 0.2.0-alpha.12
+
+Alpha 12 fixes a Ghoulraiser reveal that could stop the native client with
+"No generated native mapping for Zombie Token". Temporary source-authorized
+card views now serialize the actual card and its canonical token/copy identity.
+Only the explicitly revealed objects become visible; other hand/library cards
+remain hidden, and the temporary permission ends after acknowledgement.
+
+The exact physical-Zombie failure was reproduced with alpha 11's engine and
+native handler, then passed with the fix, including actual return, reveal
+acknowledgement and privacy checks. Ordinary Ghoulraiser, mass revival and a
+new 40-life/200-card Horde opening also pass bounded original-handler cases.
+**Horde survivor starting life is 40**; current life can decrease during play.
+Existing matches need the client reopened to load the new rules bridge.
+
+## Alpha 11 catalogue and gameplay evidence
 
 The verified baseline remains **370 names**. **1,296 additional names** are
 enabled experimentally, for **1,666 admitted primary names**. Alpha 11 adds

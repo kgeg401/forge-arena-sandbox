@@ -1,9 +1,9 @@
 {
-  "version": "0.2.0-alpha.11",
-  "displayVersion": "0.2.0 alpha 11",
-  "headline": "Solo 200-card Zombie Horde with commander decks and combat progression fixes",
+  "version": "0.2.0-alpha.12",
+  "displayVersion": "0.2.0 alpha 12",
+  "headline": "Fix Ghoulraiser token reveal; 40-life Commander Horde",
   "testRelease": true,
-  "gameplaySource": "eaaab9cc0fef1c46faadde8dd5b4def2ccd5ccaa",
+  "gameplaySource": "e2b77f99b21828a438ff5c01f6f965e1229043fd",
   "admittedNames": [
     "Plains",
     "Island",

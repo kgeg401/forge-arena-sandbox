@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.2.0 alpha 12 - Ghoulraiser reveal fix
+
+- Fixes a stalled reveal box when Ghoulraiser returns a physical Zombie token card. Explicitly revealed cards retain their original identity; other hidden cards stay hidden and temporary visibility ends after acknowledgment.
+- Horde and Commander Horde start the survivor at 40 life against the existing 200-card Zombie/Horror deck. This does not reset damage during an ongoing match.
+- Exact failing token-return scenario, ordinary revival, opening-life and hidden-pile regressions pass through the original handlers. This is a targeted repair, not certification of every card interaction.
+
 ## 0.2.0 alpha 11 - Solo reanimation Horde and combat progression
 
 - Adds Zombie Horde (Solo) and Zombie Horde (Commander Deck). Use existing practice or 99-card-plus-commander decks, 40 survivor life and three preparation turns against a shuffled 200-card Zombie/Horror Horde.

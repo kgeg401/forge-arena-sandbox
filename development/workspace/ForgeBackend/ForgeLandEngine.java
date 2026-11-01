@@ -125,6 +125,7 @@ public final class ForgeLandEngine {
     static boolean normalGame(){return zombieHorde || scenario.equals("opening-duel") || scenario.equals("spell-duel") || scenario.equals("trigger-duel") || scenario.equals("blue-duel") || scenario.equals("custom-duel") || scenario.equals("brawl-duel") || scenario.equals("commander-duel") || scenario.equals("commander-pod");}
     /** Solo Horde format rules; all card resolution, damage and movement remain Forge-owned. */
     static final class HordeRules {
+        static final int SURVIVOR_STARTING_LIFE=40;
         static final String TOKEN="token:b_2_2_zombie";
         static final Map<String,Integer> DECK=Map.ofEntries(
             Map.entry(TOKEN,120),Map.entry("Gravedigger",12),Map.entry("Ghoulraiser",12),
@@ -2337,6 +2338,19 @@ public final class ForgeLandEngine {
             throw new IllegalStateException("Stopped during a pending declaration");
         }catch(StopRequested ex){throw ex;}catch(Exception ex){throw new RuntimeException(ex);}
     }
+    static boolean pendingChoiceReveals(int forgeId){
+        if(decision==null || !decision.has("kind") || !decision.get("kind").getAsString().equals("choice"))return false;
+        JsonObject spec=decision.getAsJsonObject("choice");if(spec==null)return false;
+        for(String field:List.of("options","revealed")){
+            JsonArray views=spec.getAsJsonArray(field);if(views==null)continue;
+            for(JsonElement item:views){
+                JsonObject view=item.getAsJsonObject();
+                if(view.has("forgeId") && view.get("forgeId").getAsInt()==forgeId && view.has("privateToSeat") && view.get("privateToSeat").getAsInt()==1 && view.has("label") &&
+                   (!view.has("identityVisible") || view.get("identityVisible").getAsBoolean()))return true;
+            }
+        }
+        return false;
+    }
     static Map<String,Object> snapshot() {
         unavailableActions.clear();
         boolean priorityReady=game.getAge()==GameStage.Play && !local.hasLost() && game.getPhaseHandler().getPriorityPlayer()==local && decision==null && !game.isGameOver() && fidelityGap().isEmpty();
@@ -2411,8 +2425,11 @@ public final class ForgeLandEngine {
         result.put("legalMana",legalMana);result.put("mana",mana);result.put("manaTotal",local.getManaPool().totalMana());
         List<Object> hidden=new ArrayList<>();for(Player p:seatPlayers)for(ZoneType z:new ZoneType[]{ZoneType.Library,ZoneType.Hand})
             if(!p.hasLost() && (p!=local || z!=ZoneType.Hand))for(Card c:p.getCardsIn(z)){
-                if(fullHumanChoices && c.mayPlayerLook(local)){
-                    var known=card(c);known.put("privateChoice",true);known.put("privateToSeat",1);known.put("visibilityReason","source-look-permission");hidden.add(known);
+                if(fullHumanChoices && (c.mayPlayerLook(local) || pendingChoiceReveals(c.getId()))){
+                    // A reveal callback grants a temporary view without changing
+                    // mayPlayerLook. Serialize that exact Card, preserving its
+                    // canonical token/copy identity rather than guessing from a label.
+                    var known=card(c);known.put("privateChoice",true);known.put("privateToSeat",1);known.put("visibilityReason",c.mayPlayerLook(local)?"source-look-permission":"pending-source-choice");hidden.add(known);
                 }else hidden.add(Map.of("forgeId",c.getId(),"arenaId",1000+c.getId(),"zone",z.name(),"owner",seat(p),"controller",seat(p)));
             }
         if(fullHumanChoices)for(Card c:game.getCardsIn(ZoneType.Exile))if(c.isFaceDown() && !c.mayPlayerLook(local))hidden.add(Map.of("forgeId",c.getId(),"arenaId",1000+c.getId(),"zone","Exile","owner",seat(c.getOwner()),"controller",seat(c.getController())));
@@ -2614,7 +2631,7 @@ public final class ForgeLandEngine {
                 for(String cardName:names){int count=scenario.equals("blue-duel")?(cardName.equals("Plains") || cardName.equals("Island")?12:6):cardName.equals("Plains")?24:scenario.equals("trigger-duel")?(cardName.equals("Yoked Ox") || cardName.equals("Divine Arrow")?6:8):scenario.equals("spell-duel")?9:12;deck.getMain().add(Objects.requireNonNull(FModel.getMagicDb().getCommonCards().getCard(cardName)),count);}
             }
             RegisteredPlayer registered=commanderGame() && !(zombieHorde && !players.isEmpty())?RegisteredPlayer.forVariants(commanderPod?4:2,EnumSet.of(commanderMode?GameType.Commander:GameType.Brawl),deck,Collections.emptyList(),false,Collections.emptyList(),new forge.deck.CardPool()):new RegisteredPlayer(deck);
-            if(zombieHorde){registered.setStartingLife(players.isEmpty()?40:20);if(!players.isEmpty())registered.setStartingHand(0);}
+            if(zombieHorde){registered.setStartingLife(players.isEmpty()?HordeRules.SURVIVOR_STARTING_LIFE:20);if(!players.isEmpty())registered.setStartingHand(0);}
             players.add(registered.setPlayer(new LocalSeat(name,players.isEmpty())));
         }
         Match match=new Match(rules,players,"Arena local practice");
