@@ -73172,6 +73172,2245 @@
       "nativeAbilityTexts": {
         "88787": "When CARDNAME enters, you draw two cards and you lose 2 life."
       }
+    },
+    "Ajani's Welcome": {
+      "grpId": 67692,
+      "titleId": 229377,
+      "types": [
+        "Enchantment"
+      ],
+      "subtypes": [],
+      "supertypes": [],
+      "genericCost": 0,
+      "printedManaText": "oW",
+      "color": "White",
+      "colors": [
+        "White"
+      ],
+      "colorIdentity": [
+        "W"
+      ],
+      "abilityId": 119250,
+      "abilityIds": [
+        119250
+      ],
+      "forgeScript": "a/ajanis_welcome.txt",
+      "forgeScriptSha256": "1cb1c1fd8b1f6198db393f82610968de7dbcef2f184510b8b128d6045dcff003",
+      "token": false,
+      "admitted": true,
+      "candidate": false,
+      "experimental": true,
+      "verified": false,
+      "abilityBindings": {},
+      "coloredCost": [
+        {
+          "color": "White",
+          "count": 1
+        }
+      ]
+    },
+    "Anointer Priest": {
+      "grpId": 73775,
+      "titleId": 76303,
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Human",
+        "Cleric"
+      ],
+      "supertypes": [],
+      "genericCost": 1,
+      "printedManaText": "o1oW",
+      "color": "White",
+      "colors": [
+        "White"
+      ],
+      "colorIdentity": [
+        "W"
+      ],
+      "abilityId": 88123,
+      "abilityIds": [
+        88123,
+        88124
+      ],
+      "forgeScript": "a/anointer_priest.txt",
+      "forgeScriptSha256": "ba173c83ca569ff0fa4d6bb17885aebc9320e0c42fa23b174169788e22179afb",
+      "token": false,
+      "admitted": true,
+      "candidate": false,
+      "experimental": true,
+      "verified": false,
+      "abilityBindings": {},
+      "coloredCost": [
+        {
+          "color": "White",
+          "count": 1
+        }
+      ]
+    },
+    "Brave the Elements": {
+      "grpId": 53845,
+      "titleId": 2766,
+      "types": [
+        "Instant"
+      ],
+      "subtypes": [],
+      "supertypes": [],
+      "genericCost": 0,
+      "printedManaText": "oW",
+      "color": "White",
+      "colors": [
+        "White"
+      ],
+      "colorIdentity": [
+        "W"
+      ],
+      "abilityId": 9164,
+      "abilityIds": [
+        9164
+      ],
+      "forgeScript": "b/brave_the_elements.txt",
+      "forgeScriptSha256": "18293296804d289f77079aec7c82e84141ec26d7a75301d5e24982c08f0bc1d6",
+      "token": false,
+      "admitted": true,
+      "candidate": false,
+      "experimental": true,
+      "verified": false,
+      "abilityBindings": {},
+      "coloredCost": [
+        {
+          "color": "White",
+          "count": 1
+        }
+      ]
+    },
+    "Captain's Call": {
+      "grpId": 82061,
+      "titleId": 40590,
+      "types": [
+        "Sorcery"
+      ],
+      "subtypes": [],
+      "supertypes": [],
+      "genericCost": 3,
+      "printedManaText": "o3oW",
+      "color": "White",
+      "colors": [
+        "White"
+      ],
+      "colorIdentity": [
+        "W"
+      ],
+      "abilityId": 2080,
+      "abilityIds": [
+        2080
+      ],
+      "forgeScript": "c/captains_call.txt",
+      "forgeScriptSha256": "24a80f426ec78cb25c97464d02b937179264466b45f6476ad5206c17a910fc94",
+      "token": false,
+      "admitted": true,
+      "candidate": false,
+      "experimental": true,
+      "verified": false,
+      "abilityBindings": {},
+      "coloredCost": [
+        {
+          "color": "White",
+          "count": 1
+        }
+      ]
+    },
+    "Daxos, Blessed by the Sun": {
+      "grpId": 70520,
+      "titleId": 419660,
+      "types": [
+        "Enchantment",
+        "Creature"
+      ],
+      "subtypes": [
+        "Demigod"
+      ],
+      "supertypes": [
+        "Legendary"
+      ],
+      "genericCost": 0,
+      "printedManaText": "oWoW",
+      "color": "White",
+      "colors": [
+        "White"
+      ],
+      "colorIdentity": [
+        "W"
+      ],
+      "abilityId": 136803,
+      "abilityIds": [
+        136803,
+        136804
+      ],
+      "forgeScript": "d/daxos_blessed_by_the_sun.txt",
+      "forgeScriptSha256": "706f3dc58d71db3a25048a6a5ff01d568b3fd333c40e88ed73d0c24691fff07a",
+      "token": false,
+      "admitted": true,
+      "candidate": false,
+      "experimental": true,
+      "verified": false,
+      "abilityBindings": {},
+      "coloredCost": [
+        {
+          "color": "White",
+          "count": 2
+        }
+      ]
+    },
+    "Defiler of Faith": {
+      "grpId": 82068,
+      "titleId": 614599,
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Phyrexian",
+        "Human"
+      ],
+      "supertypes": [],
+      "genericCost": 3,
+      "printedManaText": "o3oWoW",
+      "color": "White",
+      "colors": [
+        "White"
+      ],
+      "colorIdentity": [
+        "W"
+      ],
+      "abilityId": 15,
+      "abilityIds": [
+        15,
+        152697,
+        152698
+      ],
+      "forgeScript": "d/defiler_of_faith.txt",
+      "forgeScriptSha256": "7cc34a4817af273c86335c7d73e2ddbc1b4c1a92a37b9f19bec1bee23ca7537f",
+      "token": false,
+      "admitted": true,
+      "candidate": false,
+      "experimental": true,
+      "verified": false,
+      "abilityBindings": {},
+      "coloredCost": [
+        {
+          "color": "White",
+          "count": 2
+        }
+      ]
+    },
+    "Distinguished Conjurer": {
+      "grpId": 91090,
+      "titleId": 760765,
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Human",
+        "Wizard"
+      ],
+      "supertypes": [],
+      "genericCost": 1,
+      "printedManaText": "o1oW",
+      "color": "White",
+      "colors": [
+        "White"
+      ],
+      "colorIdentity": [
+        "W"
+      ],
+      "abilityId": 122104,
+      "abilityIds": [
+        122104,
+        172484
+      ],
+      "forgeScript": "d/distinguished_conjurer.txt",
+      "forgeScriptSha256": "2af4797a212d3c91c070b93ee27ac0dd55e6f7657c3f5049c6940862ac3f778e",
+      "token": false,
+      "admitted": true,
+      "candidate": false,
+      "experimental": true,
+      "verified": false,
+      "abilityBindings": {},
+      "coloredCost": [
+        {
+          "color": "White",
+          "count": 1
+        }
+      ]
+    },
+    "Heraldic Banner": {
+      "grpId": 70369,
+      "titleId": 414367,
+      "types": [
+        "Artifact"
+      ],
+      "subtypes": [],
+      "supertypes": [],
+      "genericCost": 3,
+      "printedManaText": "o3",
+      "color": "Colorless",
+      "colors": [],
+      "colorIdentity": [],
+      "abilityId": 88237,
+      "abilityIds": [
+        88237,
+        136279,
+        2374
+      ],
+      "forgeScript": "h/heraldic_banner.txt",
+      "forgeScriptSha256": "167b44d6a92e800f36939b67c949f2f999f6c3fe8cc142065c06792e51ab1807",
+      "token": false,
+      "admitted": true,
+      "candidate": false,
+      "experimental": true,
+      "verified": false,
+      "abilityBindings": {},
+      "coloredCost": []
+    },
+    "Knight of the White Orchid": {
+      "grpId": 94246,
+      "titleId": 7979,
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Human",
+        "Knight"
+      ],
+      "supertypes": [],
+      "genericCost": 0,
+      "printedManaText": "oWoW",
+      "color": "White",
+      "colors": [
+        "White"
+      ],
+      "colorIdentity": [
+        "W"
+      ],
+      "abilityId": 6,
+      "abilityIds": [
+        6,
+        89035
+      ],
+      "forgeScript": "k/knight_of_the_white_orchid.txt",
+      "forgeScriptSha256": "14489267d810ee201376c5b2a329d3d906bcc5c2ba08c139420794e0b55bcc0a",
+      "token": false,
+      "admitted": true,
+      "candidate": false,
+      "experimental": true,
+      "verified": false,
+      "abilityBindings": {},
+      "coloredCost": [
+        {
+          "color": "White",
+          "count": 2
+        }
+      ]
+    },
+    "Linden, the Steadfast Queen": {
+      "grpId": 70167,
+      "titleId": 413663,
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Human",
+        "Noble"
+      ],
+      "supertypes": [
+        "Legendary"
+      ],
+      "genericCost": 0,
+      "printedManaText": "oWoWoW",
+      "color": "White",
+      "colors": [
+        "White"
+      ],
+      "colorIdentity": [
+        "W"
+      ],
+      "abilityId": 15,
+      "abilityIds": [
+        15,
+        136184
+      ],
+      "forgeScript": "l/linden_the_steadfast_queen.txt",
+      "forgeScriptSha256": "e4a24cb769c50f7b4e412b9729465d487cec66cfe9c61f399a4ac0b92a616334",
+      "token": false,
+      "admitted": true,
+      "candidate": false,
+      "experimental": true,
+      "verified": false,
+      "abilityBindings": {},
+      "coloredCost": [
+        {
+          "color": "White",
+          "count": 3
+        }
+      ]
+    },
+    "Lunarch Veteran": {
+      "grpId": 78354,
+      "titleId": 529776,
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Human",
+        "Cleric"
+      ],
+      "supertypes": [],
+      "genericCost": 0,
+      "printedManaText": "oW",
+      "color": "White",
+      "colors": [
+        "White"
+      ],
+      "colorIdentity": [
+        "W"
+      ],
+      "abilityId": 122104,
+      "abilityIds": [
+        122104,
+        145173
+      ],
+      "forgeScript": "l/lunarch_veteran_luminous_phantom.txt",
+      "forgeScriptSha256": "f3d97c9d0c5a24a176fccebe279a881ef43a1b636f4248f5c4c1c9f30437cb71",
+      "token": false,
+      "admitted": true,
+      "candidate": false,
+      "experimental": true,
+      "verified": false,
+      "abilityBindings": {},
+      "coloredCost": [
+        {
+          "color": "White",
+          "count": 1
+        }
+      ]
+    },
+    "Mentor of the Meek": {
+      "grpId": 67734,
+      "titleId": 39370,
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Human",
+        "Soldier"
+      ],
+      "supertypes": [],
+      "genericCost": 2,
+      "printedManaText": "o2oW",
+      "color": "White",
+      "colors": [
+        "White"
+      ],
+      "colorIdentity": [
+        "W"
+      ],
+      "abilityId": 18682,
+      "abilityIds": [
+        18682
+      ],
+      "forgeScript": "m/mentor_of_the_meek.txt",
+      "forgeScriptSha256": "24df68731b464b9edb2fc8e1907abd0be18554625a02571dbcaee9f57fa3ee6c",
+      "token": false,
+      "admitted": true,
+      "candidate": false,
+      "experimental": true,
+      "verified": false,
+      "abilityBindings": {},
+      "coloredCost": [
+        {
+          "color": "White",
+          "count": 1
+        }
+      ]
+    },
+    "Paladin Class": {
+      "grpId": 77134,
+      "titleId": 498329,
+      "types": [
+        "Enchantment"
+      ],
+      "subtypes": [
+        "Class"
+      ],
+      "supertypes": [],
+      "genericCost": 0,
+      "printedManaText": "oW",
+      "color": "White",
+      "colors": [
+        "White"
+      ],
+      "colorIdentity": [
+        "W"
+      ],
+      "abilityId": 143598,
+      "abilityIds": [
+        143598,
+        143599,
+        146502,
+        1456,
+        143564,
+        146503,
+        143600
+      ],
+      "forgeScript": "p/paladin_class.txt",
+      "forgeScriptSha256": "d4fccec0d75a8af0956371868f9eadd17fa94389f1fe639a00e4db78512f6c9d",
+      "token": false,
+      "admitted": true,
+      "candidate": false,
+      "experimental": true,
+      "verified": false,
+      "abilityBindings": {},
+      "coloredCost": [
+        {
+          "color": "White",
+          "count": 1
+        }
+      ]
+    },
+    "Path of Bravery": {
+      "grpId": 72188,
+      "titleId": 42772,
+      "types": [
+        "Enchantment"
+      ],
+      "subtypes": [],
+      "supertypes": [],
+      "genericCost": 2,
+      "printedManaText": "o2oW",
+      "color": "White",
+      "colors": [
+        "White"
+      ],
+      "colorIdentity": [
+        "W"
+      ],
+      "abilityId": 20306,
+      "abilityIds": [
+        20306,
+        20307
+      ],
+      "forgeScript": "p/path_of_bravery.txt",
+      "forgeScriptSha256": "01c260613aa07d48e69bcaaa117c9984b37fe0a286a2de0228b0e6af34d6d8e9",
+      "token": false,
+      "admitted": true,
+      "candidate": false,
+      "experimental": true,
+      "verified": false,
+      "abilityBindings": {},
+      "coloredCost": [
+        {
+          "color": "White",
+          "count": 1
+        }
+      ]
+    },
+    "Rally the Ranks": {
+      "grpId": 75056,
+      "titleId": 477036,
+      "types": [
+        "Enchantment"
+      ],
+      "subtypes": [],
+      "supertypes": [],
+      "genericCost": 1,
+      "printedManaText": "o1oW",
+      "color": "White",
+      "colors": [
+        "White"
+      ],
+      "colorIdentity": [
+        "W"
+      ],
+      "abilityId": 176647,
+      "abilityIds": [
+        176647,
+        116805
+      ],
+      "forgeScript": "r/rally_the_ranks.txt",
+      "forgeScriptSha256": "b4a7e2ec886563c7af7d87128a26c53babf1e4d35b6af70ebf2750162a145d62",
+      "token": false,
+      "admitted": true,
+      "candidate": false,
+      "experimental": true,
+      "verified": false,
+      "abilityBindings": {},
+      "coloredCost": [
+        {
+          "color": "White",
+          "count": 1
+        }
+      ]
+    },
+    "Soul Warden": {
+      "grpId": 32675,
+      "titleId": 3236,
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Human",
+        "Cleric"
+      ],
+      "supertypes": [],
+      "genericCost": 0,
+      "printedManaText": "oW",
+      "color": "White",
+      "colors": [
+        "White"
+      ],
+      "colorIdentity": [
+        "W"
+      ],
+      "abilityId": 2639,
+      "abilityIds": [
+        2639
+      ],
+      "forgeScript": "s/soul_warden.txt",
+      "forgeScriptSha256": "4135b0008ba565c09cdd8e5ad0381543db5ededb2f133332e5ff0986a1fbed13",
+      "token": false,
+      "admitted": true,
+      "candidate": false,
+      "experimental": true,
+      "verified": false,
+      "abilityBindings": {},
+      "coloredCost": [
+        {
+          "color": "White",
+          "count": 1
+        }
+      ]
+    },
+    "Sunscorched Desert": {
+      "grpId": 74153,
+      "titleId": 76973,
+      "types": [
+        "Land"
+      ],
+      "subtypes": [
+        "Desert"
+      ],
+      "supertypes": [],
+      "genericCost": 0,
+      "printedManaText": "",
+      "color": "Colorless",
+      "colors": [],
+      "colorIdentity": [],
+      "abilityId": 119389,
+      "abilityIds": [
+        119389,
+        1152
+      ],
+      "forgeScript": "s/sunscorched_desert.txt",
+      "forgeScriptSha256": "53518994a06feff83a1fb92cca6806a7529d66ba2e5a557ea53907c81914f82e",
+      "token": false,
+      "admitted": true,
+      "candidate": false,
+      "experimental": true,
+      "verified": false,
+      "abilityBindings": {},
+      "coloredCost": []
+    },
+    "Unbreakable Formation": {
+      "grpId": 69157,
+      "titleId": 279532,
+      "types": [
+        "Instant"
+      ],
+      "subtypes": [],
+      "supertypes": [],
+      "genericCost": 2,
+      "printedManaText": "o2oW",
+      "color": "White",
+      "colors": [
+        "White"
+      ],
+      "colorIdentity": [
+        "W"
+      ],
+      "abilityId": 122018,
+      "abilityIds": [
+        122018
+      ],
+      "forgeScript": "u/unbreakable_formation.txt",
+      "forgeScriptSha256": "5a71bda25ec3b86a13ce18800b07fca78fd3ef5c1deb863ea6ceed6158a6a95f",
+      "token": false,
+      "admitted": true,
+      "candidate": false,
+      "experimental": true,
+      "verified": false,
+      "abilityBindings": {},
+      "coloredCost": [
+        {
+          "color": "White",
+          "count": 1
+        }
+      ]
+    },
+    "Valiant Veteran": {
+      "grpId": 82090,
+      "titleId": 614671,
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Kor",
+        "Soldier"
+      ],
+      "supertypes": [],
+      "genericCost": 1,
+      "printedManaText": "o1oW",
+      "color": "White",
+      "colors": [
+        "White"
+      ],
+      "colorIdentity": [
+        "W"
+      ],
+      "abilityId": 152721,
+      "abilityIds": [
+        152721,
+        152722
+      ],
+      "forgeScript": "v/valiant_veteran.txt",
+      "forgeScriptSha256": "d4c3235a9e9ea21b0057b0fc9240d3e62f6c71e50232a3cf5fc5d787b59dde28",
+      "token": false,
+      "admitted": true,
+      "candidate": false,
+      "experimental": true,
+      "verified": false,
+      "abilityBindings": {},
+      "coloredCost": [
+        {
+          "color": "White",
+          "count": 1
+        }
+      ]
+    },
+    "Well of Lost Dreams": {
+      "grpId": 82861,
+      "titleId": 13790,
+      "types": [
+        "Artifact"
+      ],
+      "subtypes": [],
+      "supertypes": [],
+      "genericCost": 4,
+      "printedManaText": "o4",
+      "color": "Colorless",
+      "colors": [],
+      "colorIdentity": [],
+      "abilityId": 9808,
+      "abilityIds": [
+        9808
+      ],
+      "forgeScript": "w/well_of_lost_dreams.txt",
+      "forgeScriptSha256": "4115f52acd1de3a8fa79472bbff1cb77834f47a0b33bd6f1a7c5580dae5ce054",
+      "token": false,
+      "admitted": true,
+      "candidate": false,
+      "experimental": true,
+      "verified": false,
+      "abilityBindings": {},
+      "coloredCost": []
+    },
+    "Wrath of God": {
+      "grpId": 73820,
+      "titleId": 400,
+      "types": [
+        "Sorcery"
+      ],
+      "subtypes": [],
+      "supertypes": [],
+      "genericCost": 2,
+      "printedManaText": "o2oWoW",
+      "color": "White",
+      "colors": [
+        "White"
+      ],
+      "colorIdentity": [
+        "W"
+      ],
+      "abilityId": 1521,
+      "abilityIds": [
+        1521
+      ],
+      "forgeScript": "w/wrath_of_god.txt",
+      "forgeScriptSha256": "8d27ced15f70fe5767d0cd3d5f5f7b978470966bf32eb856622d6fad64f60bd3",
+      "token": false,
+      "admitted": true,
+      "candidate": false,
+      "experimental": true,
+      "verified": false,
+      "abilityBindings": {},
+      "coloredCost": [
+        {
+          "color": "White",
+          "count": 2
+        }
+      ]
+    },
+    "Angel's Trumpet": {
+      "grpId": 2000001,
+      "titleId": 1000000001,
+      "types": [
+        "Artifact"
+      ],
+      "subtypes": [],
+      "supertypes": [],
+      "genericCost": 3,
+      "color": "Colorless",
+      "colors": [],
+      "colorIdentity": [],
+      "abilityId": 2100001,
+      "abilityIds": [
+        2100001
+      ],
+      "forgeScript": "a/angels_trumpet.txt",
+      "forgeScriptSha256": "34a1a88fcfebd53d419cef96dfb1ef019c9e650278008a07ea416aa01d5d58ba",
+      "token": false,
+      "admitted": true,
+      "experimental": true,
+      "verified": false,
+      "paperOnly": true,
+      "commanderAdmitted": false,
+      "abilityBindings": {},
+      "targetPromptId": 10,
+      "paperDefinition": {
+        "typeTextId": 1000000002,
+        "subtypeTextId": 1000000003,
+        "manaText": "o3",
+        "manaValue": 3,
+        "colorIdentity": [],
+        "power": null,
+        "toughness": null,
+        "oracleText": "All creatures have vigilance.\nAt the beginning of each player's end step, tap all untapped creatures that player controls that didn't attack this turn. Angel's Trumpet deals damage to the player equal to the number of creatures tapped this way.",
+        "hiddenAbilityIds": [
+          2100002
+        ],
+        "artStatus": "No native Arena art; use the original missing-art placeholder"
+      }
+    },
+    "Barbed Wire": {
+      "grpId": 2000002,
+      "titleId": 1000000006,
+      "types": [
+        "Artifact"
+      ],
+      "subtypes": [],
+      "supertypes": [],
+      "genericCost": 3,
+      "color": "Colorless",
+      "colors": [],
+      "colorIdentity": [],
+      "abilityId": 2100003,
+      "abilityIds": [
+        2100003
+      ],
+      "forgeScript": "b/barbed_wire.txt",
+      "forgeScriptSha256": "d28515389f48d0ddf6117821d2762f789f9a3f23f99718b9d484136ed6946533",
+      "token": false,
+      "admitted": true,
+      "experimental": true,
+      "verified": false,
+      "paperOnly": true,
+      "commanderAdmitted": false,
+      "abilityBindings": {},
+      "targetPromptId": 10,
+      "paperDefinition": {
+        "typeTextId": 1000000007,
+        "subtypeTextId": 1000000008,
+        "manaText": "o3",
+        "manaValue": 3,
+        "colorIdentity": [],
+        "power": null,
+        "toughness": null,
+        "oracleText": "At the beginning of each player's upkeep, Barbed Wire deals 1 damage to that player.\n{2}: Prevent the next 1 damage that would be dealt by Barbed Wire this turn.",
+        "hiddenAbilityIds": [
+          2100004,
+          2100005
+        ],
+        "artStatus": "No native Arena art; use the original missing-art placeholder"
+      }
+    },
+    "Bastion Protector": {
+      "grpId": 2000003,
+      "titleId": 1000000012,
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Human",
+        "Soldier"
+      ],
+      "supertypes": [],
+      "genericCost": 2,
+      "color": "White",
+      "colors": [
+        "White"
+      ],
+      "colorIdentity": [
+        "W"
+      ],
+      "abilityId": 2100006,
+      "abilityIds": [
+        2100006
+      ],
+      "forgeScript": "b/bastion_protector.txt",
+      "forgeScriptSha256": "60242fda76ef53482d2fc9eef111254635d94b7a33ee3f1bebde096b6a0c8768",
+      "token": false,
+      "admitted": true,
+      "experimental": true,
+      "verified": false,
+      "paperOnly": true,
+      "commanderAdmitted": false,
+      "abilityBindings": {},
+      "targetPromptId": 10,
+      "paperDefinition": {
+        "typeTextId": 1000000013,
+        "subtypeTextId": 1000000014,
+        "manaText": "o2oW",
+        "manaValue": 3,
+        "colorIdentity": [
+          "White"
+        ],
+        "power": "3",
+        "toughness": "3",
+        "oracleText": "Commander creatures you control get +2/+2 and have indestructible.",
+        "hiddenAbilityIds": [],
+        "artStatus": "No native Arena art; use the original missing-art placeholder"
+      }
+    },
+    "Blood of the Martyr": {
+      "grpId": 2000004,
+      "titleId": 1000000016,
+      "types": [
+        "Instant"
+      ],
+      "subtypes": [],
+      "supertypes": [],
+      "genericCost": 0,
+      "color": "White",
+      "colors": [
+        "White"
+      ],
+      "colorIdentity": [
+        "W"
+      ],
+      "abilityId": 2100007,
+      "abilityIds": [
+        2100007
+      ],
+      "forgeScript": "b/blood_of_the_martyr.txt",
+      "forgeScriptSha256": "24ad9e600d4dbd621736cbce84c9fbb9409877e1c06f2ac2f8f4721017deb336",
+      "token": false,
+      "admitted": true,
+      "experimental": true,
+      "verified": false,
+      "paperOnly": true,
+      "commanderAdmitted": false,
+      "abilityBindings": {},
+      "targetPromptId": 10,
+      "paperDefinition": {
+        "typeTextId": 1000000017,
+        "subtypeTextId": 1000000018,
+        "manaText": "oWoWoW",
+        "manaValue": 3,
+        "colorIdentity": [
+          "White"
+        ],
+        "power": null,
+        "toughness": null,
+        "oracleText": "Until end of turn, if damage would be dealt to any creature, you may have that damage dealt to you instead.",
+        "hiddenAbilityIds": [],
+        "artStatus": "No native Arena art; use the original missing-art placeholder"
+      }
+    },
+    "Call the Coppercoats": {
+      "grpId": 2000005,
+      "titleId": 1000000020,
+      "types": [
+        "Instant"
+      ],
+      "subtypes": [],
+      "supertypes": [],
+      "genericCost": 2,
+      "color": "White",
+      "colors": [
+        "White"
+      ],
+      "colorIdentity": [
+        "W"
+      ],
+      "abilityId": 2100008,
+      "abilityIds": [
+        2100008
+      ],
+      "forgeScript": "c/call_the_coppercoats.txt",
+      "forgeScriptSha256": "f9106bcc7affd59861b88c6528b1658daf21560f50a1f64503ca4b90061c62e0",
+      "token": false,
+      "admitted": true,
+      "experimental": true,
+      "verified": false,
+      "paperOnly": true,
+      "commanderAdmitted": false,
+      "abilityBindings": {},
+      "targetPromptId": 10,
+      "paperDefinition": {
+        "typeTextId": 1000000021,
+        "subtypeTextId": 1000000022,
+        "manaText": "o2oW",
+        "manaValue": 3,
+        "colorIdentity": [
+          "White"
+        ],
+        "power": null,
+        "toughness": null,
+        "oracleText": "Strive \u00e2\u20ac\u201d This spell costs {1}{W} more to cast for each target beyond the first.\nChoose any number of target opponents. Create X 1/1 white Human Soldier creature tokens, where X is the number of creatures those opponents control.",
+        "hiddenAbilityIds": [
+          2100009
+        ],
+        "artStatus": "No native Arena art; use the original missing-art placeholder"
+      }
+    },
+    "Captain of the Watch": {
+      "grpId": 2000006,
+      "titleId": 1000000025,
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Human",
+        "Soldier"
+      ],
+      "supertypes": [],
+      "genericCost": 4,
+      "color": "White",
+      "colors": [
+        "White"
+      ],
+      "colorIdentity": [
+        "W"
+      ],
+      "abilityId": 2100010,
+      "abilityIds": [
+        2100010,
+        2100012
+      ],
+      "forgeScript": "c/captain_of_the_watch.txt",
+      "forgeScriptSha256": "54e6b85c37ee98c16477deabf8a6862c0c15004686d2823b4ec98f2bdb3a726a",
+      "token": false,
+      "admitted": true,
+      "experimental": true,
+      "verified": false,
+      "paperOnly": true,
+      "commanderAdmitted": false,
+      "abilityBindings": {},
+      "targetPromptId": 10,
+      "paperDefinition": {
+        "typeTextId": 1000000026,
+        "subtypeTextId": 1000000027,
+        "manaText": "o4oWoW",
+        "manaValue": 6,
+        "colorIdentity": [
+          "White"
+        ],
+        "power": "3",
+        "toughness": "3",
+        "oracleText": "Vigilance (Attacking doesn't cause this creature to tap.)\nOther Soldier creatures you control get +1/+1 and have vigilance.\nWhen Captain of the Watch enters, create three 1/1 white Soldier creature tokens.",
+        "hiddenAbilityIds": [
+          2100011
+        ],
+        "artStatus": "No native Arena art; use the original missing-art placeholder"
+      }
+    },
+    "Catapult Master": {
+      "grpId": 2000007,
+      "titleId": 1000000031,
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Human",
+        "Soldier"
+      ],
+      "supertypes": [],
+      "genericCost": 3,
+      "color": "White",
+      "colors": [
+        "White"
+      ],
+      "colorIdentity": [
+        "W"
+      ],
+      "abilityId": 2100013,
+      "abilityIds": [
+        2100013
+      ],
+      "forgeScript": "c/catapult_master.txt",
+      "forgeScriptSha256": "cd8b7e2bd2b86dc6991fbb4f2ec4572251e5deea2884edebda1e4c0f702ab4a2",
+      "token": false,
+      "admitted": true,
+      "experimental": true,
+      "verified": false,
+      "paperOnly": true,
+      "commanderAdmitted": false,
+      "abilityBindings": {},
+      "targetPromptId": 10,
+      "paperDefinition": {
+        "typeTextId": 1000000032,
+        "subtypeTextId": 1000000033,
+        "manaText": "o3oWoW",
+        "manaValue": 5,
+        "colorIdentity": [
+          "White"
+        ],
+        "power": "3",
+        "toughness": "3",
+        "oracleText": "Tap five untapped Soldiers you control: Exile target creature.",
+        "hiddenAbilityIds": [
+          2100014
+        ],
+        "artStatus": "No native Arena art; use the original missing-art placeholder"
+      }
+    },
+    "Court Street Denizen": {
+      "grpId": 2000008,
+      "titleId": 1000000036,
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Human",
+        "Soldier"
+      ],
+      "supertypes": [],
+      "genericCost": 2,
+      "color": "White",
+      "colors": [
+        "White"
+      ],
+      "colorIdentity": [
+        "W"
+      ],
+      "abilityId": 2100015,
+      "abilityIds": [
+        2100015
+      ],
+      "forgeScript": "c/court_street_denizen.txt",
+      "forgeScriptSha256": "d46611657333ba0bc060cf6841745f53d94f40b92c4efd664ff0783d508a9209",
+      "token": false,
+      "admitted": true,
+      "experimental": true,
+      "verified": false,
+      "paperOnly": true,
+      "commanderAdmitted": false,
+      "abilityBindings": {},
+      "targetPromptId": 10,
+      "paperDefinition": {
+        "typeTextId": 1000000037,
+        "subtypeTextId": 1000000038,
+        "manaText": "o2oW",
+        "manaValue": 3,
+        "colorIdentity": [
+          "White"
+        ],
+        "power": "2",
+        "toughness": "2",
+        "oracleText": "Whenever another white creature you control enters, tap target creature an opponent controls.",
+        "hiddenAbilityIds": [
+          2100016
+        ],
+        "artStatus": "No native Arena art; use the original missing-art placeholder"
+      }
+    },
+    "Cut a Deal": {
+      "grpId": 2000009,
+      "titleId": 1000000041,
+      "types": [
+        "Sorcery"
+      ],
+      "subtypes": [],
+      "supertypes": [],
+      "genericCost": 2,
+      "color": "White",
+      "colors": [
+        "White"
+      ],
+      "colorIdentity": [
+        "W"
+      ],
+      "abilityId": 2100017,
+      "abilityIds": [
+        2100017
+      ],
+      "forgeScript": "c/cut_a_deal.txt",
+      "forgeScriptSha256": "0e69f6ced783c9f0fe5aaea91e10065d7114ae7276b313aa171875a3bcfc0d7d",
+      "token": false,
+      "admitted": true,
+      "experimental": true,
+      "verified": false,
+      "paperOnly": true,
+      "commanderAdmitted": false,
+      "abilityBindings": {},
+      "targetPromptId": 10,
+      "paperDefinition": {
+        "typeTextId": 1000000042,
+        "subtypeTextId": 1000000043,
+        "manaText": "o2oW",
+        "manaValue": 3,
+        "colorIdentity": [
+          "White"
+        ],
+        "power": null,
+        "toughness": null,
+        "oracleText": "Each opponent draws a card, then you draw a card for each opponent who drew a card this way.",
+        "hiddenAbilityIds": [],
+        "artStatus": "No native Arena art; use the original missing-art placeholder"
+      }
+    },
+    "Darien, King of Kjeldor": {
+      "grpId": 2000010,
+      "titleId": 1000000045,
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Human",
+        "Soldier"
+      ],
+      "supertypes": [
+        "Legendary"
+      ],
+      "genericCost": 4,
+      "color": "White",
+      "colors": [
+        "White"
+      ],
+      "colorIdentity": [
+        "W"
+      ],
+      "abilityId": 2100018,
+      "abilityIds": [
+        2100018
+      ],
+      "forgeScript": "d/darien_king_of_kjeldor.txt",
+      "forgeScriptSha256": "f2f62cae7bb41395100266759cc341db53918318313ce586e8d8862fc6b0b29e",
+      "token": false,
+      "admitted": true,
+      "experimental": true,
+      "verified": false,
+      "paperOnly": true,
+      "commanderAdmitted": true,
+      "abilityBindings": {},
+      "targetPromptId": 10,
+      "paperDefinition": {
+        "typeTextId": 1000000046,
+        "subtypeTextId": 1000000047,
+        "manaText": "o4oWoW",
+        "manaValue": 6,
+        "colorIdentity": [
+          "White"
+        ],
+        "power": "3",
+        "toughness": "3",
+        "oracleText": "Whenever you're dealt damage, you may create that many 1/1 white Soldier creature tokens.",
+        "hiddenAbilityIds": [
+          2100019
+        ],
+        "artStatus": "No native Arena art; use the original missing-art placeholder"
+      }
+    },
+    "Field Marshal": {
+      "grpId": 2000011,
+      "titleId": 1000000050,
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Human",
+        "Soldier"
+      ],
+      "supertypes": [],
+      "genericCost": 1,
+      "color": "White",
+      "colors": [
+        "White"
+      ],
+      "colorIdentity": [
+        "W"
+      ],
+      "abilityId": 2100020,
+      "abilityIds": [
+        2100020
+      ],
+      "forgeScript": "f/field_marshal.txt",
+      "forgeScriptSha256": "8eb59a1063c690bee46268bcd690786048a90764e8884985f3a32cd1be934efe",
+      "token": false,
+      "admitted": true,
+      "experimental": true,
+      "verified": false,
+      "paperOnly": true,
+      "commanderAdmitted": false,
+      "abilityBindings": {},
+      "targetPromptId": 10,
+      "paperDefinition": {
+        "typeTextId": 1000000051,
+        "subtypeTextId": 1000000052,
+        "manaText": "o1oWoW",
+        "manaValue": 3,
+        "colorIdentity": [
+          "White"
+        ],
+        "power": "2",
+        "toughness": "2",
+        "oracleText": "Other Soldier creatures get +1/+1 and have first strike. (They deal combat damage before creatures without first strike.)",
+        "hiddenAbilityIds": [],
+        "artStatus": "No native Arena art; use the original missing-art placeholder"
+      }
+    },
+    "Generous Gift": {
+      "grpId": 2000012,
+      "titleId": 1000000054,
+      "types": [
+        "Instant"
+      ],
+      "subtypes": [],
+      "supertypes": [],
+      "genericCost": 2,
+      "color": "White",
+      "colors": [
+        "White"
+      ],
+      "colorIdentity": [
+        "W"
+      ],
+      "abilityId": 2100021,
+      "abilityIds": [
+        2100021
+      ],
+      "forgeScript": "g/generous_gift.txt",
+      "forgeScriptSha256": "054989252877c08b4434bbe1d9060aafd6a3f9cad07c038de6640af52fc919bc",
+      "token": false,
+      "admitted": true,
+      "experimental": true,
+      "verified": false,
+      "paperOnly": true,
+      "commanderAdmitted": false,
+      "abilityBindings": {},
+      "targetPromptId": 10,
+      "paperDefinition": {
+        "typeTextId": 1000000055,
+        "subtypeTextId": 1000000056,
+        "manaText": "o2oW",
+        "manaValue": 3,
+        "colorIdentity": [
+          "White"
+        ],
+        "power": null,
+        "toughness": null,
+        "oracleText": "Destroy target permanent. Its controller creates a 3/3 green Elephant creature token.",
+        "hiddenAbilityIds": [],
+        "artStatus": "No native Arena art; use the original missing-art placeholder"
+      }
+    },
+    "Healer of the Pride": {
+      "grpId": 2000013,
+      "titleId": 1000000058,
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Cat",
+        "Cleric"
+      ],
+      "supertypes": [],
+      "genericCost": 3,
+      "color": "White",
+      "colors": [
+        "White"
+      ],
+      "colorIdentity": [
+        "W"
+      ],
+      "abilityId": 2100022,
+      "abilityIds": [
+        2100022
+      ],
+      "forgeScript": "h/healer_of_the_pride.txt",
+      "forgeScriptSha256": "84fa2690a45af034f5671280f3d45118357aa9f4feeea7a9f5c2fb34f19e7def",
+      "token": false,
+      "admitted": true,
+      "experimental": true,
+      "verified": false,
+      "paperOnly": true,
+      "commanderAdmitted": false,
+      "abilityBindings": {},
+      "targetPromptId": 10,
+      "paperDefinition": {
+        "typeTextId": 1000000059,
+        "subtypeTextId": 1000000060,
+        "manaText": "o3oW",
+        "manaValue": 4,
+        "colorIdentity": [
+          "White"
+        ],
+        "power": "2",
+        "toughness": "3",
+        "oracleText": "Whenever another creature you control enters, you gain 2 life.",
+        "hiddenAbilityIds": [
+          2100023
+        ],
+        "artStatus": "No native Arena art; use the original missing-art placeholder"
+      }
+    },
+    "Honor of the Pure": {
+      "grpId": 2000014,
+      "titleId": 1000000063,
+      "types": [
+        "Enchantment"
+      ],
+      "subtypes": [],
+      "supertypes": [],
+      "genericCost": 1,
+      "color": "White",
+      "colors": [
+        "White"
+      ],
+      "colorIdentity": [
+        "W"
+      ],
+      "abilityId": 2100024,
+      "abilityIds": [
+        2100024
+      ],
+      "forgeScript": "h/honor_of_the_pure.txt",
+      "forgeScriptSha256": "11dac6c1e38ce7bcc261623aa77d8f1a2aae2169b48bc2c430ce8891d7254bdf",
+      "token": false,
+      "admitted": true,
+      "experimental": true,
+      "verified": false,
+      "paperOnly": true,
+      "commanderAdmitted": false,
+      "abilityBindings": {},
+      "targetPromptId": 10,
+      "paperDefinition": {
+        "typeTextId": 1000000064,
+        "subtypeTextId": 1000000065,
+        "manaText": "o1oW",
+        "manaValue": 2,
+        "colorIdentity": [
+          "White"
+        ],
+        "power": null,
+        "toughness": null,
+        "oracleText": "White creatures you control get +1/+1.",
+        "hiddenAbilityIds": [],
+        "artStatus": "No native Arena art; use the original missing-art placeholder"
+      }
+    },
+    "Idol of Oblivion": {
+      "grpId": 2000015,
+      "titleId": 1000000067,
+      "types": [
+        "Artifact"
+      ],
+      "subtypes": [],
+      "supertypes": [],
+      "genericCost": 2,
+      "color": "Colorless",
+      "colors": [],
+      "colorIdentity": [],
+      "abilityId": 2100025,
+      "abilityIds": [
+        2100025
+      ],
+      "forgeScript": "i/idol_of_oblivion.txt",
+      "forgeScriptSha256": "9f1f9e965ee5fc814037364dadf39691e2e8b16a16b32aa6b919b0801a31550c",
+      "token": false,
+      "admitted": true,
+      "experimental": true,
+      "verified": false,
+      "paperOnly": true,
+      "commanderAdmitted": false,
+      "abilityBindings": {},
+      "targetPromptId": 10,
+      "paperDefinition": {
+        "typeTextId": 1000000068,
+        "subtypeTextId": 1000000069,
+        "manaText": "o2",
+        "manaValue": 2,
+        "colorIdentity": [],
+        "power": null,
+        "toughness": null,
+        "oracleText": "{T}: Draw a card. Activate only if you created a token this turn.\n{8}, {T}, Sacrifice Idol of Oblivion: Create a 10/10 colorless Eldrazi creature token.",
+        "hiddenAbilityIds": [
+          2100026,
+          2100027
+        ],
+        "artStatus": "No native Arena art; use the original missing-art placeholder"
+      }
+    },
+    "Jade Monolith": {
+      "grpId": 2000016,
+      "titleId": 1000000073,
+      "types": [
+        "Artifact"
+      ],
+      "subtypes": [],
+      "supertypes": [],
+      "genericCost": 4,
+      "color": "Colorless",
+      "colors": [],
+      "colorIdentity": [],
+      "abilityId": 2100028,
+      "abilityIds": [
+        2100028
+      ],
+      "forgeScript": "j/jade_monolith.txt",
+      "forgeScriptSha256": "47ad75955f30b7048c7feb4d35f0c3e5ceade8af7e8913b5e91a94b3071b811a",
+      "token": false,
+      "admitted": true,
+      "experimental": true,
+      "verified": false,
+      "paperOnly": true,
+      "commanderAdmitted": false,
+      "abilityBindings": {},
+      "targetPromptId": 10,
+      "paperDefinition": {
+        "typeTextId": 1000000074,
+        "subtypeTextId": 1000000075,
+        "manaText": "o4",
+        "manaValue": 4,
+        "colorIdentity": [],
+        "power": null,
+        "toughness": null,
+        "oracleText": "{1}: The next time a source of your choice would deal damage to target creature this turn, that source deals that damage to you instead.",
+        "hiddenAbilityIds": [
+          2100029
+        ],
+        "artStatus": "No native Arena art; use the original missing-art placeholder"
+      }
+    },
+    "Jinxed Idol": {
+      "grpId": 2000017,
+      "titleId": 1000000078,
+      "types": [
+        "Artifact"
+      ],
+      "subtypes": [],
+      "supertypes": [],
+      "genericCost": 2,
+      "color": "Colorless",
+      "colors": [],
+      "colorIdentity": [],
+      "abilityId": 2100030,
+      "abilityIds": [
+        2100030
+      ],
+      "forgeScript": "j/jinxed_idol.txt",
+      "forgeScriptSha256": "dc5302be5bfc88fabf6c75cb9d881022f373760b5bdb7e0906d7d1a6435a3fc8",
+      "token": false,
+      "admitted": true,
+      "experimental": true,
+      "verified": false,
+      "paperOnly": true,
+      "commanderAdmitted": false,
+      "abilityBindings": {},
+      "targetPromptId": 10,
+      "paperDefinition": {
+        "typeTextId": 1000000079,
+        "subtypeTextId": 1000000080,
+        "manaText": "o2",
+        "manaValue": 2,
+        "colorIdentity": [],
+        "power": null,
+        "toughness": null,
+        "oracleText": "At the beginning of your upkeep, Jinxed Idol deals 2 damage to you.\nSacrifice a creature: Target opponent gains control of Jinxed Idol.",
+        "hiddenAbilityIds": [
+          2100031,
+          2100032
+        ],
+        "artStatus": "No native Arena art; use the original missing-art placeholder"
+      }
+    },
+    "Keeper of the Accord": {
+      "grpId": 2000018,
+      "titleId": 1000000084,
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Human",
+        "Soldier"
+      ],
+      "supertypes": [],
+      "genericCost": 3,
+      "color": "White",
+      "colors": [
+        "White"
+      ],
+      "colorIdentity": [
+        "W"
+      ],
+      "abilityId": 2100033,
+      "abilityIds": [
+        2100033
+      ],
+      "forgeScript": "k/keeper_of_the_accord.txt",
+      "forgeScriptSha256": "02d6e37a4bec19cc0d116b393f63c9c98466c8d8b7828b71e39d4b32ca513eea",
+      "token": false,
+      "admitted": true,
+      "experimental": true,
+      "verified": false,
+      "paperOnly": true,
+      "commanderAdmitted": false,
+      "abilityBindings": {},
+      "targetPromptId": 10,
+      "paperDefinition": {
+        "typeTextId": 1000000085,
+        "subtypeTextId": 1000000086,
+        "manaText": "o3oW",
+        "manaValue": 4,
+        "colorIdentity": [
+          "White"
+        ],
+        "power": "3",
+        "toughness": "4",
+        "oracleText": "At the beginning of each opponent's end step, if that player controls more creatures than you, create a 1/1 white Soldier creature token.\nAt the beginning of each opponent's end step, if that player controls more lands than you, you may search your library for a basic Plains card, put it onto the battlefield tapped, then shuffle.",
+        "hiddenAbilityIds": [
+          2100034,
+          2100035
+        ],
+        "artStatus": "No native Arena art; use the original missing-art placeholder"
+      }
+    },
+    "Marble Diamond": {
+      "grpId": 2000019,
+      "titleId": 1000000090,
+      "types": [
+        "Artifact"
+      ],
+      "subtypes": [],
+      "supertypes": [],
+      "genericCost": 2,
+      "color": "Colorless",
+      "colors": [],
+      "colorIdentity": [
+        "W"
+      ],
+      "abilityId": 2100036,
+      "abilityIds": [
+        2100036
+      ],
+      "forgeScript": "m/marble_diamond.txt",
+      "forgeScriptSha256": "3c1c07f8878f0a2a61e13a2152ea12a8bf2ef22cbe761907207a543af7b72b97",
+      "token": false,
+      "admitted": true,
+      "experimental": true,
+      "verified": false,
+      "paperOnly": true,
+      "commanderAdmitted": false,
+      "abilityBindings": {},
+      "targetPromptId": 10,
+      "paperDefinition": {
+        "typeTextId": 1000000091,
+        "subtypeTextId": 1000000092,
+        "manaText": "o2",
+        "manaValue": 2,
+        "colorIdentity": [
+          "White"
+        ],
+        "power": null,
+        "toughness": null,
+        "oracleText": "Marble Diamond enters tapped.\n{T}: Add {W}.",
+        "hiddenAbilityIds": [
+          2100037
+        ],
+        "artStatus": "No native Arena art; use the original missing-art placeholder"
+      }
+    },
+    "Martial Coup": {
+      "grpId": 2000020,
+      "titleId": 1000000095,
+      "types": [
+        "Sorcery"
+      ],
+      "subtypes": [],
+      "supertypes": [],
+      "genericCost": 0,
+      "color": "White",
+      "colors": [
+        "White"
+      ],
+      "colorIdentity": [
+        "W"
+      ],
+      "abilityId": 2100038,
+      "abilityIds": [
+        2100038
+      ],
+      "forgeScript": "m/martial_coup.txt",
+      "forgeScriptSha256": "6bd7e67ea165517e75963c74d6afb54520674863ec3fac44f5bf150e3ada7010",
+      "token": false,
+      "admitted": true,
+      "experimental": true,
+      "verified": false,
+      "paperOnly": true,
+      "commanderAdmitted": false,
+      "abilityBindings": {},
+      "targetPromptId": 10,
+      "paperDefinition": {
+        "typeTextId": 1000000096,
+        "subtypeTextId": 1000000097,
+        "manaText": "oXoWoW",
+        "manaValue": 2,
+        "colorIdentity": [
+          "White"
+        ],
+        "power": null,
+        "toughness": null,
+        "oracleText": "Create X 1/1 white Soldier creature tokens. If X is 5 or more, destroy all other creatures.",
+        "hiddenAbilityIds": [],
+        "artStatus": "No native Arena art; use the original missing-art placeholder"
+      }
+    },
+    "Myriad Landscape": {
+      "grpId": 2000021,
+      "titleId": 1000000099,
+      "types": [
+        "Land"
+      ],
+      "subtypes": [],
+      "supertypes": [],
+      "genericCost": 0,
+      "color": "Colorless",
+      "colors": [],
+      "colorIdentity": [],
+      "abilityId": 2100039,
+      "abilityIds": [
+        2100039
+      ],
+      "forgeScript": "m/myriad_landscape.txt",
+      "forgeScriptSha256": "fb9a54e6865a47e660b23a3d01bbccb01f8f8ead123506de4aa931b17b992652",
+      "token": false,
+      "admitted": true,
+      "experimental": true,
+      "verified": false,
+      "paperOnly": true,
+      "commanderAdmitted": false,
+      "abilityBindings": {},
+      "targetPromptId": 10,
+      "paperDefinition": {
+        "typeTextId": 1000000100,
+        "subtypeTextId": 1000000101,
+        "manaText": "",
+        "manaValue": 0,
+        "colorIdentity": [],
+        "power": null,
+        "toughness": null,
+        "oracleText": "Myriad Landscape enters tapped.\n{T}: Add {C}.\n{2}, {T}, Sacrifice Myriad Landscape: Search your library for up to two basic land cards that share a land type, put them onto the battlefield tapped, then shuffle.",
+        "hiddenAbilityIds": [
+          2100040,
+          2100041
+        ],
+        "artStatus": "No native Arena art; use the original missing-art placeholder"
+      }
+    },
+    "Nomad Stadium": {
+      "grpId": 2000022,
+      "titleId": 1000000105,
+      "types": [
+        "Land"
+      ],
+      "subtypes": [],
+      "supertypes": [],
+      "genericCost": 0,
+      "color": "Colorless",
+      "colors": [],
+      "colorIdentity": [
+        "W"
+      ],
+      "abilityId": 2100042,
+      "abilityIds": [
+        2100042
+      ],
+      "forgeScript": "n/nomad_stadium.txt",
+      "forgeScriptSha256": "7c79d55557369d0b63b5940a69f6772b8e03c46af88e0b87089077629abc302b",
+      "token": false,
+      "admitted": true,
+      "experimental": true,
+      "verified": false,
+      "paperOnly": true,
+      "commanderAdmitted": false,
+      "abilityBindings": {},
+      "targetPromptId": 10,
+      "paperDefinition": {
+        "typeTextId": 1000000106,
+        "subtypeTextId": 1000000107,
+        "manaText": "",
+        "manaValue": 0,
+        "colorIdentity": [
+          "White"
+        ],
+        "power": null,
+        "toughness": null,
+        "oracleText": "{T}: Add {W}. Nomad Stadium deals 1 damage to you.\nThreshold \u00e2\u20ac\u201d {W}, {T}, Sacrifice Nomad Stadium: You gain 4 life. Activate only if there are seven or more cards in your graveyard.",
+        "hiddenAbilityIds": [
+          2100043,
+          2100044
+        ],
+        "artStatus": "No native Arena art; use the original missing-art placeholder"
+      }
+    },
+    "Prava of the Steel Legion": {
+      "grpId": 2000023,
+      "titleId": 1000000111,
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Cat",
+        "Soldier"
+      ],
+      "supertypes": [
+        "Legendary"
+      ],
+      "genericCost": 2,
+      "color": "White",
+      "colors": [
+        "White"
+      ],
+      "colorIdentity": [
+        "W"
+      ],
+      "abilityId": 2100045,
+      "abilityIds": [
+        2100045
+      ],
+      "forgeScript": "p/prava_of_the_steel_legion.txt",
+      "forgeScriptSha256": "a41180d2e7edebfabb83333e5010ffdb9095f447aea4d5ab5a24736ebda51451",
+      "token": false,
+      "admitted": true,
+      "experimental": true,
+      "verified": false,
+      "paperOnly": true,
+      "commanderAdmitted": false,
+      "abilityBindings": {},
+      "targetPromptId": 10,
+      "paperDefinition": {
+        "typeTextId": 1000000112,
+        "subtypeTextId": 1000000113,
+        "manaText": "o2oW",
+        "manaValue": 3,
+        "colorIdentity": [
+          "White"
+        ],
+        "power": "1",
+        "toughness": "4",
+        "oracleText": "During your turn, creature tokens you control get +1/+4.\n{3}{W}: Create a 1/1 white Soldier creature token.\nPartner (You can have two commanders if both have partner.)",
+        "hiddenAbilityIds": [
+          2100046,
+          2100047
+        ],
+        "artStatus": "No native Arena art; use the original missing-art placeholder"
+      }
+    },
+    "Return to Dust": {
+      "grpId": 2000024,
+      "titleId": 1000000117,
+      "types": [
+        "Instant"
+      ],
+      "subtypes": [],
+      "supertypes": [],
+      "genericCost": 2,
+      "color": "White",
+      "colors": [
+        "White"
+      ],
+      "colorIdentity": [
+        "W"
+      ],
+      "abilityId": 2100048,
+      "abilityIds": [
+        2100048
+      ],
+      "forgeScript": "r/return_to_dust.txt",
+      "forgeScriptSha256": "bee39b05f17bde9fa544449cac51e05911d10c4231a18181349fe91145b92046",
+      "token": false,
+      "admitted": true,
+      "experimental": true,
+      "verified": false,
+      "paperOnly": true,
+      "commanderAdmitted": false,
+      "abilityBindings": {},
+      "targetPromptId": 10,
+      "paperDefinition": {
+        "typeTextId": 1000000118,
+        "subtypeTextId": 1000000119,
+        "manaText": "o2oWoW",
+        "manaValue": 4,
+        "colorIdentity": [
+          "White"
+        ],
+        "power": null,
+        "toughness": null,
+        "oracleText": "Exile target artifact or enchantment. If you cast this spell during your main phase, you may exile up to one other target artifact or enchantment.",
+        "hiddenAbilityIds": [],
+        "artStatus": "No native Arena art; use the original missing-art placeholder"
+      }
+    },
+    "Righteous Cause": {
+      "grpId": 2000025,
+      "titleId": 1000000121,
+      "types": [
+        "Enchantment"
+      ],
+      "subtypes": [],
+      "supertypes": [],
+      "genericCost": 3,
+      "color": "White",
+      "colors": [
+        "White"
+      ],
+      "colorIdentity": [
+        "W"
+      ],
+      "abilityId": 2100049,
+      "abilityIds": [
+        2100049
+      ],
+      "forgeScript": "r/righteous_cause.txt",
+      "forgeScriptSha256": "02c883535d7ca5d8c23dbc3769e6922888aa90fd41ddd5def10070c925703019",
+      "token": false,
+      "admitted": true,
+      "experimental": true,
+      "verified": false,
+      "paperOnly": true,
+      "commanderAdmitted": false,
+      "abilityBindings": {},
+      "targetPromptId": 10,
+      "paperDefinition": {
+        "typeTextId": 1000000122,
+        "subtypeTextId": 1000000123,
+        "manaText": "o3oWoW",
+        "manaValue": 5,
+        "colorIdentity": [
+          "White"
+        ],
+        "power": null,
+        "toughness": null,
+        "oracleText": "Whenever a creature attacks, you gain 1 life.",
+        "hiddenAbilityIds": [
+          2100050
+        ],
+        "artStatus": "No native Arena art; use the original missing-art placeholder"
+      }
+    },
+    "Soul's Attendant": {
+      "grpId": 2000026,
+      "titleId": 1000000126,
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Cleric",
+        "Human"
+      ],
+      "supertypes": [],
+      "genericCost": 0,
+      "color": "White",
+      "colors": [
+        "White"
+      ],
+      "colorIdentity": [
+        "W"
+      ],
+      "abilityId": 2100051,
+      "abilityIds": [
+        2100051
+      ],
+      "forgeScript": "s/souls_attendant.txt",
+      "forgeScriptSha256": "902f276a1c1727e9c37ad5b32011fee19853ffebc95334e333f172133709d0cd",
+      "token": false,
+      "admitted": true,
+      "experimental": true,
+      "verified": false,
+      "paperOnly": true,
+      "commanderAdmitted": false,
+      "abilityBindings": {},
+      "targetPromptId": 10,
+      "paperDefinition": {
+        "typeTextId": 1000000127,
+        "subtypeTextId": 1000000128,
+        "manaText": "oW",
+        "manaValue": 1,
+        "colorIdentity": [
+          "White"
+        ],
+        "power": "1",
+        "toughness": "1",
+        "oracleText": "Whenever another creature enters, you may gain 1 life.",
+        "hiddenAbilityIds": [
+          2100052
+        ],
+        "artStatus": "No native Arena art; use the original missing-art placeholder"
+      }
+    },
+    "Suture Priest": {
+      "grpId": 2000027,
+      "titleId": 1000000131,
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Cleric",
+        "Phyrexian"
+      ],
+      "supertypes": [],
+      "genericCost": 1,
+      "color": "White",
+      "colors": [
+        "White"
+      ],
+      "colorIdentity": [
+        "W"
+      ],
+      "abilityId": 2100053,
+      "abilityIds": [
+        2100053
+      ],
+      "forgeScript": "s/suture_priest.txt",
+      "forgeScriptSha256": "02249dcdbbf90cab0addcb03c857e00e296ebf6e9b557ea2b1d4eb8a78c3e68c",
+      "token": false,
+      "admitted": true,
+      "experimental": true,
+      "verified": false,
+      "paperOnly": true,
+      "commanderAdmitted": false,
+      "abilityBindings": {},
+      "targetPromptId": 10,
+      "paperDefinition": {
+        "typeTextId": 1000000132,
+        "subtypeTextId": 1000000133,
+        "manaText": "o1oW",
+        "manaValue": 2,
+        "colorIdentity": [
+          "White"
+        ],
+        "power": "1",
+        "toughness": "1",
+        "oracleText": "Whenever another creature you control enters, you may gain 1 life.\nWhenever a creature an opponent controls enters, you may have that player lose 1 life.",
+        "hiddenAbilityIds": [
+          2100054,
+          2100055
+        ],
+        "artStatus": "No native Arena art; use the original missing-art placeholder"
+      }
+    },
+    "Torture Chamber": {
+      "grpId": 2000028,
+      "titleId": 1000000137,
+      "types": [
+        "Artifact"
+      ],
+      "subtypes": [],
+      "supertypes": [],
+      "genericCost": 3,
+      "color": "Colorless",
+      "colors": [],
+      "colorIdentity": [],
+      "abilityId": 2100056,
+      "abilityIds": [
+        2100056
+      ],
+      "forgeScript": "t/torture_chamber.txt",
+      "forgeScriptSha256": "680496040e235f9ca7351cc1555bba5492119bacef3d7f4791a219f841451961",
+      "token": false,
+      "admitted": true,
+      "experimental": true,
+      "verified": false,
+      "paperOnly": true,
+      "commanderAdmitted": false,
+      "abilityBindings": {},
+      "targetPromptId": 10,
+      "paperDefinition": {
+        "typeTextId": 1000000138,
+        "subtypeTextId": 1000000139,
+        "manaText": "o3",
+        "manaValue": 3,
+        "colorIdentity": [],
+        "power": null,
+        "toughness": null,
+        "oracleText": "At the beginning of your upkeep, put a pain counter on Torture Chamber.\nAt the beginning of your end step, Torture Chamber deals damage to you equal to the number of pain counters on it.\n{1}, {T}, Remove all pain counters from Torture Chamber: It deals damage to target creature equal to the number of pain counters removed this way.",
+        "hiddenAbilityIds": [
+          2100057,
+          2100058,
+          2100059
+        ],
+        "artStatus": "No native Arena art; use the original missing-art placeholder"
+      }
+    },
+    "Weathered Wayfarer": {
+      "grpId": 2000029,
+      "titleId": 1000000144,
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Cleric",
+        "Human",
+        "Nomad"
+      ],
+      "supertypes": [],
+      "genericCost": 0,
+      "color": "White",
+      "colors": [
+        "White"
+      ],
+      "colorIdentity": [
+        "W"
+      ],
+      "abilityId": 2100060,
+      "abilityIds": [
+        2100060
+      ],
+      "forgeScript": "w/weathered_wayfarer.txt",
+      "forgeScriptSha256": "dc286a7d2b7e94d4a4638192005818d5e3c8753e6988338a988670686dd62903",
+      "token": false,
+      "admitted": true,
+      "experimental": true,
+      "verified": false,
+      "paperOnly": true,
+      "commanderAdmitted": false,
+      "abilityBindings": {},
+      "targetPromptId": 10,
+      "paperDefinition": {
+        "typeTextId": 1000000145,
+        "subtypeTextId": 1000000146,
+        "manaText": "oW",
+        "manaValue": 1,
+        "colorIdentity": [
+          "White"
+        ],
+        "power": "1",
+        "toughness": "1",
+        "oracleText": "{W}, {T}: Search your library for a land card, reveal it, put it into your hand, then shuffle. Activate only if an opponent controls more lands than you.",
+        "hiddenAbilityIds": [
+          2100061
+        ],
+        "artStatus": "No native Arena art; use the original missing-art placeholder"
+      }
+    },
+    "Worship": {
+      "grpId": 2000030,
+      "titleId": 1000000149,
+      "types": [
+        "Enchantment"
+      ],
+      "subtypes": [],
+      "supertypes": [],
+      "genericCost": 3,
+      "color": "White",
+      "colors": [
+        "White"
+      ],
+      "colorIdentity": [
+        "W"
+      ],
+      "abilityId": 2100062,
+      "abilityIds": [
+        2100062
+      ],
+      "forgeScript": "w/worship.txt",
+      "forgeScriptSha256": "a6dda6a70976913dc28a3c1dd7f747ceb587e01077160365372a6d5bedd565cd",
+      "token": false,
+      "admitted": true,
+      "experimental": true,
+      "verified": false,
+      "paperOnly": true,
+      "commanderAdmitted": false,
+      "abilityBindings": {},
+      "targetPromptId": 10,
+      "paperDefinition": {
+        "typeTextId": 1000000150,
+        "subtypeTextId": 1000000151,
+        "manaText": "o3oW",
+        "manaValue": 4,
+        "colorIdentity": [
+          "White"
+        ],
+        "power": null,
+        "toughness": null,
+        "oracleText": "If you control a creature, damage that would reduce your life total to less than 1 reduces it to 1 instead.",
+        "hiddenAbilityIds": [],
+        "artStatus": "No native Arena art; use the original missing-art placeholder"
+      }
+    },
+    "Yes Man, Personal Securitron": {
+      "grpId": 2000031,
+      "titleId": 1000000153,
+      "types": [
+        "Artifact",
+        "Creature"
+      ],
+      "subtypes": [
+        "Robot"
+      ],
+      "supertypes": [
+        "Legendary"
+      ],
+      "genericCost": 2,
+      "color": "White",
+      "colors": [
+        "White"
+      ],
+      "colorIdentity": [
+        "W"
+      ],
+      "abilityId": 2100063,
+      "abilityIds": [
+        2100063
+      ],
+      "forgeScript": "y/yes_man_personal_securitron.txt",
+      "forgeScriptSha256": "e62d7dcae37a7ea37f678e3e3f8ec38de665c790cf895fe4ded7398068f995fd",
+      "token": false,
+      "admitted": true,
+      "experimental": true,
+      "verified": false,
+      "paperOnly": true,
+      "commanderAdmitted": false,
+      "abilityBindings": {},
+      "targetPromptId": 10,
+      "paperDefinition": {
+        "typeTextId": 1000000154,
+        "subtypeTextId": 1000000155,
+        "manaText": "o2oW",
+        "manaValue": 3,
+        "colorIdentity": [
+          "White"
+        ],
+        "power": "2",
+        "toughness": "2",
+        "oracleText": "{T}: Target opponent gains control of Yes Man, Personal Securitron. When they do, you draw two cards and put a quest counter on Yes Man. Activate only during your turn.\nWild Card \u00e2\u20ac\u201d When Yes Man leaves the battlefield, its owner creates a tapped 1/1 white Soldier creature token for each quest counter on it.",
+        "hiddenAbilityIds": [
+          2100064,
+          2100065,
+          2100066
+        ],
+        "artStatus": "No native Arena art; use the original missing-art placeholder"
+      }
     }
   },
   "moxfieldProvenance": {
@@ -73208,9 +75447,7 @@
             "manaDescriptions": {
               "{T}: Add {W}.": 1001
             },
-            "keywords": {
-              "REBOUND": 89
-            },
+            "keywords": {},
             "reboundDelayedTrigger": 213
           },
           "targetPromptId": 10
@@ -73311,9 +75548,7 @@
         "forgeScriptSha256": "43d8489d82418e168af7cceb5f846b71fb7961a08da1ccffdd3bd8aa8923815b",
         "fields": {
           "abilityBindings": {
-            "keywords": {
-              "REBOUND": 89
-            },
+            "keywords": {},
             "reboundDelayedTrigger": 213,
             "activated": {},
             "descriptions": {},
@@ -80031,6 +82266,1149 @@
           },
           "targetPromptId": 10
         }
+      },
+      "Arcane Signet": {
+        "grpId": 70464,
+        "forgeScriptSha256": "7ca813f9d7bb3aa43043fdd95e0f036b3864baf046d4ce915f3aeb6a918e8d39",
+        "fields": {
+          "abilityBindings": {
+            "activated": {},
+            "descriptions": {
+              "{T}: Add one mana of any color in your commander's color identity.": 90126,
+              "Add one mana of any color in your commander's color identity.": 90126
+            },
+            "triggerDescriptions": {},
+            "manaDescriptions": {
+              "{T}: Add one mana of any color in your commander's color identity.": 90126
+            },
+            "keywords": {},
+            "reboundDelayedTrigger": 213
+          }
+        }
+      },
+      "Austere Command": {
+        "grpId": 106567,
+        "forgeScriptSha256": "21fb4903b6196f7a721ad07f9000a743b90a0ee2db2141fbb639de2ac24ea442",
+        "fields": {
+          "abilityBindings": {
+            "activated": {},
+            "descriptions": {},
+            "triggerDescriptions": {},
+            "manaDescriptions": {},
+            "keywords": {},
+            "reboundDelayedTrigger": 213
+          }
+        }
+      },
+      "Disenchant": {
+        "grpId": 69799,
+        "forgeScriptSha256": "a46f71802d9836b440229cb6d9eb3c9897ba058cd22e364d81bf9bb20dc0d209",
+        "fields": {
+          "abilityBindings": {
+            "activated": {},
+            "descriptions": {},
+            "triggerDescriptions": {},
+            "manaDescriptions": {},
+            "keywords": {},
+            "reboundDelayedTrigger": 213
+          }
+        }
+      },
+      "Elspeth, Sun's Champion": {
+        "grpId": 92706,
+        "forgeScriptSha256": "648a00383a7d64d61d4336b9d865d4a0831992c3a0bb12271691ada5452dc02b",
+        "fields": {
+          "abilityBindings": {
+            "activated": {
+              "Token": 20555,
+              "DestroyAll": 100645,
+              "Effect": 100647
+            },
+            "descriptions": {
+              "+1: Create three 1/1 white Soldier creature tokens.": 20555,
+              "-3: Destroy all creatures with power 4 or greater.": 100645,
+              "-7: You get an emblem with \"Creatures you control get +2/+2 and have flying.\"": 100647,
+              "Create three 1/1 white Soldier creature tokens.": 20555,
+              "Destroy all creatures with power 4 or greater.": 100645,
+              "You get an emblem with \"Creatures you control get +2/+2 and have flying.\"": 100647
+            },
+            "triggerDescriptions": {},
+            "manaDescriptions": {},
+            "keywords": {},
+            "reboundDelayedTrigger": 213
+          }
+        }
+      },
+      "Mangara, the Diplomat": {
+        "grpId": 71809,
+        "forgeScriptSha256": "a95f005dd483312e8edf8729883938f76bcc2abd259ea685faa7498c54825f6d",
+        "fields": {
+          "abilityBindings": {
+            "activated": {},
+            "descriptions": {},
+            "triggerDescriptions": {
+              "Whenever an opponent attacks with creatures, if two or more of those creatures are attacking you and/or planeswalkers you control, draw a card.": 137842,
+              "Whenever an opponent casts their second spell each turn, draw a card.": 137843
+            },
+            "manaDescriptions": {},
+            "keywords": {
+              "LIFELINK": 12
+            },
+            "reboundDelayedTrigger": 213
+          }
+        }
+      },
+      "Mind Stone": {
+        "grpId": 9135,
+        "forgeScriptSha256": "4ea32eebda9ae9aac0f65311c5b09041307186436f03c4f1af6a4b40cafb3567",
+        "fields": {
+          "abilityBindings": {
+            "activated": {
+              "Draw": 88188
+            },
+            "descriptions": {
+              "{T}: Add {C}.": 1152,
+              "{1}, {T}, Sacrifice CARDNAME: Draw a card.": 88188,
+              "Add {C}.": 1152,
+              "Draw a card.": 88188
+            },
+            "triggerDescriptions": {},
+            "manaDescriptions": {
+              "{T}: Add {C}.": 1152
+            },
+            "keywords": {},
+            "reboundDelayedTrigger": 213
+          }
+        }
+      },
+      "Path to Exile": {
+        "grpId": 90704,
+        "forgeScriptSha256": "baf2562f4e84eb7b9cce20f816fe0531aaac306dd57bc050d1389feb95c69658",
+        "fields": {
+          "abilityBindings": {
+            "activated": {},
+            "descriptions": {},
+            "triggerDescriptions": {},
+            "manaDescriptions": {},
+            "keywords": {},
+            "reboundDelayedTrigger": 213
+          }
+        }
+      },
+      "Secret Rendezvous": {
+        "grpId": 76419,
+        "forgeScriptSha256": "d929749177c69a1c558a26cb90de1425fcf689a03010adf11acba8937c193adb",
+        "fields": {
+          "abilityBindings": {
+            "activated": {},
+            "descriptions": {},
+            "triggerDescriptions": {},
+            "manaDescriptions": {},
+            "keywords": {},
+            "reboundDelayedTrigger": 213
+          }
+        }
+      },
+      "Skullclamp": {
+        "grpId": 20551,
+        "forgeScriptSha256": "dd443b6b862ad2e8a3e7802e25f2e3246977eb7171f7b288f848e4fca17c3c86",
+        "fields": {
+          "abilityBindings": {
+            "activated": {
+              "Attach": 1268
+            },
+            "descriptions": {
+              "Equip {1} ({1}: Attach to target creature you control. Equip only as a sorcery.)": 1268,
+              "({1}: Attach to target creature you control. Equip only as a sorcery.)": 1268
+            },
+            "triggerDescriptions": {
+              "Whenever equipped creature dies, draw two cards.": 6064
+            },
+            "manaDescriptions": {},
+            "keywords": {},
+            "reboundDelayedTrigger": 213,
+            "trigger": 6064
+          }
+        }
+      },
+      "Sol Ring": {
+        "grpId": 60235,
+        "forgeScriptSha256": "c96e86daad1367bceefc198abcbb3dd36129c893377ec0471d68041446478356",
+        "fields": {
+          "abilityBindings": {
+            "activated": {},
+            "descriptions": {
+              "{T}: Add {C}{C}.": 1471,
+              "Add {C}{C}.": 1471
+            },
+            "triggerDescriptions": {},
+            "manaDescriptions": {
+              "{T}: Add {C}{C}.": 1471
+            },
+            "keywords": {},
+            "reboundDelayedTrigger": 213
+          }
+        }
+      },
+      "Solemn Simulacrum": {
+        "grpId": 72021,
+        "forgeScriptSha256": "0b65729ba1ed11bb66e6d05a3fc1cfdca284ea8fc7305b2133ffb911ad7b0c24",
+        "fields": {
+          "abilityBindings": {
+            "activated": {},
+            "descriptions": {},
+            "triggerDescriptions": {
+              "When CARDNAME enters, you may search your library for a basic land card, put that card onto the battlefield tapped, then shuffle.": 92125,
+              "When CARDNAME dies, you may draw a card.": 88164
+            },
+            "manaDescriptions": {},
+            "keywords": {},
+            "reboundDelayedTrigger": 213
+          }
+        }
+      },
+      "Swiftfoot Boots": {
+        "grpId": 82857,
+        "forgeScriptSha256": "3a4bba7262e3a375d0dbac35be5471668542baca2be3d9123f080f3f06270d17",
+        "fields": {
+          "abilityBindings": {
+            "activated": {
+              "Attach": 1268
+            },
+            "descriptions": {
+              "Equip {1} ({1}: Attach to target creature you control. Equip only as a sorcery.)": 1268,
+              "({1}: Attach to target creature you control. Equip only as a sorcery.)": 1268
+            },
+            "triggerDescriptions": {},
+            "manaDescriptions": {},
+            "keywords": {},
+            "reboundDelayedTrigger": 213
+          }
+        }
+      },
+      "Swords to Plowshares": {
+        "grpId": 59771,
+        "forgeScriptSha256": "b220a132bd93473b212e9572ce283d52669bd92071c8cdef772581867fa8eef5",
+        "fields": {
+          "abilityBindings": {
+            "activated": {},
+            "descriptions": {},
+            "triggerDescriptions": {},
+            "manaDescriptions": {},
+            "keywords": {},
+            "reboundDelayedTrigger": 213
+          }
+        }
+      },
+      "Wayfarer's Bauble": {
+        "grpId": 88511,
+        "forgeScriptSha256": "c609a4e2c8c67129f8ab103e875a76f325f642f88e38ee003e944299b177961f",
+        "fields": {
+          "abilityBindings": {
+            "activated": {
+              "ChangeZone": 88354
+            },
+            "descriptions": {
+              "{2}, {T}, Sacrifice CARDNAME: Search your library for a basic land card, put that card onto the battlefield tapped, then shuffle.": 88354,
+              "Search your library for a basic land card, put that card onto the battlefield tapped, then shuffle.": 88354
+            },
+            "triggerDescriptions": {},
+            "manaDescriptions": {},
+            "keywords": {},
+            "reboundDelayedTrigger": 213
+          }
+        }
+      },
+      "Ajani's Welcome": {
+        "grpId": 67692,
+        "forgeScriptSha256": "1cb1c1fd8b1f6198db393f82610968de7dbcef2f184510b8b128d6045dcff003",
+        "fields": {
+          "abilityBindings": {
+            "activated": {},
+            "descriptions": {},
+            "triggerDescriptions": {
+              "Whenever a creature you control enters, you gain 1 life.": 119250
+            },
+            "manaDescriptions": {},
+            "trigger": 119250,
+            "keywords": {}
+          },
+          "targetPromptId": 10
+        }
+      },
+      "Anointer Priest": {
+        "grpId": 73775,
+        "forgeScriptSha256": "ba173c83ca569ff0fa4d6bb17885aebc9320e0c42fa23b174169788e22179afb",
+        "fields": {
+          "abilityBindings": {
+            "activated": {
+              "CopyPermanent": 88124
+            },
+            "descriptions": {
+              "Embalm {3}{W} ({3}{W}, Exile this card from your graveyard: Create a token that's a copy of this card, except it's white, it has no mana cost, and it's a Zombie in addition to its other types. Embalm only as a sorcery.)": 88124,
+              "({3}{W}, Exile this card from your graveyard: Create a token that's a copy of this card, except it's white, it has no mana cost, and it's a Zombie in addition to its other types. Embalm only as a sorcery.)": 88124
+            },
+            "triggerDescriptions": {
+              "Whenever a creature token you control enters, you gain 1 life.": 88123
+            },
+            "manaDescriptions": {},
+            "trigger": 88123,
+            "keywords": {}
+          },
+          "targetPromptId": 10
+        }
+      },
+      "Brave the Elements": {
+        "grpId": 53845,
+        "forgeScriptSha256": "18293296804d289f77079aec7c82e84141ec26d7a75301d5e24982c08f0bc1d6",
+        "fields": {
+          "abilityBindings": {
+            "activated": {},
+            "descriptions": {},
+            "triggerDescriptions": {},
+            "manaDescriptions": {},
+            "keywords": {}
+          },
+          "targetPromptId": 10
+        }
+      },
+      "Captain's Call": {
+        "grpId": 82061,
+        "forgeScriptSha256": "24a80f426ec78cb25c97464d02b937179264466b45f6476ad5206c17a910fc94",
+        "fields": {
+          "abilityBindings": {
+            "activated": {},
+            "descriptions": {},
+            "triggerDescriptions": {},
+            "manaDescriptions": {},
+            "keywords": {}
+          },
+          "targetPromptId": 10
+        }
+      },
+      "Daxos, Blessed by the Sun": {
+        "grpId": 70520,
+        "forgeScriptSha256": "706f3dc58d71db3a25048a6a5ff01d568b3fd333c40e88ed73d0c24691fff07a",
+        "fields": {
+          "abilityBindings": {
+            "activated": {},
+            "descriptions": {},
+            "triggerDescriptions": {
+              "Whenever another creature you control enters or dies, you gain 1 life.": 136804
+            },
+            "manaDescriptions": {},
+            "trigger": 136804,
+            "keywords": {}
+          },
+          "targetPromptId": 10
+        }
+      },
+      "Defiler of Faith": {
+        "grpId": 82068,
+        "forgeScriptSha256": "7cc34a4817af273c86335c7d73e2ddbc1b4c1a92a37b9f19bec1bee23ca7537f",
+        "fields": {
+          "abilityBindings": {
+            "activated": {},
+            "descriptions": {},
+            "triggerDescriptions": {
+              "Whenever you cast a white permanent spell, create a 1/1 white Soldier creature token.": 152698
+            },
+            "manaDescriptions": {},
+            "trigger": 152698,
+            "keywords": {
+              "VIGILANCE": 15
+            }
+          },
+          "targetPromptId": 10
+        }
+      },
+      "Distinguished Conjurer": {
+        "grpId": 91090,
+        "forgeScriptSha256": "2af4797a212d3c91c070b93ee27ac0dd55e6f7657c3f5049c6940862ac3f778e",
+        "fields": {
+          "abilityBindings": {
+            "activated": {
+              "ChangeZone": 172484
+            },
+            "descriptions": {
+              "{4}{W}, {T}: Exile another target creature you control, then return it to the battlefield under its owner's control.": 172484,
+              "Exile another target creature you control, then return it to the battlefield under its owner's control.": 172484
+            },
+            "triggerDescriptions": {
+              "Whenever another creature you control enters, you gain 1 life.": 122104
+            },
+            "manaDescriptions": {},
+            "trigger": 122104,
+            "keywords": {}
+          },
+          "targetPromptId": 10
+        }
+      },
+      "Heraldic Banner": {
+        "grpId": 70369,
+        "forgeScriptSha256": "167b44d6a92e800f36939b67c949f2f999f6c3fe8cc142065c06792e51ab1807",
+        "fields": {
+          "abilityBindings": {
+            "activated": {},
+            "descriptions": {
+              "{T}: Add one mana of the chosen color.": 2374,
+              "Add one mana of the chosen color.": 2374
+            },
+            "triggerDescriptions": {},
+            "manaDescriptions": {
+              "{T}: Add one mana of the chosen color.": 2374
+            },
+            "keywords": {}
+          },
+          "targetPromptId": 10
+        }
+      },
+      "Knight of the White Orchid": {
+        "grpId": 94246,
+        "forgeScriptSha256": "14489267d810ee201376c5b2a329d3d906bcc5c2ba08c139420794e0b55bcc0a",
+        "fields": {
+          "abilityBindings": {
+            "activated": {},
+            "descriptions": {},
+            "triggerDescriptions": {
+              "When CARDNAME enters, if an opponent controls more lands than you, you may search your library for a Plains card, put it onto the battlefield, then shuffle.": 89035
+            },
+            "manaDescriptions": {},
+            "trigger": 89035,
+            "keywords": {
+              "FIRSTSTRIKE": 6
+            }
+          },
+          "targetPromptId": 10
+        }
+      },
+      "Linden, the Steadfast Queen": {
+        "grpId": 70167,
+        "forgeScriptSha256": "e4a24cb769c50f7b4e412b9729465d487cec66cfe9c61f399a4ac0b92a616334",
+        "fields": {
+          "abilityBindings": {
+            "activated": {},
+            "descriptions": {},
+            "triggerDescriptions": {
+              "Whenever a white creature you control attacks, you gain 1 life.": 136184
+            },
+            "manaDescriptions": {},
+            "trigger": 136184,
+            "keywords": {
+              "VIGILANCE": 15
+            }
+          },
+          "targetPromptId": 10
+        }
+      },
+      "Lunarch Veteran": {
+        "grpId": 78354,
+        "forgeScriptSha256": "f3d97c9d0c5a24a176fccebe279a881ef43a1b636f4248f5c4c1c9f30437cb71",
+        "fields": {
+          "abilityBindings": {
+            "activated": {},
+            "descriptions": {},
+            "triggerDescriptions": {
+              "Whenever another creature you control enters, you gain 1 life.": 122104
+            },
+            "manaDescriptions": {},
+            "trigger": 122104,
+            "keywords": {}
+          },
+          "targetPromptId": 10
+        }
+      },
+      "Mentor of the Meek": {
+        "grpId": 67734,
+        "forgeScriptSha256": "24df68731b464b9edb2fc8e1907abd0be18554625a02571dbcaee9f57fa3ee6c",
+        "fields": {
+          "abilityBindings": {
+            "activated": {},
+            "descriptions": {},
+            "triggerDescriptions": {
+              "Whenever another creature you control with power 2 or less enters, you may pay {1}. If you do, draw a card.": 18682
+            },
+            "manaDescriptions": {},
+            "trigger": 18682,
+            "keywords": {}
+          },
+          "targetPromptId": 10
+        }
+      },
+      "Paladin Class": {
+        "grpId": 77134,
+        "forgeScriptSha256": "d4fccec0d75a8af0956371868f9eadd17fa94389f1fe639a00e4db78512f6c9d",
+        "fields": {
+          "abilityBindings": {
+            "activated": {},
+            "descriptions": {
+              "{2}{W}: Level 2": 143599,
+              "{4}{W}: Level 3": 143564,
+              "Level 2": 143599,
+              "Level 3": 143564
+            },
+            "triggerDescriptions": {
+              "Whenever you attack, until end of turn, target attacking creature gets +1/+1 for each other attacking creature and gains double strike.": 143600
+            },
+            "manaDescriptions": {},
+            "trigger": 143600,
+            "keywords": {}
+          },
+          "targetPromptId": 10
+        }
+      },
+      "Path of Bravery": {
+        "grpId": 72188,
+        "forgeScriptSha256": "01c260613aa07d48e69bcaaa117c9984b37fe0a286a2de0228b0e6af34d6d8e9",
+        "fields": {
+          "abilityBindings": {
+            "activated": {},
+            "descriptions": {},
+            "triggerDescriptions": {
+              "Whenever one or more creatures you control attack, you gain life equal to the number of attacking creatures.": 20307
+            },
+            "manaDescriptions": {},
+            "trigger": 20307,
+            "keywords": {}
+          },
+          "targetPromptId": 10
+        }
+      },
+      "Rally the Ranks": {
+        "grpId": 75056,
+        "forgeScriptSha256": "b4a7e2ec886563c7af7d87128a26c53babf1e4d35b6af70ebf2750162a145d62",
+        "fields": {
+          "abilityBindings": {
+            "activated": {},
+            "descriptions": {},
+            "triggerDescriptions": {},
+            "manaDescriptions": {},
+            "keywords": {}
+          },
+          "targetPromptId": 10
+        }
+      },
+      "Soul Warden": {
+        "grpId": 32675,
+        "forgeScriptSha256": "4135b0008ba565c09cdd8e5ad0381543db5ededb2f133332e5ff0986a1fbed13",
+        "fields": {
+          "abilityBindings": {
+            "activated": {},
+            "descriptions": {},
+            "triggerDescriptions": {
+              "Whenever another creature enters, you gain 1 life.": 2639
+            },
+            "manaDescriptions": {},
+            "trigger": 2639,
+            "keywords": {}
+          },
+          "targetPromptId": 10
+        }
+      },
+      "Sunscorched Desert": {
+        "grpId": 74153,
+        "forgeScriptSha256": "53518994a06feff83a1fb92cca6806a7529d66ba2e5a557ea53907c81914f82e",
+        "fields": {
+          "abilityBindings": {
+            "activated": {},
+            "descriptions": {
+              "{T}: Add {C}.": 1152,
+              "Add {C}.": 1152
+            },
+            "triggerDescriptions": {
+              "When CARDNAME enters, it deals 1 damage to target player or planeswalker.": 119389
+            },
+            "manaDescriptions": {
+              "{T}: Add {C}.": 1152
+            },
+            "trigger": 119389,
+            "keywords": {}
+          },
+          "targetPromptId": 10
+        }
+      },
+      "Unbreakable Formation": {
+        "grpId": 69157,
+        "forgeScriptSha256": "5a71bda25ec3b86a13ce18800b07fca78fd3ef5c1deb863ea6ceed6158a6a95f",
+        "fields": {
+          "abilityBindings": {
+            "activated": {},
+            "descriptions": {},
+            "triggerDescriptions": {},
+            "manaDescriptions": {},
+            "keywords": {}
+          },
+          "targetPromptId": 10
+        }
+      },
+      "Valiant Veteran": {
+        "grpId": 82090,
+        "forgeScriptSha256": "d4c3235a9e9ea21b0057b0fc9240d3e62f6c71e50232a3cf5fc5d787b59dde28",
+        "fields": {
+          "abilityBindings": {
+            "activated": {
+              "PutCounterAll": 152722
+            },
+            "descriptions": {
+              "{3}{W}{W}, Exile CARDNAME from your graveyard: Put a +1/+1 counter on each Soldier you control.": 152722,
+              "Put a +1/+1 counter on each Soldier you control.": 152722
+            },
+            "triggerDescriptions": {},
+            "manaDescriptions": {},
+            "keywords": {}
+          },
+          "targetPromptId": 10
+        }
+      },
+      "Well of Lost Dreams": {
+        "grpId": 82861,
+        "forgeScriptSha256": "4115f52acd1de3a8fa79472bbff1cb77834f47a0b33bd6f1a7c5580dae5ce054",
+        "fields": {
+          "abilityBindings": {
+            "activated": {},
+            "descriptions": {},
+            "triggerDescriptions": {
+              "Whenever you gain life, you may pay {X}, where X is less than or equal to the amount of life you gained. If you do, draw X cards.": 9808
+            },
+            "manaDescriptions": {},
+            "trigger": 9808,
+            "keywords": {}
+          },
+          "targetPromptId": 10
+        }
+      },
+      "Wrath of God": {
+        "grpId": 73820,
+        "forgeScriptSha256": "8d27ced15f70fe5767d0cd3d5f5f7b978470966bf32eb856622d6fad64f60bd3",
+        "fields": {
+          "abilityBindings": {
+            "activated": {},
+            "descriptions": {},
+            "triggerDescriptions": {},
+            "manaDescriptions": {},
+            "keywords": {}
+          },
+          "targetPromptId": 10
+        }
+      },
+      "Angel's Trumpet": {
+        "grpId": 2000001,
+        "forgeScriptSha256": "34a1a88fcfebd53d419cef96dfb1ef019c9e650278008a07ea416aa01d5d58ba",
+        "fields": {
+          "abilityBindings": {
+            "activated": {},
+            "descriptions": {},
+            "triggerDescriptions": {
+              "At the beginning of each player's end step, tap all untapped creatures that player controls that didn't attack this turn. CARDNAME deals damage to the player equal to the number of creatures tapped this way.": 2100002
+            },
+            "manaDescriptions": {},
+            "trigger": 2100002,
+            "keywords": {}
+          }
+        }
+      },
+      "Barbed Wire": {
+        "grpId": 2000002,
+        "forgeScriptSha256": "d28515389f48d0ddf6117821d2762f789f9a3f23f99718b9d484136ed6946533",
+        "fields": {
+          "abilityBindings": {
+            "activated": {
+              "Effect": 2100004
+            },
+            "descriptions": {
+              "{2}: Prevent the next 1 damage that would be dealt by CARDNAME this turn.": 2100004,
+              "Prevent the next 1 damage that would be dealt by CARDNAME this turn.": 2100004
+            },
+            "triggerDescriptions": {
+              "At the beginning of each player's upkeep, CARDNAME deals 1 damage to that player.": 2100005
+            },
+            "manaDescriptions": {},
+            "trigger": 2100005,
+            "keywords": {}
+          }
+        }
+      },
+      "Bastion Protector": {
+        "grpId": 2000003,
+        "forgeScriptSha256": "60242fda76ef53482d2fc9eef111254635d94b7a33ee3f1bebde096b6a0c8768",
+        "fields": {
+          "abilityBindings": {
+            "activated": {},
+            "descriptions": {},
+            "triggerDescriptions": {},
+            "manaDescriptions": {},
+            "keywords": {}
+          }
+        }
+      },
+      "Blood of the Martyr": {
+        "grpId": 2000004,
+        "forgeScriptSha256": "24ad9e600d4dbd621736cbce84c9fbb9409877e1c06f2ac2f8f4721017deb336",
+        "fields": {
+          "abilityBindings": {
+            "activated": {},
+            "descriptions": {},
+            "triggerDescriptions": {},
+            "manaDescriptions": {},
+            "keywords": {}
+          }
+        }
+      },
+      "Call the Coppercoats": {
+        "grpId": 2000005,
+        "forgeScriptSha256": "f9106bcc7affd59861b88c6528b1658daf21560f50a1f64503ca4b90061c62e0",
+        "fields": {
+          "abilityBindings": {
+            "activated": {},
+            "descriptions": {},
+            "triggerDescriptions": {},
+            "manaDescriptions": {},
+            "keywords": {}
+          }
+        }
+      },
+      "Captain of the Watch": {
+        "grpId": 2000006,
+        "forgeScriptSha256": "54e6b85c37ee98c16477deabf8a6862c0c15004686d2823b4ec98f2bdb3a726a",
+        "fields": {
+          "abilityBindings": {
+            "activated": {},
+            "descriptions": {},
+            "triggerDescriptions": {
+              "When CARDNAME enters, create three 1/1 white Soldier creature tokens.": 2100011
+            },
+            "manaDescriptions": {},
+            "trigger": 2100011,
+            "keywords": {
+              "VIGILANCE": 2100012
+            },
+            "printedKeywordBases": {
+              "2100012": 15
+            }
+          }
+        }
+      },
+      "Catapult Master": {
+        "grpId": 2000007,
+        "forgeScriptSha256": "cd8b7e2bd2b86dc6991fbb4f2ec4572251e5deea2884edebda1e4c0f702ab4a2",
+        "fields": {
+          "abilityBindings": {
+            "activated": {
+              "ChangeZone": 2100014
+            },
+            "descriptions": {
+              "Tap five untapped Soldiers you control: Exile target creature.": 2100014,
+              "Exile target creature.": 2100014
+            },
+            "triggerDescriptions": {},
+            "manaDescriptions": {},
+            "keywords": {}
+          }
+        }
+      },
+      "Court Street Denizen": {
+        "grpId": 2000008,
+        "forgeScriptSha256": "d46611657333ba0bc060cf6841745f53d94f40b92c4efd664ff0783d508a9209",
+        "fields": {
+          "abilityBindings": {
+            "activated": {},
+            "descriptions": {},
+            "triggerDescriptions": {
+              "Whenever another white creature you control enters, tap target creature an opponent controls.": 2100016
+            },
+            "manaDescriptions": {},
+            "trigger": 2100016,
+            "keywords": {}
+          }
+        }
+      },
+      "Cut a Deal": {
+        "grpId": 2000009,
+        "forgeScriptSha256": "0e69f6ced783c9f0fe5aaea91e10065d7114ae7276b313aa171875a3bcfc0d7d",
+        "fields": {
+          "abilityBindings": {
+            "activated": {},
+            "descriptions": {},
+            "triggerDescriptions": {},
+            "manaDescriptions": {},
+            "keywords": {}
+          }
+        }
+      },
+      "Darien, King of Kjeldor": {
+        "grpId": 2000010,
+        "forgeScriptSha256": "f2f62cae7bb41395100266759cc341db53918318313ce586e8d8862fc6b0b29e",
+        "fields": {
+          "abilityBindings": {
+            "activated": {},
+            "descriptions": {},
+            "triggerDescriptions": {
+              "Whenever you're dealt damage, you may create that many 1/1 white Soldier creature tokens.": 2100019
+            },
+            "manaDescriptions": {},
+            "trigger": 2100019,
+            "keywords": {}
+          }
+        }
+      },
+      "Field Marshal": {
+        "grpId": 2000011,
+        "forgeScriptSha256": "8eb59a1063c690bee46268bcd690786048a90764e8884985f3a32cd1be934efe",
+        "fields": {
+          "abilityBindings": {
+            "activated": {},
+            "descriptions": {},
+            "triggerDescriptions": {},
+            "manaDescriptions": {},
+            "keywords": {}
+          }
+        }
+      },
+      "Generous Gift": {
+        "grpId": 2000012,
+        "forgeScriptSha256": "054989252877c08b4434bbe1d9060aafd6a3f9cad07c038de6640af52fc919bc",
+        "fields": {
+          "abilityBindings": {
+            "activated": {},
+            "descriptions": {},
+            "triggerDescriptions": {},
+            "manaDescriptions": {},
+            "keywords": {}
+          }
+        }
+      },
+      "Healer of the Pride": {
+        "grpId": 2000013,
+        "forgeScriptSha256": "84fa2690a45af034f5671280f3d45118357aa9f4feeea7a9f5c2fb34f19e7def",
+        "fields": {
+          "abilityBindings": {
+            "activated": {},
+            "descriptions": {},
+            "triggerDescriptions": {
+              "Whenever another creature you control enters, you gain 2 life.": 2100023
+            },
+            "manaDescriptions": {},
+            "trigger": 2100023,
+            "keywords": {}
+          }
+        }
+      },
+      "Honor of the Pure": {
+        "grpId": 2000014,
+        "forgeScriptSha256": "11dac6c1e38ce7bcc261623aa77d8f1a2aae2169b48bc2c430ce8891d7254bdf",
+        "fields": {
+          "abilityBindings": {
+            "activated": {},
+            "descriptions": {},
+            "triggerDescriptions": {},
+            "manaDescriptions": {},
+            "keywords": {}
+          }
+        }
+      },
+      "Idol of Oblivion": {
+        "grpId": 2000015,
+        "forgeScriptSha256": "9f1f9e965ee5fc814037364dadf39691e2e8b16a16b32aa6b919b0801a31550c",
+        "fields": {
+          "abilityBindings": {
+            "activated": {
+              "Draw": 2100026,
+              "Token": 2100027
+            },
+            "descriptions": {
+              "{T}: Draw a card. Activate only if you created a token this turn.": 2100026,
+              "{8}, {T}, Sacrifice CARDNAME: Create a 10/10 colorless Eldrazi creature token.": 2100027,
+              "Draw a card. Activate only if you created a token this turn.": 2100026,
+              "Create a 10/10 colorless Eldrazi creature token.": 2100027
+            },
+            "triggerDescriptions": {},
+            "manaDescriptions": {},
+            "keywords": {}
+          }
+        }
+      },
+      "Jade Monolith": {
+        "grpId": 2000016,
+        "forgeScriptSha256": "47ad75955f30b7048c7feb4d35f0c3e5ceade8af7e8913b5e91a94b3071b811a",
+        "fields": {
+          "abilityBindings": {
+            "activated": {
+              "ChooseSource": 2100029
+            },
+            "descriptions": {
+              "{1}: The next time a source of your choice would deal damage to target creature this turn, that damage is dealt to you instead.": 2100029,
+              "The next time a source of your choice would deal damage to target creature this turn, that damage is dealt to you instead.": 2100029
+            },
+            "triggerDescriptions": {},
+            "manaDescriptions": {},
+            "keywords": {}
+          }
+        }
+      },
+      "Jinxed Idol": {
+        "grpId": 2000017,
+        "forgeScriptSha256": "dc5302be5bfc88fabf6c75cb9d881022f373760b5bdb7e0906d7d1a6435a3fc8",
+        "fields": {
+          "abilityBindings": {
+            "activated": {
+              "GainControl": 2100031
+            },
+            "descriptions": {
+              "Sacrifice a creature: Target opponent gains control of CARDNAME.": 2100031,
+              "Target opponent gains control of CARDNAME.": 2100031
+            },
+            "triggerDescriptions": {
+              "At the beginning of your upkeep, CARDNAME deals 2 damage to you.": 2100032
+            },
+            "manaDescriptions": {},
+            "trigger": 2100032,
+            "keywords": {}
+          }
+        }
+      },
+      "Keeper of the Accord": {
+        "grpId": 2000018,
+        "forgeScriptSha256": "02d6e37a4bec19cc0d116b393f63c9c98466c8d8b7828b71e39d4b32ca513eea",
+        "fields": {
+          "abilityBindings": {
+            "activated": {},
+            "descriptions": {},
+            "triggerDescriptions": {
+              "At the beginning of each opponent's end step, if that player controls more creatures than you, create a 1/1 white Soldier creature token.": 2100034,
+              "At the beginning of each opponent's end step, if that player controls more lands than you, you may search your library for a basic Plains card, put it onto the battlefield tapped, then shuffle.": 2100035
+            },
+            "manaDescriptions": {},
+            "keywords": {}
+          }
+        }
+      },
+      "Marble Diamond": {
+        "grpId": 2000019,
+        "forgeScriptSha256": "3c1c07f8878f0a2a61e13a2152ea12a8bf2ef22cbe761907207a543af7b72b97",
+        "fields": {
+          "abilityBindings": {
+            "activated": {},
+            "descriptions": {
+              "{T}: Add {W}.": 2100037,
+              "Add {W}.": 2100037
+            },
+            "triggerDescriptions": {},
+            "manaDescriptions": {
+              "{T}: Add {W}.": 2100037
+            },
+            "keywords": {}
+          }
+        }
+      },
+      "Martial Coup": {
+        "grpId": 2000020,
+        "forgeScriptSha256": "6bd7e67ea165517e75963c74d6afb54520674863ec3fac44f5bf150e3ada7010",
+        "fields": {
+          "abilityBindings": {
+            "activated": {},
+            "descriptions": {},
+            "triggerDescriptions": {},
+            "manaDescriptions": {},
+            "keywords": {}
+          }
+        }
+      },
+      "Myriad Landscape": {
+        "grpId": 2000021,
+        "forgeScriptSha256": "fb9a54e6865a47e660b23a3d01bbccb01f8f8ead123506de4aa931b17b992652",
+        "fields": {
+          "abilityBindings": {
+            "activated": {
+              "ChangeZone": 2100041
+            },
+            "descriptions": {
+              "{T}: Add {C}.": 2100040,
+              "{2}, {T}, Sacrifice CARDNAME: Search your library for up to two basic land cards that share a land type, put them onto the battlefield tapped, then shuffle.": 2100041,
+              "Add {C}.": 2100040,
+              "Search your library for up to two basic land cards that share a land type, put them onto the battlefield tapped, then shuffle.": 2100041
+            },
+            "triggerDescriptions": {},
+            "manaDescriptions": {
+              "{T}: Add {C}.": 2100040
+            },
+            "keywords": {}
+          }
+        }
+      },
+      "Nomad Stadium": {
+        "grpId": 2000022,
+        "forgeScriptSha256": "7c79d55557369d0b63b5940a69f6772b8e03c46af88e0b87089077629abc302b",
+        "fields": {
+          "abilityBindings": {
+            "activated": {
+              "GainLife": 2100044
+            },
+            "descriptions": {
+              "{T}: Add {W}. CARDNAME deals 1 damage to you.": 2100043,
+              "Threshold \u2014 {W}, {T}, Sacrifice CARDNAME: You gain 4 life. Activate only if there are seven or more cards in your graveyard.": 2100044,
+              "Add {W}. CARDNAME deals 1 damage to you.": 2100043,
+              "You gain 4 life. Activate only if there are seven or more cards in your graveyard.": 2100044
+            },
+            "triggerDescriptions": {},
+            "manaDescriptions": {
+              "{T}: Add {W}. CARDNAME deals 1 damage to you.": 2100043
+            },
+            "keywords": {}
+          }
+        }
+      },
+      "Prava of the Steel Legion": {
+        "grpId": 2000023,
+        "forgeScriptSha256": "a41180d2e7edebfabb83333e5010ffdb9095f447aea4d5ab5a24736ebda51451",
+        "fields": {
+          "abilityBindings": {
+            "activated": {
+              "Token": 2100046
+            },
+            "descriptions": {
+              "{3}{W}: Create a 1/1 white Soldier creature token.": 2100046,
+              "Create a 1/1 white Soldier creature token.": 2100046
+            },
+            "triggerDescriptions": {},
+            "manaDescriptions": {},
+            "keywords": {}
+          }
+        }
+      },
+      "Return to Dust": {
+        "grpId": 2000024,
+        "forgeScriptSha256": "bee39b05f17bde9fa544449cac51e05911d10c4231a18181349fe91145b92046",
+        "fields": {
+          "abilityBindings": {
+            "activated": {},
+            "descriptions": {},
+            "triggerDescriptions": {},
+            "manaDescriptions": {},
+            "keywords": {}
+          }
+        }
+      },
+      "Righteous Cause": {
+        "grpId": 2000025,
+        "forgeScriptSha256": "02c883535d7ca5d8c23dbc3769e6922888aa90fd41ddd5def10070c925703019",
+        "fields": {
+          "abilityBindings": {
+            "activated": {},
+            "descriptions": {},
+            "triggerDescriptions": {
+              "Whenever a creature attacks, you gain 1 life.": 2100050
+            },
+            "manaDescriptions": {},
+            "trigger": 2100050,
+            "keywords": {}
+          }
+        }
+      },
+      "Soul's Attendant": {
+        "grpId": 2000026,
+        "forgeScriptSha256": "902f276a1c1727e9c37ad5b32011fee19853ffebc95334e333f172133709d0cd",
+        "fields": {
+          "abilityBindings": {
+            "activated": {},
+            "descriptions": {},
+            "triggerDescriptions": {
+              "Whenever another creature enters, you may gain 1 life.": 2100052
+            },
+            "manaDescriptions": {},
+            "trigger": 2100052,
+            "keywords": {}
+          }
+        }
+      },
+      "Suture Priest": {
+        "grpId": 2000027,
+        "forgeScriptSha256": "02249dcdbbf90cab0addcb03c857e00e296ebf6e9b557ea2b1d4eb8a78c3e68c",
+        "fields": {
+          "abilityBindings": {
+            "activated": {},
+            "descriptions": {},
+            "triggerDescriptions": {
+              "Whenever another creature you control enters, you may gain 1 life.": 2100054,
+              "Whenever a creature an opponent controls enters, you may have that player lose 1 life.": 2100055
+            },
+            "manaDescriptions": {},
+            "keywords": {}
+          }
+        }
+      },
+      "Torture Chamber": {
+        "grpId": 2000028,
+        "forgeScriptSha256": "680496040e235f9ca7351cc1555bba5492119bacef3d7f4791a219f841451961",
+        "fields": {
+          "abilityBindings": {
+            "activated": {
+              "DealDamage": 2100057
+            },
+            "descriptions": {
+              "{1}, {T}, Remove all pain counters from CARDNAME: It deals damage to target creature equal to the number of pain counters removed this way.": 2100057,
+              "It deals damage to target creature equal to the number of pain counters removed this way.": 2100057
+            },
+            "triggerDescriptions": {
+              "At the beginning of your upkeep, put a pain counter on CARDNAME.": 2100058,
+              "At the beginning of your end step, CARDNAME deals damage to you equal to the number of pain counters on it.": 2100059
+            },
+            "manaDescriptions": {},
+            "keywords": {}
+          }
+        }
+      },
+      "Weathered Wayfarer": {
+        "grpId": 2000029,
+        "forgeScriptSha256": "dc286a7d2b7e94d4a4638192005818d5e3c8753e6988338a988670686dd62903",
+        "fields": {
+          "abilityBindings": {
+            "activated": {
+              "ChangeZone": 2100061
+            },
+            "descriptions": {
+              "{W}, {T}: Search your library for a land card, reveal it, put it into your hand, then shuffle. Activate only if an opponent controls more lands than you.": 2100061,
+              "Search your library for a land card, reveal it, put it into your hand, then shuffle. Activate only if an opponent controls more lands than you.": 2100061
+            },
+            "triggerDescriptions": {},
+            "manaDescriptions": {},
+            "keywords": {}
+          }
+        }
+      },
+      "Worship": {
+        "grpId": 2000030,
+        "forgeScriptSha256": "a6dda6a70976913dc28a3c1dd7f747ceb587e01077160365372a6d5bedd565cd",
+        "fields": {
+          "abilityBindings": {
+            "activated": {},
+            "descriptions": {},
+            "triggerDescriptions": {},
+            "manaDescriptions": {},
+            "keywords": {}
+          }
+        }
+      },
+      "Yes Man, Personal Securitron": {
+        "grpId": 2000031,
+        "forgeScriptSha256": "e62d7dcae37a7ea37f678e3e3f8ec38de665c790cf895fe4ded7398068f995fd",
+        "fields": {
+          "abilityBindings": {
+            "activated": {
+              "GainControl": 2100064
+            },
+            "descriptions": {
+              "{T}: Target opponent gains control of CARDNAME. When they do, you draw two cards and put a quest counter on NICKNAME. Activate only during your turn.": 2100064,
+              "Target opponent gains control of CARDNAME. When they do, you draw two cards and put a quest counter on NICKNAME. Activate only during your turn.": 2100064
+            },
+            "triggerDescriptions": {
+              "When they do, you draw two cards and put a quest counter on NICKNAME.": 2100066,
+              "Wild Card \u2014 When NICKNAME leaves the battlefield, its owner creates a tapped 1/1 white Soldier creature token for each quest counter on it.": 2100065
+            },
+            "manaDescriptions": {},
+            "trigger": 2100066,
+            "keywords": {}
+          }
+        }
       }
     },
     "presentationObjects": {
@@ -81744,10 +85122,7 @@
           "descriptions": {},
           "activated": {},
           "triggerDescriptions": {},
-          "keywords": {
-            "REBOUND": 89
-          },
-          "reboundDelayedTrigger": 213
+          "keywords": {}
         }
       },
       "token:w_1_1_soldier": {
@@ -81791,10 +85166,7 @@
           "descriptions": {},
           "activated": {},
           "triggerDescriptions": {},
-          "keywords": {
-            "REBOUND": 89
-          },
-          "reboundDelayedTrigger": 213
+          "keywords": {}
         }
       },
       "token:w_1_1_spirit_flying": {
@@ -83514,11 +86886,7 @@
         "sourceCreatingAbilityId": 100647,
         "targetPromptId": 10,
         "abilityBindings": {
-          "triggerDescriptions": {},
-          "keywords": {
-            "REBOUND": 89
-          },
-          "reboundDelayedTrigger": 213
+          "triggerDescriptions": {}
         },
         "bindingBasis": "Original Forge emblem creator, original native hidden ability graph and GRE WellKnownCatalogId.Emblem=2"
       },
@@ -86204,6 +89572,175 @@
           },
           "reboundDelayedTrigger": 213
         }
+      },
+      "Luminous Phantom": {
+        "grpId": 78355,
+        "titleId": 529779,
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Spirit",
+          "Cleric"
+        ],
+        "supertypes": [],
+        "color": "White",
+        "colors": [
+          "White"
+        ],
+        "colorIdentity": [
+          "W"
+        ],
+        "genericCost": 0,
+        "abilityId": 8,
+        "abilityIds": [
+          8,
+          145174,
+          145145
+        ],
+        "token": false,
+        "admitted": false,
+        "facePresentation": true,
+        "parentName": "Lunarch Veteran",
+        "forgeScript": "l/lunarch_veteran_luminous_phantom.txt",
+        "forgeScriptSha256": "f3d97c9d0c5a24a176fccebe279a881ef43a1b636f4248f5c4c1c9f30437cb71",
+        "bindingBasis": "Original native LinkedFaceGrpIds and exact pinned Forge backside state",
+        "abilityBindings": {
+          "activated": {},
+          "descriptions": {},
+          "triggerDescriptions": {
+            "Whenever another creature you control leaves the battlefield, you gain 1 life.": 145174
+          },
+          "manaDescriptions": {},
+          "trigger": 145174,
+          "keywords": {
+            "FLYING": 8
+          }
+        },
+        "targetPromptId": 10,
+        "nativeAbilityTexts": {
+          "8": "Flying",
+          "145174": "Whenever another creature you control leaves the battlefield, you gain 1 life.",
+          "145145": "If CARDNAME would be put into a graveyard from anywhere, exile it instead."
+        }
+      },
+      "token:embalm_anointer_priest": {
+        "grpId": 74162,
+        "titleId": 76303,
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Zombie",
+          "Human",
+          "Cleric"
+        ],
+        "supertypes": [],
+        "color": "White",
+        "colors": [
+          "White"
+        ],
+        "colorIdentity": [],
+        "genericCost": 0,
+        "abilityId": 88123,
+        "abilityIds": [
+          88123,
+          88124
+        ],
+        "token": true,
+        "admitted": false,
+        "forgeTokenScript": "embalm_anointer_priest",
+        "nativeLinks": [],
+        "bindingBasis": "Explicitly selected exact source body/color/types/subtypes/keywords and checked trigger text; no original native creator link asserted; original copy-factory prototype and exact source-ability token link; retained copy abilities use their original source IDs",
+        "equivalentNativeCandidates": [
+          74162
+        ],
+        "sourceCopyName": "Anointer Priest",
+        "retainedSourceAbilityIds": [
+          88124
+        ],
+        "abilityBindings": {
+          "descriptions": {
+            "Embalm {3}{W} ({3}{W}, Exile this card from your graveyard: Create a token that's a copy of this card, except it's white, it has no mana cost, and it's a Zombie in addition to its other types. Embalm only as a sorcery.)": 88124,
+            "({3}{W}, Exile this card from your graveyard: Create a token that's a copy of this card, except it's white, it has no mana cost, and it's a Zombie in addition to its other types. Embalm only as a sorcery.)": 88124
+          },
+          "activated": {
+            "CopyPermanent": 88124
+          },
+          "triggerDescriptions": {
+            "Whenever a creature token you control enters, you gain 1 life.": 88123
+          },
+          "keywords": {}
+        }
+      },
+      "token:c_10_10_eldrazi": {
+        "grpId": 92606,
+        "titleId": 623,
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Eldrazi"
+        ],
+        "supertypes": [],
+        "color": "Colorless",
+        "colors": [
+          "Colorless"
+        ],
+        "colorIdentity": [],
+        "genericCost": 0,
+        "abilityId": 0,
+        "abilityIds": [],
+        "token": true,
+        "admitted": false,
+        "forgeTokenScript": "c_10_10_eldrazi",
+        "nativeLinks": [],
+        "bindingBasis": "Original native source links and exact token body, color, types, subtypes and printed keywords",
+        "equivalentNativeCandidates": [
+          92606
+        ],
+        "abilityBindings": {
+          "descriptions": {},
+          "activated": {},
+          "triggerDescriptions": {},
+          "keywords": {}
+        }
+      },
+      "token:g_3_3_elephant": {
+        "grpId": 76904,
+        "titleId": 513,
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Elephant"
+        ],
+        "supertypes": [],
+        "color": "Green",
+        "colors": [
+          "Green"
+        ],
+        "colorIdentity": [],
+        "genericCost": 0,
+        "abilityId": 0,
+        "abilityIds": [],
+        "token": true,
+        "admitted": false,
+        "forgeTokenScript": "g_3_3_elephant",
+        "nativeLinks": [],
+        "bindingBasis": "Original native source links and exact token body, color, types, subtypes and printed keywords",
+        "equivalentNativeCandidates": [
+          76904,
+          79399,
+          92623,
+          95099
+        ],
+        "abilityBindings": {
+          "descriptions": {},
+          "activated": {},
+          "triggerDescriptions": {},
+          "keywords": {}
+        }
       }
     },
     "provenance": {
@@ -87925,6 +91462,84 @@
             "Rise from the Grave",
             "Rise of the Dark Realms",
             "Undead Butler"
+          ]
+        },
+        {
+          "baseOverlaySha256": "d51cca51f1ed04272467c07a9e2b87d1e48baeb70d97afde97229731d69a95ca",
+          "deltaOverlaySha256": "afb6008e9b3732245d1bcc335add9f25fa680099e882521dcaa585037f430d4d",
+          "projectionSha256": "70fce93984ab2ba47288a5276d1ab1431073066150965ae688c9867ed077d899",
+          "changedCards": [
+            "Ajani's Welcome",
+            "Angel's Trumpet",
+            "Anointer Priest",
+            "Arcane Signet",
+            "Austere Command",
+            "Barbed Wire",
+            "Bastion Protector",
+            "Blood of the Martyr",
+            "Brave the Elements",
+            "Call the Coppercoats",
+            "Captain of the Watch",
+            "Captain's Call",
+            "Catapult Master",
+            "Court Street Denizen",
+            "Cut a Deal",
+            "Darien, King of Kjeldor",
+            "Daxos, Blessed by the Sun",
+            "Defiler of Faith",
+            "Disenchant",
+            "Distinguished Conjurer",
+            "Elspeth, Sun's Champion",
+            "Field Marshal",
+            "Generous Gift",
+            "Healer of the Pride",
+            "Heraldic Banner",
+            "Honor of the Pure",
+            "Idol of Oblivion",
+            "Impassioned Orator",
+            "Jade Monolith",
+            "Jinxed Idol",
+            "Keeper of the Accord",
+            "Knight of the White Orchid",
+            "Linden, the Steadfast Queen",
+            "Lunarch Veteran",
+            "Mangara, the Diplomat",
+            "Marble Diamond",
+            "Martial Coup",
+            "Mentor of the Meek",
+            "Mind Stone",
+            "Myriad Landscape",
+            "Nomad Stadium",
+            "Paladin Class",
+            "Path of Bravery",
+            "Path to Exile",
+            "Plains",
+            "Prava of the Steel Legion",
+            "Rally the Ranks",
+            "Return to Dust",
+            "Righteous Cause",
+            "Secret Rendezvous",
+            "Skullclamp",
+            "Sol Ring",
+            "Solemn Simulacrum",
+            "Soul Warden",
+            "Soul's Attendant",
+            "Sunscorched Desert",
+            "Suture Priest",
+            "Swiftfoot Boots",
+            "Swords to Plowshares",
+            "Torture Chamber",
+            "Unbreakable Formation",
+            "Valiant Veteran",
+            "Wayfarer's Bauble",
+            "Weathered Wayfarer",
+            "Well of Lost Dreams",
+            "Worship",
+            "Wrath of God",
+            "Yes Man, Personal Securitron",
+            "emblem:Elspeth, Sun's Champion",
+            "token:w_1_1_human_soldier",
+            "token:w_1_1_soldier"
           ]
         }
       ]
@@ -89666,6 +93281,7 @@
       "Angel of the Dire Hour": 690,
       "Angel of the Ruins": 673468,
       "Angel's Grace": 34951,
+      "Angel's Trumpet": 1000000001,
       "Angelfire Ignition": 530466,
       "Angelheart Protector": 436931,
       "Angelic Ascension": 433571,
@@ -90292,6 +93908,7 @@
       "Barbed Bloodletter": 1078800,
       "Barbed Servitor": 748532,
       "Barbed Spike": 497280,
+      "Barbed Wire": 1000000006,
       "Bard Class": 499117,
       "Bard the Bowman": 1113776,
       "Bard's Bow": 928319,
@@ -90354,6 +93971,7 @@
       "Bassara Tower Archer": 44530,
       "Bastion Enforcer": 51673,
       "Bastion Mastodon": 51491,
+      "Bastion Protector": 1000000012,
       "Bastion of Remembrance": 428091,
       "Bat Colony": 737031,
       "Bat Whisperer": 530008,
@@ -90718,6 +94336,7 @@
       "Blood Spatter Analysis": 748945,
       "Blood Sun": 181777,
       "Blood for Bones": 351834,
+      "Blood of the Martyr": 1000000016,
       "Blood on the Snow": 477239,
       "Bloodbat Summoner": 546099,
       "Bloodbond Vampire": 48433,
@@ -91264,6 +94883,7 @@
       "Call of the Ring": 703307,
       "Call the Bloodline": 3668,
       "Call the Cavalry": 226997,
+      "Call the Coppercoats": 1000000020,
       "Call the Crash": 1061760,
       "Call the Gatewatch": 48893,
       "Call the Mountain Chocobo": 928144,
@@ -91338,6 +94958,7 @@
       "Captain Sisay": 16473,
       "Captain Storm, Cosmium Raider": 737899,
       "Captain of Umbar": 703192,
+      "Captain of the Watch": 1000000025,
       "Captain's Call": 40590,
       "Captain's Defense": 1121978,
       "Captain's Hook": 182010,
@@ -91426,6 +95047,7 @@
       "Catalyst Elemental": 229600,
       "Catapult Captain": 545934,
       "Catapult Fodder": 545930,
+      "Catapult Master": 1000000031,
       "Cathar Commando": 529713,
       "Cathar's Call": 529716,
       "Cathar's Companion": 49397,
@@ -92126,6 +95748,7 @@
       "Courser of Kruphix": 44070,
       "Court Cleric": 229802,
       "Court Homunculus": 11168,
+      "Court Street Denizen": 1000000036,
       "Court of Bounty": 502177,
       "Court of Garenbrig": 1112101,
       "Covert Cutpurse": 530027,
@@ -92341,6 +95964,7 @@
       "Cut Propulsion": 1055857,
       "Cut Short": 701820,
       "Cut Your Losses": 567146,
+      "Cut a Deal": 1000000041,
       "Cut of the Profits": 1027,
       "Cutthroat Centurion": 683169,
       "Cutthroat Contender": 567248,
@@ -92394,6 +96018,7 @@
       "Daredevil, Fearless Fighter": 1122514,
       "Daredevil, Man Without Fear": 1117970,
       "Daretti, Rocketeer Engineer": 879094,
+      "Darien, King of Kjeldor": 1000000045,
       "Darigaaz Reincarnated": 227472,
       "Darigaaz's Whelp": 676000,
       "Darigaaz, Shivan Champion": 676042,
@@ -94181,6 +97806,7 @@
       "Fevered Visions": 3891,
       "Feywild Trickster": 498447,
       "Field Creeper": 50862,
+      "Field Marshal": 1000000050,
       "Field Research": 437138,
       "Field Trip": 488580,
       "Field of Ruin": 174033,
@@ -94853,6 +98479,7 @@
       "General's Enforcer": 428451,
       "Generous Betty Wray": 1086491,
       "Generous Ent": 703620,
+      "Generous Gift": 1000000054,
       "Generous Plunderer": 757058,
       "Generous Pup": 823905,
       "Generous Revival": 1131822,
@@ -95746,6 +99373,7 @@
       "Headstrong Brute": 173821,
       "Headwater Sentries": 173646,
       "Healer of the Glade": 352070,
+      "Healer of the Pride": 1000000058,
       "Healer's Flock": 487243,
       "Healer's Hawk": 272601,
       "Healing Grace": 227024,
@@ -95999,6 +99627,7 @@
       "Honeymoon Hearse": 546187,
       "Honor": 959,
       "Honor Troll": 488588,
+      "Honor of the Pure": 1000000063,
       "Honor the <nobr>God-Pharaoh</nobr>": 336601,
       "Honor the Past": 1117008,
       "Honorbound Page": 1110888,
@@ -96215,6 +99844,7 @@
       "Identity Echo": 1132088,
       "Idol of Endurance": 433614,
       "Idol of False Gods": 760674,
+      "Idol of Oblivion": 1000000067,
       "Idol of the Deep King": 737629,
       "Idyllic Beachfront": 615358,
       "Idyllic Grange": 414460,
@@ -96698,6 +100328,7 @@
       "Jadar, Ghoulcaller of Nephalia": 530094,
       "Jade Bearer": 181881,
       "Jade Guardian": 173909,
+      "Jade Monolith": 1000000073,
       "Jade Orb of Dragonkind": 604351,
       "Jade Seedstones": 737779,
       "Jadecraft Artisan": 181884,
@@ -96781,6 +100412,7 @@
       "Jidoor, Aristocratic Capital": 928761,
       "Jill, Shiva's Dominant": 927847,
       "Jinnie Fay, Jetmir's Second": 567677,
+      "Jinxed Idol": 1000000078,
       "Jirina, Dauntless General": 704230,
       "Jodah's Codex": 615313,
       "Jodah, Archmage Eternal": 227485,
@@ -96999,6 +100631,7 @@
       "Keep Out": 1078573,
       "Keep Safe": 428032,
       "Keeper of Fables": 414144,
+      "Keeper of the Accord": 1000000084,
       "Keeper of the Cadence": 618125,
       "Keeper of the Quiet Hour": 1132387,
       "Keepsake Gorgon": 43348,
@@ -98007,6 +101640,7 @@
       "Marauding Mako": 879144,
       "Marauding Raptor": 351998,
       "Marauding Sphinx": 756226,
+      "Marble Diamond": 1000000090,
       "March Toward Perfection": 729492,
       "March from the Black Gate": 703364,
       "March of Burgeoning Life": 558060,
@@ -98058,6 +101692,7 @@
       "Marshal of the Lost": 927292,
       "Marshals' Pathcruiser": 879436,
       "Marshland Hordemaster": 877527,
+      "Martial Coup": 1000000095,
       "Martial Glory": 42082,
       "Martyr for the Cause": 336250,
       "Martyr of Dusk": 181587,
@@ -98732,6 +102367,7 @@
       "Myr Sire": 19388,
       "Myrel, Shield of Argive": 618008,
       "Myriad Construct": 437857,
+      "Myriad Landscape": 1000000099,
       "Mysidian Elder": 928201,
       "Mysterio's Mirage": 1122329,
       "Mysterio's Phantasm": 1103300,
@@ -99039,6 +102675,7 @@
       "Noggle Robber": 1079316,
       "Noggle the Mind": 1078711,
       "Nomad Outpost": 46177,
+      "Nomad Stadium": 1000000105,
       "Noose Constrictor": 50761,
       "Noosegraf Mob": 50551,
       "Nori, Teller of Tales": 1113835,
@@ -99930,6 +103567,7 @@
       "Prairie Stream": 48798,
       "Prairie Survivalist": 810818,
       "Prakhata <nobr>Pillar-Bug</nobr>": 51582,
+      "Prava of the Steel Legion": 1000000111,
       "Prayer of Binding": 614639,
       "Preacher of the Schism": 737464,
       "Precipitous Drop": 498691,
@@ -100814,6 +104452,7 @@
       "Return of the Wildspeaker": 414177,
       "Return the Favor": 756534,
       "Return to Action": 557742,
+      "Return to Dust": 1000000117,
       "Return to Nature": 336740,
       "Return to the Light Realms": 1131858,
       "Return to the Ranks": 45137,
@@ -100894,6 +104533,7 @@
       "Rig for War": 1055948,
       "Rigging Runner": 173842,
       "Righteous Blow": 40351,
+      "Righteous Cause": 1000000121,
       "Righteous Fury": 20784,
       "Righteous Valkyrie": 477049,
       "Righteousness": 4621,
@@ -102497,6 +106137,7 @@
       "Soul of Windgrace": 615266,
       "Soul of the Harvest": 610,
       "Soul of the Rapids": 181690,
+      "Soul's Attendant": 1000000126,
       "Soulblade Djinn": 47777,
       "Soulbright Seeker": 1079040,
       "Soulcipher Board": 545851,
@@ -103235,6 +106876,7 @@
       "Susurian Dirgecraft": 1055832,
       "Susurian Voidborn": 1055833,
       "Sutina, Speaker of the Tajuru": 824572,
+      "Suture Priest": 1000000131,
       "Svella, Ice Shaper": 477805,
       "Svyelun of Sea and Sky": 487150,
       "Swab Goblin": 182052,
@@ -104321,6 +107963,7 @@
       "Torrent Sculptor": 488739,
       "Torrential Gearhulk": 1880,
       "Torsten, Founder of Benalia": 813322,
+      "Torture Chamber": 1000000137,
       "Toski, Bearer of Secrets": 477660,
       "Totally Lost": 41757,
       "Totentanz, Swarm Piper": 731894,
@@ -105507,6 +109150,7 @@
       "Weather Maker": 1104962,
       "Weather the Storm": 430442,
       "Weathered Runestone": 477856,
+      "Weathered Wayfarer": 1000000144,
       "Weatherlight": 227591,
       "Weatherlight Compleated": 615340,
       "Weave Fate": 45690,
@@ -105819,6 +109463,7 @@
       "Worldweave": 1086894,
       "Wormhole Serpent": 488337,
       "Worn Powerstone": 12346,
+      "Worship": 1000000149,
       "Worst Fears": 44453,
       "Worthy Cost": 926958,
       "Worthy Knight": 413704,
@@ -105901,6 +109546,7 @@
       "Yellowjacket, Heartless Marauder": 1117616,
       "Yenna, Redtooth Regent": 731906,
       "Yera and Oski, Weaver and Guide": 1086507,
+      "Yes Man, Personal Securitron": 1000000153,
       "Ygra, Eater of All": 811846,
       "Yiazmat, Ultimate Mark": 928076,
       "Yidaro, Wandering Monster": 428309,
@@ -106054,5 +109700,635 @@
       "\u00c9owyn, Lady of Rohan": 703063,
       "\u00d3in the Brave": 1113634
     }
+  },
+  "paperExtension": {
+    "schema": 1,
+    "localizations": {
+      "1000000001": "Angel's Trumpet",
+      "1000000002": "Artifact",
+      "1000000003": "",
+      "1000000004": "All creatures have vigilance.\nAt the beginning of each player's end step, tap all untapped creatures that player controls that didn't attack this turn. Angel's Trumpet deals damage to the player equal to the number of creatures tapped this way.",
+      "1000000005": "At the beginning of each player's end step, tap all untapped creatures that player controls that didn't attack this turn. CARDNAME deals damage to the player equal to the number of creatures tapped this way.",
+      "1000000006": "Barbed Wire",
+      "1000000007": "Artifact",
+      "1000000008": "",
+      "1000000009": "At the beginning of each player's upkeep, Barbed Wire deals 1 damage to that player.\n{2}: Prevent the next 1 damage that would be dealt by Barbed Wire this turn.",
+      "1000000010": "{2}: Prevent the next 1 damage that would be dealt by CARDNAME this turn.",
+      "1000000011": "At the beginning of each player's upkeep, CARDNAME deals 1 damage to that player.",
+      "1000000012": "Bastion Protector",
+      "1000000013": "Creature \u2014 Human Soldier",
+      "1000000014": "Human Soldier",
+      "1000000015": "Commander creatures you control get +2/+2 and have indestructible.",
+      "1000000016": "Blood of the Martyr",
+      "1000000017": "Instant",
+      "1000000018": "",
+      "1000000019": "Until end of turn, if damage would be dealt to any creature, you may have that damage dealt to you instead.",
+      "1000000020": "Call the Coppercoats",
+      "1000000021": "Instant",
+      "1000000022": "",
+      "1000000023": "Strive \u00e2\u20ac\u201d This spell costs {1}{W} more to cast for each target beyond the first.\nChoose any number of target opponents. Create X 1/1 white Human Soldier creature tokens, where X is the number of creatures those opponents control.",
+      "1000000024": "Strive",
+      "1000000025": "Captain of the Watch",
+      "1000000026": "Creature \u2014 Human Soldier",
+      "1000000027": "Human Soldier",
+      "1000000028": "Vigilance (Attacking doesn't cause this creature to tap.)\nOther Soldier creatures you control get +1/+1 and have vigilance.\nWhen Captain of the Watch enters, create three 1/1 white Soldier creature tokens.",
+      "1000000029": "When CARDNAME enters, create three 1/1 white Soldier creature tokens.",
+      "1000000030": "Vigilance",
+      "1000000031": "Catapult Master",
+      "1000000032": "Creature \u2014 Human Soldier",
+      "1000000033": "Human Soldier",
+      "1000000034": "Tap five untapped Soldiers you control: Exile target creature.",
+      "1000000035": "Tap five untapped Soldiers you control: Exile target creature.",
+      "1000000036": "Court Street Denizen",
+      "1000000037": "Creature \u2014 Human Soldier",
+      "1000000038": "Human Soldier",
+      "1000000039": "Whenever another white creature you control enters, tap target creature an opponent controls.",
+      "1000000040": "Whenever another white creature you control enters, tap target creature an opponent controls.",
+      "1000000041": "Cut a Deal",
+      "1000000042": "Sorcery",
+      "1000000043": "",
+      "1000000044": "Each opponent draws a card, then you draw a card for each opponent who drew a card this way.",
+      "1000000045": "Darien, King of Kjeldor",
+      "1000000046": "Legendary Creature \u2014 Human Soldier",
+      "1000000047": "Human Soldier",
+      "1000000048": "Whenever you're dealt damage, you may create that many 1/1 white Soldier creature tokens.",
+      "1000000049": "Whenever you're dealt damage, you may create that many 1/1 white Soldier creature tokens.",
+      "1000000050": "Field Marshal",
+      "1000000051": "Creature \u2014 Human Soldier",
+      "1000000052": "Human Soldier",
+      "1000000053": "Other Soldier creatures get +1/+1 and have first strike. (They deal combat damage before creatures without first strike.)",
+      "1000000054": "Generous Gift",
+      "1000000055": "Instant",
+      "1000000056": "",
+      "1000000057": "Destroy target permanent. Its controller creates a 3/3 green Elephant creature token.",
+      "1000000058": "Healer of the Pride",
+      "1000000059": "Creature \u2014 Cat Cleric",
+      "1000000060": "Cat Cleric",
+      "1000000061": "Whenever another creature you control enters, you gain 2 life.",
+      "1000000062": "Whenever another creature you control enters, you gain 2 life.",
+      "1000000063": "Honor of the Pure",
+      "1000000064": "Enchantment",
+      "1000000065": "",
+      "1000000066": "White creatures you control get +1/+1.",
+      "1000000067": "Idol of Oblivion",
+      "1000000068": "Artifact",
+      "1000000069": "",
+      "1000000070": "{T}: Draw a card. Activate only if you created a token this turn.\n{8}, {T}, Sacrifice Idol of Oblivion: Create a 10/10 colorless Eldrazi creature token.",
+      "1000000071": "{T}: Draw a card. Activate only if you created a token this turn.",
+      "1000000072": "{8}, {T}, Sacrifice CARDNAME: Create a 10/10 colorless Eldrazi creature token.",
+      "1000000073": "Jade Monolith",
+      "1000000074": "Artifact",
+      "1000000075": "",
+      "1000000076": "{1}: The next time a source of your choice would deal damage to target creature this turn, that source deals that damage to you instead.",
+      "1000000077": "{1}: The next time a source of your choice would deal damage to target creature this turn, that damage is dealt to you instead.",
+      "1000000078": "Jinxed Idol",
+      "1000000079": "Artifact",
+      "1000000080": "",
+      "1000000081": "At the beginning of your upkeep, Jinxed Idol deals 2 damage to you.\nSacrifice a creature: Target opponent gains control of Jinxed Idol.",
+      "1000000082": "Sacrifice a creature: Target opponent gains control of CARDNAME.",
+      "1000000083": "At the beginning of your upkeep, CARDNAME deals 2 damage to you.",
+      "1000000084": "Keeper of the Accord",
+      "1000000085": "Creature \u2014 Human Soldier",
+      "1000000086": "Human Soldier",
+      "1000000087": "At the beginning of each opponent's end step, if that player controls more creatures than you, create a 1/1 white Soldier creature token.\nAt the beginning of each opponent's end step, if that player controls more lands than you, you may search your library for a basic Plains card, put it onto the battlefield tapped, then shuffle.",
+      "1000000088": "At the beginning of each opponent's end step, if that player controls more creatures than you, create a 1/1 white Soldier creature token.",
+      "1000000089": "At the beginning of each opponent's end step, if that player controls more lands than you, you may search your library for a basic Plains card, put it onto the battlefield tapped, then shuffle.",
+      "1000000090": "Marble Diamond",
+      "1000000091": "Artifact",
+      "1000000092": "",
+      "1000000093": "Marble Diamond enters tapped.\n{T}: Add {W}.",
+      "1000000094": "{T}: Add {W}.",
+      "1000000095": "Martial Coup",
+      "1000000096": "Sorcery",
+      "1000000097": "",
+      "1000000098": "Create X 1/1 white Soldier creature tokens. If X is 5 or more, destroy all other creatures.",
+      "1000000099": "Myriad Landscape",
+      "1000000100": "Land",
+      "1000000101": "",
+      "1000000102": "Myriad Landscape enters tapped.\n{T}: Add {C}.\n{2}, {T}, Sacrifice Myriad Landscape: Search your library for up to two basic land cards that share a land type, put them onto the battlefield tapped, then shuffle.",
+      "1000000103": "{T}: Add {C}.",
+      "1000000104": "{2}, {T}, Sacrifice CARDNAME: Search your library for up to two basic land cards that share a land type, put them onto the battlefield tapped, then shuffle.",
+      "1000000105": "Nomad Stadium",
+      "1000000106": "Land",
+      "1000000107": "",
+      "1000000108": "{T}: Add {W}. Nomad Stadium deals 1 damage to you.\nThreshold \u00e2\u20ac\u201d {W}, {T}, Sacrifice Nomad Stadium: You gain 4 life. Activate only if there are seven or more cards in your graveyard.",
+      "1000000109": "{T}: Add {W}. CARDNAME deals 1 damage to you.",
+      "1000000110": "Threshold \u00e2\u20ac\u201d {W}, {T}, Sacrifice CARDNAME: You gain 4 life. Activate only if there are seven or more cards in your graveyard.",
+      "1000000111": "Prava of the Steel Legion",
+      "1000000112": "Legendary Creature \u2014 Cat Soldier",
+      "1000000113": "Cat Soldier",
+      "1000000114": "During your turn, creature tokens you control get +1/+4.\n{3}{W}: Create a 1/1 white Soldier creature token.\nPartner (You can have two commanders if both have partner.)",
+      "1000000115": "{3}{W}: Create a 1/1 white Soldier creature token.",
+      "1000000116": "Partner",
+      "1000000117": "Return to Dust",
+      "1000000118": "Instant",
+      "1000000119": "",
+      "1000000120": "Exile target artifact or enchantment. If you cast this spell during your main phase, you may exile up to one other target artifact or enchantment.",
+      "1000000121": "Righteous Cause",
+      "1000000122": "Enchantment",
+      "1000000123": "",
+      "1000000124": "Whenever a creature attacks, you gain 1 life.",
+      "1000000125": "Whenever a creature attacks, you gain 1 life.",
+      "1000000126": "Soul's Attendant",
+      "1000000127": "Creature \u2014 Cleric Human",
+      "1000000128": "Cleric Human",
+      "1000000129": "Whenever another creature enters, you may gain 1 life.",
+      "1000000130": "Whenever another creature enters, you may gain 1 life.",
+      "1000000131": "Suture Priest",
+      "1000000132": "Creature \u2014 Cleric Phyrexian",
+      "1000000133": "Cleric Phyrexian",
+      "1000000134": "Whenever another creature you control enters, you may gain 1 life.\nWhenever a creature an opponent controls enters, you may have that player lose 1 life.",
+      "1000000135": "Whenever another creature you control enters, you may gain 1 life.",
+      "1000000136": "Whenever a creature an opponent controls enters, you may have that player lose 1 life.",
+      "1000000137": "Torture Chamber",
+      "1000000138": "Artifact",
+      "1000000139": "",
+      "1000000140": "At the beginning of your upkeep, put a pain counter on Torture Chamber.\nAt the beginning of your end step, Torture Chamber deals damage to you equal to the number of pain counters on it.\n{1}, {T}, Remove all pain counters from Torture Chamber: It deals damage to target creature equal to the number of pain counters removed this way.",
+      "1000000141": "{1}, {T}, Remove all pain counters from CARDNAME: It deals damage to target creature equal to the number of pain counters removed this way.",
+      "1000000142": "At the beginning of your upkeep, put a pain counter on CARDNAME.",
+      "1000000143": "At the beginning of your end step, CARDNAME deals damage to you equal to the number of pain counters on it.",
+      "1000000144": "Weathered Wayfarer",
+      "1000000145": "Creature \u2014 Cleric Human Nomad",
+      "1000000146": "Cleric Human Nomad",
+      "1000000147": "{W}, {T}: Search your library for a land card, reveal it, put it into your hand, then shuffle. Activate only if an opponent controls more lands than you.",
+      "1000000148": "{W}, {T}: Search your library for a land card, reveal it, put it into your hand, then shuffle. Activate only if an opponent controls more lands than you.",
+      "1000000149": "Worship",
+      "1000000150": "Enchantment",
+      "1000000151": "",
+      "1000000152": "If you control a creature, damage that would reduce your life total to less than 1 reduces it to 1 instead.",
+      "1000000153": "Yes Man, Personal Securitron",
+      "1000000154": "Legendary Artifact Creature \u2014 Robot",
+      "1000000155": "Robot",
+      "1000000156": "{T}: Target opponent gains control of Yes Man, Personal Securitron. When they do, you draw two cards and put a quest counter on Yes Man. Activate only during your turn.\nWild Card \u00e2\u20ac\u201d When Yes Man leaves the battlefield, its owner creates a tapped 1/1 white Soldier creature token for each quest counter on it.",
+      "1000000157": "{T}: Target opponent gains control of CARDNAME. When they do, you draw two cards and put a quest counter on NICKNAME. Activate only during your turn.",
+      "1000000158": "Wild Card \u00e2\u20ac\u201d When NICKNAME leaves the battlefield, its owner creates a tapped 1/1 white Soldier creature token for each quest counter on it.",
+      "1000000159": "When they do, you draw two cards and put a quest counter on NICKNAME."
+    },
+    "abilities": [
+      {
+        "id": 2100001,
+        "baseId": 2100001,
+        "textId": 1000000004,
+        "category": 3,
+        "subCategory": 0
+      },
+      {
+        "id": 2100002,
+        "baseId": 2100002,
+        "textId": 1000000005,
+        "category": 2,
+        "subCategory": 0
+      },
+      {
+        "id": 2100003,
+        "baseId": 2100003,
+        "textId": 1000000009,
+        "category": 3,
+        "subCategory": 0
+      },
+      {
+        "id": 2100004,
+        "baseId": 2100004,
+        "textId": 1000000010,
+        "category": 1,
+        "subCategory": 0
+      },
+      {
+        "id": 2100005,
+        "baseId": 2100005,
+        "textId": 1000000011,
+        "category": 2,
+        "subCategory": 0
+      },
+      {
+        "id": 2100006,
+        "baseId": 2100006,
+        "textId": 1000000015,
+        "category": 3,
+        "subCategory": 0
+      },
+      {
+        "id": 2100007,
+        "baseId": 2100007,
+        "textId": 1000000019,
+        "category": 3,
+        "subCategory": 0
+      },
+      {
+        "id": 2100008,
+        "baseId": 2100008,
+        "textId": 1000000023,
+        "category": 3,
+        "subCategory": 0
+      },
+      {
+        "id": 2100009,
+        "baseId": 2100009,
+        "textId": 1000000024,
+        "category": 3,
+        "subCategory": 0
+      },
+      {
+        "id": 2100010,
+        "baseId": 2100010,
+        "textId": 1000000028,
+        "category": 3,
+        "subCategory": 0
+      },
+      {
+        "id": 2100011,
+        "baseId": 2100011,
+        "textId": 1000000029,
+        "category": 2,
+        "subCategory": 0
+      },
+      {
+        "id": 2100012,
+        "baseId": 15,
+        "textId": 1000000030,
+        "category": 3,
+        "subCategory": 0
+      },
+      {
+        "id": 2100013,
+        "baseId": 2100013,
+        "textId": 1000000034,
+        "category": 3,
+        "subCategory": 0
+      },
+      {
+        "id": 2100014,
+        "baseId": 2100014,
+        "textId": 1000000035,
+        "category": 1,
+        "subCategory": 0
+      },
+      {
+        "id": 2100015,
+        "baseId": 2100015,
+        "textId": 1000000039,
+        "category": 3,
+        "subCategory": 0
+      },
+      {
+        "id": 2100016,
+        "baseId": 2100016,
+        "textId": 1000000040,
+        "category": 2,
+        "subCategory": 0
+      },
+      {
+        "id": 2100017,
+        "baseId": 2100017,
+        "textId": 1000000044,
+        "category": 3,
+        "subCategory": 0
+      },
+      {
+        "id": 2100018,
+        "baseId": 2100018,
+        "textId": 1000000048,
+        "category": 3,
+        "subCategory": 0
+      },
+      {
+        "id": 2100019,
+        "baseId": 2100019,
+        "textId": 1000000049,
+        "category": 2,
+        "subCategory": 0
+      },
+      {
+        "id": 2100020,
+        "baseId": 2100020,
+        "textId": 1000000053,
+        "category": 3,
+        "subCategory": 0
+      },
+      {
+        "id": 2100021,
+        "baseId": 2100021,
+        "textId": 1000000057,
+        "category": 3,
+        "subCategory": 0
+      },
+      {
+        "id": 2100022,
+        "baseId": 2100022,
+        "textId": 1000000061,
+        "category": 3,
+        "subCategory": 0
+      },
+      {
+        "id": 2100023,
+        "baseId": 2100023,
+        "textId": 1000000062,
+        "category": 2,
+        "subCategory": 0
+      },
+      {
+        "id": 2100024,
+        "baseId": 2100024,
+        "textId": 1000000066,
+        "category": 3,
+        "subCategory": 0
+      },
+      {
+        "id": 2100025,
+        "baseId": 2100025,
+        "textId": 1000000070,
+        "category": 3,
+        "subCategory": 0
+      },
+      {
+        "id": 2100026,
+        "baseId": 2100026,
+        "textId": 1000000071,
+        "category": 1,
+        "subCategory": 0
+      },
+      {
+        "id": 2100027,
+        "baseId": 2100027,
+        "textId": 1000000072,
+        "category": 1,
+        "subCategory": 0
+      },
+      {
+        "id": 2100028,
+        "baseId": 2100028,
+        "textId": 1000000076,
+        "category": 3,
+        "subCategory": 0
+      },
+      {
+        "id": 2100029,
+        "baseId": 2100029,
+        "textId": 1000000077,
+        "category": 1,
+        "subCategory": 0
+      },
+      {
+        "id": 2100030,
+        "baseId": 2100030,
+        "textId": 1000000081,
+        "category": 3,
+        "subCategory": 0
+      },
+      {
+        "id": 2100031,
+        "baseId": 2100031,
+        "textId": 1000000082,
+        "category": 1,
+        "subCategory": 0
+      },
+      {
+        "id": 2100032,
+        "baseId": 2100032,
+        "textId": 1000000083,
+        "category": 2,
+        "subCategory": 0
+      },
+      {
+        "id": 2100033,
+        "baseId": 2100033,
+        "textId": 1000000087,
+        "category": 3,
+        "subCategory": 0
+      },
+      {
+        "id": 2100034,
+        "baseId": 2100034,
+        "textId": 1000000088,
+        "category": 2,
+        "subCategory": 0
+      },
+      {
+        "id": 2100035,
+        "baseId": 2100035,
+        "textId": 1000000089,
+        "category": 2,
+        "subCategory": 0
+      },
+      {
+        "id": 2100036,
+        "baseId": 2100036,
+        "textId": 1000000093,
+        "category": 3,
+        "subCategory": 0
+      },
+      {
+        "id": 2100037,
+        "baseId": 2100037,
+        "textId": 1000000094,
+        "category": 1,
+        "subCategory": 1
+      },
+      {
+        "id": 2100038,
+        "baseId": 2100038,
+        "textId": 1000000098,
+        "category": 3,
+        "subCategory": 0
+      },
+      {
+        "id": 2100039,
+        "baseId": 2100039,
+        "textId": 1000000102,
+        "category": 3,
+        "subCategory": 0
+      },
+      {
+        "id": 2100040,
+        "baseId": 2100040,
+        "textId": 1000000103,
+        "category": 1,
+        "subCategory": 1
+      },
+      {
+        "id": 2100041,
+        "baseId": 2100041,
+        "textId": 1000000104,
+        "category": 1,
+        "subCategory": 0
+      },
+      {
+        "id": 2100042,
+        "baseId": 2100042,
+        "textId": 1000000108,
+        "category": 3,
+        "subCategory": 0
+      },
+      {
+        "id": 2100043,
+        "baseId": 2100043,
+        "textId": 1000000109,
+        "category": 1,
+        "subCategory": 1
+      },
+      {
+        "id": 2100044,
+        "baseId": 2100044,
+        "textId": 1000000110,
+        "category": 1,
+        "subCategory": 0
+      },
+      {
+        "id": 2100045,
+        "baseId": 2100045,
+        "textId": 1000000114,
+        "category": 3,
+        "subCategory": 0
+      },
+      {
+        "id": 2100046,
+        "baseId": 2100046,
+        "textId": 1000000115,
+        "category": 1,
+        "subCategory": 0
+      },
+      {
+        "id": 2100047,
+        "baseId": 2100047,
+        "textId": 1000000116,
+        "category": 3,
+        "subCategory": 0
+      },
+      {
+        "id": 2100048,
+        "baseId": 2100048,
+        "textId": 1000000120,
+        "category": 3,
+        "subCategory": 0
+      },
+      {
+        "id": 2100049,
+        "baseId": 2100049,
+        "textId": 1000000124,
+        "category": 3,
+        "subCategory": 0
+      },
+      {
+        "id": 2100050,
+        "baseId": 2100050,
+        "textId": 1000000125,
+        "category": 2,
+        "subCategory": 0
+      },
+      {
+        "id": 2100051,
+        "baseId": 2100051,
+        "textId": 1000000129,
+        "category": 3,
+        "subCategory": 0
+      },
+      {
+        "id": 2100052,
+        "baseId": 2100052,
+        "textId": 1000000130,
+        "category": 2,
+        "subCategory": 0
+      },
+      {
+        "id": 2100053,
+        "baseId": 2100053,
+        "textId": 1000000134,
+        "category": 3,
+        "subCategory": 0
+      },
+      {
+        "id": 2100054,
+        "baseId": 2100054,
+        "textId": 1000000135,
+        "category": 2,
+        "subCategory": 0
+      },
+      {
+        "id": 2100055,
+        "baseId": 2100055,
+        "textId": 1000000136,
+        "category": 2,
+        "subCategory": 0
+      },
+      {
+        "id": 2100056,
+        "baseId": 2100056,
+        "textId": 1000000140,
+        "category": 3,
+        "subCategory": 0
+      },
+      {
+        "id": 2100057,
+        "baseId": 2100057,
+        "textId": 1000000141,
+        "category": 1,
+        "subCategory": 0
+      },
+      {
+        "id": 2100058,
+        "baseId": 2100058,
+        "textId": 1000000142,
+        "category": 2,
+        "subCategory": 0
+      },
+      {
+        "id": 2100059,
+        "baseId": 2100059,
+        "textId": 1000000143,
+        "category": 2,
+        "subCategory": 0
+      },
+      {
+        "id": 2100060,
+        "baseId": 2100060,
+        "textId": 1000000147,
+        "category": 3,
+        "subCategory": 0
+      },
+      {
+        "id": 2100061,
+        "baseId": 2100061,
+        "textId": 1000000148,
+        "category": 1,
+        "subCategory": 0
+      },
+      {
+        "id": 2100062,
+        "baseId": 2100062,
+        "textId": 1000000152,
+        "category": 3,
+        "subCategory": 0
+      },
+      {
+        "id": 2100063,
+        "baseId": 2100063,
+        "textId": 1000000156,
+        "category": 3,
+        "subCategory": 0
+      },
+      {
+        "id": 2100064,
+        "baseId": 2100064,
+        "textId": 1000000157,
+        "category": 1,
+        "subCategory": 0
+      },
+      {
+        "id": 2100065,
+        "baseId": 2100065,
+        "textId": 1000000158,
+        "category": 2,
+        "subCategory": 0
+      },
+      {
+        "id": 2100066,
+        "baseId": 2100066,
+        "textId": 1000000159,
+        "category": 2,
+        "subCategory": 0
+      }
+    ],
+    "source": "Explicit paper-deck extension generated from the pinned local Forge runtime; these are not original Arena identities",
+    "deckSha256": "8816b4f70ff22466fc7752b9a87ffffb89bcb342abfa24bbec3ca52ff07aea46"
   }
 }

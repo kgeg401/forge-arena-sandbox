@@ -44,6 +44,10 @@
     {
       "file": "Brawl-Jace-Superfriends.txt",
       "name": "Jace Superfriends Brawl"
+    },
+    {
+      "file": "Commander-FREAK-OFF-Darien.txt",
+      "name": "FREAK-OFF Darien (Paper Commander)"
     }
   ]
 }

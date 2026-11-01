@@ -2,10 +2,11 @@
 from pathlib import Path
 import hashlib
 import json
+import os
 
 
 def load_experimental(path=None):
-    path=Path(path) if path else Path(__file__).with_name('experimental-admission.json')
+    path=Path(path) if path else Path(os.environ.get('FORGE_ARENA_EXPERIMENTAL',str(Path(__file__).with_name('experimental-admission.json'))))
     if not path.exists():return dict(cards={},blockedCards={},enabled=False)
     value=json.loads(path.read_text(encoding='utf-8-sig'))
     if value.get('schema')!=1 or value.get('enabled') is not True:
@@ -84,5 +85,8 @@ def merge_manifest(manifest,experimental=None):
     manifest['experimentalNames']=sorted(experimental['cards'])
     manifest['experimentalStatus']='User-enabled unverified cards; runtime fidelity gaps still stop unsupported behavior'
     manifest['experimentalBlockedCards']=experimental['blockedCards']
+    if 'paperExtension' in experimental:
+        if experimental['paperExtension'].get('schema')!=1:raise ValueError('Unknown paper extension schema')
+        manifest['paperExtension']=experimental['paperExtension']
     if 'humanChoices' in experimental:apply_human_choices(manifest,experimental['humanChoices'])
     return manifest

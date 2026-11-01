@@ -47,7 +47,8 @@ internal static class NativeCardAssetProbe
         if((bool?)manifest["researchOnly"]!=true)throw new InvalidOperationException("Asset probe requires a research-only manifest.");
         var requested=(JArray)request["grpIds"]!;
         if(requested.Count==0 || requested.Count>128 || requested.Distinct(new JTokenEqualityComparer()).Count()!=requested.Count)throw new InvalidDataException("Asset probe needs 1-128 distinct source identities.");
-        var allowed=((JObject)manifest["cards"]!).Properties().ToDictionary(p=>(uint)p.Value["grpId"]!,p=>p.Name);
+        var records=((JObject)manifest["cards"]!).Properties().GroupBy(p=>(uint)p.Value["grpId"]!).ToDictionary(g=>g.Key,g=>g.First());
+        var allowed=records.ToDictionary(p=>p.Key,p=>p.Value.Name);
         foreach(var value in requested)if(!allowed.ContainsKey((uint)value))throw new InvalidDataException("Asset probe printing is not in the research manifest.");
         File.Delete(requestPath);
         var rows=new JArray();var live=new List<CDCMetaCardView>();
@@ -72,10 +73,10 @@ internal static class NativeCardAssetProbe
                 float deadline=Time.realtimeSinceStartup+8;
                 // Card parts/texture requests update over several Unity frames.
                 int frames=0;
-                while(Time.realtimeSinceStartup<deadline && (frames<8 || batch.Any(v=>!ArtReady(v.View)))){frames++;yield return null;}
+                while(Time.realtimeSinceStartup<deadline && (frames<8 || batch.Any(v=>(bool?)records[v.Id].Value["paperOnly"]!=true && !ArtReady(v.View)))){frames++;yield return null;}
                 foreach(var entry in batch)
                 {
-                    rows.Add(new JObject{["grpId"]=entry.Id,["name"]=allowed[entry.Id],["modelGrpId"]=entry.View.Card.GrpId,["artReady"]=ArtReady(entry.View),["textures"]=Textures(entry.View)});
+                    rows.Add(new JObject{["grpId"]=entry.Id,["name"]=allowed[entry.Id],["modelGrpId"]=entry.View.Card.GrpId,["localizedName"]=papa.CardDatabase.GreLocProvider.GetLocalizedText(entry.View.Card.TitleId),["paperOnly"]=(bool?)records[entry.Id].Value["paperOnly"]==true,["artReady"]=ArtReady(entry.View),["textures"]=Textures(entry.View)});
                     entry.View.Cleanup();UnityEngine.Object.Destroy(entry.View.gameObject);live.Remove(entry.View);
                 }
             }

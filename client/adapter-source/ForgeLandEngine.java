@@ -135,7 +135,7 @@ public final class ForgeLandEngine {
         static final Set<String> FIXTURE_CARDS=Set.of("Scathe Zombies","Those Who Serve","Lazotep Behemoth");
         final Set<Integer> physicalCards=new HashSet<>();
         final Set<Integer> attempted=new HashSet<>();
-        Card ruleEffect;int survivorsTurns,waves,lastWaveTurn=-1,initialCards,damageMilled;boolean prepared,initialized,finished;
+        Card ruleEffect;int survivorsTurns,waves,lastWaveTurn=-1,initialCards,damageMilled,preparationTurns=3;boolean prepared,initialized,finished;
         forge.item.PaperToken sourceToken;PaperCard physicalPrinting;int initialTokenCards;
         Deck deck(){
             if(!fullHumanChoices || !MAPPED_OBJECTS.contains(TOKEN))throw new IllegalArgumentException("Horde needs the original mapped Zombie token and full human controls");
@@ -161,6 +161,9 @@ public final class ForgeLandEngine {
 
         void initialize(){
             if(initialized)return;initialized=true;
+            // Count the initial survivor turn as preparation turn one. Commander
+            // tax and cost reductions do not change this initial land-drop budget.
+            if(commanderGame())preparationTurns=Math.max(1,local.getCardsIn(ZoneType.Command).stream().filter(Card::isRealCommander).mapToInt(Card::getCMC).max().orElse(3));
             if(opponent.getCardsIn(ZoneType.Library).size()!=initialCards)throw new IllegalStateException("Actual Horde library differs from the constructed initial deck");
             for(Card c:opponent.getCardsIn(ZoneType.Library)){if(c.getPaperCard().equals(physicalPrinting))physicalCards.add(c.getId());if(physicalToken(c)){c.setGamePieceType(forge.card.GamePieceType.CARD);c.setTokenCard(true);c.setImageKey(sourceToken.getImageKey(false));}}
             if(physicalCards.size()!=initialTokenCards)throw new IllegalStateException("Physical Horde token-card identities were not conserved during deck creation");
@@ -170,12 +173,12 @@ public final class ForgeLandEngine {
             ruleEffect.addStaticAbility("Mode$ Continuous | EffectZone$ Command | Affected$ Creature.YouCtrl | AddKeyword$ Haste | Description$ Horde creatures have haste.");
             ruleEffect.addStaticAbility("Mode$ Continuous | EffectZone$ Command | Affected$ You | SetMaxHandSize$ Unlimited | Description$ Horde cards returned to hand wait for the next wave.");
             game.getAction().moveToCommand(ruleEffect,null);opponentKept=true;seatKept.put(2,true);
-            event(Map.of("kind","horde-initialized","cards",initialCards,"preparationTurns",3,"survivorLife",local.getStartingLife()));
+            event(Map.of("kind","horde-initialized","cards",initialCards,"preparationTurns",preparationTurns,"survivorLife",local.getStartingLife()));
         }
         void turn(forge.game.event.GameEventTurnBegan e){
             if(e.turnOwner().getId()==local.getId()){
                 survivorsTurns++;
-                if(!prepared){prepared=true;game.getPhaseHandler().addExtraTurn(local);game.getPhaseHandler().addExtraTurn(local);}
+                if(!prepared){prepared=true;for(int i=1;i<preparationTurns;i++)game.getPhaseHandler().addExtraTurn(local);}
             }
         }
         void damage(forge.game.event.GameEventPlayerDamaged e){
@@ -234,7 +237,7 @@ public final class ForgeLandEngine {
             if(!onStack)throw new UnsupportedOperationException("Horde spell did not enter the real response stack: "+spell.getHostCard().getName());
             event(Map.of("kind","horde-free-cast","sourceForgeId",id,"wave",waves));return true;
         }
-        Map<String,Object> state(){var value=new LinkedHashMap<String,Object>(Map.of("solo",true,"initialCards",initialCards,"remainingCards",opponent.getCardsIn(ZoneType.Library).size(),"wave",waves,"survivorTurns",survivorsTurns,"preparationTurnsRemaining",Math.max(0,3-survivorsTurns),"damageMilled",damageMilled,"hasLifeTotal",false,"finished",finished,"initialized",initialized));value.put("rulesEffectForgeId",ruleEffect==null?0:ruleEffect.getId());return value;}
+        Map<String,Object> state(){var value=new LinkedHashMap<String,Object>(Map.of("solo",true,"initialCards",initialCards,"remainingCards",opponent.getCardsIn(ZoneType.Library).size(),"wave",waves,"survivorTurns",survivorsTurns,"preparationTurnsRemaining",Math.max(0,preparationTurns-survivorsTurns),"damageMilled",damageMilled,"hasLifeTotal",false,"finished",finished,"initialized",initialized));value.put("preparationTurns",preparationTurns);value.put("rulesEffectForgeId",ruleEffect==null?0:ruleEffect.getId());return value;}
         @SuppressWarnings("unchecked") void presentation(Card c,Map<String,Object> value){
             var grants=(List<Map<String,Object>>)value.get("keywordGrants");
             if(grants!=null && ruleEffect!=null)for(int i=0;i<grants.size();i++){
@@ -2755,7 +2758,9 @@ public final class ForgeLandEngine {
             if(fixtureConfig.has("fixtureCommander")){
                 String name=fixtureConfig.get("fixtureCommander").getAsString();
                 if(!fullHumanChoices || !BRAWL_COMMANDERS.contains(name))throw new IllegalArgumentException("Initial commander needs an admitted original commander identity");
-                Card c=Card.fromPaperCard(Objects.requireNonNull(FModel.getMagicDb().getCommonCards().getCard(name)),local);c.setCommander(true);local.addCommander(c);local.initCommanderColor(c);local.getZone(ZoneType.Command).add(c);
+                Card c=Card.fromPaperCard(Objects.requireNonNull(FModel.getMagicDb().getCommonCards().getCard(name)),local);c.setCommander(true);local.addCommander(c);local.initCommanderColor(c);
+                boolean inPlay=fixtureConfig.has("fixtureCommanderInPlay") && fixtureConfig.get("fixtureCommanderInPlay").getAsBoolean();
+                local.getZone(inPlay?ZoneType.Battlefield:ZoneType.Command).add(c);if(inPlay && fixtureConfig.has("fixtureBattlefieldReady") && fixtureConfig.get("fixtureBattlefieldReady").getAsBoolean())c.setSickness(false);
             }
             if(fixtureConfig.has("fixtureLibrary")){
                 JsonArray names=fixtureConfig.getAsJsonArray("fixtureLibrary");if(names.size()>100)throw new IllegalArgumentException("Initial library fixture is bounded to100 cards");

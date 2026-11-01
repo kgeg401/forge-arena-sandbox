@@ -1,4 +1,30 @@
-# Current gameplay alpha: 0.2.0-alpha.12
+# Current gameplay alpha: 0.2.0-alpha.13
+
+Alpha 13 adds commander-mana-value Horde preparation and the exact original
+100-card FREAK-OFF Darien paper list. Four original-handler openings cast
+one-, three-, five- and six-mana commanders from normal land drops before the
+first Horde wave. Survivor life remains 40 and the Horde deck remains 200.
+
+The existing 370-name verified baseline is unchanged. The experimental inventory
+is 1,348 names (1,718 admitted primaries). Of the 52 new names, 31 are explicitly
+paper-only extensions with separate local printing/ability/text records, sourced
+from the pinned Forge definitions. They do not modify the owned Arena database.
+Their art is currently the native missing-art placeholder. See
+[the paper Darien deck and limits](PAPER-DARIEN.md).
+
+All 52 new cast/land entry points and 34 named interaction scenarios have
+original-handler evidence. These include damage/redirection, the token/lifegain
+chain, soldier lords, optional payments, activated costs, land searches,
+reanimation/back faces, control changes, counters and commander protection.
+These bounded cases do not certify every combination or every opponent deck.
+
+The private rendered consumer check loaded all 31 paper models with matching
+localized names, seeded the exact 99-plus-commander list, selected it through
+the original Play menu, and opened the actual Horde match at 40 life, 200 Horde
+cards and a six-turn prep budget. An original land-play handler worked with no
+reported client gap. All 31 new artworks remain declared missing-art placeholders.
+
+## Alpha 12: temporary card reveals
 
 Alpha 12 fixes a Ghoulraiser reveal that could stop the native client with
 "No generated native mapping for Zombie Token". Temporary source-authorized

@@ -34,7 +34,11 @@ if a.incremental:
         del check_base['cards'][name]
     composed=copy.deepcopy(old)
     for name,value in overlay['cardOverrides'].items():
-        if name in composed['cardOverrides']:composed['cardOverrides'][name]['fields'].update(value['fields'])
+        if name in composed['presentationObjects']:
+            # Existing token/face objects are removed from check_base below;
+            # retain their identity and compose updated fields into that object.
+            composed['presentationObjects'][name].update(value['fields'])
+        elif name in composed['cardOverrides']:composed['cardOverrides'][name]['fields'].update(value['fields'])
         else:composed['cardOverrides'][name]=value
     composed['presentationObjects'].update(overlay['presentationObjects'])
     for key in ('keywordAbilityIds','typeEnumIds','cardNameIds'):composed[key]=overlay[key]

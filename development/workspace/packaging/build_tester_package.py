@@ -141,6 +141,7 @@ def build(tag,output,gameplay_ref=None,headline='Public launcher and automatic u
         admission=str(len(policy['verifiedNames']))+' explicitly admitted Arena names plus separately admitted commanders/tokens; no general-card support claim',features=['dedicated Windows client launcher','automatic startup updates','automatic Forge and runtime setup','persistent native Home/Decks/Packs/Play','normal practice bot matches','100-card Brawl bot matches','40-life Commander bot matches','four-player local Commander with one human and three bots','experimental shared table and public zones','native commander slot and local format choice','local sandbox pack opening','native local deck browser'],
         excluded=['network multiplayer','online matchmaking','retail account services','complete card support','retail banlist/format legality','retail pack collation','automatic client-asset migration'])
     requirements['features']+=['solo 40-life 200-card Zombie/Horror reanimation Horde','Horde with saved 99-card-plus-commander decks','optional human Exert choices']
+    requirements['features']+=['Horde preparation based on commander mana value','original FREAK-OFF Darien paper Commander deck with declared missing-art placeholders']
     (output/'requirements.json').write_text(json.dumps(requirements,indent=2))
     commit=subprocess.run(['git','rev-parse','HEAD'],cwd=REPO,capture_output=True,text=True,check=True).stdout.strip()
     state=subprocess.run(['git','status','--porcelain'],cwd=REPO,capture_output=True,text=True,check=True).stdout.strip()

@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.2.0 alpha 13 - Paper Darien and commander-sized Horde prep
+
+- Commander Horde preparation now matches the commander's printed mana value (minimum one turn). Five-mana commanders get five preparation turns; Darien gets six. Practice decks keep three. Normal land drops and costs remain in force; life stays 40 and the Horde stays 200 cards.
+- Adds the exact original 100-card FREAK-OFF Darien paper deck, with no substitutions. Enables 52 new experimental names, including 31 explicit paper-only presentation records using Forge rules. No owned Arena database records are overwritten. Paper-only artwork uses the native missing-art placeholder.
+- Fixes incremental presentation overlays so updated token bindings retain existing identities, and distinguishes trigger-execution effects from actual activated abilities. Adds exact generated-copy body binding as an explicit preparation option.
+- Tests cover all 52 new cast/land entry points, four on-curve commander openings and 34 named interaction scenarios. Actual native checks load all 31 paper models with matching names, show the saved deck in Play, and open a 40-life/200-card/six-prep Horde match with a successful original land play.
+- The verified baseline remains 370; 1,348 names remain experimental, for 1,718 admitted primaries. Exhaustive combinations, partner commanders, network Horde and durable match saves remain outside this checkpoint.
+
 ## 0.2.0 alpha 12 - Ghoulraiser reveal fix
 
 - Fixes a stalled reveal box when Ghoulraiser returns a physical Zombie token card. Explicitly revealed cards retain their original identity; other hidden cards stay hidden and temporary visibility ends after acknowledgment.

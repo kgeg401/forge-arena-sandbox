@@ -9,6 +9,7 @@ from arena_catalog import clean_name
 p=argparse.ArgumentParser(description=__doc__)
 for k in ('database','projection','manifest','output','report'):p.add_argument('--'+k,type=Path,required=True)
 p.add_argument('--allow-incomplete-research',action='store_true',help='Write a research-only candidate with explicit unresolved binding records; never a release manifest')
+p.add_argument('--allow-exact-generated-copy-body',action='store_true',help='Bind generated copies by their exact body and subsequently checked keywords/triggers when the original native creator link is absent')
 args=p.parse_args()
 projection=json.loads(args.projection.read_text(encoding='utf-8-sig'));manifest=json.loads(args.manifest.read_text(encoding='utf-8-sig'))
 if args.allow_incomplete_research and manifest.get('researchOnly') is not True:raise ValueError('Incomplete bindings are permitted only in an explicit research manifest')
@@ -36,7 +37,8 @@ for name,source in projection['cards'].items():
     row=linked[0];ids=[int(v.split(':')[0]) for v in filter(None,row['AbilityIds'].split(','))];colors=face_values('CardColor',row['Colors'])
     manifest['cards'][name]=dict(grpId=row['GrpId'],titleId=row['TitleId'],types=face_values('CardType',row['Types']),subtypes=face_values('SubType',row['Subtypes']),supertypes=face_values('SuperType',row['Supertypes']),color=next((c for c in colors if c in ('White','Blue','Black','Red','Green')),'Colorless'),colors=colors,colorIdentity=parent.get('colorIdentity',[]),genericCost=0,abilityId=ids[0] if ids else 0,abilityIds=ids,token=False,admitted=False,facePresentation=True,parentName=source['parentName'],forgeScript=parent['forgeScript'],forgeScriptSha256=parent['forgeScriptSha256'],bindingBasis='Original native LinkedFaceGrpIds and exact pinned Forge backside state')
 for source in projection['cards'].values():
-    source['abilities']+= [a for a in source.get('latentAbilities',[]) if a.get('description') and a['description'] not in {x['description'] for x in source['abilities']}]
+    trigger_executions={t.get('Execute') for t in source.get('triggers',[])}
+    source['abilities']+= [a for a in source.get('latentAbilities',[]) if a.get('description') and a.get('sourceSVar') not in trigger_executions and a['description'] not in {x['description'] for x in source['abilities']}]
     source['triggers']+=source.get('latentTriggers',[])
 def normalized(text,name):
     text=html.unescape(re.sub(r'<[^>]+>',' ',text or '')).replace(name,'CARDNAME')
@@ -287,11 +289,19 @@ for script,source in projection['tokens'].items():
         keywords={normalized(k.split(':')[1]+'walk' if k.startswith('Landwalk:') and k.split(':')[1] in ('Plains','Island','Swamp','Mountain','Forest') else k,name) for k in source_keywords}
         if not keywords.issubset({normalized(t,name) for t in texts}):continue
         candidates.append(row)
-    linked=[r for r in candidates if r['GrpId'] in tokens_linked]
+    prior_token=original['cards'].get('token:'+script)
+    retained=[r for r in candidates if prior_token and r['GrpId']==prior_token['grpId']]
+    linked=retained or [r for r in candidates if r['GrpId'] in tokens_linked]
     if source.get('generatedCopy'):
         parent=manifest['cards'][source['sourceCardName']]
         ability=parent['abilityBindings']['descriptions'].get(source['sourceAbilityDescription'])
         linked=[r for r in candidates if any(v['name']==source['sourceCardName'] and v['abilityId']==ability for v in tokens_linked.get(r['GrpId'],[]))]
+        if len(linked)!=1 and args.allow_exact_generated_copy_body and candidates:
+            # A generated copy retains the source's exact projected stats,
+            # types and color. The keyword/trigger checks below still apply.
+            # This explicitly selected mapping does not assert an absent link.
+            linked=[min(candidates,key=lambda r:r['GrpId'])]
+            source['exactBodyWithoutCreatorLink']=True
         if len(linked)!=1:
             unbound_tokens.append(dict(script=script,reason='Generated copy lacks one exact original source-ability token link'));continue
         candidates=linked
@@ -300,8 +310,14 @@ for script,source in projection['tokens'].items():
         linked=[r for r in candidates if r['GrpId'] in face_ids]
     candidates=linked or candidates
     if not candidates:unbound_tokens.append(dict(script=script,source=source));continue
+    if prior_token:
+        retained=[r for r in candidates if r['GrpId']==prior_token['grpId']]
+        if not retained:raise ValueError('Existing token presentation is not a source-equivalent candidate: '+script)
+        candidates=retained
     row=min(candidates,key=lambda r:r['GrpId']);ids=[int(v.split(':')[0]) for v in filter(None,row['AbilityIds'].split(','))]
     manifest['cards']['token:'+script]=dict(grpId=row['GrpId'],titleId=row['TitleId'],types=values('CardType',row['Types']),subtypes=values('SubType',row['Subtypes']),supertypes=values('SuperType',row['Supertypes']),color={0:'Colorless',1:'White',2:'Blue',4:'Black',8:'Red',16:'Green'}.get(source['colorMask'],'Colorless'),colors=values('CardColor',row['Colors'] or row['FrameColors']),colorIdentity=[],genericCost=0,abilityId=ids[0] if ids else 0,abilityIds=ids,token=True,admitted=False,forgeTokenScript=script,nativeLinks=tokens_linked.get(row['GrpId'],[]),bindingBasis='Original native source links and exact token body, color, types, subtypes and printed keywords',equivalentNativeCandidates=sorted(r['GrpId'] for r in candidates))
+    if source.get('exactBodyWithoutCreatorLink'):manifest['cards']['token:'+script]['bindingBasis']='Explicitly selected exact source body/color/types/subtypes/keywords and checked trigger text; no original native creator link asserted'
+    if prior_token:manifest['cards']['token:'+script]=copy.deepcopy(prior_token)
     counts['token bound']+=1
 for script,source in projection['tokens'].items():
     key='token:'+script

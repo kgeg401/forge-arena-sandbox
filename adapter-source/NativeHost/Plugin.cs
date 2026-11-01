@@ -48,6 +48,7 @@ public sealed class Plugin : BaseUnityPlugin
     private void Awake()
     {
         _root = LabBoundary.Validate(Paths.GameRootPath);
+        NativePaperCards.Install(_root);
         if (!IsNetworkIsolated())
             throw new InvalidOperationException("Local host requires the independent zero-capability AppContainer lab.");
         _phase = "waiting-for-native-services";

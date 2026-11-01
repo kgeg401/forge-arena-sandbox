@@ -1,6 +1,6 @@
 # Experimental card catalogue
 
-This build enables 1296 additional experimental card names. The verified catalogue remains 370 names. See docs/VERIFICATION.md and docs/MOXFIELD-COVERAGE.md for tested scenarios and per-card coverage. Permission to start a match is not exhaustive proof of its effects or combos. Actual unmapped mechanics still report a gap.
+This build enables 1348 additional experimental card names. The verified catalogue remains 370 names. See docs/VERIFICATION.md and docs/MOXFIELD-COVERAGE.md for tested scenarios and per-card coverage. Permission to start a match is not exhaustive proof of its effects or combos. Actual unmapped mechanics still report a gap.
 
 Use Manage-Updates.ps1 rollback to return to the previous build. Saved decks and profiles are retained.
 

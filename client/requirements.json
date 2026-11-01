@@ -101,7 +101,9 @@
     "native local deck browser",
     "solo 40-life 200-card Zombie/Horror reanimation Horde",
     "Horde with saved 99-card-plus-commander decks",
-    "optional human Exert choices"
+    "optional human Exert choices",
+    "Horde preparation based on commander mana value",
+    "original FREAK-OFF Darien paper Commander deck with declared missing-art placeholders"
   ],
   "excluded": [
     "network multiplayer",

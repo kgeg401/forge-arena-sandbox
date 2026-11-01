@@ -184,7 +184,7 @@ internal static class Program
                         else if(modification.Type==AbilityModification.ModType.Added && known.Contains(Canonical(modification.AbilityId)))effective.Add(Canonical(modification.AbilityId));
                     }
                     var expectedKeywords=rulesKeywords.Select(k=>bridge.ResearchKnownKeyword((string)k!)).Where(k=>k.HasValue).Select(k=>k!.Value).ToHashSet();
-                    if(!effective.SetEquals(expectedKeywords))throw new InvalidOperationException("Native keyword modifier order disagrees with actual active Forge keywords");
+                    if(!effective.SetEquals(expectedKeywords))throw new InvalidOperationException("Native keyword modifier order disagrees for "+name+"; actual="+string.Join(",",effective.OrderBy(v=>v))+" expected="+string.Join(",",expectedKeywords.OrderBy(v=>v)));
                 }
                 if(!native.AttachedWithIds.SetEquals(attachedWith.TryGetValue(id,out var group)?group:new HashSet<uint>()))throw new InvalidOperationException("Native reverse attachments differ from Forge");
                 var expected=((JArray?)card["counters"]??new JArray()).ToDictionary(c=>SharedCounterProtocol.Type((string)c["type"]!),c=>(int)c["count"]!);

@@ -23,6 +23,10 @@ public class ProjectForgeCards {
     static Map<String,Object> card(Card card){
         var original=card.getCurrentState();Map<String,Object> r=new LinkedHashMap<>();
         r.put("presentationImageKey",original.getImageKey());r.put("presentationState",card.getCurrentStateName().name());
+        r.put("oracleText",card.getPaperCard().getRules().getOracleText());
+        r.put("manaCost",original.getManaCost().toString());
+        r.put("supertypes",original.getType().getSupertypes().stream().map(Object::toString).sorted().toList());
+        r.put("colorIdentityMask",(int)card.getPaperCard().getRules().getColorIdentity().getColor());
         r.put("name",card.getName());r.put("colorMask",(int)original.getColor().getColor());r.put("coreTypes",original.getType().getCoreTypes().stream().map(Object::toString).sorted().toList());r.put("subtypes",original.getType().getSubtypes().stream().sorted().toList());r.put("power",original.getBasePowerString());r.put("toughness",original.getBaseToughnessString());r.put("keywords",original.getIntrinsicKeywords().stream().map(k->k.getOriginal()).sorted().toList());r.put("imageKey",card.getPaperCard().getImageKey(false));
         r.put("abilities",card.getSpellAbilities().stream().map(ProjectForgeCards::ability).toList());r.put("triggers",card.getTriggers().stream().map(t->t.getMapParams()).toList());var latent=new ArrayList<Object>();for(var entry:card.getSVars().entrySet())if(entry.getValue().startsWith("AB$")){try{var a=forge.game.ability.AbilityFactory.getAbility(entry.getValue(),card);a.setActivatingPlayer(card.getOwner());var row=ability(a);row.put("sourceSVar",entry.getKey());latent.add(row);}catch(Exception ex){latent.add(Map.of("sourceSVar",entry.getKey(),"error",ex.toString()));}}r.put("latentAbilities",latent);
         // Optional attack costs keep their reflexive effect in a StaticAbility

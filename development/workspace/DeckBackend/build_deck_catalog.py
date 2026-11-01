@@ -27,6 +27,10 @@ def build():
                   colorIdentity=EXPERIMENTAL['cards'].get(clean_name(r['EnglishName']),{}).get('colorIdentity',POLICY.get('colorIdentities',{}).get(clean_name(r['EnglishName']),[])),
                   preferred={**PINNED,**COMMANDER_PINNED}.get(clean_name(r['EnglishName']))==r['GrpId'])
              for r in indexed_printings(rows)]
+    for name,card in EXPERIMENTAL['cards'].items():
+        if not card.get('paperOnly'):continue
+        if any(c['grpId']==card['grpId'] or c['name']==name for c in cards):raise ValueError('Paper identity collides with the owned catalogue: '+name)
+        cards.append(dict(grpId=card['grpId'],name=name,set='PAPER',collector=str(card['grpId']-2000000),sort=[int('Land' in card['types']),card['paperDefinition']['manaValue'],0,name.casefold()],rebalanced=False,matchSupported=True,commanderSupported=bool(card.get('commanderAdmitted')),experimental=True,colorIdentity=card['colorIdentity'],preferred=True,paperOnly=True))
     result = dict(schema=1,sourceDatabaseSha256=digest,policySha256=hashlib.sha256(SUPPORT_POLICY.read_bytes()).hexdigest(),cards=cards,
                   policy=f'Local sandbox deck storage; {len(VERIFIED)} verified names plus {len(EXPERIMENTAL["cards"])} explicitly enabled experimental names. No retail format legality claim.')
     target = ROOT/'native-lab/deck-catalog.json'

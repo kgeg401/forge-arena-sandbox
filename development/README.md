@@ -18,9 +18,10 @@ supported list for release status. Review paths and supply explicit runtime
 configuration before running any research tool on another PC.
 
 The verified policy is the 370-name `ForgeBackend/bridge_support.json`.
-The release separately enables 1,296 experimental names (942 new in alpha 10
-and 11 Zombie/Horror/reanimation names in alpha 11),
-restricted to its pinned Arena catalogue. The generated experimental overlay
+The release separately enables 1,348 experimental names. Alpha 13 adds the
+original paper Darien deck: 52 new names, including 31 explicit paper-only
+presentation extensions, with declared missing-art placeholders. Other catalogue
+entries retain their pinned Arena identities. The generated experimental overlay
 is shipped in `client/ForgeBackend/experimental-admission.json`; it is not a
 claim of exhaustive gameplay support. Source and package checks keep these
 inventories disjoint and verify their exact dependency hashes. See

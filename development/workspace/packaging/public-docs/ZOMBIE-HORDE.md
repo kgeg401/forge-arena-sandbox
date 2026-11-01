@@ -4,7 +4,11 @@ In **Play**, choose **Zombie Horde (Solo)** for a 40–250-card practice deck, o
 **Zombie Horde (Commander Deck)** under Brawl for 99 cards plus a commander.
 Both start you at **40 life**. These are local sandbox formats, not Arena queues.
 
-You take three preparation turns before the Horde's first turn. Its shuffled
+With a commander deck, preparation turns equal the commander's original mana
+value, with a minimum of one turn. A five-mana commander gets five turns;
+Darien gets six. Normal land-drop and payment rules apply: this does not give
+lands, mana, or a free commander cast. Practice decks keep three prep turns.
+Its shuffled
 **200-card deck** contains 120 physical 2/2 Zombie token cards and the following
 80 Arena-present cards. Every creature is a Zombie or Horror; the sorceries
 reanimate creatures.
