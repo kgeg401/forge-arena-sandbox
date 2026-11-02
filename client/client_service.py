@@ -256,7 +256,10 @@ class Coordinator:
                 else:self.publish('error',str(error))
         if self.phase=='starting':
             if self.process.poll() is not None:
-                self.publish('error',self.engine_failure());self.stopped_log()
+                if self.internet and self.process.poll()==0 and (self.ipc/'stop.request').is_file() and not (self.ipc/'engine-error.json').exists():
+                    self.publish('cancelled','Private room cancelled')
+                else:self.publish('error',self.engine_failure())
+                self.stopped_log()
             elif time.monotonic()>self.deadline:
                 self.error='Forge startup timed out; the engine was stopped';self.stop('error')
             elif (self.ipc/'state.json').exists():

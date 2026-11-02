@@ -1,9 +1,9 @@
 {
-  "version": "0.2.0-alpha.15.mp.1",
-  "displayVersion": "0.2.0 Alpha 15 \u2014 Private Commander",
+  "version": "0.2.0-alpha.15.mp.2",
+  "displayVersion": "0.2.0 Alpha 15.2 \u2014 Private Commander",
   "headline": "Private internet Commander \u2014 play with a friend",
   "testRelease": true,
-  "gameplaySource": "8d9b5e781f557c165496e21ab236b71d8dd24677",
+  "gameplaySource": "c45f40439f15edeaa9a5c947f50ced1755f3ada1",
   "admittedNames": [
     "Plains",
     "Island",

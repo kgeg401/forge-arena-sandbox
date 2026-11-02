@@ -1,4 +1,4 @@
-# Private internet Commander: alpha 15.mp.1
+# Private internet Commander: alpha 15.mp.2
 
 Two original native client processes, independent saved decks and public HTTPS
 transport have completed bounded real games through commander casts, combat

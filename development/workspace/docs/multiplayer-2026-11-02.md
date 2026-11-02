@@ -1,6 +1,6 @@
 # Internet multiplayer: playable two-human integration
 
-The later alpha 15.mp.1 integration adds the normal saved-deck Play queue,
+The later alpha 15.mp.2 integration adds the normal saved-deck Play queue,
 private Host/Join lobby, pinned official cloudflared download, authoritative
 two-human Java controller, paired per-player native views and display ACK fences.
 All 107 inherited human callbacks execute with their actual player context;

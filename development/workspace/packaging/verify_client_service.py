@@ -116,6 +116,13 @@ with tempfile.TemporaryDirectory(prefix='forge-coordinator-') as temp:
             check(queue+' uses the saved player deck',horde['localDeck']['name']==saved['name'])
             check(queue+' cannot substitute an ordinary opponent deck','opponentDeck' not in horde and 'opponentDecks' not in horde)
             submit(request('cancel',matchRequestId=horde_request['id']));engines[-1].code=0;c.tick()
+        for internet,code,failure,expected in [(True,0,False,'cancelled'),(True,1,False,'error'),(True,0,True,'error'),(False,0,False,'error')]:
+            c.internet=internet;c.process=Engine(900000);c.process.code=code;c.phase='starting'
+            (c.ipc/'stop.request').write_text('Room window closed')
+            error=c.ipc/'engine-error.json';error.unlink(missing_ok=True)
+            if failure:atomic(error,dict(reason='Actual worker failure'))
+            c.tick(process_requests=False)
+            check('Only clean internet cancellation avoids an engine error: '+str((internet,code,failure)),c.phase==expected)
         c.close()
         check('Closing an idle coordinator leaves no engine',c.phase=='closed' and c.process is None)
     receipt['capabilityCount']=1;atomic(lab/'launch-receipt.json',receipt)
