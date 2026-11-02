@@ -109,6 +109,13 @@ with tempfile.TemporaryDirectory(prefix='forge-coordinator-') as temp:
               len(ten['opponentDecks'])==9 and [Path(d['source']).name for d in ten['opponentDecks']]==['Commander-Pod-'+n+'.txt' for n in ('Isamaru','Emry','Selvala')*3]
               and all(d['format']=='commander-40' and sum(v['count'] for v in d['cards'])==99 for d in ten['opponentDecks']))
         submit(request('cancel',matchRequestId=ten_request['id']));engines[-1].code=0;c.tick()
+        for queue,saved in [('SandboxHorde',practice),('SandboxHordeCommander',brawl)]:
+            horde_request=request('start',queue=queue,deckId=saved['id']);submit(horde_request)
+            horde=json.loads((c.ipc/'scenario.json').read_text())
+            check(queue+' selects the actual Horde rules scenario',horde['scenario']=='zombie-horde')
+            check(queue+' uses the saved player deck',horde['localDeck']['name']==saved['name'])
+            check(queue+' cannot substitute an ordinary opponent deck','opponentDeck' not in horde and 'opponentDecks' not in horde)
+            submit(request('cancel',matchRequestId=horde_request['id']));engines[-1].code=0;c.tick()
         c.close()
         check('Closing an idle coordinator leaves no engine',c.phase=='closed' and c.process is None)
     receipt['capabilityCount']=1;atomic(lab/'launch-receipt.json',receipt)

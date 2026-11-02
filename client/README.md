@@ -39,6 +39,8 @@ A different build is rejected rather than changing your retail installation.
   99 main cards plus one commander, singleton except basics, color identity,
   25 life, a free first mulligan, command-zone returns and commander tax.
 - **Commander:** on the Brawl tab, choose **Commander Bot (40 Life)** or **Commander Pod (4 Players)**. The pod is one human and three easy Forge bots on this PC, with 40 life, commander tax and 21 commander combat damage. Its shared table and public-zone controls are experimental.
+- **Ten-player Commander:** under Brawl choose **Commander Pod (10 Players - Experimental)** for you and nine Forge bots, 40 life, attacks to the nearest living opponent on your left until four remain, then normal legal opponents.
+- **Zombie Horde:** under Brawl choose **Zombie Horde (Commander Deck)** for a saved commander deck, or under Play choose **Zombie Horde (Solo)** for a practice deck. You start at 40 life against 200 Zombie/Horror cards with extensive revival. Commander preparation equals mana value (minimum one); practice gets three turns. See [all modes and controls](docs/GAME-MODES.md).
 - **Decks:** create, import Arena deck text, edit, duplicate, export or delete
   local decks. Fresh profiles receive recommended starters. Choose Practice or Brawl when creating a deck. Click the deck
   header to change its local format. Brawl uses the native commander slot.
@@ -54,7 +56,7 @@ A different build is rejected rather than changing your retail installation.
 - Opening the launcher again focuses the existing client instead of starting
   a second game.
 
-All queues create local Forge bot matches. Four-player Commander is one human and three bots; network multiplayer and online matchmaking are not implemented.
+All queues create local games. Commander pods are one human and three or nine bots; Horde is solo against its scripted format. Network multiplayer and online matchmaking are not implemented.
 The Home menu, navigation, Play panel, deck widgets, pack chamber and game board
 reuse installed Arena assets. Local navigation and queue data replace the online
 services. Advertising, store/account controls and online reward panels are
@@ -62,9 +64,9 @@ omitted. This is not a claim of complete retail UI or behavior parity.
 
 ## Current limits
 
-The verified baseline remains **370 main-deck names**. Another **343 names** are enabled experimentally, including the Jace Superfriends starter. The exact baseline is in [SUPPORTED-CARDS.md](docs/SUPPORTED-CARDS.md); experimental status and blockers are in [EXPERIMENTAL.md](docs/EXPERIMENTAL.md). Card admission and play/cast checks do not prove every branch or combination. Actual unmapped actions still report a gap.
+The verified baseline remains **370 main-deck names**. The exact baseline is in [SUPPORTED-CARDS.md](docs/SUPPORTED-CARDS.md); the generated [experimental catalogue notice](docs/EXPERIMENTAL.md) records this release's additional names and blockers. Card admission and play/cast checks do not prove every branch or combination. Actual unmapped actions still report a gap.
 
-Home can park and resume the same running match. Closing the client ends it; durable match saves are not implemented. Decks, packs and settings persist separately.
+Return Home or closing the client ends that match; player-facing durable match saves are not implemented. Decks, packs and settings persist separately.
 
 Packs use custom sandbox collation: five commons, two uncommons and one
 rare/mythic, with a one-in-eight mythic choice when available. Retail bonus

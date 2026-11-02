@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.2.0 alpha 14.rail.10 - Interaction-tested efficiency and game-mode guide
+
+- Reuse per-transition chooser-visible cards and token membership sets. Keeps visibility rules, card order and native annotations; avoids repeated full-state rebuilding for each token.
+- Six recorded sequences retain 224 exact GRE messages; repeated 36-token projections allocate about 18% fewer temporary bytes. No gameplay fps claim.
+- Fresh Forge plus original Arena-handler checks cover token combat, phasing/equipment/counters, Class level/zone reset, mass arrivals, creature/spell copies, poison, Horde revival and commander-sized preparation. Real full-deck ten-player attacks and ordinary 200-card Horde are checked separately; no all-card/full-pod-winner certification.
+- Includes both Zombie Horde queues and experimental ten-player Commander. Adds one guide with exact menu locations, 40-life rules, 200-card Horde, preparation and attack-left/final-four rules. Packaged README no longer omits those modes or promises durable Home/resume.
+- Saved decks and game assets stay separate from versioned updates; use the normal close/reopen auto-update flow.
+
 ## 0.2.0 alpha 14.rail.9 - Client reliability and Commander pods
 
 - Repairs nullable update digests, session-qualified native error notices, expensive full-board notice reads and unlimited growth of newly marked match archives. Existing legacy archives/decks remain untouched. Export/full-history options are documented.

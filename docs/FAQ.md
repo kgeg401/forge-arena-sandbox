@@ -40,7 +40,7 @@ not cause it to be added again every time the client opens.
 
 ## Are these Arena bots or online opponents?
 
-All queues start local games in the native Arena board. Commander Pod is one human and three Forge bots on this PC. Brawl Bot uses 25 life; Commander Bot and Commander Pod use 40 life and 21 commander combat damage. They do
+All queues start local games in the native Arena board. Commander pods are one human and three or nine Forge bots on this PC; Zombie Horde is solo against its scripted format. Brawl Bot uses 25 life; Commander Bot and Commander pods use 40 life and 21 commander combat damage. See [all modes and menu locations](GAME-MODES.md). They do
 not connect to Arena matchmaking or use its server AI. Multiplayer is unfinished.
 Games are not resumable after closing the client.
 

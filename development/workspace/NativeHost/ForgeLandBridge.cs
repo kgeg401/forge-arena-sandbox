@@ -802,6 +802,9 @@ internal sealed class ForgeLandBridge
         // A ten-player state contains up to a thousand physical deck cards.
         // Index once instead of rescanning the entire prior state per card.
         var priorCardsById=Cards(prior).ToDictionary(c=>(int)c["forgeId"]!);
+        // Reuse chooser views only within this adoption; token membership is linear.
+        var nowVisible=VisibleCards(_state).ToArray();var priorVisible=VisibleCards(prior).ToArray();
+        var visibleIds=nowVisible.Select(c=>(int)c["forgeId"]!).ToHashSet();var priorVisibleIds=priorVisible.Select(c=>(int)c["forgeId"]!).ToHashSet();
         foreach(var card in Cards(_state))
         {
             priorCardsById.TryGetValue((int)card["forgeId"]!,out var before);
@@ -839,13 +842,13 @@ internal sealed class ForgeLandBridge
             annotations.Add(new JObject{["id"]=annotationId++,["affectorId"]=oldIds[(int)ability["forgeId"]!],["affectedIds"]=new JArray(oldIds[(int)ability["forgeId"]!]),["type"]=new JArray("AnnotationType_ResolutionStart"),["details"]=new JArray(Detail("grpid",StackAbilityId(ability)))});
         // The owned TokenCreatedEventParser requires an explicit annotation;
         // merely adding a token to the object list does not create its native view.
-        foreach(var token in VisibleCards(_state).Where(c=>(bool?)c["token"]==true && !VisibleCards(prior).Any(p=>(int)p["forgeId"]! ==(int)c["forgeId"]!)))
+        foreach(var token in nowVisible.Where(c=>(bool?)c["token"]==true && !priorVisibleIds.Contains((int)c["forgeId"]!)))
         {
             var created=new JObject{["id"]=annotationId++,["affectedIds"]=new JArray(Id(token)),["type"]=new JArray("AnnotationType_TokenCreated")};
             if((int?)token["sourceForgeId"] is int source && _ids.TryGetValue(source,out int sourceId))created["affectorId"]=sourceId;
             annotations.Add(created);
         }
-        var vanishedTokens=VisibleCards(prior).Where(c=>(bool?)c["token"]==true && !VisibleCards(_state).Any(n=>(int)n["forgeId"]! ==(int)c["forgeId"]!)).Select(c=>oldIds[(int)c["forgeId"]!]).ToList();
+        var vanishedTokens=priorVisible.Where(c=>(bool?)c["token"]==true && !visibleIds.Contains((int)c["forgeId"]!)).Select(c=>oldIds[(int)c["forgeId"]!]).ToList();
         if(vanishedTokens.Count>0)annotations.Add(new JObject{["id"]=annotationId++,["affectedIds"]=new JArray(vanishedTokens),["type"]=new JArray("AnnotationType_TokenDeleted")});
         // A copied spell ceases to exist after resolution/countering. It has no
         // graveyard card to carry an ObjectIdChanged event into the next state.
@@ -918,8 +921,7 @@ internal sealed class ForgeLandBridge
         var retiredAttachments=SharedAttachmentProtocol.Persistent(prior,id=>oldIds[id]).Where(c=>!attachmentIds.Contains((uint)c["id"]!)).Select(c=>(uint)c["id"]!);
         var nextKeywordState=SharedKeywordProtocol.Persistent(_state,id=>_ids[id],_keywordBindings,_cardManifest);var keywordIds=nextKeywordState.Select(c=>(uint)c["id"]!).ToHashSet();
         var retiredKeywords=SharedKeywordProtocol.Persistent(prior,id=>oldIds[id],_keywordBindings,_cardManifest).Where(c=>!keywordIds.Contains((uint)c["id"]!)).Select(c=>(uint)c["id"]!);
-        var nowVisible=VisibleCards(_state).ToArray();var visibleIds=nowVisible.Select(c=>(int)c["forgeId"]!).ToHashSet();
-        var concealed=VisibleCards(prior).Where(c=>(bool?)c["privateChoice"]==true && !visibleIds.Contains((int)c["forgeId"]!)).Select(c=>Cards(_state).Single(n=>(int)n["forgeId"]! == (int)c["forgeId"]!)).Select(c=>new JObject
+        var concealed=priorVisible.Where(c=>(bool?)c["privateChoice"]==true && !visibleIds.Contains((int)c["forgeId"]!)).Select(c=>Cards(_state).Single(n=>(int)n["forgeId"]! == (int)c["forgeId"]!)).Select(c=>new JObject
             {["instanceId"]=Id(c),["grpId"]=0,["overlayGrpId"]=0,["name"]=0,["type"]="GameObjectType_Card",["zoneId"]=ZoneId(c),["ownerSeatId"]=(int)c["owner"]!,["controllerSeatId"]=(int)c["controller"]!,["visibility"]="Visibility_Hidden"});
         bool quiet=!GameOver && ShouldAutoPass(false);
         bool combatPriority=_renderedCombatPresentation && !quiet && !GameOver && !LocalPodEliminated && Decision==null && ((bool?)_state["canPass"]??false)
@@ -934,7 +936,7 @@ internal sealed class ForgeLandBridge
         foreach(uint id in retiredCounters)((JArray)delta["diffDeletedPersistentAnnotationIds"]!).Add(id);
         foreach(var card in ((JArray)prior["battlefield"]!).Where(c=>(int?)c["protectorSeat"]>0 && !((JArray)_state["battlefield"]!).Any(n=>(int)n["forgeId"]! == (int)c["forgeId"]! && (int?)n["protectorSeat"]>0)))
             ((JArray)delta["diffDeletedPersistentAnnotationIds"]!).Add(930000+(int)card["forgeId"]!);
-        foreach(var card in VisibleCards(prior).Where(c=>(int?)c["classLevel"]>0 && !VisibleCards(_state).Any(n=>(int)n["forgeId"]! == (int)c["forgeId"]! && (int?)n["classLevel"]>0)))
+        foreach(var card in priorVisible.Where(c=>(int?)c["classLevel"]>0 && !nowVisible.Any(n=>(int)n["forgeId"]! == (int)c["forgeId"]! && (int?)n["classLevel"]>0)))
             ((JArray)delta["diffDeletedPersistentAnnotationIds"]!).Add(940000+(int)card["forgeId"]!);
         foreach(uint id in retiredAttachments)((JArray)delta["diffDeletedPersistentAnnotationIds"]!).Add(id);
         foreach(uint id in retiredKeywords)((JArray)delta["diffDeletedPersistentAnnotationIds"]!).Add(id);

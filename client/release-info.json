@@ -1,9 +1,9 @@
 {
-  "version": "0.2.0-alpha.14.rail.9",
-  "displayVersion": "0.2.0 Alpha 14.9",
-  "headline": "Client reliability, readable pods and bounded match diagnostics",
+  "version": "0.2.0-alpha.14.rail.10",
+  "displayVersion": "0.2.0 Alpha 14.10",
+  "headline": "Interaction-tested token efficiency, Zombie Horde and ten-player Commander",
   "testRelease": true,
-  "gameplaySource": "a0c73e4e8351bf439bfb541773098dedd30cafd7",
+  "gameplaySource": "b204733f92be40fd09e220ba71f6fef724e6289d",
   "admittedNames": [
     "Plains",
     "Island",

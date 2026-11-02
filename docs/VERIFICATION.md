@@ -381,3 +381,18 @@ notice checks cover session ownership, error classification, deduplication and
 small projections from large boards. Separate rendered checks exercise the
 original Continue and Return Home dialogs. These maintenance checks do not
 certify every card or complete retail UI parity.
+
+## Interaction-tested token projection
+
+The optimized adapter reuses chooser-visible cards within one state adoption.
+Fresh Forge/original Arena-handler runs pass 37 bounded scenarios and 308 checks,
+covering token combat, copies, hidden reveal handling, phasing/equipment/counters,
+Class level/zone resets, poison, Horde revival and commander-sized preparation.
+Six separately recorded sequences also retain all224 GRE messages exactly.
+
+A full-deck ten-player seed13 run reaches turn61 with six legal attack-left
+declarations and actual combat damage. Seed7274 develops all bot boards but
+declines combat, so its combat-coverage failure is retained; no AI retuning was
+used. The default200-card Horde also completes a genuine passive-survivor loss.
+These are bounded interaction tests, not every-card, pod-winner or rendering
+parity certification. See [mode locations and controls](GAME-MODES.md).
