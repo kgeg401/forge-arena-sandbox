@@ -19,7 +19,18 @@ def prepare(a):
     def values(kind,words):return ','.join(str(enums[kind,w]) for w in words)
     def insert(table,row):
         db.execute('INSERT INTO '+table+' ('+','.join(row)+') VALUES ('+','.join('?' for _ in row)+')',list(row.values()))
-    locs={};abilities=[];loc_id=1000000000;ability_id=2100000
+    extension=copy.deepcopy(old.get('paperExtension',dict(schema=1,localizations={},abilities=[])))
+    locs=extension['localizations'];abilities=extension['abilities']
+    # An append uses its pinned parent binder, preserving every existing identity.
+    for key,text in locs.items():
+        row=db.execute('SELECT Loc FROM Localizations_enUS WHERE LocId=? AND Formatted=1',(int(key),)).fetchone()
+        assert row and row['Loc']==text,'Parent paper binder does not match its metadata'
+    for name,card in old['cards'].items():
+        if card.get('paperOnly'):
+            row=db.execute('SELECT TitleId,AbilityIds FROM Cards WHERE GrpId=?',(card['grpId'],)).fetchone()
+            assert row and row['TitleId']==card['titleId'] and row['AbilityIds']==','.join(map(str,card['abilityIds'])),'Parent paper card differs: '+name
+    loc_id=max([1000000000]+[int(v) for v in locs]);ability_id=max([2100000]+[v['id'] for v in abilities])
+    grp_id=max([2000000]+[c['grpId'] for c in old['cards'].values() if c.get('paperOnly')])
     def loc(text):
         nonlocal loc_id
         loc_id+=1;assert not db.execute('SELECT 1 FROM Localizations WHERE LocId=?',(loc_id,)).fetchone()
@@ -36,7 +47,7 @@ def prepare(a):
     for name,card in added['cards'].items():
         if name not in result['cards'] and name not in base['cards']:result['cards'][name]=card;base['cards'][name]=copy.deepcopy(card)
     for i,name in enumerate(sorted(audit['outsideArena']),1):
-        s=projection['cards'][name];grp=2000000+i
+        s=projection['cards'][name];grp=grp_id+i
         assert name not in base['cards'] and not db.execute('SELECT 1 FROM Cards WHERE GrpId=?',(grp,)).fetchone()
         raw=(s.get('oracleText') or '').replace('\\n','\n');title=loc(name)
         typ=' '.join(s['supertypes']+s['coreTypes']);subtypes=' '.join(s['subtypes'])
@@ -57,7 +68,7 @@ def prepare(a):
         colors=[n for bit,n in ((1,'White'),(2,'Blue'),(4,'Black'),(8,'Red'),(16,'Green')) if s['colorMask']&bit]
         identity=[n for bit,n in ((1,'White'),(2,'Blue'),(4,'Black'),(8,'Red'),(16,'Green')) if s['colorIdentityMask']&bit]
         ci=[{'White':'W','Blue':'U','Black':'B','Red':'R','Green':'G'}[n] for n in identity]
-        card=dict(grpId=grp,titleId=title,types=s['coreTypes'],subtypes=s['subtypes'],supertypes=s['supertypes'],genericCost=sum(int(v) for v in symbols if v.isdecimal()),color=colors[0] if colors else 'Colorless',colors=colors,colorIdentity=ci,abilityId=root,abilityIds=[root]+printed_keywords,forgeScript='',forgeScriptSha256=hashes[name],token=False,admitted=True,experimental=True,verified=False,paperOnly=True,commanderAdmitted=name=='Darien, King of Kjeldor',abilityBindings={},targetPromptId=10)
+        card=dict(grpId=grp,titleId=title,types=s['coreTypes'],subtypes=s['subtypes'],supertypes=s['supertypes'],genericCost=sum(int(v) for v in symbols if v.isdecimal()),color=colors[0] if colors else 'Colorless',colors=colors,colorIdentity=ci,abilityId=root,abilityIds=[root]+printed_keywords,forgeScript='',forgeScriptSha256=hashes[name],token=False,admitted=True,experimental=True,verified=False,paperOnly=True,commanderAdmitted=name in getattr(a,'commanders',['Darien, King of Kjeldor']),abilityBindings={},targetPromptId=10)
         # Script paths come from the original source identities, not filenames
         # guessed from card titles. The caller supplies the real indexed paths.
         card['forgeScript']=a.script_paths[name]
@@ -67,7 +78,8 @@ def prepare(a):
         row['AbilityIds']=','.join(map(str,card['abilityIds']))
         insert('Cards',row);base['cards'][name]=copy.deepcopy(card);result['cards'][name]=card;result['blockedCards'].pop(name,None)
     db.commit();db.close()
-    result['paperExtension']=dict(schema=1,localizations=locs,abilities=abilities,source='Explicit paper-deck extension generated from the pinned local Forge runtime; these are not original Arena identities',deckSha256=audit['sha256'])
+    extension.update(schema=1,localizations=locs,abilities=abilities,source='Explicit paper-deck extension generated from the pinned local Forge runtime; these are not original Arena identities',deckSha256=audit['sha256'])
+    result['paperExtension']=extension
     base['paperExtension']=result['paperExtension'];base['researchOnly']=True
     projection['provenance']=dict(forgeJarSha256=a.forge_hash,sourceScriptHashes=hashes,paperPresentationExtension=True)
     (a.output/'projection.json').write_text(json.dumps(projection,indent=2));(a.output/'base-manifest.json').write_text(json.dumps(base,indent=2));(a.output/'experimental-unbound.json').write_text(json.dumps(result,indent=2))
@@ -77,4 +89,5 @@ def prepare(a):
 if __name__=='__main__':
     p=argparse.ArgumentParser(description=__doc__)
     for key in ('projection','manifest','experimental','additions','scripts','script-paths','audit','database','forge-jar','output'):p.add_argument('--'+key,type=Path,required=True)
+    p.add_argument('--commander',dest='commanders',action='append',default=['Darien, King of Kjeldor'])
     a=p.parse_args();a.forge_hash=hashlib.sha256(a.forge_jar.read_bytes()).hexdigest();a.script_paths=json.loads(a.script_paths.read_text());prepare(a)

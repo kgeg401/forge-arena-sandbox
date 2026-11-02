@@ -68,6 +68,8 @@ internal static class Program
                 foreach(var item in gre.RetrieveClientUpdates())if(item is GreClient.Rules.GameStateUpdate update)
                 {
                     latest=update.NewState;presented=latest.Id;interaction=update.Interaction;updateOrdinal++;dirty=true;
+                    foreach(var flip in update.Changes.OfType<CoinFlipEvent>())
+                        Record("native-coin-flip",new JObject{["sourceId"]=flip.AffectorId,["seat"]=flip.AffectedId,["heads"]=new JArray(flip.Results)});
                     if(interaction is SelectNRequest choice)
                     {
                         // Exercise original classifiers used by the Unity
@@ -80,8 +82,11 @@ internal static class Program
                     Record("native-update",new JObject{["stateId"]=presented,["interaction"]=interaction?.GetType().Name,
                         ["promptId"]=interaction?.Prompt?.PromptId,
                         ["promptParameters"]=interaction?.Prompt==null?new JArray():new JArray(interaction.Prompt.Parameters.Select(p=>new JObject{["name"]=p.ParameterName,["type"]=p.Type.ToString(),["number"]=p.NumberValue})),
-                        ["cards"]=new JArray(latest.AllCards.Select(p=>new JObject{["id"]=p.Key,["grpId"]=p.Value.BaseGrpId,["keywordGrants"]=new JArray(p.Value.AbilityAdders.Select(g=>new JObject{["abilityId"]=g.AbilityId,["sourceId"]=g.AddedById,["layerId"]=g.LayeredEffectId})),["counters"]=new JArray(p.Value.Counters.Select(c=>new JObject{["type"]=c.Key.ToString(),["count"]=c.Value}))})),
-                        ["events"]=new JArray(update.Changes.Select(c=>c.GetType().Name))});
+                        ["cards"]=new JArray(latest.AllCards.Select(p=>new JObject{["id"]=p.Key,["grpId"]=p.Value.BaseGrpId,["damage"]=p.Value.Damage,["phasedOut"]=p.Value.IsPhasedOut,["zone"]=p.Value.Zone?.Type.ToString(),["keywordGrants"]=new JArray(p.Value.AbilityAdders.Select(g=>new JObject{["abilityId"]=g.AbilityId,["sourceId"]=g.AddedById,["layerId"]=g.LayeredEffectId})),["counters"]=new JArray(p.Value.Counters.Select(c=>new JObject{["type"]=c.Key.ToString(),["count"]=c.Value}))})),
+                        ["events"]=new JArray(update.Changes.Select(c=>c.GetType().Name)),
+                        ["phaseEvents"]=new JArray(update.Changes.OfType<CardChangedEvent>().Where(c=>c.Property==PropertyType.PhaseState).Select(c=>new JObject{["id"]=c.NewInstance.InstanceId,["from"]=c.OldInstance.Zone.Type.ToString(),["to"]=c.NewInstance.Zone.Type.ToString()})),
+                        ["deletedCards"]=new JArray(update.Changes.OfType<CardDeletedEvent>().Select(c=>c.CardId)),
+                        ["damageEvents"]=new JArray(update.Changes.OfType<DamageDealtEvent>().Select(c=>new JObject{["source"]=c.Damager.InstanceId,["target"]=c.Victim.InstanceId,["amount"]=c.Amount,["type"]=c.Type.ToString()}))});
                 }
             }
         }
@@ -143,6 +148,7 @@ internal static class Program
             {
                 uint id=checked((uint)bridge.ResearchInstanceId((int)card["forgeId"]!));
                 if(!latest.AllCards.TryGetValue(id,out var native))throw new InvalidOperationException("Visible Forge object is absent from the native model");
+                if(native.IsPhasedOut!=((bool?)card["phasedOut"]??false))throw new InvalidOperationException("Native phasing state differs from Forge");
                 if((string?)card["zone"]=="Battlefield" && native.ProtectorId!=(uint)((int?)card["protectorSeat"]??0))throw new InvalidOperationException("Native battle protector differs from Forge");
                 if(card["baseDefense"]!=null){int defense=(int)card["defense"]!;if((string?)card["zone"]!="Battlefield" && int.TryParse((string?)card["baseDefense"],out int printedDefense))defense=printedDefense;if(native.Defense!=(uint)defense)throw new InvalidOperationException("Native battle defense differs from Forge");}
                 if(card["classLevel"]!=null && native.ClassLevel!=(int)card["classLevel"]!)throw new InvalidOperationException("Native Class level differs from Forge");
@@ -162,8 +168,8 @@ internal static class Program
                         if((string?)state["scenario"]!="zombie-horde" || (int?)grant["sourceSeat"]!=2 || (int?)grant["sourceForgeId"]!=(int?)state["horde"]?["rulesEffectForgeId"] || (string?)grant["keyword"]!="Haste")throw new InvalidOperationException("Invalid declared Horde format keyword origin");
                         return 2;
                     }
-                    var expectedGrants=keywordGrants.Select(g=>(Ability:checked((uint)bridge.ResearchKeywordId((string)g["keyword"]!)),Source:checked((uint)KeywordSource(g)),Layer:(uint)g["layerId"]!)).OrderBy(g=>g.Layer).ToArray();
-                    var actualGrants=native.AbilityAdders.Select(g=>(Ability:g.AbilityId,Source:g.AddedById,Layer:g.LayeredEffectId)).OrderBy(g=>g.Layer).ToArray();
+                    var expectedGrants=keywordGrants.SelectMany(g=>bridge.ResearchKeywordIds((string)g["keyword"]!).Select(a=>(Ability:checked((uint)a),Source:checked((uint)KeywordSource(g)),Layer:(uint)g["layerId"]!))).OrderBy(g=>g.Layer).ThenBy(g=>g.Ability).ToArray();
+                    var actualGrants=native.AbilityAdders.Select(g=>(Ability:g.AbilityId,Source:g.AddedById,Layer:g.LayeredEffectId)).OrderBy(g=>g.Layer).ThenBy(g=>g.Ability).ToArray();
                     if(!expectedGrants.SequenceEqual(actualGrants))throw new InvalidOperationException("Native active keyword identities, grant sources or layer lifetimes differ from Forge");
                 }
                 if(card["keywordRemovals"] is JArray removals)
@@ -183,7 +189,7 @@ internal static class Program
                         else if(modification.Type==AbilityModification.ModType.Removed)effective.Remove(Canonical(modification.AbilityId));
                         else if(modification.Type==AbilityModification.ModType.Added && known.Contains(Canonical(modification.AbilityId)))effective.Add(Canonical(modification.AbilityId));
                     }
-                    var expectedKeywords=rulesKeywords.Select(k=>bridge.ResearchKnownKeyword((string)k!)).Where(k=>k.HasValue).Select(k=>k!.Value).ToHashSet();
+                    var expectedKeywords=rulesKeywords.SelectMany(k=>bridge.ResearchKnownKeywordIds((string)k!)).ToHashSet();
                     if(!effective.SetEquals(expectedKeywords))throw new InvalidOperationException("Native keyword modifier order disagrees for "+name+"; actual="+string.Join(",",effective.OrderBy(v=>v))+" expected="+string.Join(",",expectedKeywords.OrderBy(v=>v)));
                 }
                 if(!native.AttachedWithIds.SetEquals(attachedWith.TryGetValue(id,out var group)?group:new HashSet<uint>()))throw new InvalidOperationException("Native reverse attachments differ from Forge");

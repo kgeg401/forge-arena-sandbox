@@ -44,12 +44,14 @@ internal static class NativeCardAssetProbe
         var requestPath=Path.Combine(root,"card-assets.request.json");
         var request=JObject.Parse(File.ReadAllText(requestPath));
         var manifest=JObject.Parse(File.ReadAllText(Path.Combine(root,"bridge-card-manifest.json")));
-        if((bool?)manifest["researchOnly"]!=true)throw new InvalidOperationException("Asset probe requires a research-only manifest.");
+        bool paperArtOnly=(bool?)request["paperArtOnly"]==true;
+        if((bool?)manifest["researchOnly"]!=true && !paperArtOnly)throw new InvalidOperationException("Consumer asset probes are limited to explicit paper-art checks.");
         var requested=(JArray)request["grpIds"]!;
         if(requested.Count==0 || requested.Count>128 || requested.Distinct(new JTokenEqualityComparer()).Count()!=requested.Count)throw new InvalidDataException("Asset probe needs 1-128 distinct source identities.");
         var records=((JObject)manifest["cards"]!).Properties().GroupBy(p=>(uint)p.Value["grpId"]!).ToDictionary(g=>g.Key,g=>g.First());
         var allowed=records.ToDictionary(p=>p.Key,p=>p.Value.Name);
         foreach(var value in requested)if(!allowed.ContainsKey((uint)value))throw new InvalidDataException("Asset probe printing is not in the research manifest.");
+        if(paperArtOnly && requested.Any(v=>(bool?)records[(uint)v].Value["paperOnly"]!=true))throw new InvalidDataException("Paper-art checks cannot include other card identities.");
         File.Delete(requestPath);
         var rows=new JArray();var live=new List<CDCMetaCardView>();
         var holder=new GameObject("Research native card asset checks");holder.transform.position=new Vector3(10000,10000,10000);
@@ -73,14 +75,14 @@ internal static class NativeCardAssetProbe
                 float deadline=Time.realtimeSinceStartup+8;
                 // Card parts/texture requests update over several Unity frames.
                 int frames=0;
-                while(Time.realtimeSinceStartup<deadline && (frames<8 || batch.Any(v=>(bool?)records[v.Id].Value["paperOnly"]!=true && !ArtReady(v.View)))){frames++;yield return null;}
+                while(Time.realtimeSinceStartup<deadline && (frames<8 || batch.Any(v=>(paperArtOnly || (bool?)records[v.Id].Value["paperOnly"]!=true) && !ArtReady(v.View)))){frames++;yield return null;}
                 foreach(var entry in batch)
                 {
                     rows.Add(new JObject{["grpId"]=entry.Id,["name"]=allowed[entry.Id],["modelGrpId"]=entry.View.Card.GrpId,["localizedName"]=papa.CardDatabase.GreLocProvider.GetLocalizedText(entry.View.Card.TitleId),["paperOnly"]=(bool?)records[entry.Id].Value["paperOnly"]==true,["artReady"]=ArtReady(entry.View),["textures"]=Textures(entry.View)});
                     entry.View.Cleanup();UnityEngine.Object.Destroy(entry.View.gameObject);live.Remove(entry.View);
                 }
             }
-            File.WriteAllText(Path.Combine(root,"card-assets-report.json"),JsonConvert.SerializeObject(new{requestId=(string?)request["requestId"],utc=DateTime.UtcNow,researchOnly=true,cards=rows,scope="Original native card models and art texture availability; not gameplay or complete visual-parity proof."},Formatting.Indented));
+            File.WriteAllText(Path.Combine(root,"card-assets-report.json"),JsonConvert.SerializeObject(new{requestId=(string?)request["requestId"],utc=DateTime.UtcNow,researchOnly=(bool?)manifest["researchOnly"]==true,paperArtOnly,cards=rows,scope="Original native card models and art texture availability; not gameplay or complete visual-parity proof."},Formatting.Indented));
         }
         finally
         {

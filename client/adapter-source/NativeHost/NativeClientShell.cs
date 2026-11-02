@@ -37,6 +37,10 @@ internal sealed class NativeClientShell
     private readonly MonoBehaviour _runner;
     private readonly Action _startMatch;
     private readonly Func<IEnumerator> _endMatch;
+    private readonly Action _spectatePod;
+    private readonly Func<JObject?> _matchNotice;
+    private (string session,string message,bool recoverable)? _pendingBridgeFailure;
+    private readonly HashSet<string> _reportedBridgeFailures=new HashSet<string>();
     private string _session="";
     private string? _matchRequest;
     private bool _matchActive;
@@ -59,8 +63,28 @@ internal sealed class NativeClientShell
     private string _screen="starting";
     private string? _error;
     public NativeMenuSurface Surface {get;private set;}=null!;
-    public void ShowPodDetails(string message){if(_matchActive && !_returning && _dialogs?.IsOpen==false)_dialogs.Show("Commander Pod",message,"Close");}
-    public NativeClientShell(string root,PAPA papa,Action<string> log,MonoBehaviour runner,Action startMatch,Func<IEnumerator> endMatch){_root=root;_papa=papa;_log=log;_runner=runner;_startMatch=startMatch;_endMatch=endMatch;}
+    public void ShowPodDetails(string message){
+        if(!_matchActive || _returning || _dialogs?.IsOpen!=false)return;
+        var sections=message.Split(new[]{"\n\n"},StringSplitOptions.RemoveEmptyEntries);
+        var pages=sections.Length>1?sections.Skip(1).Select(s=>sections[0]+"\n\n"+s).ToArray():new[]{message};
+        _dialogs.ShowPages("Commander damage",pages);
+    }
+    public NativeClientShell(string root,PAPA papa,Action<string> log,MonoBehaviour runner,Action startMatch,Func<IEnumerator> endMatch,Action spectatePod,Func<JObject?> matchNotice){_root=root;_papa=papa;_log=log;_runner=runner;_startMatch=startMatch;_endMatch=endMatch;_spectatePod=spectatePod;_matchNotice=matchNotice;}
+    public void ReportBridgeFailure(string? session,string message,bool recoverable=false)
+    {
+        session??=_rulesSession; // Constructor failures precede bridge assignment.
+        if(session==null || session!=_rulesSession || _matchRequest==null || _returning || string.IsNullOrWhiteSpace(message))return;
+        if(!_reportedBridgeFailures.Contains(session+"\n"+message))_pendingBridgeFailure=(session!,message,recoverable);
+    }
+    private void PollBridgeFailure()
+    {
+        if(_pendingBridgeFailure==null || _dialogs==null || _dialogs.IsOpen)return;
+        var failure=_pendingBridgeFailure.Value;_pendingBridgeFailure=null;
+        if(failure.session!=_rulesSession || _matchRequest==null || _returning)return;
+        _reportedBridgeFailures.Add(failure.session+"\n"+failure.message);
+        if(failure.recoverable)_dialogs.Show("Action not completed",failure.message+"\n\nYour match is still open. You can try another action.","Continue");
+        else _dialogs.Show("Local match display stopped",failure.message+"\n\nYour decks and collection are preserved.","Return Home",()=>{if(_matchActive)RequestReturn();else CancelQueue();});
+    }
     private static bool Owned(Component obj)=>_active!=null && (_active._constructing || (_active.Surface!=null && obj.transform.IsChildOf(_active.Surface.Root)));
     private static bool SkipOnline(Component __instance)=>!Owned(__instance);
     private static void Clear(UnityEventBase value){for(int i=0;i<value.GetPersistentEventCount();i++)value.SetPersistentListenerState(i,UnityEventCallState.Off);value.RemoveAllListeners();}
@@ -72,6 +96,7 @@ internal sealed class NativeClientShell
         _active=this;
         var harmony=new Harmony("local.forge-arena.client-shell");
         harmony.Patch(AccessTools.Method(typeof(MatchSceneManager),"ExitMatchScene"),prefix:new HarmonyMethod(typeof(NativeClientShell),nameof(ExitLocalMatch)));
+        harmony.Patch(AccessTools.Method(typeof(SettingsMenu),"Open"),postfix:new HarmonyMethod(typeof(NativeClientShell),nameof(LocalSettingsHelp)));
         var sessionPath=Path.Combine(_root,"client-session.json");
         if(File.Exists(sessionPath))
         {
@@ -235,6 +260,23 @@ internal sealed class NativeClientShell
         var task=Pantry.Get<SettingsMenuHost>().Open();while(!task.IsCompleted)yield return null;
         if(task.IsFaulted)Act(()=>throw task.Exception!.GetBaseException());
     }
+    private static void LocalSettingsHelp(SettingsMenu __instance)
+    {
+        if(_active==null)return;
+        foreach(var button in __instance.GetComponentsInChildren<CustomButton>(true).Where(b=>b.name=="Button_Concede"))
+        {
+            bool eliminated=_active._matchActive && _active._reportedPodElimination;
+            foreach(var text in button.GetComponentsInChildren<TMP_Text>(true)){foreach(var loc in text.GetComponents<Localize>())loc.enabled=false;text.text=eliminated?"Return Home":"Concede";}
+            if(eliminated)button.gameObject.SetActive(true);
+            _active.Bind(button,eliminated?(Action)(()=>{__instance.OnCloseClicked();_active.RequestReturn();}):__instance.ConcedeButton_OnClick);
+        }
+        foreach(var button in __instance.GetComponentsInChildren<CustomButton>(true).Where(b=>b.name=="Link_ReportABug" || b.name=="Link_LocalClientHelp"))
+        {
+            button.name="Link_LocalClientHelp";
+            foreach(var text in button.GetComponentsInChildren<TMP_Text>(true)){foreach(var loc in text.GetComponents<Localize>())loc.enabled=false;text.text="Client help";}
+            _active.Bind(button,()=>_active._dialogs!.Show("Local client help","This is the offline Forge Arena client. Your decks and collection are saved locally. Report client issues in your project chat.","Close"));
+        }
+    }
     public void Poll()
     {
         _display?.Poll();
@@ -249,6 +291,7 @@ internal sealed class NativeClientShell
             _dialogs.Show("Packs did not finish loading","The installed Packs screen could not become ready. Your local collection was preserved. Return Home and try again.");
         }
         PollService();
+        PollBridgeFailure();
         var request=Path.Combine(_root,"client-ui.request.json");
         if(File.Exists(request))
         {
@@ -260,6 +303,12 @@ internal sealed class NativeClientShell
                 switch((string?)value["op"])
                 {
                     case "home":Home();break;case "decks":Decks();break;case "play":Play();break;case "packs":Packs();break;case "inspect":Dump();break;
+                    case "resume-match":
+                        RequireMenu();
+                        var recovery=JObject.Parse(File.ReadAllText(Path.Combine(_root,"client-service-status.json")));
+                        if(_matchRequest!=null || (string?)recovery["session"]!=_session || (string?)recovery["phase"]!="ready" || (bool?)recovery["recovered"]!=true || !Guid.TryParse((string?)recovery["requestId"],out _))throw new InvalidOperationException("No verified recovered match is ready.");
+                        _matchRequest=(string)recovery["requestId"]!;_cancelRequested=false;_reportedServiceError=null;_reportedPodElimination=false;_reportedUnavailableActions.Clear();_queuedAt=DateTime.UtcNow;
+                        ShowQueue("Restoring your game…");_screen="queue";break;
                     case "select-deck":_play!.SelectDeck(Guid.Parse((string)value["id"]!));break;
                     case "return-home":RequestReturn();break;
                     case "click":
@@ -280,16 +329,21 @@ internal sealed class NativeClientShell
     private void PollUnavailableActions()
     {
         if(_dialogs==null || _dialogs.IsOpen || _rulesSession==null)return;
-        JObject state;
-        try{using(var stream=new FileStream(Path.Combine(_root,"forge-ipc","state.json"),FileMode.Open,FileAccess.Read,FileShare.ReadWrite|FileShare.Delete))using(var reader=new StreamReader(stream))state=JObject.Parse(reader.ReadToEnd());}
-        catch(IOException){return;}catch(JsonException){return;}
-        if((string?)state["session"]!=_rulesSession)return;
+        var state=_matchNotice();
+        if(state==null || (string?)state["session"]!=_rulesSession)return;
+        if((string?)state["bridgeFailure"] is string failure && !string.IsNullOrEmpty(failure)){
+            ReportBridgeFailure(_rulesSession,failure,(bool?)state["recoverableFailure"]==true);return;
+        }
         if((bool?)state["pod"]==true && (bool?)state["localLost"]==true && (bool?)state["gameOver"]!=true)
         {
-            if(!_reportedPodElimination){_reportedPodElimination=true;_dialogs.Show("Eliminated from the pod","Your seat has been eliminated. This local practice session pauses here. Return Home to start another match.","Return Home",RequestReturn);}
+            if(!_reportedPodElimination && (bool?)state["requestPending"]!=true){
+                _reportedPodElimination=true;
+                if((string?)state["stage"]=="Play")_dialogs.Choose("Eliminated from the pod","Your seat has been eliminated. Watch the remaining players finish, or return Home to start another match.","Return Home",RequestReturn,"Watch match",()=>Act(_spectatePod));
+                else _dialogs.Show("Eliminated from the pod","Your seat was eliminated before play began. Return Home to start another match.","Return Home",RequestReturn);
+            }
             return;
         }
-        if(state["decision"] is JObject)return;
+        if((bool?)state["decisionPending"]==true)return;
         var messages=new List<string>();
         foreach(var item in (JArray?)state["unavailableActions"]??new JArray())
         {

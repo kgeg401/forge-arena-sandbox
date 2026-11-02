@@ -9,14 +9,15 @@ from pathlib import Path
 from engine_test_client import Engine
 from native_test_policy import execute
 
-def run(factory=Engine):
+def run(factory=Engine,blocked_trample=False):
+    attacker_name='Colossal Dreadmaw' if blocked_trample else 'Grizzly Bears'
     trace=[];e=factory('card-family',fixtureHand=['Invasion of Ikoria'],fixtureLands=['Forest']*4,
-        fixtureBattlefield=['Grizzly Bears'],fixtureBattlefieldReady=True,fixtureOpponentBattlefield=[],
-        fixtureCounters=[dict(seat=1,cardName='Grizzly Bears',occurrence=0,type='P1P1',count=4)],
+        fixtureBattlefield=[attacker_name],fixtureBattlefieldReady=True,fixtureOpponentBattlefield=['Grizzly Bears'] if blocked_trample else [],fixtureOpponentPolicy='block-all',
+        fixtureCounters=[dict(seat=1,cardName=attacker_name,occurrence=0,type='P1P1',count=2 if blocked_trample else 4)],
         fixtureLibrary=['Grizzly Bears','Forest','Forest','Forest','Forest','Forest','Forest','Forest'])
     try:
         battle=next(c['forgeId'] for c in e.state['hand'] if c['name']=='Invasion of Ikoria')
-        attacker=next(c['forgeId'] for c in e.state['battlefield'] if c['name']=='Grizzly Bears')
+        attacker=next(c['forgeId'] for c in e.state['battlefield'] if c['name']==attacker_name)
         searched=next(c['forgeId'] for c in e.state['hidden'] if c['zone']=='Library' and c['owner']==1)
         def choices(c,state):
             if c['type']=='number':return [dict(number=2)]
@@ -50,8 +51,12 @@ def run(factory=Engine):
         e.check('Defeat trigger casts the original back face as an 8/8 with reach',creature['power']==8 and creature['toughness']==8 and 'Reach' in creature['rulesKeywords'])
         e.check('Transformation removes Battle protector designation',not creature.get('protectorSeat') and 'Battle' not in creature['currentTypes'])
         e.check('Damage went to the Siege, not the protecting player',e.state['opponentLife']==20)
+        hits=[v for v in e.state['events'] if v['kind']=='damage' and v.get('targetForgeId')==battle and v.get('sourceForgeId')==attacker]
+        e.check('Actual Battle combat has one exact unmarked six-damage impact',len(hits)==1 and hits[0]['amount']==6 and hits[0]['combat'] and hits[0].get('markDamage') is False)
+        if blocked_trample:
+            e.check('Protector blocks with a real Bear before Battle trample',any(c['name']=='Grizzly Bears' and c['owner']==2 for c in e.state['graveyard']) and any(v.get('kind')=='assign_damage' for v in trace))
         e.check('Defeat completed without pending decision, stack or gap',not e.state.get('decision') and not e.state['stackOrder'] and not e.state['fidelityGap'])
-        return dict(passed=True,checks=len(e.checks),evidence=str(e.ipc),trace=trace)
+        return dict(passed=True,checks=len(e.checks),evidence=str(e.ipc),trace=trace,blockedTrample=blocked_trample)
     except Exception as error:
         message=error.args[0] if isinstance(error,AssertionError) and error.args else error
         if isinstance(message,tuple):message=message[0]
@@ -59,12 +64,12 @@ def run(factory=Engine):
     finally:e.close()
 
 if __name__=='__main__':
-    p=argparse.ArgumentParser(description=__doc__);p.add_argument('--output',type=Path,required=True)
+    p=argparse.ArgumentParser(description=__doc__);p.add_argument('--output',type=Path,required=True);p.add_argument('--blocked-trample',action='store_true')
     for key in ('native-worker','managed','fixture'):p.add_argument('--'+key,type=Path)
     a=p.parse_args();factory=Engine
     if any((a.native_worker,a.managed,a.fixture)):
         if not all((a.native_worker,a.managed,a.fixture)):p.error('Supply all native paths')
         from native_engine_test_client import NativeEngine
         factory=lambda *args,**settings:NativeEngine(*args,worker=a.native_worker,managed=a.managed,fixture=a.fixture,**settings)
-    result=run(factory);result['nativeHandlers']=bool(a.native_worker);a.output.write_text(json.dumps(result,indent=2))
+    result=run(factory,a.blocked_trample);result['nativeHandlers']=bool(a.native_worker);a.output.write_text(json.dumps(result,indent=2))
     print(json.dumps({k:v for k,v in result.items() if k!='trace'}));raise SystemExit(0 if result['passed'] else 1)

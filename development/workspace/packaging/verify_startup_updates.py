@@ -92,6 +92,20 @@ with TemporaryDirectory(prefix='forge-startup-') as temp:
         def read(self,*a):return json.dumps(self.payload).encode()
     with patch('update_tester.urllib.request.urlopen',return_value=Response(feed)):
         check('Test feed chooses numeric newest matching non-draft prerelease',latest(config['updateRepository'],'test')['version']=='0.1.0-test.10')
+    # GitHub permits null digests. Even an older asset must not prevent a
+    # healthy copied-game client from launching when its update is rejected.
+    (versions/'0.1.0-test.3/application.txt').write_text('Authored test 0.1.0-test.3')
+    config['installationMode']='copied-game';config['automaticUpdates']=True;config['python']=sys.executable
+    (root/'sandbox-install.json').write_text(json.dumps(config))
+    (versions/'0.1.0-test.3/launch_tester.py').write_text('# Authored launch fixture')
+    current=versions/'0.1.0-test.3';manifest=json.loads((current/'release-manifest.json').read_text());manifest['files']['launch_tester.py']=sha(current/'launch_tester.py');(current/'release-manifest.json').write_text(json.dumps(manifest))
+    for bad_digest in (None,42):
+        broken={**asset,'digest':bad_digest}
+        with patch('update_tester.urllib.request.urlopen',return_value=Response([row('v0.1.0-test.1',assets=[broken])])),patch('launch_tester.win_processes',return_value=[]),patch('client_entry.subprocess.call',return_value=0) as launch:
+            result=startup(root,'client')
+            check('Unverifiable digest preserves normal client startup '+repr(bad_digest),result['version']=='0.1.0-test.3' and 'digest' in result['warning'] and launch.call_count==1)
+    with patch('update_tester.urllib.request.urlopen',return_value=Response([row('v0.1.0-test.4',assets=[{**asset,'digest':None}])])):
+        rejected('Null digest is rejected before any archive download',lambda:latest(config['updateRepository'],'test'))
     with patch('update_tester.urllib.request.urlopen',return_value=Response(row('v0.2.0'))):
         rejected('Stable channel rejects prereleases',lambda:latest(config['updateRepository'],'stable'))
     rejected('Unknown channel is rejected',lambda:latest(config['updateRepository'],'wrong'))

@@ -2,6 +2,18 @@
   "schema": 1,
   "decks": [
     {
+      "file": "Commander-Everybody-Get-In.txt",
+      "name": "Everybody Get In (Miirym Mass Arrival)"
+    },
+    {
+      "file": "Commander-Your-Deck-But-Toxic.txt",
+      "name": "Your Deck But Toxic (Zaxara Copy Army)"
+    },
+    {
+      "file": "Commander-Gamba-Gamba.txt",
+      "name": "Gamba Gamba (Yusri Coin Flips)"
+    },
+    {
       "file": "White-Lifegain.txt",
       "name": "White Lifegain"
     },

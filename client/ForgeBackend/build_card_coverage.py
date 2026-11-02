@@ -198,7 +198,7 @@ def build():
             if name in values and values[name]!=row['Value']:raise ValueError(('Ambiguous owned type enum label',kind,name))
             values[name]=row['Value']
         type_ids[kind]=values
-    for keyword in ['Flying','Trample','Hexproof','Haste','Lifelink','Deathtouch','Vigilance','Indestructible','Reach','First strike','Double strike','Defender','Menace','Protection from white','Protection from blue','Protection from black','Protection from red','Protection from green']:
+    for keyword in ['Flying','Trample','Hexproof','Shroud','Haste','Lifelink','Deathtouch','Vigilance','Indestructible','Reach','First strike','Double strike','Defender','Menace','Protection from white','Protection from blue','Protection from black','Protection from red','Protection from green']:
         matches=list(db.execute('SELECT a.Id FROM Abilities a JOIN Localizations_enUS l ON a.TextId=l.LocId AND l.Formatted=1 WHERE a.Category=3 AND l.Loc=?',(keyword,)))
         if len(matches)!=1:raise ValueError(('Owned native keyword identity is not unique',keyword))
         keyword_ids[keyword.lower()]=matches[0]['Id']

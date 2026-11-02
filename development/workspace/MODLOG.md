@@ -876,3 +876,213 @@ This is a subsystem checkpoint, not a full-client1:1 claim. No public release.
 - UI parity follow-up 2026-10-26: native editor quantity/statistics/format/notice/Done acceptance passes 18 checks; page preservation and native modal focus pass eight. Restored read-only original Avatar/Pet/Sleeve summaries. Native drag handler replay passes six checks; physical drag/keyboard automation remains unverified. Packs passes five isolated-profile workflow checks including native reveal and no duplicate grants. See docs/ui-parity-20261026.md for scope and remaining gaps.
 
 - UI checkpoint final interaction pass: a new isolated real Commander bot match reached native mulligan, accepted physical Keep 7, advanced and returned Home; last-played changed without changing modified time, and statistics survived scene unload. Quantity-only catalogue refresh now reuses native display records; eight cache/printing/search checks plus the existing 18 editor/eight pagination checks pass. Original game resumed/rendered/reparked with identical state bytes at turn24, 29/23. Local package/source/build provenance verified; running match retained, no public release.
+# Darien paper-card art - 2026-11-01
+
+Added an external pinned artwork cache and native renderer bindings for the 31
+paper-only Darien cards. No illustration binaries are packaged. Each entry keeps
+the original card identity, exact-name Scryfall printing, artist, size and SHA-256.
+The game remains network isolated; startup prepares its private cache. Missing
+downloads retain native placeholders and cached art works offline.
+
+Source-validated against the owned pinned CardArtUtil, CardArtTextureLoader and
+AltReferencedMaterialAndBlock signatures. NativeHost builds cleanly against the
+installed supported Arena assemblies; the retail installation has changed and
+is not the build target. Eleven cache/identity/offline/download checks pass.
+31 downloaded JPEGs decode, 571-626px wide and 452-467px high (2,260,415 bytes total),
+RGB art crops; native material blocks retain the original card frame and crops.
+Actual native rendered verification is still pending. Current user match untouched.
+
+# Commander pod opponent decks - 2026-11-01
+
+Root cause confirmed from the actual running scenario: all three pod opponents
+used the gentle duel list (94 Islands, five defensive creatures). Added separate
+100-card Commander pod lists: Isamaru38lands/44creatures, Emry39/47, Selvala38/43.
+All lists retain existing admission, singleton and color identity; no new card
+mapping or rules were added. Coordinator resolves each pod file independently;
+the easier duel opponent and Horde are unchanged. Native queue description names
+the opponents. Coordinator regression41checks pass.
+
+Native shuffled first run reached turn33 with all three bot boards developed
+(6/7/5 maximum creatures) and87combat damage, without a fidelity gap. An extra
+test assertion that every AI must cast its commander by then was inappropriate:
+Selvala preferred other creatures. This was recorded as a failed diagnostic;
+the test now checks opening commander identities and records actual choices.
+Second seed13 passed eight cycles: all three cast creatures and dealt combat
+damage, maximum boards5/4/4 creatures and5/8/7 lands, no fidelity gap.
+Private research profiles restored with independent hashes. No live installation yet.
+
+
+## 2026-11-01: large-pod rail and Greaves
+
+Read-only live evidence isolated Greaves stall to missing Shroud native ability22 (owned exact English/category3 match). Baseline reproduces through original native handler; repaired equip/reattach/targeting/death checks pass13. New local package is ready but installation awaits user restart choice.
+
+Interface research: [MTGO multiplayer](https://www.mtgo.com/getting-started/getting-started-multiplayer), [Blizzard Battlegrounds](https://hearthstone.blizzard.com/en-us/news/23156373/introducing-hearthstone-battlegrounds), [Unity UI optimization](https://unity.com/how-to/unity-ui-optimization-tips). Proposed inference: roster + one inspected board above four survivors, shared table at four, preserved Magic priority and public-information boundaries. Research/evidence in C:/Users/loula/Documents/Codex/ForgeArenaPodRail-20261101/research.md; no FPS improvement claimed yet.
+
+
+### Implemented rail and bounded verification
+Above four living players, show the native duel board plus a persistent roster. Clicking a row pins inspection; Follow/Tab resumes active-turn following. Player targeting has its own legal-target button. Local blocking temporarily reveals the attacking board. At four survivors the policy returns to the existing compact shared table, retaining original seat IDs. The roster stays visible during native animation input locks; controls still respect the lock. Native stack, hand privacy, animation scheduler, Forge turns and attack-direction rules are unchanged.
+
+Reduce repeated work: cache unchanged shared decision JSON, native seat offsets and avatar lookups; reuse known holders; reduce reflective name/timer visibility updates; index the prior card state once instead of scanning it per card. Original session/request/token guards and shared-file replacement semantics remain.
+
+Policy/cache probe:21 checks. Original-handler Greaves regression:13 checks, including Shroud target rejection, zero-cost equip, changing wearer and death detachment. Two private rendered ten-player candidate passes verified pin/follow and stale-context rejection. Four-survivor switching is covered by policy/layout tests; a naturally played rendered10-to4 elimination has not been verified. No full-match or busy-board frame-rate guarantee.
+
+Native1280x720 held-priority empty ten-player diagnostic,20 seconds: old layout median6.946ms/p99 13.891ms/83.28CPU-seconds; two rail passes median6.946ms/p99 6.953ms/48.39 and50.03CPU-seconds. Both near144Hz cap. Different shuffled opening hands and uncontrolled concurrent PC activity limit the comparison; do not advertise these as populated-board FPS gains. A69,856-byte JSON/600-poll microbenchmark parsed once versus600times (22.97 versus1248.40ms); this is a parser benchmark only.
+
+Research-informed design references remain above. Installation is deferred by the user until the combined update is ready; no GitHub publication is authorized for this pass. Exact private backups, native receipts, tests and screenshots live in ForgeArenaPodRail-20261101.
+
+Final runtime probe has23checks, including identical card lookup results for an actual1,001-card native state;10passes measured687.01ms for repeated scans versus1.73ms for constructing/querying the index. This isolates lookup work, not total turn duration. First shuffled seed7274 completed turn61 without a native fidelity gap and with all nine bot boards developed, but produced no AI attacks; its combat-coverage assertion failed and that report is retained. Repeat uses the previously verified seed13 to exercise the combat path rather than treating no-attack play as a repair failure or declaring combat tested.
+
+Completion: previously verified seed13 passed the updated native bridge through six10-player cycles toturn61:6AI attack declarations obeyed direction rules, combat damage observed, and all nine real bot lists developed boards. Local alpha14.rail.1 installed after deferred restart authorization; exact stalled Greaves match closed normally, user profile hash unchanged and53cached illustrations retained. Fresh installed consumer verification and Home check passed; Shroud22 present. Four private native sessions restored34groups/4immutable hashes each; six headless research groups restored. No GitHub publication. Bounds remain: no full ten-player match, crowded late-game benchmark, or natural rendered10-to4elimination verified.
+
+## 2026-11-01: restore native coin-flip presentation
+Forge correctly recorded coin outcomes but the bridge did not emit the original CoinFlip annotation. Exact supported Core3e85d45e88b10a2fd3841e3abe6f5b37a17e0c42d360c93988e2270b4fdc858a, SharedClientCore original CoinFlipEventParser and CoinFlipEventTranslator inspected privately. Added AnnotationType_CoinFlip/CoinFlipResult integer1heads,0tails, original flipper seat/resolving source; existing event cursor prevents replays. Reject malformed outcomes or unresolved source identities.
+
+New native-handler regression records parsed CoinFlipEvent results and compares every outcome/seat/order to actual Forge events. Old bridge reproduced failure; corrected bridge passed34results: Yusri plain5 (2wins), Yusri withThumb5 (5wins), Frenetic24 (14wins), existing draws/damage/Treasures/luck/actual upkeep victory remain checked. These are seeded rules tests, not complete deck matches.
+
+Private original-renderer replay exposed the supported translator's empty-event-list assumption on a coin-only update. Narrow Harmony guard handles only that case, constructing the original pooled ChooseRandomUXEvent_CoinFlip with original owned data/animations/audio path; normal grouping and timing stay native. Tails, heads and five-annotation grouping rendered and native scheduler completed. Presentation replay uses unchanged recorded flip annotations with envelope state IDs renumbered; it is not an uninterrupted Forge match or audible sound verification. Private decompiled output/game assets are excluded from source/package. Evidence/backups in ForgeArenaCoinFlip-20261101; no live changes/publication before validation.
+
+Coin repair completion: local alpha14.rail.2 installed with user client closed; no active match ended, profile unchanged,53cached illustrations retained. Reopened nativeHome and fresh installed catalogue/binary checks passed. Two private renderer sessions restored34groups+4immutable hashes each; six research groups independently restored. No GitHub publication or full-match/audio parity claim.
+
+## 2026-11-01: reveal coin before its consequences
+User correctly reported the prior isolated coin test missed animation order. Replayed the actual native Yusri plain last-flip packet including two draws and six damage. Baseline native timeline: playback began with life34/hand2 about2.8seconds BEFORE coin started; coin start/complete both already showed that state. Retained baseline failure and exact packet.
+
+Narrow postprocess moves original ChooseRandomUXEvent_CoinFlip objects, preserving coin order/grouping and every non-coin event's relative order, ahead of GameStatePlaybackCommenced for the SAME update. This holds native model/HUD/card/counter updates behind the original blocking coin completion. No Forge changes, rerolls, fabricated timing, or new animations.
+
+Eighteen checks exercise actual owned UXEventQueue and playback events with bounded timer-only coin test subclasses: zero/one/two coin sequences, held state/effects, completion, exactly-once effects, stable non-coin ordering. Native original-renderer candidate replay: coin started/completed at old state11 life40/hand0; only after completion did playback commence state12 life34/hand2. Actual screenshots confirm empty hand/life40 during reveal then two cards/life34 afterward. Setup suppresses only earlier coin visuals; exact tested consequence packet is preserved except pending-message count for a noninteractive replay. This is presentation replay evidence, not a full live Gamba match. Private observer/decompiled output/owned assets excluded from product. No installation/publication before approval if the user's current match remains active.
+
+Coin-order completion: user explicitly approved restart. Local alpha14.rail.3 installed; profile hash unchanged/53illustrations retained; fresh nativeHome and consumer/binary verification passed. Both private renderer sessions restored34groups+4immutable hashes each, no test observer distributed. No full live Gamba match or GitHub publication claim.
+
+## 2026-11-01: animate physical Thumb tosses, keep logical outcomes
+Confirmed Krark's Thumb replacement performs two physical tosses for each logical flip. Pinned owned Forge.jar82083a2e52ff04f22e518f705b1a1fcac877a1ee0fa25db4e4fb208bf6a7295a collapses tosses into Set<Boolean> before emitting only the kept GameEventFlipCoin, so final-result events could not reconstruct order/duplicates. No fake extra tosses or rerolls added.
+
+Observe actual delegate32-bit outputs on the pinned CountingRandom.next(1)->Random.nextBoolean->FlipCoinEffect.flipCoin path. The sign bit is the true physical toss. Seeded Random and unseeded SecureRandom behavior remain their standard implementations; scope stack walking to resolving game actions. Drain per-thread tosses on actual final flip event, retain kept heads/seat/source, and validate replacement count/kept-result membership. Forced native outcomes are explicitly marked and derive their deterministic tosses from the actual fixed-result modifier. Current pinned ABI is explicit; drift reports a fidelity gap. Native CoinFlipResult now receives all observed tosses in a pair; five kept results still drive rules.
+
+Original-handler cases pass: plain Yusri5physical/5kept/2wins; Thumb Yusri10physical/5kept/5wins; Frenetic48physical/24kept/14wins. Original draws/damage/Chance Encounter/Treasure/free-cast/upkeep-victory checks unchanged. Verified900 mixed seeded random outputs and2028 native RNG calls bit-identical with no false coin capture; an ordinary four-player pod regression passed eight cycles toturn33 with combat and developed boards.
+
+Private original-renderer replay instrumented original FlipCoin method read-only: TEN actual coin-prefab spawns in FIVE two-toss groups, all ten heads/tails values and their order identical to the observed RNG outputs, including identical-face pairs. Ignored tosses added no life loss. This is real-packet renderer replay plus independently played rules tests, not a full live Gamba match. Current user match preserved. Fresh research backups and per-run native backups/evidence in ForgeArenaThumbTosses-20261101; no private observer/decompiled/game assets distributed. No GitHub publication requested.
+
+Thumb completion: local alpha14.rail.4 installed with client already closed; profile unchanged/53cached illustrations retained. Fresh nativeHome and installed consumer/binary checks passed; no match ended or GitHub publication. Private native34groups/4asset hashes and six headless research groups restored and independently verified. No full live Gamba match claim.
+
+## 2026-11-01: simultaneous coin burst per resolving effect
+Collect actual physical tosses by authoritative resolving source and flipper. Emit one native CoinFlipResult when that source leaves stackOrder, keeping unrelated stack abilities and response windows separate. No rules/RNG changes. Original native Execute staggers even zero-spaced coins across frames; a narrow postfix invokes the original pooled FlipCoin for every actual result on one frame, places them in a compact camera-relative grid, and keeps the native blocking completion until the original clips finish. Original prefab, animations, cleanup and audio call retained; shared assets are unchanged.
+
+Baseline reproduced five native events instead of one for Yusri/Thumb. Candidate native-handler tests pass Yusri/Thumb10 physical tosses in one reveal, plain Yusri5 in one, Frenetic48 across24 separately resolved abilities; exact faces/order and logical draws/damage/Treasures/luck/free-cast/upkeep victory unchanged. Layout280checks and existing original UXEventQueue18checks pass. Private original-renderer replay observed all TEN original coin spawns in ONE group on frame3253, exact actual heads/tails preserved, screenshot shows two rows. This is real-packet animation replay plus separately played rules tests, not a full live match or audible audio verification. Evidence/backups: ForgeArenaCoinBurst-20261101. No GitHub publication requested.
+
+Burst completion: local alpha14.rail.5 installed with freshly verified Home/no active match, reopened and consumer/Home/binary checks passed. Saved profile unchanged and53illustrations retained. Fresh private native groups/immutable hashes and six research groups restored and independently rechecked. Packaged Java classes match prior independently tested unchanged engine (21checks). No GitHub publication or full live-match claim.
+
+## 2026-11-01: two absurd real-card Commander decks
+Added 100-card Miirym Everybody Get In and Zaxara Your Deck But Toxic lists and starter-deck menu entries. User chose real-card copying of opposing battlefield creatures/permanents instead of a custom library-copy spell. Fresh complete metadata audits check 99 main plus commander, singleton, color identity and Commander legality; upper Bracket4 is a design target, not a competitive certification. Strategy/limits are in docs/absurd-commander-decks.md.
+
+Miirym uses Maskwood Nexus plus Sarkhan Unbroken's ultimate for simultaneous whole-library creature arrivals, Genesis Wave/Kindred Summons alternatives, token/trigger multipliers and ETB damage. Zaxara uses paid untap loops, Doppelgang/Clone Legion/Rite, Esix, Second Harvest and Triumph of the Hordes. Copies preserve opposing originals/library identities; Finale at X>=10 enables immediate attacks. An unrequested Astral Dragon copy-added intrinsic Flying gap and Progenitor Mimic retained-upkeep identity gap were found and excluded from final lists; failed experiments retained privately. No speculative retained-source lookup shipped; Java rules source stays unchanged.
+
+Append-only explicit paper metadata preserves old identities and all53 cached illustrations, adds missing deck cards and exact 0/0 green Hydra token. Infect uses a declared paper-keyword text identity, not a fabricated original Arena identity; original Forge owns its damage/counter rules. Artwork preparation now includes paper-only presentation tokens. Native renderer loaded all83 paper/token models with correct localized names and actual illustration textures. A genuine Doppelgang packet replay rendered original opponents, copied tokens and the 2/2 Hydra; replay is separate from uninterrupted live-match evidence.
+
+Fixed two real presentation bugs found by tests. Token matching formerly accepted a Flying/Haste printing for a Flying-only token; reject extra recognized printed keywords, checking both native Id and BaseId (generic BaseId can be0). Game-over updates formerly replaced all persistent state with LossOfGame, dropping final poison/counters/attachments/keywords; append the loss instead. Old failures and corrected original-handler poison victories preserved. Test helpers now submit legend choices in the required assignment array and track a cast object's identity through name-changing clones.
+
+Bounded original-native-handler checks cover simultaneous arrivals with Ganax last in the seeded library (detecting sequential entry), Miirym doubled nonlegendary copies, real X Hydras, unchanged opposing library IDs, Esix, paid Drake/Zaxara mana loops, infect/Aura/equipment combat, copied poison-army victory and recurring Extravagant Replication. All newly admitted final-deck cards have play/cast smoke evidence (45 final names; the discarded Mimic also had a cast-only pass, which did not prove its upkeep). Normal complete shuffled decks reached turn5 in four-player40-life mode with correct commanders, no zone fixtures. Gamba Frenetic48 physical tosses/24kept/14wins/Chance Encounter victory regression passes. Twelve artwork-cache checks pass. No full games, exhaustive copied opposing cards, giant late-game queues or matchup-strength claim. Private evidence: ForgeArenaAbsurdDecks-20261101. Current user's live match remains untouched pending concrete update/restart approval; no GitHub publication requested.
+
+
+## 2026-11-02: Miirym / Roaming Throne crash and exact-boundary recovery
+
+Fixed null-zone action inspection and missing pending-copy presentation identity during as-enters type selection. Old native handler reproduces the crash; fixed native handler completes three real Throne type choices. Installed local rail.7 with unchanged saved profile. Reconstructed the interrupted real match through all 181 recorded requests and known original shuffle outcomes, independently compared each boundary, reconnected the actual rules owner and visually verified the restored turn-14 board. User inputs then progressed beyond the original crash. Original failures, handoff correction, native tests and ownership guards are retained; see docs/match-recovery-2026-11-02.md for exact evidence and limits. Current game remains open; no GitHub publication or generic automatic-save claim.
+
+
+## 2026-11-02: top20 modal triggers and human mana-life costs
+
+Fresh public Moxfield capture20/20:937 distinct names,634 in the installed Arena catalogue,303 excluded by the carried-forward Arena-only scope. All634 already admitted; no new primary names. Collector/auditor now preserve the real deck count and reject contradictory ranking receipts (5checks).
+
+Projection formerly omitted modal triggered abilities, crashing Oltec when both modes became legal. Export original trigger Charm roots and recover original native parent/children for Oltec, Dawnbringer Cleric, Hullbreaker Horror and Plundering Barbarian. Fresh complete consumer reconstruction preserves1939objects/1791primary names, changing only those4modalBinding fields. Do not use partial binding rebuilds that drop pre-existing keyword metadata.
+
+Krrik ordinary black life payment was absent from availability when mana sources were exhausted. Add source-backed partial mana/life probes and human choice. Original Forge commits tentative mana-life only on successful completion; canceled payment now consumes no life. Explicit declined/uncompleted mana payment is acknowledged without turning cancellation into a client error. Native unavailable/wrong-mana errors still reject. Five cost variants and a normal shuffled Commander fourth-land cast/cancel pass;10 existing payment groups pass on final engine04, including Jace compleated loyalty and real wrong-mana recovery.
+
+Focused native interaction14-case repeat passes; eight additional mode paths and four Rhystic/Remora/Sentinel tax scenarios pass, including three simultaneous original tax triggers and exact opposing draw. Eleven shared-effect groups pass. The old Necropotence test failure was a stale state.json observation: actual native response already contained private exile. Test helper now reads its completed native-handler boundary; real end-step return passes. Retain that failed evidence, do not describe it as a rules repair.
+
+Original Unity private validation renders original modal cards/art/text; original Barbarian selection callback creates one actual Treasure. Krrik prompt/cancel/refund/retry verified through original rendered controls. Final cancellation produces no native gap; paid same-match retry resolves Necropotence and Krrik counter correctly. Narrow state/availability-guarded QA access for original modal card callbacks added; stale/unknown choices reject without advancing. Full-control used to expose boundaries; this is not exhaustive automatic turn pacing or animation parity.
+
+Fresh private renderer sessions restore35groups+4immutable hashes and are independently rechecked; all new code/evidence is on C: under ForgeArenaEightHour-20261102. User installed rail.7/profile and unrelated shared server untouched. No live install, GitHub publication or updater promotion. See docs/top20-cards-2026-11-02.md for scope and remaining gaps. Animation/combat work begins at the original07:41:40UTC boundary.
+
+Final card-block integrated engine04 run:24scenarios/128checks ALL PASS in independent A/B original-handler workers. Additional exact tests cover Force of Will alternate life/exile counter, Beseech bargain/free Bowmasters, Ring burden/draw/upkeep for two cycles, Ring player-protection target exclusion, and Mana Vault retained tap/upkeep/draw-step damage. Original Unity Ring target-and-Bolt sequence passes after the test driver submits the actual required Submit1 control; earlier omitted-confirmation test failure retained. All14literal exported token scripts already have native mappings; indirect/dynamic token closure is not claimed. Source and card-phase-final.json frozen privately; no publication/install.
+
+
+## 2026-11-02: native phase-stop progression repair
+
+Old bridge reproduced a real unrelated-spell pause solely from a future upkeep stop. Replace global stop-count checks with original phase/side/status matching and canonical Set/Clear updates; protobuf repeated-field merge was not stop-state merge. Future transient stops survive until reached and expire after leaving the actual phase. Unknown stop settings reject before mutation. Native fullcontrol, real counterspell windows, yield and ResolveAll remain intact.17original-handler flow modes pass, including actual next-upkeep permanent clear/transient expiry.
+
+Actual original-renderer before/after uses the same scene/rules and original Beginning avatar icon. Old host pauses current MAIN1 without actions; corrected host reaches actual next ownUPKEEP, original Draw then Main controls advance the two requested stops, icon status clears and a real land remains playable. Two earlier driver assertions (assuming Next label and scopeNone after clear) were corrected against observed controls/original source; failures retained, not product bugs. Original local AvatarPhaseIcon keeps Team scope when Clear. No phase dwell timers or native clip-speed changes added. Candidate03 hashes and private restoration evidence in ForgeArenaEightHour-20261102; source contract/scope in docs/phase-stops-2026-11-02.md. No live install/publication or server-smart-stop parity claim.
+
+
+## 2026-11-02: non-player trample and native impact animation
+
+Blocked trample previously rejected planeswalker/Battle defenders. Use the effective Forge callback defender (including native trample-over-PW substitution), original excess-damage helper and real card quarry. Preserve exact human assignment and lethal-before-spill validation. Four original-handler PW cases pass: unblocked6vs4loyalty, blocked2/4, manual3/3survival and6/0noimpact. Real cast/protector/search/blocked8power Battle defeat/back-face sequence passes13checks; no protecting-player damage.
+
+Pinned Forge emits CardDamaged only for creatures. Observe its original post-prevention damage-history callback for noncreature cards after base registration, without altering rules/history/resources. Native unmarked impact events retain exact amount/source/combat instead of inferring damage from counter changes. Bolt, actual shield prevention and actual loyalty-cost controls pass; native parser exact events/no duplicates/no false creature-marked damage checked. Original native Match factory was verified to call the same Game constructor; no Forge jar patch.
+
+Actual original Unity before/after shows the missing PW CombatFrame branch restored: exact blocker2 plus walker4. Original manual spinner assigns all6toBear with no false PWhit, walker unharmed. No clip-speed/timing changes; p95~6.95ms in bounded1280x720cases, no performance-repair claim. Initial renderer test expected damage to persist after cleanup; corrected test uses actual damage event and survivor, original failure retained. Ordinary/infect native controls already pass; no speculative infect change. Winota/Historian, Bowmasters, combined taxes and normalCommander Krrik cast/cancel regressions pass integrated06/07.
+
+Private source/build/evidence and independent35groups+4assets restoration under ForgeArenaEightHour-20261102. User install/profile and shared server unchanged; no publication/updater promotion. All special trample variants, complete games and full animation parity remain unverified. See docs/nonplayer-combat-2026-11-02.md.
+
+
+## 2026-11-02: separate strike clips and real token-army checks
+
+First-strike and double-strike native-handler controls pass. Real Charge Through grants trample to3power FencingAce against0/4Ox; two original damage browsers expose lethal4 then1, actual hits3then1+2player. Actual original renderer has two distinct completed combat clips and exact branches; automatic next rules pass occurs8.2626ms AFTER first clip completion. No timing/speed repair needed or made. Original timestamp-reader failure retained: new scoped reader preserves native100ns UTC fractions,11synthetic/negative checks plus separate SAME-native-evidence review pass. Initial unadmittedRancor fixture preserved and replaced with admittedChargeThrough; no admission change.
+
+Real RaiseAlarm/SecondHarvest underDoublingSeason grows4/12/36actual tokens; original identities, one-one stats and natural next-turn readiness verified. Actual original AllAttack36 and36exact one-damage hits win20to-16 through both native handlers and renderer. No fixturebound/pose/resource/readiness changes, mandatory-confirm or manualResolve shortcut. Bounded1280x720 p95~6.95/p99~13.89ms, not a performance repair or broad scaling guarantee. Raw sources, native scenes, reports and independently checked35groups+4assets restoration under ForgeArenaEightHour-20261102; docs/combat-sequences-2026-11-02.md records scope. User install/profile unchanged; no GitHub/update promotion.
+
+
+## 2026-11-02: measured ten-player bridge performance
+
+Cache the active GameManager per match while preserving native queue/state/workflow readiness and destroyed/inactive reacquisition. Replace per-zone full-card rescans with a projection-local ordered index, retaining stack and retired-ID behavior. Native ten-player Poll mean3.246ms/frame ->.688/.638cached ->.460withzoneindex; Zones12.916->.793ms/update, p99frame41.676->27.784ms in the same bounded real-deck scenario. No broad stutter/parity guarantee.
+
+128 captured-state old/new frozen-binary projections are deeply identical. Actual original optimized double-strike/trample animation completes before automatic rules handoff (7.1726ms after first clip); original upkeep/draw phase stops and clearing pass. Four native planeswalker allocation controls plus Winota/Bowmasters/combined taxes/normalCommanderKrrik regressions pass. No animation-rate, rules or timer changes. Private original client state restored and independently verified; no user install/push/update/server changes. See docs/pod-performance-2026-11-02.md.
+
+
+## 2026-11-02: asynchronous immutable response parsing and combat response checks
+
+Read/parse immutable rules responses off the drawing thread; preserve native readiness plus exact session/request validation, state adoption and message delivery on owner thread. Retire obsolete reads across nested decisions/detachment, observe abandoned faults, propagate current errors. Eleven bounded helper ownership contracts pass;24effect scenarios/ten payment groups and actual first-strike instant response pass. No rules/timer/animation-rate changes.
+
+Two original ten-player two-cycle runs retain controls/real decks/40life: Pollmean.268/.269ms/frame; p99frame20.839/27.783ms vs original41.676. Main-thread improvement only, not lower totalCPU or complete-match reliability. Original first clip completes before actual clickedGiantGrowth and regular4damage; corrected outgoing-GRE timeline reader passes SAME immutablecapture, raw wrong-log readerfailure retained. Lifelink/deathtouch plus mandatoryCruelCelebrant drain controls pass16checks with original handlers/no genericconfirmation. See docs/async-responses-2026-11-02.md; private borrowedstate independentlyrestored, no installation/push/updater/serverchanges.
+
+
+## 2026-11-02: retain physical phasing and original native visuals
+
+Phasing previously omitted real permanents from battlefield export, causing native deletion. Preserve physical membership through Forge getCardsIncludePhasingIn, export actual phasedOut, and use original synthetic realm12 plus phase annotations without zone transfer or identity replacement. Do not explicitly recreate the parser-owned synthetic zone. Real Forge legality/mana/untap remain authoritative. Three native cases/28checks preserve original identities/tokens/counters/equipment; targeted SlipOuttheBack keeps unphased lands usable and indirectly phases Boots. Integrated24card-effectcases/128checks pass.
+
+Actual original Unity Teferi sequence displays and clears native phasing around natural next untap; newly played Forest remains separate. Real multi-block Nighthawk deathtouch/lifelink/death/Celebrant sequence also passes original damage browser/animation and settles23/19without generic confirmation. Read-only native-worker/parser diagnostics make phase state/events/deletions independently visible. Private35groups+4assets restored per session; no user installation/push/updater changes. Opponent phasing/reconnect/full catalogue not certified. See docs/phasing-2026-11-02.md.
+
+
+## 2026-11-02: compound protection and temporary combat presentation
+
+Akroma'sWill protection/both modes reproduced native unmapped Protection from each color. Translate that exact Forge compound to five owned color-protection identities in ONE original AddAbility grpid-list annotation, preserving source/target/layer/timestamp/identity. Removal expands equally; unsupported compounds/missing mapping remain explicit gaps. Original SharedClientCore parser independently inspected privately, no original code/assets added to source.
+
+Three native modal/combat/expiry cases17checks nowpass, including actual commander chooseboth. Original rendered BOTH browser/2nativeclips/4damage4lifelink/actualcleanup pass. Heroic Intervention native8checks and actual original protected multi-block/deathtouch/lifelink/expiry6checks pass. Ten KeywordProbe contracts preserve single-literal compatibility and reject incomplete/unknown/invalidlayer inputs. Integrated24effectcases128checks pass frozen15/java07. This is no catalogue/fullmatch/completeanimation parity claim. User install and profiles unchanged, no push/updater promotion. See docs/combat-protection-2026-11-02.md.
+
+
+## 2026-11-02: release historical board responses from rules-engine memory
+
+Real ten-player rendered768MiB run exhaustedheap atturn54; independent consumer1024MiB run saturatedheap/timedout67. Full completed JsonObject responses retained every board. Archive exact replies in compressed per-match files with in-memory integrity hashes; retain request-body conflict checking and existing owner-thread loop. Hash-derived filenames preserve case-sensitive requestIDs on Windows. Missing/tampered archives fail closed, never repeat actions. Atomic UTF8 writes retain original wire/null behavior; archive codec preserves full typed nulls.
+
+Eleven bounded archive contracts pass;14actual rules/replay cases preserve old activation response after later turns/conflict without retapping/addingmana, pluscase-distinct realWindowsreplays. First stalelegacy test missed explicitoffered manaability and was corrected in testdriver, rawfailurekept. Integrated24effects128checks,28phasingchecks,tenpaymentgroups pass; finaloriginal Akroma bothmode/combat/cleanup uses native15/classes10.
+
+Controlled SAMErender/nativebinary/seed/decks/inputs/768MiB nowpasses6tablecycles61; first552nativepayloads match afteronlyephemeralMatchIDexclusion,4laterAIstates differ atoldtimeouts andstayrecorded. Independent native-handler source09 passes100turns/165BF atconsumer1024MiB withpoint-in-time529MiB finalheap. Finalsource10addsONLYfilenamecasehardening withseparateunit/realreplay/renderedgates. No fullmatch/allcatalogue/constantmemory/AIbottleneck-eliminationclaim. Smallmetadata/diskhistorygrowwithmatchlength. Sources/builds/failures/evidencepreserved; no userinstall/push/updater/serverchanges. See docs/response-memory-2026-11-02.md.
+
+
+## 2026-11-02 - Arena-style multiplayer UI pass (local review)
+
+Refreshed four-player headers and the ten-player rail using loaded native Arena fonts, configured avatar portraits/frames, zone icons, button skins and gradient backers. Preserved native focus, follow, targeting and public-zone callbacks; removed ordinary colored board rectangles. Private rendered validation and its limits are recorded in docs/pod-ui-2026-11-02.md. No installed-client change, match restart, publication or update promotion.
+
+
+## 2026-11-02 - Real ten-player playthrough through local defeat
+
+One normal-menu saved Isamaru game with nine real opponent decks reached turn162 and at least257 permanents before natural human defeat. Confirmed unnecessary Soul-Guide Lantern exile ordering, empty-zone click-through, long commander-damage dialog and retained retail settings. Human elimination deliberately pauses remaining nine bots; final-four/winner untested. Native combat/counters/ReturnHome passed; life-affector/audio/teardown log candidates retained without claiming accounting failure. All36 private groups plus4 immutable assets independently restored, all owned clients exited. No gameplay repairs/install/push. See docs/ten-player-playthrough-2026-11-02.md.
+
+
+## 2026-11-02 - Install ten-player prompt/UI/spectator repairs
+
+Face-up exile skips destination ordering while face-down/explicit and other ordered-zone choices remain. Empty counters absorb clicks. Original commander-damage dialog now pages all ten seats. Settings opens local client help; eliminated spectators have Return Home. Explicit Watch match advances real AI on the same rules owner only after native presentation; dead-seat gameplay stays rejected. Opening concessions cannot resume unsafe original Forge pre-play startup. Actual Lantern exile, eight ordering boundaries, two Preordain cases, spectator ownership/progression checks, final native Settings/elimination/bot turns/ReturnHome and 23 package/45 coordinator checks pass. Fresh private36+4 originals independently restored. Local rail.8 installed with rollback/profile backup; actual installed Home and matching native/Java binaries verified, original profile/config unchanged. No GitHub publication or full-pod-winner certification. See docs/pod-fixes-2026-11-02.md.
+
+
+## 2026-11-02 - Four customer-client audit repairs
+
+Reject nullable/non-string update digests through the existing verified-install fallback. Surface session-qualified recoverable/fatal bridge failures through original native Continue/Return Home dialogs without replacing an open dialog or replaying an action. Shell notices now use a small adopted-state projection rather than parsing full board/history files. Shared archive handling limits only new marked closed-match diagnostics to three folders/512 MiB, preserves legacy/live/profile data, rejects junctions, and provides documented full-history/export options.
+
+25 startup +44 updater +45 coordinator +15 archive +14 compiled-notice checks pass. Native notice allocation ~3.6KB against the saved 849KB board versus old full-file parse ~17.5MB; this is not measured frame-rate. Actual private fault injections verified Continue/same rules owner/normal action, queued fatal reason/original dialog precedence/Return Home and a second ordinary match. An extra second-game spectator check was blocked by the private observer caching an old native queue; no fresh spectator/full-winner certification. All 36 original private groups and four immutable assets independently restored; Windows long evidence paths required extended-path archival during final cleanup. Installed rail.8 and player data unchanged. Release package/source verification recorded separately; no original assets or private evidence shipped.

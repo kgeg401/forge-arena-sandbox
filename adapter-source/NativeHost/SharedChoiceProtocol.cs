@@ -40,13 +40,13 @@ internal static class SharedChoiceProtocol
             if(!offered.TryAdd(Integer(option["choiceId"]),option))throw new InvalidDataException("Duplicate shared option identity");
         return offered;
     }
-    private static int NativeId(JToken option,Func<int,int> cardId)
+    private static int NativeId(JToken option,Func<int,int> cardId,int playerCount)
     {
         if((string?)option["entityKind"]=="player")
         {
-            int seat=Integer(option["targetSeat"]);if(seat<1 || seat>4)throw new InvalidDataException("Unmapped player seat");return seat;
+            int seat=Integer(option["targetSeat"]);if(seat<1 || seat>playerCount)throw new InvalidDataException("Unmapped player seat");return seat;
         }
-        int id=cardId(Integer(option["forgeId"]));if(id<=4)throw new InvalidDataException("Card identity overlaps player seats");return id;
+        int id=cardId(Integer(option["forgeId"]));if(id<=playerCount)throw new InvalidDataException("Card identity overlaps player seats");return id;
     }
     private static (string Zone,string Sub) Group(string name)=>name switch
     {
@@ -55,7 +55,7 @@ internal static class SharedChoiceProtocol
         "graveyard"=>("ZoneType_Graveyard","SubZoneType_None"),
         _=>throw new NotSupportedException("Unmapped shared partition group "+name)
     };
-    public static JObject Request(JObject decision,Func<int,int> cardId,uint stateId,uint messageId)
+    public static JObject Request(JObject decision,Func<int,int> cardId,uint stateId,uint messageId,int playerCount=4)
     {
         var spec=Spec(decision);var options=Options(spec);string kind=(string)spec["type"]!;
         JObject payload;string type,key;
@@ -64,7 +64,7 @@ internal static class SharedChoiceProtocol
             var groups=((JArray)spec["groups"]!).Select(v=>(string)v!).ToArray();
             if(groups.Length!=2 || groups[0]!="top" || (groups[1]!="bottom" && groups[1]!="graveyard"))throw new NotSupportedException("Unmapped partition shape");
             int count=Integer(spec["count"]);if(count!=options.Count)throw new InvalidDataException("Partition cardinality differs");
-            payload=new JObject{["instanceIds"]=new JArray(options.Values.Select(o=>NativeId(o,cardId))),["groupType"]="GroupType_Ordered",["context"]=groups[1]=="bottom"?"GroupingContext_Scry":"GroupingContext_Surveil",
+            payload=new JObject{["instanceIds"]=new JArray(options.Values.Select(o=>NativeId(o,cardId,playerCount))),["groupType"]="GroupType_Ordered",["context"]=groups[1]=="bottom"?"GroupingContext_Scry":"GroupingContext_Surveil",
                 ["groupSpecs"]=new JArray(groups.Select(g=>{var zone=Group(g);return new JObject{["lowerBound"]=0,["upperBound"]=count,["zoneType"]=zone.Zone,["subZoneType"]=zone.Sub};}))};
             type="GREMessageType_GroupReq";key="groupReq";
         }
@@ -169,13 +169,13 @@ internal static class SharedChoiceProtocol
         {
             if((bool?)spec["repeats"]!=false)throw new NotSupportedException("Entity choice repetition is not mapped");
             int min=Integer(spec["min"]),max=Integer(spec["max"]);if(min<0 || max<min || max>options.Count)throw new InvalidDataException("Invalid entity bounds");
-            payload=new JObject{["minSel"]=min,["maxSel"]=max,["context"]=kind=="discard-effect"?"SelectionContext_Discard":"SelectionContext_Resolution",["optionContext"]="OptionContext_Resolution",["listType"]="SelectionListType_Dynamic",["idType"]="IdType_InstanceId",["ids"]=new JArray(options.Values.Select(o=>NativeId(o,cardId))),["validationType"]="SelectionValidationType_NonRepeatable"};
+            payload=new JObject{["minSel"]=min,["maxSel"]=max,["context"]=kind=="discard-effect"?"SelectionContext_Discard":"SelectionContext_Resolution",["optionContext"]="OptionContext_Resolution",["listType"]="SelectionListType_Dynamic",["idType"]="IdType_InstanceId",["ids"]=new JArray(options.Values.Select(o=>NativeId(o,cardId,playerCount))),["validationType"]="SelectionValidationType_NonRepeatable"};
             type="GREMessageType_SelectNReq";key="selectNReq";
         }
         else if(kind=="order")
         {
             if((string?)spec["destination"]!="Library" && (string?)spec["destination"]!="Graveyard" && (string?)spec["destination"]!="Exile" && (string?)spec["destination"]!="Battlefield")throw new NotSupportedException("Unmapped ordering zone");
-            payload=new JObject{["ids"]=new JArray(options.Values.Select(o=>NativeId(o,cardId))),["orderingContext"]="OrderingContext_None"};type="GREMessageType_OrderReq";key="orderReq";
+            payload=new JObject{["ids"]=new JArray(options.Values.Select(o=>NativeId(o,cardId,playerCount))),["orderingContext"]="OrderingContext_None"};type="GREMessageType_OrderReq";key="orderReq";
         }
         else throw new NotSupportedException("Native shared choice requires an explicit presentation binding: "+kind);
         // The shipped Unity workflow classifiers dereference ReqPrompt even
@@ -192,7 +192,7 @@ internal static class SharedChoiceProtocol
         return message;
     }
 
-    public static JArray Response(JObject decision,Func<int,int> cardId,ClientToGREMessage response,uint stateId,uint requestId)
+    public static JArray Response(JObject decision,Func<int,int> cardId,ClientToGREMessage response,uint stateId,uint requestId,int playerCount=4)
     {
         if(response.GameStateId!=stateId || response.RespId!=requestId)throw new InvalidOperationException("Stale native shared-choice response");
         var spec=Spec(decision);var options=Options(spec);string kind=(string)spec["type"]!;
@@ -211,7 +211,7 @@ internal static class SharedChoiceProtocol
 #pragma warning disable CS0612
             if(response.GroupResp.GroupType!=GroupType.Ordered || groups.Count!=expected.Length)throw new InvalidOperationException("Shared grouping type/count mismatch");
 #pragma warning restore CS0612
-            var native=options.ToDictionary(p=>NativeId(p.Value,cardId),p=>p.Key);var seen=new HashSet<int>();
+            var native=options.ToDictionary(p=>NativeId(p.Value,cardId,playerCount),p=>p.Key);var seen=new HashSet<int>();
             for(int i=0;i<expected.Length;i++)
             {
                 var zone=Group(expected[i]);var actual=groups[i];
@@ -279,7 +279,7 @@ internal static class SharedChoiceProtocol
         }
         else if(kind is "entities" or "cards-zone" or "cards-effect" or "sacrifice" or "discard-effect" or "look" && response.Type==ClientMessageType.SelectNresp)
         {
-            var native=options.ToDictionary(p=>NativeId(p.Value,cardId),p=>p.Key);var seen=new HashSet<int>();
+            var native=options.ToDictionary(p=>NativeId(p.Value,cardId,playerCount),p=>p.Key);var seen=new HashSet<int>();
             foreach(uint raw in response.SelectNResp.Ids)
             {
                 if(raw>int.MaxValue || !native.TryGetValue((int)raw,out int id) || !seen.Add(id))throw new InvalidOperationException("Duplicate or unoffered selected object");
@@ -290,7 +290,7 @@ internal static class SharedChoiceProtocol
         else if(kind=="order" && response.Type==ClientMessageType.OrderResp)
         {
             if(response.OrderResp.Ordering!=OrderingType.OrderAsIndicated)throw new NotSupportedException("An explicit ordering is required");
-            var native=options.ToDictionary(p=>NativeId(p.Value,cardId),p=>p.Key);var seen=new HashSet<int>();
+            var native=options.ToDictionary(p=>NativeId(p.Value,cardId,playerCount),p=>p.Key);var seen=new HashSet<int>();
             // Shipped OrderRequest.SubmitOrder reverses its displayed list;
             // this is undone here before returning Forge's movement order.
             foreach(uint raw in response.OrderResp.Ids.Reverse())

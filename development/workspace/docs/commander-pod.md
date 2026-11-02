@@ -14,28 +14,33 @@ of complete tabletop Commander deck legality or partner support.
   Emry deck with basic lands and defensive creatures.
 - Each player starts at 40 life. Forge enforces 21 combat damage from one
   commander, one free first mulligan, and the multiplayer first-player draw.
-- **All players / Tab** shows one shared table: your board below three
+- **Table view / Tab** shows one shared table: your board below three
   opponents. Player panels sit above their corresponding opponent lanes;
   your own panel stays at the lower left. Each shows life, public zone counts,
-  and turn/priority or combat status. Seat colors stay consistent throughout.
+  and turn/priority or combat status. Warm gold marks the active player; blue marks legal targets or priority.
 - Click a player panel or use **F1–F4** to focus that player's board. Your own
   battlefield remains visible beside the chosen opponent; the other players'
   status panels remain available. Click the same panel or press **Tab** to
   return to the table. Dense battlefields fit their lane and offer focus for
   a closer look.
-- Underlined **Graveyard** and **Exile** counts open that player's original
+- The native **Graveyard** and **Exile** icons and counts open that player's original
   native public-zone browser. Empty counts are informational. Browsing does
   not switch the focused player or construct a separate card list.
-- **Details / F5** opens the original message dialog with all four players'
+- **Commander damage / F5** opens the original message dialog with one player's
   life, elimination status and commander damage received, named by source.
+  Previous/Next player and Close remain visible in four- and ten-player pods.
   Those records remain available after a player is eliminated.
 - To attack another player, select the attacker, click that player's avatar
   or highlighted player panel, and confirm the attacker declaration. A spell
   that targets players uses the same panels. Ineligible panels are disabled
   during selection; targeting returns to the table so other players stay
   visible. Target legality remains Forge-owned.
-- When the human is eliminated, this local practice session pauses and offers
-  Return Home. The surviving bots are not assigned a fabricated winner.
+- When the human is eliminated during play, the local session pauses and offers
+  **Watch match** or **Return Home**. Watching advances the original bots at real
+  owner-thread priority boundaries after native presentation completes. The dead
+  seat cannot cast, activate or rejoin. Settings offers Return Home while watching.
+  Opening-hand concessions offer Return Home only: Forge's pre-play startup is
+  not safe to resume after that concession. No winner is invented for survivors.
 - Return Home stops the owned rules process; another match can start without
   restarting the client.
 - An explicit native turn yield started during a bot's turn carries through
@@ -65,7 +70,8 @@ views retain the local battlefield and one opponent, with the other cards off
 camera. Dense battlefield layouts scale to stay inside their ownership lanes.
 The mapping is scoped to this four-player GameManager and is inert in duels.
 
-The added screen-space panels use the installed Arena font and panel outline.
+The added screen-space panels use installed Arena title/body fonts, avatar
+frames and portraits, zone icons, gradients and button artwork.
 They show stable identities, exact life and public counts, turn versus priority,
 legal player targets, attack recipients and eliminated seats. Player selection
 delegates to the original native workflow and its CanClick check. Native card
@@ -173,3 +179,6 @@ verifies a pinned release and owned native build, launches a separate prepared
 AppContainer lab, and reuses only that lab's existing preview. It does not
 replace the installed client or close another lab's parked match. The private
 spec and prepared owned assets are not distributable installer inputs.
+
+The current multiplayer styling checkpoint is documented in
+[pod-ui-2026-11-02.md](pod-ui-2026-11-02.md).

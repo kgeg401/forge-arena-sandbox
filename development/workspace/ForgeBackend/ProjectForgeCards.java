@@ -29,6 +29,16 @@ public class ProjectForgeCards {
         r.put("colorIdentityMask",(int)card.getPaperCard().getRules().getColorIdentity().getColor());
         r.put("name",card.getName());r.put("colorMask",(int)original.getColor().getColor());r.put("coreTypes",original.getType().getCoreTypes().stream().map(Object::toString).sorted().toList());r.put("subtypes",original.getType().getSubtypes().stream().sorted().toList());r.put("power",original.getBasePowerString());r.put("toughness",original.getBaseToughnessString());r.put("keywords",original.getIntrinsicKeywords().stream().map(k->k.getOriginal()).sorted().toList());r.put("imageKey",card.getPaperCard().getImageKey(false));
         r.put("abilities",card.getSpellAbilities().stream().map(ProjectForgeCards::ability).toList());r.put("triggers",card.getTriggers().stream().map(t->t.getMapParams()).toList());var latent=new ArrayList<Object>();for(var entry:card.getSVars().entrySet())if(entry.getValue().startsWith("AB$")){try{var a=forge.game.ability.AbilityFactory.getAbility(entry.getValue(),card);a.setActivatingPlayer(card.getOwner());var row=ability(a);row.put("sourceSVar",entry.getKey());latent.add(row);}catch(Exception ex){latent.add(Map.of("sourceSVar",entry.getKey(),"error",ex.toString()));}}r.put("latentAbilities",latent);
+        // Modal triggered abilities are not included in Card.getSpellAbilities().
+        var triggeredModes=new ArrayList<Object>();
+        for(var trigger:card.getTriggers()){
+            var effect=trigger.ensureAbility();
+            if(effect!=null && effect.getApi()==forge.game.ability.ApiType.Charm){
+                effect.setActivatingPlayer(card.getOwner());var row=ability(effect);
+                row.put("triggerParams",trigger.getMapParams());triggeredModes.add(row);
+            }
+        }
+        r.put("triggeredModalAbilities",triggeredModes);
         // Optional attack costs keep their reflexive effect in a StaticAbility
         // SVar, outside Card.getTriggers(). Recover that original effect without
         // declaring an attack or paying its cost in this data-only projection.

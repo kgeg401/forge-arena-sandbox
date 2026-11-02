@@ -73,7 +73,7 @@ def collect(output, count=50, format='commander'):
     cards.sort(key=lambda c:(-c['deckCount'],c['name'].casefold()))
     report.update(complete=len(report['decks'])==count and not report['failures'],distinctCards=len(cards),finishedUtc=datetime.now(timezone.utc).isoformat())
     (output/'decks.json').write_text(json.dumps(report,indent=2),encoding='utf-8')
-    (output/'cards.json').write_text(json.dumps(dict(schema=1,source='decks.json',complete=report['complete'],cards=cards,newAdmissions=0),indent=2),encoding='utf-8')
+    (output/'cards.json').write_text(json.dumps(dict(schema=1,source='decks.json',complete=report['complete'],rankedDecks=count,retrievedUtc=report['retrievedUtc'],cards=cards,newAdmissions=0),indent=2),encoding='utf-8')
     return report['complete']
 
 if __name__=='__main__':

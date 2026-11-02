@@ -1,0 +1,102 @@
+Commander
+1 Miirym, Sentinel Wyrm
+
+Deck
+1 Sol Ring
+1 Arcane Signet
+1 Fellwar Stone
+1 Birds of Paradise
+1 Llanowar Elves
+1 Elvish Mystic
+1 Fyndhorn Elves
+1 Bloom Tender
+1 Nature's Lore
+1 Three Visits
+1 Farseek
+1 Delighted Halfling
+1 Genesis Wave
+1 Kindred Summons
+1 Maskwood Nexus
+1 Sarkhan Unbroken
+1 Doubling Season
+1 Panharmonicon
+1 Roaming Throne
+1 Spark Double
+1 Sakashima of a Thousand Faces
+1 Molten Echoes
+1 Mirror March
+1 Parallel Lives
+1 Terror of the Peaks
+1 Scourge of Valkas
+1 Lathliss, Dragon Queen
+1 Ganax, Astral Hunter
+1 Phyrexian Metamorph
+1 Goldspan Dragon
+1 Old Gnawbone
+1 Utvara Hellkite
+1 Dragonlord Atarka
+1 Wrathful Red Dragon
+1 Dragon Tempest
+1 Impact Tremors
+1 Purphoros, God of the Forge
+1 Temur Ascendancy
+1 Deadeye Navigator
+1 Peregrine Drake
+1 Deepglow Skate
+1 Mystical Tutor
+1 Worldly Tutor
+1 Sylvan Tutor
+1 Gamble
+1 Green Sun's Zenith
+1 Finale of Devastation
+1 Tooth and Nail
+1 Rhystic Study
+1 Mystic Remora
+1 Sylvan Library
+1 Force of Will
+1 Force of Negation
+1 Fierce Guardianship
+1 Swan Song
+1 Flusterstorm
+1 Cyclonic Rift
+1 Beast Within
+1 Chaos Warp
+1 Heroic Intervention
+1 Deflecting Swat
+1 Veil of Summer
+1 Blasphemous Act
+1 Lightning Greaves
+1 Swiftfoot Boots
+1 Eternal Witness
+1 Command Tower
+1 Exotic Orchard
+1 City of Brass
+1 Mana Confluence
+1 Reflecting Pool
+1 Breeding Pool
+1 Steam Vents
+1 Stomping Ground
+1 Tropical Island
+1 Volcanic Island
+1 Taiga
+1 Rejuvenating Springs
+1 Training Center
+1 Spire Garden
+1 Botanical Sanctum
+1 Spirebluff Canal
+1 Copperline Gorge
+1 Yavimaya Coast
+1 Shivan Reef
+1 Karplusan Forest
+1 Misty Rainforest
+1 Scalding Tarn
+1 Wooded Foothills
+1 Flooded Strand
+1 Windswept Heath
+1 Verdant Catacombs
+1 Arid Mesa
+1 Prismatic Vista
+1 Boseiju, Who Endures
+1 Otawara, Soaring City
+2 Forest
+1 Island

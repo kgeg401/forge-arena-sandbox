@@ -29,6 +29,8 @@ practice=deck({'1':24,'3':16});brawl=deck({'1':98,'3':1},{'4':1})
 check('Practice preserves the exact admitted name counts',parse_local_deck(practice,catalog,'SandboxPractice')['cards']==[dict(name='Plains',count=24),dict(name='Savannah Lions',count=16)])
 check('Brawl retains the commander and 99 main cards',sum(c['count'] for c in parse_local_deck(brawl,catalog,'SandboxBrawl')['cards'])==99)
 check('Four-player Commander independently enforces the Commander deck policy',parse_local_deck(brawl,catalog,'SandboxCommanderPod')['format']=='commander-40')
+check('Ten-player Commander independently enforces the Commander deck policy',parse_local_deck(brawl,catalog,'SandboxCommanderTenPod')['format']=='commander-40')
+reject('Ten-player pod rejects a deck without a commander',lambda:parse_local_deck(practice,catalog,'SandboxCommanderTenPod'))
 reject('Commander pod rejects a deck without a commander',lambda:parse_local_deck(practice,catalog,'SandboxCommanderPod'))
 reject('Practice cannot silently drop a commander',lambda:parse_local_deck(brawl,catalog,'SandboxPractice'))
 reject('Unknown local queues are rejected',lambda:parse_local_deck(practice,catalog,'OnlineRanked'))
@@ -56,6 +58,8 @@ with tempfile.TemporaryDirectory(prefix='forge-coordinator-') as temp:
     app=root/'app';(app/'decks').mkdir(parents=True)
     (app/'decks/White-Lifegain.txt').write_text('Deck\n24 Plains\n36 Savannah Lions\n')
     (app/'decks/Brawl-Isamaru-Bot.txt').write_text('Commander\n1 Isamaru, Hound of Konda\nDeck\n98 Plains\n1 Savannah Lions\n')
+    for name in ('Isamaru','Emry','Selvala'):
+        (app/'decks'/('Commander-Pod-'+name+'.txt')).write_text('Commander\n1 Isamaru, Hound of Konda\nDeck\n98 Plains\n1 Savannah Lions\n')
     config=dict(privateRoot=str(root),javaHome=str(root/'java'))
     engines=[]
     def spawn(*args,**kwargs):e=Engine(800000+len(engines));engines.append(e);return e
@@ -91,6 +95,20 @@ with tempfile.TemporaryDirectory(prefix='forge-coordinator-') as temp:
         c.heartbeat_at=0;before=json.loads(c.state_path.read_text())['utc'];time.sleep(.002);c.tick()
         check('A fresh heartbeat is observable while idle/error',json.loads(c.state_path.read_text())['utc']!=before)
         check('All queue operations preserve the saved deck library byte for byte',(lab/'local-profile/decks.json').read_bytes()==original)
+        pod_request=request('start',queue='SandboxCommanderPod',deckId=brawl['id']);submit(pod_request)
+        pod=json.loads((c.ipc/'scenario.json').read_text())
+        check('Pod resolves three dedicated deck files rather than cloning the duel opponent',
+              len(pod['opponentDecks'])==3 and [Path(d['source']).name for d in pod['opponentDecks']]==['Commander-Pod-Isamaru.txt','Commander-Pod-Emry.txt','Commander-Pod-Selvala.txt'])
+        check('All three independently parsed pod decks retain Commander format and full card count',
+              all(d['format']=='commander-40' and sum(v['count'] for v in d['cards'])==99 for d in pod['opponentDecks']))
+        submit(request('cancel',matchRequestId=pod_request['id']));engines[-1].code=0;c.tick()
+        ten_request=request('start',queue='SandboxCommanderTenPod',deckId=brawl['id']);submit(ten_request)
+        ten=json.loads((c.ipc/'scenario.json').read_text())
+        check('Ten-player queue selects the real ten-player rules scenario',ten['scenario']=='commander-ten-pod')
+        check('Ten-player queue independently reads nine complete saved opponent decks',
+              len(ten['opponentDecks'])==9 and [Path(d['source']).name for d in ten['opponentDecks']]==['Commander-Pod-'+n+'.txt' for n in ('Isamaru','Emry','Selvala')*3]
+              and all(d['format']=='commander-40' and sum(v['count'] for v in d['cards'])==99 for d in ten['opponentDecks']))
+        submit(request('cancel',matchRequestId=ten_request['id']));engines[-1].code=0;c.tick()
         c.close()
         check('Closing an idle coordinator leaves no engine',c.phase=='closed' and c.process is None)
     receipt['capabilityCount']=1;atomic(lab/'launch-receipt.json',receipt)

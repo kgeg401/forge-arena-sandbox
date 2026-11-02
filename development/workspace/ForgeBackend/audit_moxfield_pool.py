@@ -8,6 +8,18 @@ import hashlib,json,sqlite3,zipfile,re
 from pathlib import Path
 from arena_catalog import clean_name,indexed_printings
 
+def ranked_deck_count(cards_file,source):
+    # Older captures keep the count only in their companion ranking receipt.
+    count=source.get('rankedDecks')
+    ranking=cards_file.with_name('decks.json')
+    if count is None or ranking.exists():
+        captured=json.loads(ranking.read_text(encoding='utf-8-sig'));requested=captured.get('requested')
+        if captured.get('complete') is not True or len(captured.get('decks',[]))!=requested:raise ValueError('Incomplete ranking provenance')
+        if count is not None and count!=requested:raise ValueError('Card union and ranking disagree on deck count')
+        count=requested
+    if type(count) is not int or not 1<=count<=100:raise ValueError('Invalid ranked-deck count')
+    return count
+
 def audit(cards_file,database,scripts,policy,manifest,output):
     source=json.loads(cards_file.read_text(encoding='utf-8'))
     if source.get('complete') is not True:raise ValueError('Collect the full ranking before auditing its pool')
@@ -45,10 +57,10 @@ def audit(cards_file,database,scripts,policy,manifest,output):
                'previouslyAdmitted':native_name in admission['verifiedNames'],
                'runtimeMapped':native_name in runtime.get('cards',{}),'gameplayTest':'pending','newAdmission':False}
         results.append(entry)
-    report=dict(schema=1,arenaOnly=True,rankedDecks=50,distinctCards=len(results),counts=dict(Counter(r['status'] for r in results)),
+    report=dict(schema=1,arenaOnly=True,rankedDecks=ranked_deck_count(cards_file,source),distinctCards=len(results),counts=dict(Counter(r['status'] for r in results)),
                 arenaCards=sum(bool(r['nativeGrpIds']) for r in results),previouslyAdmitted=sum(r['previouslyAdmitted'] for r in results),
                 runtimeMapped=sum(r['runtimeMapped'] for r in results),newAdmissions=0,
-                provenance={str(p):hashlib.sha256(p.read_bytes()).hexdigest() for p in [cards_file,database,scripts,policy,manifest]},cards=results)
+                provenance={str(p):hashlib.sha256(p.read_bytes()).hexdigest() for p in [cards_file,database,scripts,policy,manifest,cards_file.with_name('decks.json')] if p.exists()},cards=results)
     output.write_text(json.dumps(report,indent=2),encoding='utf-8')
     print(json.dumps({k:v for k,v in report.items() if k not in ['cards','provenance']}))
 

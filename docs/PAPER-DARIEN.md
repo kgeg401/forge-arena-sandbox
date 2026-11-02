@@ -14,7 +14,10 @@ The list has 68 distinct names. Fifty-two needed new client admission; 31 of
 those have no printing in the pinned Arena installation. Those paper-only cards
 use separate local presentation identities and the existing Forge rules engine.
 They display their real name, cost, types and text through the native card model;
-**their artwork currently uses the native missing-art placeholder**.
+Their illustrations are fetched from Scryfall into a private local cache and
+displayed through the original card renderer, with artist credits. The first
+launch needs an internet connection for these 31 images; cached art works offline.
+Missing downloads use the native missing-art placeholder until a later launch.
 No original Arena record is overwritten and no game assets are included in the
 download. This enables the explicitly requested paper list, not all paper cards.
 

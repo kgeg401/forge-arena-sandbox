@@ -26,6 +26,8 @@ public static class NativePaperCards
         var manifest=JObject.Parse(File.ReadAllText(Path.Combine(root,"bridge-card-manifest.json")));
         if(manifest["paperExtension"] is not JObject extension)return;
         if((int?)extension["schema"]!=1)throw new InvalidDataException("Unknown paper extension schema");
+        var h=new Harmony("local.forge-arena.paper-cards");
+        NativePaperArt.Install(root,manifest,h);
         foreach(var p in ((JObject)extension["localizations"]!).Properties())Text.Add(uint.Parse(p.Name), (string)p.Value!);
         foreach(var a in (JArray)extension["abilities"]!)
         {
@@ -37,13 +39,12 @@ public static class NativePaperCards
             var d=c.Value;var p=d["paperDefinition"]!;uint id=(uint)d["grpId"]!;
             if(id<2000000 || id>=2100000)throw new InvalidDataException("Paper printing outside its reserved range");
             Cards.Add(id,new CardPrintingRecord(grpId:id,titleId:(uint)d["titleId"]!,typeTextId:(uint)p["typeTextId"]!,subtypeTextId:(uint)p["subtypeTextId"]!,
-                artId:0,artistCredit:"Paper card — art unavailable",rarity:CardRarity.Rare,expansionCode:"ANA",collectorNumber:(id-2000000).ToString(),
+                artId:id,artistCredit:NativePaperArt.Artist(id),rarity:CardRarity.Rare,expansionCode:"ANA",collectorNumber:(id-2000000).ToString(),
                 oldSchoolManaText:(string)p["manaText"]!,power:new StringBackedInt((string?)p["power"]),toughness:new StringBackedInt((string?)p["toughness"]),
                 colors:Values<CardColor>(d["colors"]),colorIdentity:Values<CardColor>(p["colorIdentity"]),frameColors:Values<CardColor>(d["colors"]),
                 types:Values<CardType>(d["types"]),subtypes:Values<SubType>(d["subtypes"]),supertypes:Values<SuperType>(d["supertypes"]),
                 abilityIds:((JArray)d["abilityIds"]!).Select(v=>((uint)v,0u)).ToArray()));
         }
-        var h=new Harmony("local.forge-arena.paper-cards");
         Patch(h,typeof(SqlCardDataProvider),"GetCardRecordById",nameof(CardRecord));
         Patch(h,typeof(SqlCardDataProvider),"GetCardPrintingById",nameof(CardPrinting));
         Patch(h,typeof(SqlAbilityDataProvider),"GetAbilityRecordById",nameof(AbilityRecord));

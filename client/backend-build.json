@@ -1,19 +1,23 @@
 {
   "schema": 1,
   "compiler": "javac 17.0.20.1",
-  "sourceSha256": "0738d4a239b5c4d4eb53adc6e2a4173bce9725f035585fedb20523fbff702b07",
+  "sourceSha256": "c0daa11c6413bd224b6c06163477ac68bec46f0f53c571bc0028f38c942cb458",
   "forgeJarSha256": "82083a2e52ff04f22e518f705b1a1fcac877a1ee0fa25db4e4fb208bf6a7295a",
   "gsonSha256": "dd0ce1b55a3ed2080cb70f9c655850cda86c206862310009dcb5e5c95265a5e0",
   "classes": {
-    "ForgeLandEngine$1.class": "01b87ac743cf0ccdde2c1448440a60d506d31b41b16d41d092ec5e00c166a15d",
-    "ForgeLandEngine$EventRecorder.class": "87e5518fbd81850249ad222a0a168a63469b5ada61a34874c52d96bb5477115c",
-    "ForgeLandEngine$HeadlessChoiceController.class": "91d4c9fc4a78131669944b9422104e207f39e8bf553b1ae4d7eee2d4d00f3037",
-    "ForgeLandEngine$HordeRules.class": "56c4c7ae0bc808802613ba8cebab6cff4f9a7f5757df51211c669440a2831272",
-    "ForgeLandEngine$HumanPayments.class": "00a61906898e616de1f24b4aefbb944bcff6714a3b28228bc2636e6fb09fa677",
-    "ForgeLandEngine$LocalSeat.class": "e1e972996b195924638de76d443e578b5fb1e42fe913eb847d6e77e13121fe85",
-    "ForgeLandEngine$PassiveController.class": "82a0e845564a30d9aac53a4c18521b3c6a3d6e1a6989e3f684b15695f4301414",
-    "ForgeLandEngine$ResearchStrictController.class": "c9a5ddf10726dd5e3ff04021d96e2f609011c3757db8de4ff35e4ac529609c86",
-    "ForgeLandEngine$StopRequested.class": "ab25a4583ca8c5f6c6eed49e5f6f6241f9bb0b0f1884563bc655a1be4e4a047f",
-    "ForgeLandEngine.class": "e54fb170c83fa9b7558deca3989424ac2230fb7561233cb4713531dad2ffb8f5"
+    "ForgeLandEngine$1.class": "64ef0c3702ecbfe09797a8544ae7b464f3ac9df0333b72745d863474d862945e",
+    "ForgeLandEngine$CoinRandom.class": "4d29f6370827d9ab485d8029b38de8a8a6c89fcff23c30e6fa33c8dfc86fe2aa",
+    "ForgeLandEngine$CoinSecureRandom.class": "2cbcb07ae3a4a5469baed7ff97fef10406f77850d265526538e0bf5f63a352fb",
+    "ForgeLandEngine$EventRecorder.class": "890eb41c602adf611ea9bf68e1f348cdde230831621170279cdd016ee905dda0",
+    "ForgeLandEngine$HeadlessChoiceController.class": "91c5cd8f3c961f70fe0f7f2286a753f583630f738f34560bd73264573e36f34d",
+    "ForgeLandEngine$HordeRules.class": "1fab15e651776e36bfaf8430b6a733fb28e7da8e8c0d448ac40269e8dfdd0a65",
+    "ForgeLandEngine$HumanPayments.class": "a3be8024a8e2f587501cf63492f1efc8b47b0b4e1f34741cd3596691d9f126bd",
+    "ForgeLandEngine$LocalSeat.class": "0da69a31f905e23fa238319d949ae27e0b2d62b5de2b3e50f4d6ce6470f700df",
+    "ForgeLandEngine$PassiveController.class": "aa7aff62bf740f22018c0a4cfd957c3ff331a542876ef0a3c0918c1fcfe9bc6b",
+    "ForgeLandEngine$PresentedGame.class": "b2842c57e483a2a3052a693c4288c78a44923d1f28ac953b445b5cbc10ded2bc",
+    "ForgeLandEngine$ResearchStrictController.class": "dab98bbf4a67c41199564dbc48f8d3df4aea472102cc15a49d7376ab397fb720",
+    "ForgeLandEngine$ResponseArchive.class": "0855e3ac99b3f163301c1dee0216ab552ae3a398e4d2f022dec2418093ce87fc",
+    "ForgeLandEngine$StopRequested.class": "8a800932e1566028e37817952ec9f9d96b7411c29e96a4afc3c699cde096a971",
+    "ForgeLandEngine.class": "b79a79adc32b6e31c1fc081bf73071b406187c32f5f54cbc3decd18a5d4273f1"
   }
 }

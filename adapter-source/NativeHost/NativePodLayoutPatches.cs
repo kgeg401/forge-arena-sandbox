@@ -11,15 +11,19 @@ using Wotc.Mtga.DuelScene.Battlefield;
 
 namespace ForgeArenaSandbox;
 
-// Inert outside this four-player view. No change to rules or selection IDs.
+// Inert outside this pod view. No change to rules or selection IDs.
 internal static class NativePodLayoutPatches
 {
     [ThreadStatic] private static int _endpointDepth;
+    private static bool _installed;
+    internal static int RegisteredSeats;
     internal static void Install()
     {
+        if(_installed)return;
         var harmony = new Harmony("local.forge-arena.pod-shared-table");
         try
         {
+            harmony.Patch(AccessTools.Method(typeof(QuadrantOffsetCalculator),"GetRelativeOffset"),prefix:new HarmonyMethod(typeof(NativePodLayoutPatches),nameof(ExtendedOffset)));
             foreach (var type in typeof(CardHolderBase).Assembly.GetTypes().Where(t => typeof(CardHolderBase).IsAssignableFrom(t)))
                 foreach (var method in type.GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly).Where(m => !m.IsAbstract && m.Name == "GetLayoutEndpoint" && m.ReturnType == typeof(IdealPoint) && m.GetParameters().Length == 1 && m.GetParameters()[0].ParameterType == typeof(CardLayoutData)))
                     harmony.Patch(method, prefix: new HarmonyMethod(typeof(NativePodLayoutPatches), nameof(EnterEndpoint)), postfix: new HarmonyMethod(typeof(NativePodLayoutPatches), nameof(Endpoint)), finalizer: new HarmonyMethod(typeof(NativePodLayoutPatches), nameof(EndpointFailure)));
@@ -35,6 +39,7 @@ internal static class NativePodLayoutPatches
             foreach (var method in new[] { AccessTools.Method(typeof(LibraryCardHolder), "ViewLibrary"), AccessTools.Method(typeof(GraveyardCardHolder), "ViewGraveyard"), typeof(PlayerExileCardHolder).GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly).Single(m => m.Name.EndsWith(".OnPointerClick", StringComparison.Ordinal)) })
                 harmony.Patch(method, prefix: new HarmonyMethod(typeof(NativePodLayoutPatches), nameof(ZoneBrowserStarting)), postfix: new HarmonyMethod(typeof(NativePodLayoutPatches), nameof(ZoneBrowser)));
             harmony.Patch(AccessTools.Method(typeof(ZoneCountView), "SetVisibility"), prefix: new HarmonyMethod(typeof(NativePodLayoutPatches), nameof(HideDuelZoneCounts)));
+            _installed=true;
         }
         catch
         {
@@ -43,6 +48,14 @@ internal static class NativePodLayoutPatches
             harmony.UnpatchSelf();
             throw;
         }
+    }
+    private static bool ExtendedOffset(uint idOffset,ref Vector3 __result)
+    {
+        if(RegisteredSeats<=4 || idOffset<=4)return true;
+        if(idOffset>RegisteredSeats)throw new ArgumentOutOfRangeException(nameof(idOffset));
+        // Virtual origins extend the native four-seat calculator. The table
+        // transform moves cards, colliders, zones and avatars from these origins.
+        __result=new Vector3(-64.3885f*((idOffset-1)%3),0,-38.1452f*(1+(idOffset-1)/3));return false;
     }
     private static void EnterEndpoint() => _endpointDepth++;
     private static void Endpoint(CardHolderBase __instance, CardLayoutData data, ref IdealPoint __result)
@@ -75,7 +88,7 @@ internal static class NativePodLayoutPatches
         for (int i = 0; i < pending.Count && i < __instance.ActiveStackCounters.Count; i++)
         {
             uint seat = allData.FirstOrDefault(d => d.Card.InstanceId == pending[i].parentInstanceId)?.Card.Model.Instance.Controller?.InstanceId ?? 0;
-            if (seat < 1 || seat > 4) continue; var badge = __instance.ActiveStackCounters[i]; badge.transform.position = view.MapPoint(pending[i].positon, seat, true); badge.transform.localScale = Vector3.one * view.Scale(seat, true);
+            if (!view.HasSeat(seat)) continue; var badge = __instance.ActiveStackCounters[i]; badge.transform.position = view.MapPoint(pending[i].positon, seat, true); badge.transform.localScale = Vector3.one * view.Scale(seat, true);
         }
         foreach (var entry in __instance.RegionsByCardTypeAndOwnerId.Values.SelectMany(d => d).GroupBy(p => p.Value))
         {

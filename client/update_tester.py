@@ -43,7 +43,7 @@ def latest(repository,channel='stable'):
     assets=[a for a in release['assets'] if a['name']==ASSET_NAME]
     if len(assets)!=1:raise ValueError('Latest release has no unique Windows adapter package')
     asset=assets[0];expected=asset.get('digest','')
-    if not re.fullmatch(r'sha256:[0-9a-f]{64}',expected):raise ValueError('Release asset has no SHA-256 digest; download and review manually')
+    if not isinstance(expected,str) or not re.fullmatch(r'sha256:[0-9a-f]{64}',expected):raise ValueError('Release asset has no SHA-256 digest; download and review manually')
     parsed=urllib.parse.urlparse(asset['browser_download_url'])
     if parsed.scheme!='https' or parsed.netloc.casefold()!='github.com' or not parsed.path.casefold().startswith(('/'+repository+'/releases/download/').casefold()):raise ValueError('Asset is outside the configured GitHub repository')
     return dict(version=release['tag_name'].removeprefix('v'),url=asset['browser_download_url'],sha256=expected[7:],size=asset['size'],releaseUrl=release['html_url'])

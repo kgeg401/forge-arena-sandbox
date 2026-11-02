@@ -75,7 +75,7 @@ def execute(e,trace,op,card=0,_attack_seat=None,_target_seat=2,_choice_policy=No
    elif kind=='assign_damage':
     allocation=_damage_policy(spec,e.state) if _damage_policy else [dict(forgeId=o['forgeId'],amount=o['assignedDamage']) for o in spec['options']]
     trace.append(dict(kind='damage-assignments',selected=allocation));pending.append(e.begin('submit_assign_damage',assignments=allocation,**fields))
-   elif kind=='legend_rule':pending.append(e.begin('submit_legend_rule',forgeId=spec['options'][0]['forgeId'],**fields))
+   elif kind=='legend_rule':pending.append(e.begin('submit_legend_rule',assignments=[dict(forgeId=spec['options'][0]['forgeId'])],**fields))
    else:raise RuntimeError('Unhandled test decision '+kind)
   elif not pending:
    # The original native handler's latest presented boundary includes terminal

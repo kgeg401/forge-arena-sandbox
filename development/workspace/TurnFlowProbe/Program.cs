@@ -42,9 +42,33 @@ internal static class Program
         clock=.051;Check("Workflow readiness can recover after 50 ms",pacing.TrySubmit(3,4,()=>Submit(true)));
         Check("New state bypasses the prior workflow retry timer",pacing.TrySubmit(4,5,()=>Submit(true)));
 
+        var stops=new SettingsMessage{DefaultAutoPassOption=AutoPassOption.ResolveMyStackEffects};
+        var upkeep=new Stop{StopType=StopType.UpkeepStep,AppliesTo=SettingScope.Team,Status=SettingStatus.Set};
+        NativePhaseStops.Merge(stops,new SettingsMessage{Stops={upkeep}});
+        Check("Future phase stop is not a global pause",!NativePhaseStops.Holds(stops,"MAIN1",1));
+        Check("Stop applies at its actual local upkeep",NativePhaseStops.Holds(stops,"UPKEEP",1));
+        Check("Local stop does not hold an opposing upkeep",!NativePhaseStops.Holds(stops,"UPKEEP",2));
+        NativePhaseStops.Merge(stops,new SettingsMessage{Stops={upkeep.Clone()}});
+        Check("Repeated stop commands retain one canonical record",stops.Stops.Count==1);
+        NativePhaseStops.Merge(stops,new SettingsMessage{Stops={new Stop{StopType=StopType.UpkeepStep,AppliesTo=SettingScope.Team,Status=SettingStatus.Clear}}});
+        Check("Clearing a stop removes its hold and acknowledges Clear",!NativePhaseStops.Holds(stops,"UPKEEP",1) && stops.Stops.Count==1 && stops.Stops[0].Status==SettingStatus.Clear);
+        NativePhaseStops.Merge(stops,new SettingsMessage{TransientStops={upkeep.Clone()}});
+        Check("Future transient stop survives unrelated phase changes",!NativePhaseStops.LeavePhase(stops,"MAIN1",2,2,"MAIN2",2,2) && NativePhaseStops.Holds(stops,"UPKEEP",1));
+        Check("Transient stop expires after leaving its actual matching phase",NativePhaseStops.LeavePhase(stops,"UPKEEP",1,3,"DRAW",1,3) && !NativePhaseStops.Holds(stops,"UPKEEP",1));
+        NativePhaseStops.Merge(stops,new SettingsMessage{Stops={new Stop{StopType=StopType.EndStep,AppliesTo=SettingScope.AnyPlayer,Status=SettingStatus.Set}}});
+        Check("Any-player stop normalizes both original phase-ladder sides",NativePhaseStops.Holds(stops,"END_OF_TURN",1) && NativePhaseStops.Holds(stops,"END_OF_TURN",4));
+        NativePhaseStops.LeavePhase(stops,"END_OF_TURN",1,3,"CLEANUP",1,3);
+        Check("Permanent stops survive phase changes",NativePhaseStops.Holds(stops,"END_OF_TURN",1));
+        string settingsBefore=stops.ToString();bool invalidStop=false;
+        try{NativePhaseStops.Merge(stops,new SettingsMessage{Stops={new Stop{StopType=(StopType)987654,AppliesTo=SettingScope.Team,Status=SettingStatus.Set}}});}catch(InvalidOperationException){invalidStop=true;}
+        Check("Unknown stop rejects before changing settings",invalidStop && stops.ToString()==settingsBefore);
+        NativePhaseStops.Merge(stops,new SettingsMessage{ClearAllStops=SettingStatus.Set});
+        Check("Clear-all releases permanent and transient stops",!NativePhaseStops.Holds(stops,"END_OF_TURN",1) && !NativePhaseStops.Holds(stops,"UPKEEP",1));
+        Check("Stop updates preserve unrelated native automatic controls",stops.DefaultAutoPassOption==AutoPassOption.ResolveMyStackEffects);
+
         using var gre=new GreInterface(NullCardDatabaseAdapter.Default,null,null,true,null);
         var local=new LocalGreConnection();local.MessageReceived+=gre.OnMessageReceived;local.Connect(null!);local.ConnectToGRE(LocalGreConnection.LocalUri,local.MatchId);
-        uint? presented=null;BaseUserRequest? request=null;MtgGameState? latest=null;
+        uint? presented=null;BaseUserRequest? request=null;MtgGameState? latest=null;SettingsMessage? observedSettings=null;
         bool presentationReady=true,workflowReady=true;int attempts=0;long presentedAt=0;
         var timer=Stopwatch.StartNew();ForgeLandBridge? bridge=null;
         void Drain()
@@ -52,8 +76,10 @@ internal static class Program
             for(int i=0;i<8;i++)
             {
                 local.ProcessMessages();gre.ProcessQueues();
-                foreach(var item in gre.RetrieveClientUpdates())if(item is GreClient.Rules.GameStateUpdate update)
+                foreach(var item in gre.RetrieveClientUpdates())
                 {
+                    if(item is SettingsNotification notification)observedSettings=notification.Settings;
+                    if(item is not GreClient.Rules.GameStateUpdate update)continue;
                     latest=update.NewState;presented=latest.Id;request=update.Interaction;presentedAt=timer.ElapsedTicks;
                     nativeEvents.AddRange(update.Changes.Select(c=>c.GetType().Name));
                     transitions.Add(new JObject{["nativeStateId"]=presented,["activeSeat"]=bridge?.ActiveSeat,["interaction"]=request?.GetType().Name,["hasInteraction"]=request!=null,["phase"]=latest.CurrentPhase.ToString(),["step"]=latest.CurrentStep.ToString(),["nextPhase"]=latest.NextPhase.ToString(),["nextStep"]=latest.NextStep.ToString(),["events"]=new JArray(update.Changes.Select(c=>c.GetType().Name))});
@@ -122,6 +148,22 @@ internal static class Program
             for(int i=0;i<30;i++)Tick();Check("Settings handshake is required before automatic passing",attempts==0);
             Check("Original parser receives a native turn-change event",nativeEvents.Contains("TurnChangeEvent"));
             Check("Original parser receives a native phase-change event",nativeEvents.Contains("GamePhaseChangeEvent"));
+            if(mode is "phase-cycle-stop" or "transient-cycle-stop")
+            {
+                Manual(ActionType.Play);Manual(ActionType.Cast);
+                var stop=new Stop{StopType=StopType.UpkeepStep,AppliesTo=SettingScope.Team,Status=SettingStatus.Set};
+                Settings(mode=="transient-cycle-stop"?new SettingsMessage{TransientStops={stop}}:new SettingsMessage{Stops={stop}});
+                Until(()=>bridge.Turn>=3 && bridge.ActiveSeat==1 && bridge.Phase=="UPKEEP");
+                int count=passes.Count;for(int i=0;i<30;i++)Tick();Check("Requested upkeep stops at the actual next native phase",passes.Count==count && request is ActionsAvailableRequest);
+                Check("Earlier spell resolved before the requested future stop",!bridge.ResearchState["stack"]!.HasValues && ((JArray)bridge.ResearchState["battlefield"]!).Any(c=>(string?)c["name"]=="Savannah Lions"));
+                if(mode=="transient-cycle-stop")Manual(ActionType.Pass);
+                else Settings(new SettingsMessage{Stops={new Stop{StopType=StopType.UpkeepStep,AppliesTo=SettingScope.Team,Status=SettingStatus.Clear}}});
+                Until(()=>bridge.Phase=="MAIN1" && bridge.ResearchState["legalLands"]!.HasValues);
+                var records=mode=="transient-cycle-stop"?observedSettings!.TransientStops:observedSettings!.Stops;
+                Check("Original settings acknowledgement clears the used or canceled stop",records.Count==1 && records[0].Status==SettingStatus.Clear);
+                Check("Stop release preserves the next playable native main phase",bridge.Turn==3 && bridge.LandsPlayed==0 && request is ActionsAvailableRequest);
+                File.WriteAllText(args[5],new JObject{["passed"]=true,["checks"]=new JArray(checks),["automaticPasses"]=passes,["settings"]=JObject.Parse(observedSettings.ToString()),["nativeUpdates"]=transitions,["scope"]="Real Forge phase cycle and original native settings/actions; not rendered timing."}.ToString());return 0;
+            }
             if(mode=="pod-yield" || mode=="pod-yield-unless")
             {
                 Check("Pod yield starts during an opponent's real priority window",bridge.IsCommanderPod && bridge.ActiveSeat==2 && bridge.ResearchState["legalCasts"]!.HasValues);
@@ -152,14 +194,28 @@ internal static class Program
                 int before=passes.Count;for(int i=0;i<30;i++)Tick();Check("End-turn mode does not skip the next playable main phase",passes.Count==before);
                 File.WriteAllText(args[5],new JObject{["passed"]=true,["checks"]=new JArray(checks),["nativeUpdates"]=transitions,["scope"]="Original native settings and Forge turns; no rendered UI."}.ToString());return 0;
             }
-            if(mode=="response" || mode=="no-response" || mode=="resolve-all")
+            bool phaseStopMode=new[]{"unrelated-stop","foreign-turn-stop","active-phase-stop","clear-phase-stop","future-transient-stop","clear-all-stops"}.Contains(mode);
+            if(mode=="response" || mode=="no-response" || mode=="resolve-all" || phaseStopMode)
             {
                 var initial=bridge.ResearchState;
                 Check("Fixture has a real opponent creature spell on the stack",((JArray)initial["stack"]!).Any(c=>(int)c["owner"]! ==2 && (string?)c["name"]=="Savannah Lions"));
-                Check("Forge determines whether the counterspell is payable",initial["legalCasts"]!.HasValues==(mode!="no-response"));
+                Check("Forge determines whether the counterspell is payable",initial["legalCasts"]!.HasValues==(!phaseStopMode && mode!="no-response"));
                 presentationReady=false;Settings(new SettingsMessage{AutoPassOption=AutoPassOption.Clear,StackAutoPassOption=mode=="resolve-all"?AutoPassOption.ResolveAll:AutoPassOption.Clear});
                 for(int i=0;i<30;i++)Tick();Check("Opponent spell waits for presentation",attempts==0);
+                if(mode=="unrelated-stop")Settings(new SettingsMessage{Stops={new Stop{StopType=StopType.UpkeepStep,AppliesTo=SettingScope.Opponents,Status=SettingStatus.Set}}});
+                if(mode=="foreign-turn-stop")Settings(new SettingsMessage{Stops={new Stop{StopType=StopType.PrecombatMainPhase,AppliesTo=SettingScope.Team,Status=SettingStatus.Set}}});
+                if(mode=="future-transient-stop")Settings(new SettingsMessage{TransientStops={new Stop{StopType=StopType.UpkeepStep,AppliesTo=SettingScope.Opponents,Status=SettingStatus.Set}}});
+                if(mode is "active-phase-stop" or "clear-phase-stop" or "clear-all-stops")Settings(new SettingsMessage{Stops={new Stop{StopType=StopType.PrecombatMainPhase,AppliesTo=SettingScope.Opponents,Status=SettingStatus.Set}}});
                 presentationReady=true;Tick();
+                if(mode is "active-phase-stop" or "clear-phase-stop" or "clear-all-stops")
+                {
+                    for(int i=0;i<30;i++)Tick();Check("A matching native phase stop retains its real response window",passes.Count==0 && bridge.ResearchState["stack"]!.HasValues);
+                    if(mode=="active-phase-stop")
+                    {File.WriteAllText(args[5],new JObject{["passed"]=true,["checks"]=new JArray(checks),["settings"]=JObject.Parse(observedSettings!.ToString()),["scope"]="Real original settings parser and Forge priority; not Unity rendering."}.ToString());return 0;}
+                    Settings(mode=="clear-phase-stop"?new SettingsMessage{Stops={new Stop{StopType=StopType.PrecombatMainPhase,AppliesTo=SettingScope.Opponents,Status=SettingStatus.Clear}}}:new SettingsMessage{ClearAllStops=SettingStatus.Set});
+                    Check("Native acknowledgement replaces the active stop with Clear",observedSettings!.Stops.Count==1 && observedSettings.Stops[0].Status==SettingStatus.Clear);
+                    Tick();
+                }
                 if(mode=="response")
                 {
                     for(int i=0;i<30;i++)Tick();
@@ -216,7 +272,7 @@ internal static class Program
                 Settings(new SettingsMessage{AutoPassOption=AutoPassOption.Clear});
                 if(mode=="stop")
                 {
-                    Settings(new SettingsMessage{Stops={new Stop()}});
+                    Settings(new SettingsMessage{Stops={new Stop{StopType=StopType.PrecombatMainPhase,AppliesTo=SettingScope.Team,Status=SettingStatus.Set}}});
                     for(int i=0;i<30;i++)Tick();Check("Explicit phase stops preserve the response window",attempts==before);
                     File.WriteAllText(args[5],new JObject{["passed"]=true,["checks"]=new JArray(checks),["automaticPasses"]=passes,["scope"]="Native handler and Forge state; no rendered UI."}.ToString());return 0;
                 }

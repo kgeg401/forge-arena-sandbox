@@ -67,4 +67,24 @@ internal sealed class NativeClientDialogs
             new SystemMessageManager.SystemMessageButtonData{Text=confirm,IsConfirm=true,HideOnClick=true,Callback=action}});
         _view.Show();
     }
+    public void ShowPages(string title,IReadOnlyList<string> pages,int page=0)
+    {
+        if(pages.Count==0)throw new ArgumentException("No detail pages supplied.");
+        EnsureView();_view!.SetTitle(title+" ("+(page+1)+"/"+pages.Count+")");_view.SetMessage(pages[page]);_view.SetDetails("");
+        var buttons=new List<SystemMessageManager.SystemMessageButtonData>();
+        if(pages.Count>1){
+            buttons.Add(new SystemMessageManager.SystemMessageButtonData{Text="Previous player",HideOnClick=false,Callback=()=>ShowPages(title,pages,(page+pages.Count-1)%pages.Count)});
+            buttons.Add(new SystemMessageManager.SystemMessageButtonData{Text="Next player",HideOnClick=false,Callback=()=>ShowPages(title,pages,(page+1)%pages.Count)});
+        }
+        buttons.Add(new SystemMessageManager.SystemMessageButtonData{Text="Close",IsCancel=true,HideOnClick=true});
+        _view.CreateButtons(buttons);_view.Show();
+    }
+    public void Choose(string title,string message,string first,Action firstAction,string second,Action secondAction)
+    {
+        EnsureView();_view!.SetTitle(title);_view.SetMessage(message);_view.SetDetails("");
+        _view.CreateButtons(new List<SystemMessageManager.SystemMessageButtonData>{
+            new SystemMessageManager.SystemMessageButtonData{Text=first,IsCancel=true,HideOnClick=true,Callback=firstAction},
+            new SystemMessageManager.SystemMessageButtonData{Text=second,IsConfirm=true,HideOnClick=true,Callback=secondAction}});
+        _view.Show();
+    }
 }

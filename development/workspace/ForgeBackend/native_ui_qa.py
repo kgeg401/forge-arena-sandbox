@@ -37,12 +37,16 @@ def objects():
     return cards
 
 x=inspect();op=sys.argv[1] if len(sys.argv)>1 else 'inspect'
-summary=dict(workflow=x['workflow'],state=x['nativeState'],orderCardIds=x.get('orderCardIds'),damageAssignments=x.get('damageAssignments'),damageControls=x.get('damageControls'),distributionControls=x.get('distributionControls'),buttons=x.get('buttons'),uiButtons=x.get('uiButtons'),clickable=[v for v in x['views'] if v['click'] and v['active']])
+summary=dict(workflow=x['workflow'],state=x['nativeState'],modalCards=x.get('modalCards'),orderCardIds=x.get('orderCardIds'),damageAssignments=x.get('damageAssignments'),damageControls=x.get('damageControls'),distributionControls=x.get('distributionControls'),buttons=x.get('buttons'),uiButtons=x.get('uiButtons'),clickable=[v for v in x['views'] if v['click'] and v['active']])
 if op=='inspect':print(json.dumps(summary,indent=2));raise SystemExit(0)
 if '--expected-state' in sys.argv and x['nativeState']!=int(sys.argv[sys.argv.index('--expected-state')+1]):
     raise RuntimeError('Native QA observation changed before publication; inspect again')
 action=dict(expectedWorkflow=x['workflow'],nativeState=x['nativeState'],primary='--primary' in sys.argv)
-if op=='button':
+if op=='modal-card':
+    ability=int(sys.argv[2]);matches=[c for c in x.get('modalCards') or [] if c['abilityGrpId']==ability and c['visible'] and c['active']]
+    if x['workflow']!='CastingTimeOptionWorkflow' or len(matches)!=1:raise RuntimeError('Original modal card is not uniquely selectable')
+    action.update(op='modal_card',abilityGrpId=ability)
+elif op=='button':
     matches=[b for b in x['buttons'] if b['enabled'] and b['text']==sys.argv[2]]
     if len(matches)!=1:raise RuntimeError('Button is not uniquely observed/enabled: '+sys.argv[2])
     action.update(op='button',text=matches[0]['text'],tag=matches[0]['tag'])

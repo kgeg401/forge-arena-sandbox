@@ -2,6 +2,7 @@
   <PropertyGroup><TargetFramework>netstandard2.1</TargetFramework></PropertyGroup>
   <ItemGroup><Compile Include="..\Shared\LabBoundary.cs" Link="LabBoundary.cs" /></ItemGroup>
   <ItemGroup>
+    <Reference Include="UnityEngine.ImageConversionModule"><HintPath>$(ArenaManagedDir)\UnityEngine.ImageConversionModule.dll</HintPath><Private>false</Private></Reference>
     <Reference Include="UnityEngine.PhysicsModule"><HintPath>$(ArenaManagedDir)\UnityEngine.PhysicsModule.dll</HintPath><Private>false</Private></Reference>
     <Reference Include="Wizards.Arena.Promises"><HintPath>$(ArenaManagedDir)\Wizards.Arena.Promises.dll</HintPath><Private>false</Private></Reference>
     <Reference Include="Wizards.Arena.Models"><HintPath>$(ArenaManagedDir)\Wizards.Arena.Models.dll</HintPath><Private>false</Private></Reference>

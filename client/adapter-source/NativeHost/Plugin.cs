@@ -27,6 +27,7 @@ public sealed class Plugin : BaseUnityPlugin
 {
     private string _root = "";
     private float _next;
+    private readonly NativeFrameProbe _frameProbe=new NativeFrameProbe();
     private LocalGreConnection? _connection;
     private ForgeLandBridge? _forge;
     private NativePackChamber? _packs;
@@ -53,6 +54,9 @@ public sealed class Plugin : BaseUnityPlugin
             throw new InvalidOperationException("Local host requires the independent zero-capability AppContainer lab.");
         _phase = "waiting-for-native-services";
         HarmonyLib.Harmony.CreateAndPatchAll(typeof(NativeInputDiagnostics),"local.forge-arena.input-observation");
+        HarmonyLib.Harmony.CreateAndPatchAll(typeof(NativeCoinFlipPresentation),"local.forge-arena.coin-presentation");
+        HarmonyLib.Harmony.CreateAndPatchAll(typeof(NativeCoinFlipOrder),"local.forge-arena.coin-order");
+        HarmonyLib.Harmony.CreateAndPatchAll(typeof(NativeCoinFlipTogether),"local.forge-arena.coin-burst");
         Logger.LogInfo("Local host loaded inside isolated Unity process; native scene probe active.");
     }
 
@@ -88,7 +92,8 @@ public sealed class Plugin : BaseUnityPlugin
     private void Update()
     {
         if(_root=="")return;
-        try{_forge?.Poll();}catch(Exception ex){_gap=ex.ToString();Logger.LogError(ex);}
+        _frameProbe.Tick(_root);
+        try{_forge?.Poll();}catch(Exception ex){_gap=ex.ToString();Logger.LogError(ex);_shell?.ReportBridgeFailure(_forge?.Session,ex.Message);}
         if (Time.realtimeSinceStartup < _next) return;
         _next = Time.realtimeSinceStartup + 1f;
         try
@@ -102,7 +107,7 @@ public sealed class Plugin : BaseUnityPlugin
             {
                 File.Delete(clientRequest);
                 if(papa?.CardDatabase==null)throw new InvalidOperationException("Prepare native assets before opening the client.");
-                if(_shell==null)_shell=new NativeClientShell(_root,papa,value=>{_events.Add(value);if(_events.Count>20)_events.RemoveAt(0);},this,()=>StartBoard(papa),()=>EndClientMatch(papa));
+                if(_shell==null)_shell=new NativeClientShell(_root,papa,value=>{_events.Add(value);if(_events.Count>20)_events.RemoveAt(0);},this,()=>StartBoard(papa),()=>EndClientMatch(papa),()=>_forge!.ContinuePodSpectating(),()=>_forge?.ClientNotice);
                 _shell.Open();_phase="native-local-client";
             }
             if(!_cardAssetProbeRunning && papa?.CardDatabase!=null && File.Exists(Path.Combine(_root,"card-assets.request.json")))
@@ -157,6 +162,8 @@ public sealed class Plugin : BaseUnityPlugin
                 try
                 {
                   var activeWorkflow=game?.WorkflowController.CurrentWorkflow;
+                  var modalWorkflow=(activeWorkflow as IParentWorkflow)?.ChildWorkflows.OfType<Wotc.Mtga.DuelScene.Interactions.CastingTimeOption.ModalWorkflow>().SingleOrDefault();
+                  var modalCards=modalWorkflow?.GetBrowserHighlights().Where(v=>v.Value==HighlightType.Hot || v.Value==HighlightType.Cold).Select(v=>v.Key).ToArray();
                   var workflow=activeWorkflow as IClickableWorkflow;
                   string ButtonPath(StyledButton button){var names=new List<string>();for(var node=button.transform;node!=null;node=node.parent)names.Add(node.name);names.Reverse();return string.Join("/",names);}
                   var uiButtons=UnityEngine.Object.FindObjectsByType<StyledButton>(FindObjectsSortMode.None).Where(b=>b.gameObject.activeInHierarchy && b.HasInteraction).ToArray();
@@ -185,12 +192,26 @@ public sealed class Plugin : BaseUnityPlugin
                 var hits=new List<RaycastResult>();
                 var point=new Vector2((float?)action["x"]??0,(float?)action["y"]??0);
                 if(EventSystem.current!=null && action["x"]!=null)EventSystem.current.RaycastAll(new PointerEventData(EventSystem.current){position=point},hits);
-                  File.WriteAllText(Path.Combine(_root,"native-action-probe.json"),JsonConvert.SerializeObject(new{utc=DateTime.UtcNow,workflow=activeWorkflow?.GetType().Name,applied=activeWorkflow?.AppliedState.ToString(),nativeState=game?.CurrentGameState?.Id,orderCardIds,damageAssignments,damageControls,distributionControls,nativeRequest=observedRequest==null?null:new{type=observedRequest.GetType().Name,state=observedRequest.OriginalMessage.GameStateId,message=observedRequest.OriginalMessage.MsgId,submitListeners=observedRequest.OnSubmit?.GetInvocationList().Length ?? 0},uiButtons=uiButtonInfo,mulliganHandlers=new{browser=mulliganBrowser?.GetType().Name,keep=HandlerCount("KeepPressed"),mulligan=HandlerCount("MulliganPressed"),keepTargetsCurrent=KeepTargetsCurrent()},buttons=activeWorkflow?.Buttons?.WorkflowButtons.Select(b=>new{text=b.ButtonText.ToString(),tag=b.Tag.ToString(),enabled=b.Enabled}).ToArray(),screen=new{width=Screen.width,height=Screen.height},focused=Application.isFocused,inputModule=EventSystem.current?.currentInputModule?.GetType().FullName,
+                  File.WriteAllText(Path.Combine(_root,"native-action-probe.json"),JsonConvert.SerializeObject(new{utc=DateTime.UtcNow,workflow=activeWorkflow?.GetType().Name,pod=NativeCommanderPodView.Active?.Snapshot(),applied=activeWorkflow?.AppliedState.ToString(),nativeState=game?.CurrentGameState?.Id,modalCards=modalCards?.Select(v=>new{abilityGrpId=v.Model.GrpId,visible=v.IsVisible,active=v.gameObject.activeInHierarchy}).ToArray(),orderCardIds,damageAssignments,damageControls,distributionControls,nativeRequest=observedRequest==null?null:new{type=observedRequest.GetType().Name,state=observedRequest.OriginalMessage.GameStateId,message=observedRequest.OriginalMessage.MsgId,submitListeners=observedRequest.OnSubmit?.GetInvocationList().Length ?? 0},uiButtons=uiButtonInfo,mulliganHandlers=new{browser=mulliganBrowser?.GetType().Name,keep=HandlerCount("KeepPressed"),mulligan=HandlerCount("MulliganPressed"),keepTargetsCurrent=KeepTargetsCurrent()},buttons=activeWorkflow?.Buttons?.WorkflowButtons.Select(b=>new{text=b.ButtonText.ToString(),tag=b.Tag.ToString(),enabled=b.Enabled}).ToArray(),screen=new{width=Screen.width,height=Screen.height},focused=Application.isFocused,inputModule=EventSystem.current?.currentInputModule?.GetType().FullName,
                     mouse=UnityEngine.InputSystem.Mouse.current?.position.ReadValue().ToString(),hovered=Wotc.Mtga.CustomInput.CustomUIInputModule.GetHovered().Select(g=>g.name).ToArray(),inputEvents=NativeInputDiagnostics.Events.ToArray(),
                     raycasters=UnityEngine.Object.FindObjectsByType<BaseRaycaster>(FindObjectsSortMode.None).Select(r=>new{name=r.name,type=r.GetType().Name,enabled=r.enabled,camera=r.eventCamera?.name}).ToArray(),
                     raycast=hits.Select(h=>new{name=h.gameObject.name,module=h.module.GetType().Name,card=h.gameObject.GetComponentInParent<DuelScene_CDC>()?.InstanceId,distance=h.distance}).ToArray(),
                     views=views.Select(v=>new{id=v.InstanceId,holder=v.CurrentCardHolder?.CardHolderType.ToString(),click=workflow?.CanClick(v,clickType),visible=v.IsVisible,inputEnabled=v.InputHandler!=null && v.InputHandler.enabled,active=v.gameObject.activeInHierarchy,layer=v.gameObject.layer,position=Camera.main!=null?Camera.main.WorldToScreenPoint(v.transform.position).ToString():null}).ToArray()},Formatting.Indented));
-                if((string?)action["op"]=="click")
+                if((string?)action["op"]=="pod_inspect" || (string?)action["op"]=="pod_follow")
+                {
+                    if(game?.CurrentGameState?.Id!=(uint?)action["nativeState"] || NativeCommanderPodView.Active?.IsReady!=true)throw new NativeQaRejectedException("Pod context changed; inspect again.");
+                    if((string?)action["op"]=="pod_follow")NativeCommanderPodView.Active.ShowTable();
+                    else NativeCommanderPodView.Active.ShowSeat((uint)action["seat"]!);
+                }
+                else if((string?)action["op"]=="modal_card")
+                {
+                    if(activeWorkflow?.AppliedState!=InteractionAppliedState.Applied || activeWorkflow.GetType().Name!=(string?)action["expectedWorkflow"] || game?.CurrentGameState?.Id!=(uint?)action["nativeState"] || modalWorkflow==null)throw new NativeQaRejectedException("Native modal context changed; inspect again.");
+                    var choices=modalCards?.Where(v=>v.Model.GrpId==(uint)action["abilityGrpId"]! && v.gameObject.activeInHierarchy && v.IsVisible).ToArray();
+                    if(choices==null || choices.Length!=1)throw new NativeQaRejectedException("Original modal card is no longer uniquely selectable.");
+                    var selected=typeof(Wotc.Mtga.DuelScene.Interactions.CastingTimeOption.ModalWorkflow).GetMethod("CardBrowser_OnCardViewSelected",System.Reflection.BindingFlags.Instance|System.Reflection.BindingFlags.NonPublic)!;
+                    selected.Invoke(modalWorkflow,new object[]{choices[0]});
+                }
+                else if((string?)action["op"]=="click")
                 {
                     if(workflow==null || activeWorkflow?.AppliedState!=InteractionAppliedState.Applied || activeWorkflow.GetType().Name!=(string?)action["expectedWorkflow"] || game?.CurrentGameState?.Id!=(uint?)action["nativeState"])throw new NativeQaRejectedException("Native card context changed; inspect again.");
                     var matchingViews=views.Where(v=>v.InstanceId==(uint)action["instanceId"]!).ToArray();
@@ -281,7 +302,7 @@ public sealed class Plugin : BaseUnityPlugin
                 persistentPath = Application.persistentDataPath, recentEvents = _events.ToArray()
             }, Formatting.Indented));
         }
-        catch (Exception ex) { _gap = ex.ToString(); Logger.LogError(ex); }
+        catch (Exception ex) { _gap = ex.ToString(); Logger.LogError(ex); _shell?.ReportBridgeFailure(_forge?.Session,ex.Message); }
     }
 
     private IEnumerator PrepareLocalAssets(PAPA papa)
@@ -343,18 +364,28 @@ public sealed class Plugin : BaseUnityPlugin
             if (_forge == null) _gap = "Native command captured locally. Forge backend is not connected yet.";
         };
         if (File.Exists(Path.Combine(_root, "enable-forge-land-test.flag")))
+        {
+            // Scene searches dominate per-frame readiness checks in larger pods.
+            // Reacquire after destruction or deactivation, matching native search visibility.
+            GameManager? cachedGame=null;
+            GameManager? VisibleGame()
+            {
+                if(cachedGame==null || !cachedGame.gameObject.activeInHierarchy)cachedGame=UnityEngine.Object.FindFirstObjectByType<GameManager>();
+                return cachedGame;
+            }
             _forge = new ForgeLandBridge(_root, _connection, message => { _events.Add(message); if (_events.Count > 20) _events.RemoveAt(0); }, () =>
             {
-                var visibleGame=UnityEngine.Object.FindFirstObjectByType<GameManager>();
+                var visibleGame=VisibleGame();
                 return visibleGame != null && !visibleGame.UXEventQueue.IsRunning ? visibleGame.CurrentGameState?.Id : null;
             }, () =>
             {
-                var visibleGame=UnityEngine.Object.FindFirstObjectByType<GameManager>();
+                var visibleGame=VisibleGame();
                 var workflow=visibleGame?.WorkflowController.CurrentWorkflow as ActionsAvailableWorkflow;
                 if(workflow==null || workflow.AppliedState!=Wotc.Mtga.DuelScene.Interactions.InteractionAppliedState.Applied)return false;
                 workflow.OnAutoYieldEnabled();
                 return true;
             },autoOrderTriggers:()=>MDNPlayerPrefs.AutoOrderTriggers,autoChooseReplacementEffects:()=>MDNPlayerPrefs.AutoChooseReplacementEffects);
+        }
         _forge?.EnableRenderedCombatPresentation();
         manager.Initialize(_connection, papa.CardDatabase);
         // Multiplayer layout captures the local seat during scene initialization.
@@ -382,12 +413,13 @@ public sealed class Plugin : BaseUnityPlugin
         manager.Players.Add(manager.OpponentInfo);
         if(_forge?.IsCommanderPod==true)
         {
+            NativePodLayoutPatches.RegisteredSeats=_forge.PlayerCount;NativePodLayoutPatches.Install();
             manager.LocalPlayerInfo.ScreenName=_forge.PlayerName(1);
             manager.OpponentInfo.ScreenName=_forge.PlayerName(2);
             for(int seat=3;seat<=_forge.PlayerCount;seat++)
                 manager.Players.Add(new MatchManager.PlayerInfo(_forge.PlayerName(seat))
                 {SeatId=(uint)seat,TeamId=(uint)seat,AvatarSelection=AvatarIdConstants.Sparky,Commanders=_forge.Commanders(seat)});
-            _events.Add("Four-player Commander roster configured before native match scene load.");
+            _events.Add("Commander pod roster configured before native match scene load.");
         }
         var fixture = JObject.Parse(File.ReadAllText(Path.Combine(_root, "board-fixture.json")));
         var full = GREToClientMessage.Parser.ParseJson(fixture["messages"]![0]!.ToString(Formatting.None));
@@ -402,13 +434,13 @@ public sealed class Plugin : BaseUnityPlugin
                 else _connection.Enqueue(full);
                 _phase = "local-state-queued-native-render-unverified";
             }
-            catch (Exception ex) { _gap = ex.ToString(); Logger.LogError(ex); }
+            catch (Exception ex) { _gap = ex.ToString(); Logger.LogError(ex); _shell?.ReportBridgeFailure(_forge?.Session,ex.Message); }
         });
     }
     private IEnumerator EndClientMatch(PAPA papa)
     {
         _phase="returning-local-client-home";
-        _forge?.Detach();_forge=null;
+        _forge?.Detach();_forge=null;NativePodLayoutPatches.RegisteredSeats=0;
         var manager=UnityEngine.Object.FindFirstObjectByType<MatchSceneManager>();
         if(manager!=null){manager.StopAllCoroutines();manager.enabled=false;}
         AudioManager.Instance?.UnLoadBattleField();

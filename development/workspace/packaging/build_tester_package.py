@@ -11,7 +11,7 @@ PRIVATE=Path(r'D:\GAMES\CodexAssets\ForgeArenaSandbox')
 ARENA=Path(r'D:\GAMES\MTGA')
 FORGE=Path.home()/'Games/Forge'
 LOADER=PRIVATE/'tools/BepInEx-5.4.23.5'
-OWN_SCRIPTS=('install_tester.py','launch_tester.py','update_tester.py','rules_runtime.py','tester_common.py','board_template.py','client_bootstrap.py','client_entry.py','client_service.py','setup_client.py','auto_install.py','dependencies.py','dependencies-lock.json','starter-decks.json','Setup.cmd','Start-Client.ps1','Manage-Updates.ps1','TESTER-README.md','LICENSE.txt')
+OWN_SCRIPTS=('install_tester.py','launch_tester.py','update_tester.py','rules_runtime.py','tester_common.py','match_archives.py','board_template.py','client_bootstrap.py','client_entry.py','client_service.py','setup_client.py','auto_install.py','dependencies.py','dependencies-lock.json','starter-decks.json','paper_art.py','paper-art.json','Setup.cmd','Start-Client.ps1','Manage-Updates.ps1','TESTER-README.md','LICENSE.txt')
 PYTHON_FILES=('ForgeBackend/runtime_paths.py','ForgeBackend/arena_catalog.py','ForgeBackend/card_support.py','ForgeBackend/start_backend.py','ForgeBackend/deck_import.py','ForgeBackend/experimental_cards.py','ForgeBackend/build_card_coverage.py','ForgeBackend/bridge_support.json','DeckBackend/build_deck_catalog.py','PackBackend/build_pack_catalog.py')
 
 def build(tag,output,gameplay_ref=None,headline='Public launcher and automatic update test',support_index=None,display_version=None,native_build_root=None,experimental_admission=None,forge_build_jar=None,arena_install=None):
@@ -141,7 +141,8 @@ def build(tag,output,gameplay_ref=None,headline='Public launcher and automatic u
         admission=str(len(policy['verifiedNames']))+' explicitly admitted Arena names plus separately admitted commanders/tokens; no general-card support claim',features=['dedicated Windows client launcher','automatic startup updates','automatic Forge and runtime setup','persistent native Home/Decks/Packs/Play','normal practice bot matches','100-card Brawl bot matches','40-life Commander bot matches','four-player local Commander with one human and three bots','experimental shared table and public zones','native commander slot and local format choice','local sandbox pack opening','native local deck browser'],
         excluded=['network multiplayer','online matchmaking','retail account services','complete card support','retail banlist/format legality','retail pack collation','automatic client-asset migration'])
     requirements['features']+=['solo 40-life 200-card Zombie/Horror reanimation Horde','Horde with saved 99-card-plus-commander decks','optional human Exert choices']
-    requirements['features']+=['Horde preparation based on commander mana value','original FREAK-OFF Darien paper Commander deck with declared missing-art placeholders']
+    requirements['features']+=['Horde preparation based on commander mana value','original FREAK-OFF Darien paper Commander deck','private cached paper-card illustrations through the original renderer']
+    requirements['features']+=['survivor-aware Commander table and camera','experimental ten-player attack-left Commander pod','Gamba Gamba Yusri coin-flip Commander deck']
     (output/'requirements.json').write_text(json.dumps(requirements,indent=2))
     commit=subprocess.run(['git','rev-parse','HEAD'],cwd=REPO,capture_output=True,text=True,check=True).stdout.strip()
     state=subprocess.run(['git','status','--porcelain'],cwd=REPO,capture_output=True,text=True,check=True).stdout.strip()

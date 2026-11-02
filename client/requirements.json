@@ -103,7 +103,11 @@
     "Horde with saved 99-card-plus-commander decks",
     "optional human Exert choices",
     "Horde preparation based on commander mana value",
-    "original FREAK-OFF Darien paper Commander deck with declared missing-art placeholders"
+    "original FREAK-OFF Darien paper Commander deck",
+    "private cached paper-card illustrations through the original renderer",
+    "survivor-aware Commander table and camera",
+    "experimental ten-player attack-left Commander pod",
+    "Gamba Gamba Yusri coin-flip Commander deck"
   ],
   "excluded": [
     "network multiplayer",

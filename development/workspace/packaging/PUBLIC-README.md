@@ -33,7 +33,7 @@ Allow space for an independent Arena copy; setup checks the required space.
   is a straightforward first match.
 - **Home > Play > Brawl:** choose Brawl Bot and **Jace Superfriends Brawl**, **Emry Brawl**, or **Isamaru Brawl**.
   These use 99 cards plus a commander, 25 life and a free first mulligan.
-- **Commander:** in the Brawl tab choose **Commander Bot (40 Life)** for one opponent, or **Commander Pod (4 Players)** for you and three easy Forge bots. These use 40 life, commander tax and 21 commander combat damage. The four-player table and public-zone controls are experimental.
+- **Commander:** in the Brawl tab choose **Commander Bot (40 Life)** for one opponent, or **Commander Pod (4 Players)** for you against complete Isamaru, Emry and Selvala decks. These use 40 life, commander tax and 21 commander combat damage. The four-player table and public-zone controls are experimental.
 - **Zombie Horde:** choose **Zombie Horde (Commander Deck)** under Brawl to use a saved commander deck, or **Zombie Horde (Solo)** under Play for a practice deck. You start at 40 life against a 200-card Zombie/Horror Horde containing 52 revival cards. Commander prep turns equal the commander’s mana value (minimum one); practice decks get three. See [Horde rules and limits](docs/ZOMBIE-HORDE.md).
 - **Paper Darien:** select **FREAK-OFF Darien (Paper Commander)** in Commander Horde for the original 100-card paper list and six prep turns. Its 31 paper-only cards have working local presentation/rules mappings and currently use missing-art placeholders. See [deck details and limits](docs/PAPER-DARIEN.md).
 - **New practice decks:** visit Decks for **Fire and Growth** and **Trample and Growth**.

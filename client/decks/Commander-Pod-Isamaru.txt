@@ -1,0 +1,67 @@
+# Creature-focused Commander opponent for a normal four-player pod.
+Commander
+1 Isamaru, Hound of Konda
+
+Deck
+38 Plains
+1 Savannah Lions
+1 Healer's Hawk
+1 Segovian Angel
+1 Swooping Lookout
+1 Sanctuary Cat
+1 Staunch Shieldmate
+1 Battlefield Raptor
+1 Rustwing Falcon
+1 Impassioned Orator
+1 Lunarch Veteran
+1 Aerial Responder
+1 Alabaster Host Sanctifier
+1 Fencing Ace
+1 Youthful Knight
+1 Leonin Skyhunter
+1 Mesa Unicorn
+1 Steadfast Paladin
+1 Concordia Pegasus
+1 Silverbeak Griffin
+1 Story Seeker
+1 Sungrace Pegasus
+1 Stormfront Pegasus
+1 Sun Sentinel
+1 Bishop's Soldier
+1 Daybreak Chaplain
+1 Soul Warden
+1 Soul's Attendant
+1 Inspiring Overseer
+1 Loyal Warhound
+1 Knight of the White Orchid
+1 Blade Splicer
+1 Mentor of the Meek
+1 Solemn Simulacrum
+1 Distinguished Conjurer
+1 Serra Angel
+1 Sunblade Angel
+1 Seraph of Dawn
+1 Dawn Gryff
+1 Griffin Sentinel
+1 Aven Sentry
+1 Shrike Force
+1 Prized Griffin
+1 Brightblade Stoat
+1 Aardvark Sloth
+1 Sol Ring
+1 Arcane Signet
+1 Mind Stone
+1 Marble Diamond
+1 Raise the Alarm
+1 Captain's Call
+1 Honor of the Pure
+1 Rally the Ranks
+1 Disenchant
+1 Path to Exile
+1 Swords to Plowshares
+1 Divine Arrow
+1 Smite the Monstrous
+1 Revitalize
+1 Secret Rendezvous
+1 Cut a Deal
+1 Unbreakable Formation

@@ -13,6 +13,12 @@ internal static class SharedKeywordProtocol
 {
     private static JObject Detail(string key,int value)=>new JObject{["key"]=key,["type"]="KeyValuePairValueType_int32",["valueInt32"]=new JArray(value)};
     internal static string Key(string keyword)=>keyword.StartsWith("Escape:",StringComparison.Ordinal)?"escape":keyword.ToLowerInvariant();
+    // Forge stores this as one keyword; the original native parser accepts a
+    // list of the five literal protections in one AddAbility annotation.
+    internal static string[] Literals(string keyword)=>Key(keyword)=="protection from each color"
+        ?new[]{"protection from white","protection from blue","protection from black","protection from red","protection from green"}
+        :new[]{keyword};
+    internal static int[] Abilities(string keyword,JObject bindings)=>Literals(keyword).Select(k=>Ability(k,bindings)).ToArray();
     internal static int Ability(string keyword,JObject bindings)
     {
         // Underworld Breach grants per-card escape costs. The original client
@@ -31,7 +37,7 @@ internal static class SharedKeywordProtocol
             foreach(var id in (JArray)printed["abilityIds"]!)ids.Add((int)id);
             if((int?)printed["abilityId"] is int primary && primary>0)ids.Add(primary);
         }
-        foreach(var keyword in (JArray?)removal["keywords"]??new JArray())ids.Add(Ability((string)keyword!,keywordBindings));
+        foreach(var keyword in (JArray?)removal["keywords"]??new JArray())ids.UnionWith(Abilities((string)keyword!,keywordBindings));
         return ids.OrderBy(i=>i).ToArray();
     }
     public static JArray Persistent(JObject state,Func<int,int> cardId,JObject bindings,JObject cardBindings)
@@ -48,8 +54,8 @@ internal static class SharedKeywordProtocol
                     if((string?)state["scenario"]!="zombie-horde" || (int?)grant["sourceSeat"]!=2 || (int?)grant["sourceForgeId"]!=(int?)state["horde"]?["rulesEffectForgeId"] || (string?)grant["keyword"]!="Haste")throw new InvalidDataException("Invalid Horde format keyword source");
                     source=2; // The native player owns this declared format rule; no invented card asset.
                 }else source=cardId((int)grant["sourceForgeId"]!);
-                int target=cardId((int)card["forgeId"]!),ability=Ability((string)grant["keyword"]!,bindings),layer=(int)grant["layerId"]!;
-                result.Add(((long)grant["timestamp"]!,layer,new JObject{["id"]=3_000_000_000u+(uint)layer,["affectorId"]=source,["affectedIds"]=new JArray(target),["type"]=new JArray("AnnotationType_AddAbility"),["details"]=new JArray(Detail("grpid",ability),Detail("count",1),Detail("effect_id",layer))}));
+                int target=cardId((int)card["forgeId"]!),layer=(int)grant["layerId"]!;var abilities=Abilities((string)grant["keyword"]!,bindings);
+                result.Add(((long)grant["timestamp"]!,layer,new JObject{["id"]=3_000_000_000u+(uint)layer,["affectorId"]=source,["affectedIds"]=new JArray(target),["type"]=new JArray("AnnotationType_AddAbility"),["details"]=new JArray(new JObject{["key"]="grpid",["type"]="KeyValuePairValueType_int32",["valueInt32"]=new JArray(abilities)},Detail("count",1),Detail("effect_id",layer))}));
             }
             foreach(var removal in (JArray?)card["keywordRemovals"]??new JArray())
             {

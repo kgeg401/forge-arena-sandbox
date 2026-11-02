@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.2.0 alpha 14.rail.9 - Client reliability and Commander pods
+
+- Repairs nullable update digests, session-qualified native error notices, expensive full-board notice reads and unlimited growth of newly marked match archives. Existing legacy archives/decks remain untouched. Export/full-history options are documented.
+- Includes the previously local pod repairs: face-up exile ordering, empty-zone click handling, ten-seat commander-damage pages, original Options navigation, deliberate post-defeat spectating and safe Return Home. Refreshes large-pod rail/portraits and survivor-aware camera controls.
+- Includes concurrent native coin flips/Thumb presentation, paper artwork, creature-combo/copy Commander decks, protection/combat fixes and disk-backed completed rules replies with integrity checks. Catalogue: 370 verified-baseline names plus 1,421 experimental names; this does not certify every card or combo.
+- Current maintenance checks: 143 focused authored checks, 23 package equivalence checks and original Continue/queued fatal/Return Home/second-match verification. Small notice allocation ~3.6 KB vs prior ~17.5 MB full-file parse; not an fps measurement. Private original files restored independently.
+- Known limits: an extra second-match spectator check was blocked by the private observer retaining its first-game queue. No new full-pod winner, all-card, recipient-PC or complete retail UI parity certification. Return Home ends the match; durable player save/restore remains unfinished.
+
 ## 0.2.0 alpha 13 - Paper Darien and commander-sized Horde prep
 
 - Commander Horde preparation now matches the commander's printed mana value (minimum one turn). Five-mana commanders get five preparation turns; Darien gets six. Practice decks keep three. Normal land drops and costs remain in force; life stays 40 and the Horde stays 200 cards.

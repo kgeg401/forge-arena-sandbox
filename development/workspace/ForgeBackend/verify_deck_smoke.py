@@ -39,7 +39,7 @@ def run(name):
         assert target['forgeId'] in e.state['legalLands' if land else 'legalCasts'],('No legal native action',name,e.state.get('unavailableActions'))
         execute(e,trace,'play_land' if land else 'cast_spell',target['forgeId']);resolve()
         assert not e.state['fidelityGap'] and not e.state.get('decision')
-        assert any(c['name']==name and c['owner']==1 for zone in ['battlefield','graveyard','exile','command'] for c in e.state[zone]),('Card did not resolve to a supported zone',name)
+        assert any(c['forgeId']==target['forgeId'] and c['owner']==1 for zone in ['battlefield','graveyard','exile','command'] for c in e.state[zone]),('Card did not resolve to a supported zone',name)
         activated=None
         if 'Planeswalker' in card['types'] and not e.state['gameOver']:
             offers=[x for x in e.state['legalActivations'] if x['forgeId']==target['forgeId']]

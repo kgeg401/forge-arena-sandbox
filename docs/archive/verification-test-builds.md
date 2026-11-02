@@ -67,4 +67,3 @@ sandbox. Recipient-PC installation remains to be tested.
 ## Simplified setup - test.6
 
 The packaged Setup.exe opened the real setup window with only Check Arena and Install sandbox. Check Arena successfully validated the installed supported Arena files without starting installation. All 39 prerequisite safety checks passed. Publication scanning found zero failures and zero warnings. Gameplay and compatibility requirements are unchanged from test.5. Existing launcher installations remain eligible for full setup.
-

@@ -111,4 +111,27 @@ separate. Python and the prerequisite download cache are outside that folder.
 
 ## Can I save a match and close the game?
 
-Home can park and Resume the same running match. Closing the client ends it; there is no durable match restoration. Decks, packs, collection and settings persist separately.
+Returning Home ends the practice match, as does closing the client. There is no
+player-facing durable match save/restore. Decks, packs, collection and settings
+persist separately.
+
+## How much match history does the client keep?
+
+New closed-match diagnostics are limited to three archives and 512 MiB total.
+These limits apply together; a single oversized archive can be removed. Active
+match responses, saved decks, collection and settings are never pruned. Archives
+created before this policy are preserved for manual review.
+
+For a support export, close the match and run the following in your installed
+sandbox folder. It creates a new ZIP on your Desktop; use a different filename
+if one already exists. Review it before sharing because it contains match data.
+
+```powershell
+$config = Get-Content .\sandbox-install.json -Raw | ConvertFrom-Json
+$version = (Get-Content .\active-version.json -Raw | ConvertFrom-Json).version
+& $config.python -B ".\versions\$version\match_archives.py" --lab .\data\native-lab --export "$env:USERPROFILE\Desktop\MTG-match-diagnostics.zip"
+```
+
+For a longer troubleshooting session, the optional `retainFullMatchDiagnostics`
+setting in `sandbox-install.json` can be set to `true` before launch. This disables
+automatic pruning of new archives until you turn it off again.

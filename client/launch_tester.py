@@ -117,6 +117,9 @@ def start_client(args,owned):
         pending=recipe_path.with_suffix('.pending')
         pending.write_text(json.dumps(dict(recipeSha256=recipe,policySha256=expected_policy),indent=2))
         pending.replace(recipe_path)
+    if not args.check_only:
+        from paper_art import prepare_paper_art
+        prepare_paper_art(app,lab)
     procs=win_processes()
     for proc in procs:
         if proc['ExecutablePath'] and Path(proc['ExecutablePath']).name.lower()=='mtga.exe' and Path(proc['ExecutablePath']).resolve()!=lab/'MTGA.exe':raise ValueError('Another Arena client is open. Close it before starting this sandbox.')
@@ -135,7 +138,9 @@ def start_client(args,owned):
             end=time.monotonic()+12
             while time.monotonic()<end and any(p['ProcessId']==old['pid'] for p in win_processes()):time.sleep(.2)
             if any(p['ProcessId']==old['pid'] for p in win_processes()):raise TimeoutError('Prior Forge engine did not stop; no second engine started')
-    if ipc.exists():ipc.rename(lab/('forge-ipc-evidence-'+datetime.now().strftime('%Y%m%d-%H%M%S-%f')))
+    if ipc.exists():
+        from match_archives import archive_match
+        archive_match(lab,keep_all=config.get('retainFullMatchDiagnostics') is True)
     for name,subdir in (('NativeHost.dll','plugins/ForgeArenaSandbox'),('LocalTransport.dll','plugins/ForgeArenaSandbox'),('PreferencePatcher.dll','patchers'),('LabPreferences.dll','core')):shutil.copy2(app/'binaries'/name,lab/'BepInEx'/subdir/name)
     shutil.copy2(app/'third-party/gson/gson.jar',data/'forge-runtime/gson.jar')
     classes=data/'build/ForgeBackend/classes'

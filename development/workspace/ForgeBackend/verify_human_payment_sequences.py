@@ -62,7 +62,9 @@ def action(e,op,card=0,plans=None,plan_queue=None,**fields):
                     values=[dict(choiceId=o['choiceId']) for o in selected]
                 pending.append(e.begin('submit_choice',decisionToken=d['token'],assignments=values))
         elif not pending:
-            e.state=json.loads((e.ipc/'state.json').read_text(encoding="utf-8-sig"))
+            # A parent response can precede the next state.json publication.
+            # Use the actual native handler's completed presentation boundary.
+            e.state=e.native_status['state']
             if not shared:assert not plans,plans
             return
         time.sleep(.025)

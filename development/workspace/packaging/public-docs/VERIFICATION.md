@@ -1,4 +1,12 @@
-# Current gameplay alpha: 0.2.0-alpha.13
+# Local updates after alpha 13
+
+The artwork update has rendered evidence for all 31 paper-card illustrations,
+including Darien's visible zoomed native card view. The pod-opponent update
+replaces the three duplicated training lists with complete distinct decks; see
+[opponent deck contents and limits](POD-OPPONENTS.md). Rules-engine development
+checks are separate from a complete rendered multiplayer match.
+
+# Published gameplay alpha: 0.2.0-alpha.13
 
 Alpha 13 adds commander-mana-value Horde preparation and the exact original
 100-card FREAK-OFF Darien paper list. Four original-handler openings cast
@@ -363,3 +371,13 @@ original trigger identity, then verifies clearing and no repeated trigger on
 the following local turn. It includes mana values 0, 2, 3 and an uncounterable
 4-mana spell. This hotfix requires reopening an already running match client
 because each match loads its integration bindings at startup.
+
+## Client reliability checks
+
+Startup checks include nullable release checksums and preservation of a healthy
+installed client. Diagnostic checks cover count/byte limits, legacy evidence,
+live-state preservation, ZIP exports and Windows junction rejection. Compiled
+notice checks cover session ownership, error classification, deduplication and
+small projections from large boards. Separate rendered checks exercise the
+original Continue and Return Home dialogs. These maintenance checks do not
+certify every card or complete retail UI parity.

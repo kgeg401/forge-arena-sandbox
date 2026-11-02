@@ -1,0 +1,21 @@
+using System;using System.IO;using System.Linq;using System.Diagnostics;using Newtonsoft.Json.Linq;using ForgeArenaSandbox;
+class Program {
+ static int checks;static void Check(bool x,string name){if(!x)throw new Exception(name);checks++;}
+ static void Main(string[] args){
+ var s=new PodSpectatorPolicy();var ten=Enumerable.Range(1,10).Select(x=>(uint)x).ToArray();
+ Check(s.Update(ten,2)&&s.Rail&&s.Watched==2,"initial follow");
+ Check(s.Update(ten,7)&&s.Watched==7,"active follow");s.Inspect(9);s.Update(ten,3);Check(s.Pinned==9&&s.Watched==9,"pin survives turn");
+ s.Update(ten,3,2);Check(s.Watched==2&&s.Pinned==9,"block overrides view");s.Update(ten,3);Check(s.Watched==9,"pin restored after block");
+ s.Follow();s.Update(ten,3);Check(s.Watched==3&&s.Following,"follow resumes");s.Inspect(9);s.Update(ten.Where(x=>x!=9).ToArray(),5);Check(s.Watched==5&&s.Following,"eliminated pin fallback");
+ s.Inspect(1);Check(s.Visible(1)&&!s.Visible(3),"local inspection");s.Follow();s.Update(ten,1);Check(s.Watched!=1,"local turn opponent fallback");
+ Check(s.Update(new uint[]{1,4,6,10},10)&&!s.Rail&&s.Watched==0&&s.Pinned==0,"four survivor table");
+ s.Update(new uint[]{1,6,10},6);Check(s.Visible(10)&&!s.Rail,"three survivor table");s.Update(new uint[]{1,10},10);Check(!s.Rail,"duel table");
+ bool rejected=false;try{s.Update(new uint[]{1,1},1);}catch(ArgumentException){rejected=true;}Check(rejected,"duplicate roster rejects");
+ var root=Path.Combine(Path.GetTempPath(),"pod-cache-"+Guid.NewGuid());Directory.CreateDirectory(root);var file=Path.Combine(root,"decision.json");
+ try{var cache=new SharedJsonFile(file);Check(cache.Read()==null,"missing");File.WriteAllText(file,"{\"token\":\"a\"}");var a=cache.Read();Check((string?)a!["token"]=="a","initial parse");Check(ReferenceEquals(a,cache.Read())&&cache.Reads==1&&cache.Hits==1,"unchanged cache");
+ File.WriteAllText(file,"{\"token\":\"b\"}");File.SetLastWriteTimeUtc(file,DateTime.UtcNow.AddSeconds(2));Check((string?)cache.Read()!["token"]=="b","same length change");
+ var next=file+".pending";File.WriteAllText(next,"{\"token\":\"replacement\"}");File.Move(next,file,true);Check((string?)cache.Read()!["token"]=="replacement","atomic replacement");
+ File.Delete(file);Check(cache.Read()==null,"delete");File.WriteAllText(file,"{bad");rejected=false;try{cache.Read();}catch(Newtonsoft.Json.JsonReaderException){rejected=true;}Check(rejected,"bad parse not cached");File.WriteAllText(file,"{\"token\":\"recreated\"}");Check((string?)cache.Read()!["token"]=="recreated","recreate after bad parse");
+ if(args.Length>0){var payload=File.ReadAllText(args[0]);File.WriteAllText(file,payload);var n=600;var timer=Stopwatch.StartNew();for(int i=0;i<n;i++)JObject.Parse(File.ReadAllText(file));var old=timer.Elapsed.TotalMilliseconds;cache=new SharedJsonFile(file);timer.Restart();for(int i=0;i<n;i++)cache.Read();Console.WriteLine($"JSON microbenchmark bytes={payload.Length}, polls={n}, reparseMs={old:F2}, cachedMs={timer.Elapsed.TotalMilliseconds:F2}, parses={cache.Reads}, hits={cache.Hits}");}
+ if(args.Length>1){var state=JObject.Parse(File.ReadAllText(args[1]));var zones=new[]{"hand","battlefield","stack","graveyard","command","exile","hidden","stackAbilities"};var cards=zones.SelectMany(z=>state[z] as JArray??new JArray()).ToArray();var index=cards.ToDictionary(c=>(int)c["forgeId"]!);Check(cards.All(c=>ReferenceEquals(c,cards.Single(x=>(int)x["forgeId"]! == (int)c["forgeId"]!))&&ReferenceEquals(c,index[(int)c["forgeId"]!])),"real complete-state indexed lookup equivalence");long sum=0;var timer=Stopwatch.StartNew();for(int n=0;n<10;n++)foreach(var card in cards)sum+=(int)cards.Single(c=>(int)c["forgeId"]! == (int)card["forgeId"]!)["forgeId"]!;var legacy=timer.Elapsed.TotalMilliseconds;long nextSum=0;timer.Restart();for(int n=0;n<10;n++){index=cards.ToDictionary(c=>(int)c["forgeId"]!);foreach(var card in cards)nextSum+=(int)index[(int)card["forgeId"]!]["forgeId"]!;}Check(sum==nextSum,"same ordered card identities after indexing");Console.WriteLine($"Card index microbenchmark cards={cards.Length}, passes=10, scanMs={legacy:F2}, indexMs={timer.Elapsed.TotalMilliseconds:F2}");}
+ }finally{Directory.Delete(root,true);}Console.WriteLine($"Passed {checks} runtime policy/cache checks");}}

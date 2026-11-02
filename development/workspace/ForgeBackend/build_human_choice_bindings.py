@@ -196,7 +196,7 @@ for name,source in projection['cards'].items():
         matches=[r for r in rows if r['PrintedRoot'] and normalized(r['EnglishText'],name)==normalized(base,name)]
         if len(matches)==1:keyword_map[re.sub(r'[^A-Z0-9]','',base.upper())]=matches[0]['Id']
     bindings['keywords']=keyword_map
-    for ability in source['abilities']:
+    for ability in source['abilities']+source.get('triggeredModalAbilities',[]):
         if ability.get('api')!='Charm':continue
         parents=[r for r in rows if r['PrintedRoot'] and r['ModalChildIds']]
         candidates=[]
@@ -279,7 +279,8 @@ for script,source in projection['tokens'].items():
         body=lambda value:'' if value is None else str(value)
         if mask!=source['colorMask'] or body(row['Power'])!=body(source.get('power')) or body(row['Toughness'])!=body(source.get('toughness')):continue
         ids=[int(v.split(':')[0]) for v in filter(None,row['AbilityIds'].split(','))]
-        texts=[r[0] for id in ids for r in db.execute('SELECT l.Loc FROM Abilities a JOIN Localizations_enUS l ON a.TextId=l.LocId AND l.Formatted=1 WHERE a.Id=?',(id,))]
+        native_abilities=[r for id in ids for r in db.execute('SELECT a.Id,a.BaseId,l.Loc FROM Abilities a JOIN Localizations_enUS l ON a.TextId=l.LocId AND l.Formatted=1 WHERE a.Id=?',(id,))]
+        texts=[r['Loc'] for r in native_abilities]
         source_keywords=source['keywords']
         if source.get('generatedCopy'):
             # Forge's exact copy retains the graveyard keyword; Arena's linked
@@ -288,6 +289,9 @@ for script,source in projection['tokens'].items():
             source_keywords=[k for k in source_keywords if k.split(':',1)[0] not in ('Eternalize','Embalm')]
         keywords={normalized(k.split(':')[1]+'walk' if k.startswith('Landwalk:') and k.split(':')[1] in ('Plains','Island','Swamp','Mountain','Forest') else k,name) for k in source_keywords}
         if not keywords.issubset({normalized(t,name) for t in texts}):continue
+        # A Flying/Haste printing is not interchangeable with a Flying-only token.
+        known=set(manifest['keywordAbilityIds'].values())
+        if not {normalized(r['Loc'],name) for r in native_abilities if r['Id'] in known or r['BaseId'] in known}.issubset(keywords):continue
         candidates.append(row)
     prior_token=original['cards'].get('token:'+script)
     retained=[r for r in candidates if prior_token and r['GrpId']==prior_token['grpId']]

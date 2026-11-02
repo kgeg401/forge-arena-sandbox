@@ -52,7 +52,7 @@ def atomic(path,value):
 
 def parse_local_deck(deck,catalog,queue):
     from deck_import import parse_brawl,parse_commander,parse_deck
-    if queue not in ('SandboxPractice','SandboxBrawl','SandboxCommander','SandboxCommanderPod','SandboxHorde','SandboxHordeCommander'):raise ValueError('Unknown local bot queue')
+    if queue not in ('SandboxPractice','SandboxBrawl','SandboxCommander','SandboxCommanderPod','SandboxCommanderTenPod','SandboxHorde','SandboxHordeCommander'):raise ValueError('Unknown local bot queue')
     if not isinstance(deck,dict) or not isinstance(deck.get('name'),str):raise ValueError('Invalid saved deck')
     lines=[]
     for pile,title in (('commander','Commander'),('companion','Companion'),('main','Deck'),('sideboard','Sideboard')):
@@ -63,7 +63,7 @@ def parse_local_deck(deck,catalog,queue):
         for key,count in cards.items():
             if key not in catalog or type(count) is not int or not 1<=count<=999:raise ValueError('Unknown or invalid saved printing: '+str(key))
             lines.append(str(count)+' '+catalog[key]['name'])
-    parser=parse_commander if queue in ('SandboxCommander','SandboxCommanderPod','SandboxHordeCommander') else parse_brawl if queue=='SandboxBrawl' else parse_deck
+    parser=parse_commander if queue in ('SandboxCommander','SandboxCommanderPod','SandboxCommanderTenPod','SandboxHordeCommander') else parse_brawl if queue=='SandboxBrawl' else parse_deck
     return parser('\n'.join(lines),deck['name'])
 
 
@@ -84,10 +84,41 @@ class NativeLifetime:
         except Exception:api.CloseHandle(handle);raise
         self.api=api;self.handle=handle;self.allow_termination=allow_termination
     def alive(self):return self.api.WaitForSingleObject(self.handle,0)==258
+    def creation_ticks(self):
+        times=[wintypes.FILETIME() for _ in range(4)]
+        self.api.GetProcessTimes.argtypes=[wintypes.HANDLE]+[ctypes.POINTER(wintypes.FILETIME)]*4
+        if not self.api.GetProcessTimes(self.handle,*(ctypes.byref(t) for t in times)):raise ctypes.WinError(ctypes.get_last_error())
+        return (times[0].dwHighDateTime<<32)|times[0].dwLowDateTime
     def terminate(self):
         if not self.allow_termination:raise RuntimeError('This lifetime handle is read-only')
         if self.alive() and not self.api.TerminateProcess(self.handle,1):raise ctypes.WinError(ctypes.get_last_error())
     def close(self):self.api.CloseHandle(self.handle)
+
+
+class RecoveredRulesProcess:
+    """Adopt only an explicitly captured, still-live rules owner; never a PID alone."""
+    def __init__(self,receipt,ipc):
+        executable=Path(receipt['executable']).resolve()
+        if executable.name.lower()!='java.exe':raise ValueError('Recovery requires the Java rules owner')
+        self.pid=int(receipt['pid']);self.lifetime=NativeLifetime(self.pid,executable,allow_termination=True)
+        try:
+            if self.lifetime.creation_ticks()!=receipt['creationTicks'] or not self.lifetime.alive():raise ValueError('Recovery process identity changed')
+            command=subprocess.check_output(['powershell.exe','-NoProfile','-Command',f"Get-CimInstance Win32_Process -Filter 'ProcessId={self.pid}' | Select-Object -ExpandProperty CommandLine"],text=True,creationflags=subprocess.CREATE_NO_WINDOW)
+            if 'ForgeLandEngine' not in command or str(Path(ipc).resolve()).casefold() not in command.casefold():raise ValueError('Recovery process belongs to another match')
+        except BaseException:self.lifetime.close();raise
+    def poll(self):
+        if self.lifetime.alive():return None
+        code=wintypes.DWORD();self.lifetime.api.GetExitCodeProcess.argtypes=[wintypes.HANDLE,ctypes.POINTER(wintypes.DWORD)]
+        if not self.lifetime.api.GetExitCodeProcess(self.lifetime.handle,ctypes.byref(code)):raise ctypes.WinError(ctypes.get_last_error())
+        return code.value
+    def wait(self,timeout=None):
+        end=time.monotonic()+(timeout if timeout is not None else 15)
+        while self.poll() is None:
+            if time.monotonic()>=end:raise subprocess.TimeoutExpired('Recovered Forge owner',timeout)
+            time.sleep(.05)
+        return self.poll()
+    def terminate(self):self.lifetime.terminate()
+    def close(self):self.lifetime.close()
 
 
 class Coordinator:
@@ -116,7 +147,16 @@ class Coordinator:
         deck=parse_local_deck(matches[0],self.catalog,queue)
         from deck_import import read_deck
         horde=queue in ('SandboxHorde','SandboxHordeCommander')
-        opponent=None if horde else read_deck(self.app/'decks'/('Brawl-Isamaru-Bot.txt' if queue in ('SandboxBrawl','SandboxCommander','SandboxCommanderPod','SandboxHordeCommander') else 'White-Lifegain.txt'),'commander-40' if queue in ('SandboxCommander','SandboxCommanderPod','SandboxHordeCommander') else 'arena-brawl' if queue=='SandboxBrawl' else 'practice')
+        pod=None
+        if queue in ('SandboxCommanderPod','SandboxCommanderTenPod'):
+            names=('Isamaru','Emry','Selvala')
+            pod=[read_deck(self.app/'decks'/('Commander-Pod-'+names[i%3]+'.txt'),'commander-40') for i in range(9 if queue=='SandboxCommanderTenPod' else 3)]
+            opponent=pod[0]
+        elif horde:opponent=None
+        else:
+            filename='Brawl-Isamaru-Bot.txt' if queue in ('SandboxBrawl','SandboxCommander') else 'White-Lifegain.txt'
+            format='commander-40' if queue=='SandboxCommander' else 'arena-brawl' if queue=='SandboxBrawl' else 'practice'
+            opponent=read_deck(self.app/'decks'/filename,format)
         self.request_id=request['id'];self.error=None
         self.publish('starting','Starting experimental Forge match — these cards are unverified' if deck.get('experimental') else 'Starting the local Forge bot…',queue=queue,deckName=deck['name'])
         if self.ipc.exists():
@@ -125,12 +165,12 @@ class Coordinator:
                 old=read(metadata)
                 check=subprocess.run(['powershell.exe','-NoProfile','-Command',f"Get-CimInstance Win32_Process -Filter 'ProcessId={int(old['pid'])}' | Select-Object -ExpandProperty CommandLine"],capture_output=True,text=True,creationflags=subprocess.CREATE_NO_WINDOW)
                 if 'ForgeLandEngine' in check.stdout and str(self.ipc).casefold() in check.stdout.casefold():raise RuntimeError('A previous rules engine is still running; close the client and retry')
-            archived=self.lab/('forge-ipc-evidence-'+datetime.now().strftime('%Y%m%d-%H%M%S-%f'))
-            self.ipc.rename(archived)
+            from match_archives import archive_match
+            archive_match(self.lab,keep_all=self.config.get('retainFullMatchDiagnostics') is True)
         self.ipc.mkdir()
-        scenario=dict(scenario='zombie-horde' if horde else 'commander-pod' if queue=='SandboxCommanderPod' else 'commander-duel' if queue=='SandboxCommander' else 'brawl-duel' if queue=='SandboxBrawl' else 'custom-duel',localDeck=deck)
+        scenario=dict(scenario='zombie-horde' if horde else 'commander-ten-pod' if queue=='SandboxCommanderTenPod' else 'commander-pod' if queue=='SandboxCommanderPod' else 'commander-duel' if queue=='SandboxCommander' else 'brawl-duel' if queue=='SandboxBrawl' else 'custom-duel',localDeck=deck)
         if not horde:scenario['opponentDeck']=opponent
-        if queue=='SandboxCommanderPod':scenario['opponentDecks']=[opponent,opponent,opponent]
+        if pod:scenario['opponentDecks']=pod
         atomic(self.ipc/'scenario.json',scenario)
         (self.lab/'enable-forge-land-test.flag').write_text('Authoritative local Forge match')
         cp=';'.join(str(self.root/p) for p in ('build/ForgeBackend/classes','forge-runtime/forge.jar','forge-runtime/gson.jar'))
@@ -147,6 +187,7 @@ class Coordinator:
         else:self.stopped()
     def stopped(self):
         if self.log:self.log.close();self.log=None
+        if isinstance(self.process,RecoveredRulesProcess):self.process.close()
         self.process=None
         self.publish(self.after_stop,self.error if self.after_stop=='error' and self.error else 'Match cancelled' if self.after_stop=='cancelled' else 'Ready for another local bot match')
     def engine_failure(self):
@@ -173,6 +214,18 @@ class Coordinator:
         elif action=='match-started':
             if request.get('matchRequestId')!=self.request_id or self.phase!='ready':raise RequestRejected('Stale match acknowledgment rejected')
             self.publish('playing','Local Forge bot match in progress')
+        elif action=='resume':
+            if self.process and self.process.poll() is None:raise RequestRejected('A rules owner is already active')
+            receipt=read(self.lab/'match-recovery.json');state=read(self.ipc/'state.json')
+            if receipt.get('schema')!=1 or receipt.get('clientSession')!=self.session or time.time()>receipt.get('expires',0):raise RequestRejected('Recovery receipt expired or belongs to another client')
+            if Path(receipt['ipc']).resolve()!=self.ipc.resolve() or state.get('session')!=receipt['engineSession'] or state.get('gameOver') or not state.get('decision') or state.get('fidelityGap'):raise RequestRejected('The recovered match changed or is not ready')
+            import hashlib
+            if hashlib.sha256((self.ipc/'state.json').read_bytes()).hexdigest()!=receipt['stateSha256']:raise RequestRejected('Recovered state differs from the verified handoff')
+            owner=RecoveredRulesProcess(receipt,self.ipc)
+            self.process=owner;self.request_id=request_id;self.error=None
+            (self.lab/'enable-forge-land-test.flag').write_text('Authoritative recovered Forge match')
+            self.publish('ready','Recovered match ready',engineSession=state['session'],scenario=state['scenario'],recovered=True)
+            (self.lab/'match-recovery.json').rename(self.lab/('match-recovery-consumed-'+request_id+'.json'))
         else:raise RequestRejected('Unknown client action')
     def tick(self,process_requests=True):
         if time.monotonic()>=self.heartbeat_at and self.last_snapshot:
