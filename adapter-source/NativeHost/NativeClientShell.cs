@@ -167,7 +167,7 @@ internal sealed class NativeClientShell
         var request=new JObject{["schema"]=1,["session"]=_session,["id"]=_matchRequest,["action"]="start",["queue"]=queue,["deckId"]=id.ToString()};
         string path=Path.Combine(_root,"client-service.request.json");if(File.Exists(path)){_matchRequest=null;throw new InvalidOperationException("A local match request is still pending.");}
         File.WriteAllText(path+".pending",request.ToString());File.Move(path+".pending",path);
-        _play?.Hide();ShowQueue("Starting the local Forge bot…");_screen="queue";_log("Queued "+queue+" with saved deck "+id);
+        _play?.Hide();ShowQueue(queue=="SandboxCommanderInternet"?"Opening your private Commander room…":"Starting the local Forge bot…");_screen="queue";_log("Queued "+queue+" with saved deck "+id);
     }
     private void ShowQueue(string message)
     {

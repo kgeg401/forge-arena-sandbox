@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.2.0 alpha 15.mp.1 - Private internet Commander
+
+- Two human players choose saved Commander decks at 40 life through Brawl > Private Commander (Internet), then Host or Join with a private invitation. No port forwarding.
+- One authoritative Forge process, private per-player views, native presentation acknowledgements and exact build/catalogue compatibility. Verified official temporary HTTPS helper; retail game retains zero network capabilities.
+- Two real native clients played commander casts and combat, correct opposite results and same-process rematch with reversed host. Completed guest results survive host departure. These tests used public HTTPS on one PC; two-household testing is next.
+- Includes existing bot, solo Horde and experimental ten-player bot modes. Saved decks remain separate. No human pods, matchmaking, host migration, crash-resume or all-card claim.
+
 ## 0.2.0 alpha 14.rail.10 - Interaction-tested efficiency and game-mode guide
 
 - Reuse per-transition chooser-visible cards and token membership sets. Keeps visibility rules, card order and native annotations; avoids repeated full-state rebuilding for each token.

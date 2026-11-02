@@ -52,7 +52,7 @@ def atomic(path,value):
 
 def parse_local_deck(deck,catalog,queue):
     from deck_import import parse_brawl,parse_commander,parse_deck
-    if queue not in ('SandboxPractice','SandboxBrawl','SandboxCommander','SandboxCommanderPod','SandboxCommanderTenPod','SandboxHorde','SandboxHordeCommander'):raise ValueError('Unknown local bot queue')
+    if queue not in ('SandboxPractice','SandboxBrawl','SandboxCommander','SandboxCommanderInternet','SandboxCommanderPod','SandboxCommanderTenPod','SandboxHorde','SandboxHordeCommander'):raise ValueError('Unknown match queue')
     if not isinstance(deck,dict) or not isinstance(deck.get('name'),str):raise ValueError('Invalid saved deck')
     lines=[]
     for pile,title in (('commander','Commander'),('companion','Companion'),('main','Deck'),('sideboard','Sideboard')):
@@ -63,7 +63,7 @@ def parse_local_deck(deck,catalog,queue):
         for key,count in cards.items():
             if key not in catalog or type(count) is not int or not 1<=count<=999:raise ValueError('Unknown or invalid saved printing: '+str(key))
             lines.append(str(count)+' '+catalog[key]['name'])
-    parser=parse_commander if queue in ('SandboxCommander','SandboxCommanderPod','SandboxCommanderTenPod','SandboxHordeCommander') else parse_brawl if queue=='SandboxBrawl' else parse_deck
+    parser=parse_commander if queue in ('SandboxCommander','SandboxCommanderInternet','SandboxCommanderPod','SandboxCommanderTenPod','SandboxHordeCommander') else parse_brawl if queue=='SandboxBrawl' else parse_deck
     return parser('\n'.join(lines),deck['name'])
 
 
@@ -130,9 +130,10 @@ class Coordinator:
         if not boundary:raise ValueError('Isolated lab boundary is missing')
         self.process=None;self.log=None;self.request_id=None;self.phase='idle';self.deadline=0.;self.after_stop='idle';self.seen=set();self.error=None
         self.last_snapshot=None;self.heartbeat_at=0.
+        self.internet=False
         self.ipc=self.lab/'forge-ipc';self.state_path=self.lab/'client-service-status.json'
         self.catalog={str(c['grpId']):c for c in read(self.lab/'deck-catalog.json')['cards']}
-        self.publish('idle','Ready for a local bot match')
+        self.publish('idle','Ready to play')
     def publish(self,phase,message,**extra):
         self.phase=phase
         value=dict(schema=1,session=self.session,nativePid=self.pid,utc=datetime.now(timezone.utc).isoformat(),requestId=self.request_id,phase=phase,message=message,enginePid=self.process.pid if self.process else None,**extra)
@@ -145,6 +146,7 @@ class Coordinator:
         matches=[d for d in library['decks'] if str(uuid.UUID(d['id']))==deck_id]
         if len(matches)!=1:raise ValueError('The selected saved deck no longer exists')
         deck=parse_local_deck(matches[0],self.catalog,queue)
+        self.internet=queue=='SandboxCommanderInternet'
         from deck_import import read_deck
         horde=queue in ('SandboxHorde','SandboxHordeCommander')
         pod=None
@@ -152,22 +154,30 @@ class Coordinator:
             names=('Isamaru','Emry','Selvala')
             pod=[read_deck(self.app/'decks'/('Commander-Pod-'+names[i%3]+'.txt'),'commander-40') for i in range(9 if queue=='SandboxCommanderTenPod' else 3)]
             opponent=pod[0]
-        elif horde:opponent=None
+        elif horde or self.internet:opponent=None
         else:
             filename='Brawl-Isamaru-Bot.txt' if queue in ('SandboxBrawl','SandboxCommander') else 'White-Lifegain.txt'
             format='commander-40' if queue=='SandboxCommander' else 'arena-brawl' if queue=='SandboxBrawl' else 'practice'
             opponent=read_deck(self.app/'decks'/filename,format)
         self.request_id=request['id'];self.error=None
-        self.publish('starting','Starting experimental Forge match — these cards are unverified' if deck.get('experimental') else 'Starting the local Forge bot…',queue=queue,deckName=deck['name'])
+        self.publish('starting','Opening your private Commander room…' if self.internet else 'Starting experimental Forge match — these cards are unverified' if deck.get('experimental') else 'Starting the local Forge bot…',queue=queue,deckName=deck['name'])
         if self.ipc.exists():
             metadata=self.ipc/'backend-process.json'
             if metadata.exists():
                 old=read(metadata)
                 check=subprocess.run(['powershell.exe','-NoProfile','-Command',f"Get-CimInstance Win32_Process -Filter 'ProcessId={int(old['pid'])}' | Select-Object -ExpandProperty CommandLine"],capture_output=True,text=True,creationflags=subprocess.CREATE_NO_WINDOW)
-                if 'ForgeLandEngine' in check.stdout and str(self.ipc).casefold() in check.stdout.casefold():raise RuntimeError('A previous rules engine is still running; close the client and retry')
+                if ('ForgeLandEngine' in check.stdout or 'multiplayer_session.py' in check.stdout) and str(self.ipc).casefold() in check.stdout.casefold():raise RuntimeError('A previous match owner is still running; close the client and retry')
             from match_archives import archive_match
             archive_match(self.lab,keep_all=self.config.get('retainFullMatchDiagnostics') is True)
         self.ipc.mkdir()
+        if self.internet:
+            atomic(self.ipc/'network-deck.json',deck)
+            (self.lab/'enable-forge-land-test.flag').write_text('Authoritative private internet match')
+            self.log=(self.ipc/'engine.log').open('w',encoding='utf8')
+            script=Path(__file__).with_name('multiplayer_session.py')
+            self.process=subprocess.Popen([self.config['python'],'-B',str(script),'--config',os.environ['FORGE_ARENA_CONFIG'],'--ipc',str(self.ipc)],stdout=self.log,stderr=subprocess.STDOUT,creationflags=subprocess.CREATE_NO_WINDOW)
+            atomic(self.ipc/'backend-process.json',dict(pid=self.process.pid,**{'class':'InternetRoom'},ipc=str(self.ipc),started=time.time(),clientSession=self.session,requestId=self.request_id))
+            self.deadline=time.monotonic()+1800;self.publish('starting','Choose Host or Join in the private-room window.');return
         scenario=dict(scenario='zombie-horde' if horde else 'commander-ten-pod' if queue=='SandboxCommanderTenPod' else 'commander-pod' if queue=='SandboxCommanderPod' else 'commander-duel' if queue=='SandboxCommander' else 'brawl-duel' if queue=='SandboxBrawl' else 'custom-duel',localDeck=deck)
         if not horde:scenario['opponentDeck']=opponent
         if pod:scenario['opponentDecks']=pod
@@ -183,13 +193,13 @@ class Coordinator:
         self.after_stop=after
         if self.process and self.process.poll() is None:
             (self.ipc/'stop.request').write_text('Client session finished or cancelled')
-            self.deadline=time.monotonic()+12;self.publish('stopping','Closing the local match…')
+            self.deadline=time.monotonic()+(35 if self.internet else 12);self.publish('stopping','Closing the match…')
         else:self.stopped()
     def stopped(self):
         if self.log:self.log.close();self.log=None
         if isinstance(self.process,RecoveredRulesProcess):self.process.close()
         self.process=None
-        self.publish(self.after_stop,self.error if self.after_stop=='error' and self.error else 'Match cancelled' if self.after_stop=='cancelled' else 'Ready for another local bot match')
+        self.publish(self.after_stop,self.error if self.after_stop=='error' and self.error else 'Match cancelled' if self.after_stop=='cancelled' else 'Ready to play again')
     def engine_failure(self):
         try:
             failure=read(self.ipc/'engine-error.json')
@@ -213,7 +223,7 @@ class Coordinator:
             self.stop('cancelled' if action=='cancel' else 'idle')
         elif action=='match-started':
             if request.get('matchRequestId')!=self.request_id or self.phase!='ready':raise RequestRejected('Stale match acknowledgment rejected')
-            self.publish('playing','Local Forge bot match in progress')
+            self.publish('playing','Private Commander match in progress' if self.internet else 'Local Forge bot match in progress')
         elif action=='resume':
             if self.process and self.process.poll() is None:raise RequestRejected('A rules owner is already active')
             receipt=read(self.lab/'match-recovery.json');state=read(self.ipc/'state.json')
@@ -253,21 +263,30 @@ class Coordinator:
                 try:
                     state=read(self.ipc/'state.json')
                     if state.get('fidelityGap'):raise ValueError(state['fidelityGap'])
-                    if state.get('session') and state.get('decision'):
-                        self.publish('ready','Bot ready — opening the Arena board',engineSession=state['session'],scenario=state['scenario'])
+                    if state.get('session') and (state.get('decision') or state.get('networkMatch')):
+                        self.publish('ready','Both players ready — opening the Arena board' if self.internet else 'Bot ready — opening the Arena board',engineSession=state['session'],scenario=state['scenario'])
                 except (OSError,json.JSONDecodeError):pass
                 except ValueError as error:self.error=str(error);self.stop('error')
         elif self.phase=='stopping':
             if not self.process or self.process.poll() is not None:self.stopped()
             elif time.monotonic()>self.deadline:
                 # This Popen object is the exact process created by this coordinator.
+                if self.internet:
+                    children=read(self.ipc/'network-children.json') if (self.ipc/'network-children.json').exists() else {'children':[]}
+                    for child in children['children']:
+                        try:
+                            owner=NativeLifetime(child['pid'],child['executable'],allow_termination=True)
+                            try:
+                                if owner.creation_ticks()==child['creationTicks']:owner.terminate()
+                            finally:owner.close()
+                        except RuntimeError:pass
                 self.process.terminate();self.process.wait(timeout=10);self.stopped()
         elif self.phase in ('ready','playing') and self.process and self.process.poll() is not None:
             self.publish('error',self.engine_failure());self.stopped_log()
     def stopped_log(self):
         if self.log:self.log.close();self.log=None
     def close(self):
-        self.stop('closed');end=time.monotonic()+15
+        self.stop('closed');end=time.monotonic()+(45 if self.internet else 15)
         while self.phase=='stopping' and time.monotonic()<end:self.tick(process_requests=False);time.sleep(.1)
         self.stopped_log()
 

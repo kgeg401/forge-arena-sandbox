@@ -3,7 +3,7 @@
 A local Magic sandbox using your installed Arena's original screens, cards and
 animations. Forge runs the bot and supported rules.
 
-**[Download the gameplay alpha for Windows](https://github.com/kgeg401/forge-arena-sandbox/releases/tag/v0.2.0-alpha.14.rail.10)**
+**[Download the gameplay alpha for Windows](https://github.com/kgeg401/forge-arena-sandbox/releases/tag/v0.2.0-alpha.15.mp.1)**
 
 Download **ForgeArenaSandbox-Windows.zip** from that release. GitHub's **Code >
 Download ZIP** contains source code, not the installable client.
@@ -30,6 +30,8 @@ Allow space for an independent Arena copy; setup checks the required space.
 ## Play
 
 **Horde and ten-player Commander are included.** See [all game modes and exact menu locations](docs/GAME-MODES.md).
+
+**Play with a friend:** choose **Brawl > Private Commander (Internet)** with a saved deck, then Host or Join. Two humans, 40 life, private invitation; both need the same build. [Full setup and limits](docs/MULTIPLAYER.md).
 
 - **Home > Play > Play:** choose Practice Bot and a valid deck. **White Lifegain**
   is a straightforward first match.
@@ -66,7 +68,7 @@ Upgraded installations retain their existing deck names and libraries.
 
 Mandatory triggers now use the original **Auto Order Triggers** preference and advance without an ordering prompt by default. **Auto Choose Replacement Effects** also works, using Forge's automatic chooser while retaining the manual override. Genuine target selections, optional effects and response windows remain. This release also connects the original spell-damage allocation controls and adds shared support for several targeting, channel, cycling, ninjutsu, Class and Battle scenarios.
 
-All queues create local games. Horde is solo against a scripted format using Forge's rules and AI choices; Commander pods mean one human and three or nine bots on this PC. Network multiplayer, online matchmaking, retail account services, full card coverage and complete retail UI parity are unfinished. Packs use custom sandbox collation, without retail wildcard rewards, bonus sheets or duplicate protection. Opening a card does not enable its rules.
+Private Commander connects two humans over the internet. Horde is solo against a scripted format using Forge's rules and AI choices; Commander pods mean one human and three or nine bots on this PC. Human multiplayer pods, online matchmaking, retail account services, full card coverage and complete retail UI parity are unfinished. Packs use custom sandbox collation, without retail wildcard rewards, bonus sheets or duplicate protection. Opening a card does not enable its rules.
 
 Return Home or closing the client ends that match; player-facing durable match save/restore is not implemented. Decks, packs and preferences persist separately.
 
@@ -74,7 +76,7 @@ Return Home or closing the client ends that match; player-facing durable match s
 
 This is an unofficial experiment. Arena is required separately; its assets are
 not distributed here. The game runs with zero Windows network capabilities.
-The external installer/updater downloads prerequisites and adapter releases.
+The external installer/updater downloads prerequisites and adapter releases. A separate worker connects private rooms through a temporary authenticated HTTPS tunnel; the host must stay open. [Connection and trust](docs/MULTIPLAYER.md).
 
 ## Update
 

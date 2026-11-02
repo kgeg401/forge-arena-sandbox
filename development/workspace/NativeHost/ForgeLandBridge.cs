@@ -22,6 +22,11 @@ internal sealed class ForgeLandBridge
     }
     private readonly string _ipc;
     private readonly SharedJsonFile _decisionFile;
+    private readonly SharedJsonFile _networkFile;
+    private long _networkRevision;
+    private bool _networkAwaitPresentation;
+    private bool NetworkMatch=>(bool?)_state["networkMatch"]==true;
+    private bool NetworkWaiting=>NetworkMatch && (int?)_state["inputSeat"]!=1;
     private readonly AsyncJsonRead _responseFile=new AsyncJsonRead(path=>JObject.Parse(ReadShared(path)));
     private readonly LocalGreConnection _connection;
     private readonly System.Action<string> _log;
@@ -129,7 +134,9 @@ internal sealed class ForgeLandBridge
         _autoChooseReplacementEffects=autoChooseReplacementEffects??(()=>false);
         _ipc=researchIpc??Path.Combine(root,"forge-ipc");_wire=Path.Combine(_ipc,"native-wire.jsonl");_connection=connection;_log=log;_presentedState=presentedState;_submitAutomaticPass=submitAutomaticPass;_fullControl=File.Exists(Path.Combine(root,"full-control-test.flag"));
         _decisionFile=new SharedJsonFile(Path.Combine(_ipc,"decision.json"));
+        _networkFile=new SharedJsonFile(Path.Combine(_ipc,"network-view.json"));
         _state=JObject.Parse(ReadShared(Path.Combine(_ipc,"state.json")));
+        _networkRevision=(long?)_state["networkRevision"]??0;_networkAwaitPresentation=NetworkMatch;
         var manifest=JObject.Parse(File.ReadAllText(Path.Combine(root,"bridge-card-manifest.json")));
         if((int?)manifest["schema"]!=1)throw new InvalidDataException("Unsupported generated card manifest.");
         _cardManifest=(JObject)manifest["cards"]!;
@@ -398,7 +405,7 @@ internal sealed class ForgeLandBridge
         info["matchID"]="forge-"+_session;info["stage"]=GameOver?"GameStage_GameOver":(string?)_state["stage"]=="Mulligan" || (string?)_state["stage"]=="BeforeMulligan"?"GameStage_Start":"GameStage_Play";
         // A local sandbox has no multi-game series scoring. SingleElimination
         // would make the shipped workflow auto-choose Play and hide its browser.
-        if(Scenario=="zombie-horde" || Scenario=="opening-duel" || Scenario=="spell-duel" || Scenario=="trigger-duel" || Scenario=="blue-duel" || Scenario=="custom-duel" || Scenario=="brawl-duel" || Scenario=="commander-duel" || IsCommanderPod)info["matchWinCondition"]="MatchWinCondition_None";
+        if(NetworkMatch || Scenario=="zombie-horde" || Scenario=="opening-duel" || Scenario=="spell-duel" || Scenario=="trigger-duel" || Scenario=="blue-duel" || Scenario=="custom-duel" || Scenario=="brawl-duel" || Scenario=="commander-duel" || IsCommanderPod)info["matchWinCondition"]="MatchWinCondition_None";
         if((string?)_state["format"]=="arena-brawl" || (string?)_state["format"]=="commander-40"){info["variant"]=(string?)_state["format"]=="commander-40"?"GameVariant_Commander":"GameVariant_Brawl";info["deckConstraintInfo"]=new JObject{["minDeckSize"]=100,["maxDeckSize"]=100,["maxSideboardSize"]=0};}
         info["matchState"]=GameOver?"MatchState_MatchComplete":"MatchState_GameInProgress";
         info.Remove("results");
@@ -544,7 +551,7 @@ internal sealed class ForgeLandBridge
     public void Start()
     {
         var state=(JObject)_template.DeepClone();
-        state["type"]="GameStateType_Full";state["gameStateId"]=_stateId;state["pendingMessageCount"]=1;
+        state["type"]="GameStateType_Full";state["gameStateId"]=_stateId;state["pendingMessageCount"]=NetworkWaiting?0:1;
         state["gameInfo"]=GameInfo();
         state["zones"]=Zones();state["gameObjects"]=new JArray(VisibleCards(_state).Select(CardObject));
         int turnAnnotationId=(int)_stateId*100;state["annotations"]=NativeTurnProtocol.Changes(null,_state,ref turnAnnotationId);state["persistentAnnotations"]=new JArray(TargetAnnotations().Concat(SharedCounterProtocol.Persistent(_state,id=>_ids[id])).Concat(SharedAttachmentProtocol.Persistent(_state,id=>_ids[id])).Concat(SharedKeywordProtocol.Persistent(_state,id=>_ids[id],_keywordBindings,_cardManifest)));state.Remove("diffDeletedInstanceIds");
@@ -552,7 +559,7 @@ internal sealed class ForgeLandBridge
         state["actions"]=new JArray(Offers().Select(a=>new JObject{["seatId"]=1,["action"]=a.DeepClone()}));
         Queue(Parse(Envelope("GREMessageType_GameStateMessage",state,"gameStateMessage")));
         _lastEventId=((JArray?)_state["events"]??new JArray()).Select(e=>(long)e["id"]!).DefaultIfEmpty(0).Max();
-        if(!GameOver)Queue(Parse(ActionRequest()));
+        if(!GameOver && !NetworkWaiting)Queue(Parse(ActionRequest()));
         _log("Forge offers " + ((JArray)_state["legalLands"]!).Count + " legal land plays");
     }
 
@@ -696,6 +703,24 @@ internal sealed class ForgeLandBridge
 
     public void Poll()
     {
+        if(NetworkMatch)
+        {
+            if(_networkAwaitPresentation)
+            {
+                if(_presentedState()!=_stateId)return;
+                File.WriteAllText(Path.Combine(_ipc,"network-presented.json"),new JObject{["session"]=_session,["revision"]=_networkRevision}.ToString(Formatting.None));
+                _networkAwaitPresentation=false;
+            }
+            if(_pending==null)
+            {
+                var remote=_networkFile.Read();
+                if(remote!=null && (long?)remote["networkRevision"]>_networkRevision)
+                {
+                    if((string?)remote["session"]!=_session || (bool?)remote["networkMatch"]!=true)throw new InvalidDataException("Network view belongs to another match");
+                    AdoptState(remote);return;
+                }
+            }
+        }
         if(_pending==null)
         {
             if(_combatPriorityRefresh)
@@ -783,6 +808,11 @@ internal sealed class ForgeLandBridge
     }
     private void AdoptState(JObject nextState)
     {
+        if(NetworkMatch)
+        {
+            if((string?)nextState["session"]!=_session || (long?)nextState["networkRevision"]<_networkRevision)throw new InvalidDataException("Stale network view");
+            _networkRevision=(long)nextState["networkRevision"]!;_networkAwaitPresentation=true;
+        }
         _combatPriorityRefresh=false;
         int previousMana=ManaTotal;var prior=_state;var oldIds=new Dictionary<int,int>(_ids);long previousEventId=_lastEventId;_state=nextState;
         if(NativePhaseStops.LeavePhase(_settings,(string)prior["phase"]!,(int)prior["activeSeat"]!,(int)prior["turn"]!,Phase,ActiveSeat,Turn))
@@ -926,7 +956,7 @@ internal sealed class ForgeLandBridge
         bool quiet=!GameOver && ShouldAutoPass(false);
         bool combatPriority=_renderedCombatPresentation && !quiet && !GameOver && !LocalPodEliminated && Decision==null && ((bool?)_state["canPass"]??false)
             && ((JArray?)_state["events"]??new JArray()).Any(e=>(long)e["id"]!>previousEventId && (string?)e["kind"]=="damage" && (bool?)e["combat"]==true);
-        var delta=new JObject { ["type"]="GameStateType_Diff",["gameStateId"]=_stateId,["prevGameStateId"]=previous,["pendingMessageCount"]=quiet || LocalPodEliminated || combatPriority?0:1,
+        var delta=new JObject { ["type"]="GameStateType_Diff",["gameStateId"]=_stateId,["prevGameStateId"]=previous,["pendingMessageCount"]=quiet || LocalPodEliminated || combatPriority || NetworkWaiting?0:1,
             ["zones"]=Zones(retired),["players"]=Players(),["turnInfo"]=TurnInfo(),["gameObjects"]=new JArray(nowVisible.Select(CardObject).Concat(concealed)),["annotations"]=annotations,
             ["persistentAnnotations"]=new JArray(TargetAnnotations().Concat(nextCounterState).Concat(nextAttachmentState).Concat(nextKeywordState)),
             ["diffDeletedInstanceIds"]=new JArray(resolvedAbilities.Select(a=>oldIds[(int)a["forgeId"]!]).Concat(vanishedTokens).Concat(vanishedCopies).Concat(eliminatedObjects).Distinct()),
@@ -952,8 +982,8 @@ internal sealed class ForgeLandBridge
         _quietAdvance=quiet;
         if(combatPriority){_combatPriorityRefresh=true;_requestId=0;}
         else if(quiet)_requestId=0;
-        else if(!GameOver && !LocalPodEliminated)Queue(Parse(ActionRequest()));
-        else if(LocalPodEliminated && !GameOver)_requestId=0;
+        else if(!GameOver && !LocalPodEliminated && !NetworkWaiting)Queue(Parse(ActionRequest()));
+        else if((LocalPodEliminated || NetworkWaiting) && !GameOver)_requestId=0;
         else Queue(Parse(Envelope("GREMessageType_IntermissionReq",new JObject
         {
             ["result"]=((JArray)GameInfo()["results"]!)[1].DeepClone(),

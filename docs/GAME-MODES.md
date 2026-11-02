@@ -1,8 +1,8 @@
 # Choose a game mode
 
-All modes below are included in the Windows release. They are local games using
-Forge rules and the separately installed Arena presentation. Extra seats are
-bots on this PC; network play with friends is not implemented.
+All modes below use Forge rules and the separately installed Arena presentation.
+Private Commander connects two human players over the internet. Other extra
+seats are bots on this PC. See [private multiplayer setup](MULTIPLAYER.md).
 
 Open **Home > Play**, choose the listed tab and queue, then select a saved deck
 and click **Play**.
@@ -12,6 +12,7 @@ and click **Play**.
 | Practice | Play: Practice Bot | You and one Forge bot; 40–250-card deck. |
 | Brawl | Brawl: Brawl Bot | 99 cards plus commander; 25 starting life. |
 | Commander duel | Brawl: Commander Bot (40 Life) | 99 cards plus commander; 40 life, commander tax and 21 commander combat damage. |
+| Private internet Commander | Brawl: Private Commander (Internet) | Two humans with their own saved decks; 40 life. Host and privately share an invitation; the other player joins. |
 | Four-player Commander | Brawl: Commander Pod (4 Players) | You and three bots using complete Isamaru, Emry and Selvala decks. |
 | Ten-player Commander | Brawl: Commander Pod (10 Players - Experimental) | You and nine bots; 40 life. Attack the nearest living opponent to your left while more than four players remain. At four or fewer, attack any legal opponent. |
 | Zombie Horde with a commander | Brawl: Zombie Horde (Commander Deck) | Use your saved 99-card-plus-commander deck. You start at 40 life against a 200-card Zombie/Horror Horde. |

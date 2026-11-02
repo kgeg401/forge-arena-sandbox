@@ -42,6 +42,33 @@ public final class ForgeLandEngine {
     static final List<Player> seatPlayers=new ArrayList<>();
     static final Map<Integer,Integer> seatMulligans=new HashMap<>();
     static final Map<Integer,Boolean> seatKept=new HashMap<>();
+
+    // Each human callback binds its actor on the sole rules owner; views keep stable roster IDs.
+    static boolean multiplayer;
+    static final Thread rulesOwner=Thread.currentThread();
+    static final Map<Integer,boolean[]> seatPreferences=new HashMap<>();
+    static long viewRevision;
+    static Player decisionOwner;
+    static int inputSeat(){return multiplayer?seat(local):1;}
+    static boolean requestOwner(JsonObject r){int who=r.get("seat").getAsInt();return who==inputSeat() || multiplayer && r.get("op").getAsString().equals("concede") && who>=1 && who<=2;}
+    static final class HumanContext implements AutoCloseable {
+        final Player beforeLocal=local,beforeOpponent=opponent,actor;
+        final int beforeMulligans=mulligans,beforeOpponentMulligans=opponentMulligans;
+        final boolean beforeOrder=autoOrderTriggers,beforeReplacement=autoChooseReplacementEffects;
+        final boolean changed;
+        HumanContext(Player p){
+            actor=p;if(multiplayer && local!=null && seatPlayers.contains(p) && Thread.currentThread()!=rulesOwner)throw new IllegalStateException("Human callback outside the rules owner");changed=multiplayer && local!=null && p!=local && seatPlayers.contains(p);
+            if(changed){seatMulligans.put(seat(local),mulligans);seatPreferences.put(seat(local),new boolean[]{autoOrderTriggers,autoChooseReplacementEffects});if(Thread.currentThread()!=rulesOwner)throw new IllegalStateException("Human callback outside the rules owner");boolean[] prefs=seatPreferences.getOrDefault(seat(p),new boolean[]{true,false});autoOrderTriggers=prefs[0];autoChooseReplacementEffects=prefs[1];local=p;opponent=seatPlayers.get(p==seatPlayers.get(0)?1:0);mulligans=seatMulligans.getOrDefault(seat(p),0);opponentMulligans=seatMulligans.getOrDefault(seat(opponent),0);}
+        }
+        public void close(){if(changed){seatPreferences.put(seat(actor),new boolean[]{autoOrderTriggers,autoChooseReplacementEffects});autoOrderTriggers=beforeOrder;autoChooseReplacementEffects=beforeReplacement;seatMulligans.put(seat(actor),mulligans);local=beforeLocal;opponent=beforeOpponent;mulligans=beforeMulligans;opponentMulligans=beforeOpponentMulligans;}}
+    }
+    static Map<String,Object> viewFor(int player){try(HumanContext ignored=new HumanContext(playerAtSeat(player))){return snapshot();}}
+    static void publishState() throws Exception {
+        if(multiplayer)viewRevision++;
+        write(ipc.resolve("state.json"),snapshot());
+        if(multiplayer)for(int role=1;role<=2;role++)write(ipc.resolve("state-"+role+".json"),viewFor(role));
+    }
+
     static boolean commanderPod;
     static boolean podSpectating;
     static boolean tenPlayerPod;
@@ -148,12 +175,13 @@ public final class ForgeLandEngine {
         }
         if(settings.has("autoOrderTriggers"))autoOrderTriggers=settings.get("autoOrderTriggers").getAsBoolean();
         if(settings.has("autoChooseReplacementEffects"))autoChooseReplacementEffects=settings.get("autoChooseReplacementEffects").getAsBoolean();
+        if(multiplayer && local!=null)seatPreferences.put(seat(local),new boolean[]{autoOrderTriggers,autoChooseReplacementEffects});
     }
     static boolean researchOpponentAttackAll;
     static boolean researchOpponentBlockAll;
     static final Deque<String> researchOpponentSpellPlan=new ArrayDeque<>();
     static final List<String> researchCallbackAudit=new ArrayList<>();
-    static boolean normalGame(){return zombieHorde || scenario.equals("opening-duel") || scenario.equals("spell-duel") || scenario.equals("trigger-duel") || scenario.equals("blue-duel") || scenario.equals("custom-duel") || scenario.equals("brawl-duel") || scenario.equals("commander-duel") || scenario.equals("commander-pod") || scenario.equals("commander-ten-pod");}
+    static boolean normalGame(){return multiplayer || zombieHorde || scenario.equals("opening-duel") || scenario.equals("spell-duel") || scenario.equals("trigger-duel") || scenario.equals("blue-duel") || scenario.equals("custom-duel") || scenario.equals("brawl-duel") || scenario.equals("commander-duel") || scenario.equals("commander-pod") || scenario.equals("commander-ten-pod");}
     /** Solo Horde format rules; all card resolution, damage and movement remain Forge-owned. */
     static final class HordeRules {
         static final int SURVIVOR_STARTING_LIFE=40;
@@ -709,11 +737,15 @@ public final class ForgeLandEngine {
             if(n<0 || n>choices.size())return null;
             if(n==0)return forge.game.cost.PaymentDecision.card(new CardCollection());
             JsonObject context=choiceSource(ability);
-            List<Card> picked=selectChoice("cards-effect",instruction,choices,n,n,false,c->{JsonObject o=new JsonObject();o.addProperty("forgeId",c.getId());o.addProperty("label",c.getName());o.addProperty("entityKind","card");o.addProperty("privateToSeat",1);o.addProperty("identityVisible",true);return o;},context);
+            List<Card> picked=selectChoice("cards-effect",instruction,choices,n,n,false,c->{JsonObject o=new JsonObject();o.addProperty("forgeId",c.getId());o.addProperty("label",c.getName());o.addProperty("entityKind","card");o.addProperty("privateToSeat",inputSeat());o.addProperty("identityVisible",true);return o;},context);
             return forge.game.cost.PaymentDecision.card(picked);
         }
         private CardCollection valid(Iterable<Card> cards,forge.game.cost.CostPart cost){return CardLists.getValidCards(cards,cost.getType().split(";"),player,source,ability);}
         private forge.game.cost.PaymentDecision decide(forge.game.cost.CostPart cost){
+            if(!multiplayer || player==local)return decideForActor(cost);
+            try(HumanContext ignored=new HumanContext(player)){return decideForActor(cost);}
+        }
+        private forge.game.cost.PaymentDecision decideForActor(forge.game.cost.CostPart cost){
             if(!cost.canPay(ability,player,isEffect()))return null;
             if(cost instanceof forge.game.cost.CostTap || cost instanceof forge.game.cost.CostUntap)return forge.game.cost.PaymentDecision.number(1);
             if(cost instanceof forge.game.cost.CostPartMana)return forge.game.cost.PaymentDecision.number(0);
@@ -961,7 +993,7 @@ public final class ForgeLandEngine {
         @Override public Player chooseStartingPlayer(boolean firstGame){
             if(zombieHorde){startingSeat=1;startingPlayerPolicy="local-first";return local;}
             if(!normalGame())return super.chooseStartingPlayer(firstGame);
-            if(startingPlayerPolicy.equals("local-first")){startingSeat=1;return local;}
+            if(startingPlayerPolicy.equals("local-first")){startingSeat=1;return multiplayer?playerAtSeat(1):local;}
             if(getPlayer()!=local){Player chosen=super.chooseStartingPlayer(firstGame);startingSeat=seat(chosen);return chosen;}
             JsonArray options=new JsonArray();for(int seat=1;seat<=seatPlayers.size();seat++){JsonObject o=new JsonObject();o.addProperty("startingSeat",seat);options.add(o);}
             waitForDecision("starting_player",options,values->{
@@ -986,7 +1018,7 @@ public final class ForgeLandEngine {
                 if(values.size()!=1 || !values.get(0).getAsJsonObject().has("keep"))throw new IllegalArgumentException("Choose keep or mulligan");
                 boolean accepted=values.get(0).getAsJsonObject().get("keep").getAsBoolean();
                 if(!accepted && cardsToReturn>=local.getStartingHandSize())throw new IllegalArgumentException("Cannot mulligan below zero cards; keep this hand");
-                keep[0]=accepted;seatKept.put(1,accepted);if(!keep[0])mulligans++;
+                keep[0]=accepted;seatKept.put(inputSeat(),accepted);if(!keep[0])mulligans++;
             });return keep[0];
         }
         @Override public CardCollectionView tuckCardsViaMulligan(CardCollectionView hand,int count){
@@ -1027,7 +1059,7 @@ public final class ForgeLandEngine {
                 if(cards.size()<2){ordered.addAll(cards);return ordered;}
                 List<Card> offered=new ArrayList<>();for(Card c:cards)offered.add(c);
                 JsonObject context=choiceSource(cause);context.addProperty("destination","Graveyard");
-                ordered.addAll(selectChoice("order","Order cards entering the graveyard",offered,offered.size(),offered.size(),false,c->{JsonObject o=new JsonObject();o.addProperty("forgeId",c.getId());o.addProperty("entityKind","card");o.addProperty("label",c.getName());o.addProperty("privateToSeat",1);o.addProperty("identityVisible",true);return o;},context));
+                ordered.addAll(selectChoice("order","Order cards entering the graveyard",offered,offered.size(),offered.size(),false,c->{JsonObject o=new JsonObject();o.addProperty("forgeId",c.getId());o.addProperty("entityKind","card");o.addProperty("label",c.getName());o.addProperty("privateToSeat",inputSeat());o.addProperty("identityVisible",true);return o;},context));
                 return ordered;
             }
             if(destination!=ZoneType.Graveyard){
@@ -1209,7 +1241,7 @@ public final class ForgeLandEngine {
         spec.addProperty("count",cards.size());spec.addProperty("topOrder","next card drawn first");spec.addProperty("otherOrder",other.equals("bottom")?"closest to library top first":"Forge insertion order");
         spec.add("groups",JSON.toJsonTree(List.of("top",other)));
         Map<Integer,Card> identities=new LinkedHashMap<>();
-        for(Card card:cards){if(identities.put(card.getId(),card)!=null)throw new IllegalStateException("Duplicate offered card identity");JsonObject option=new JsonObject();option.addProperty("choiceId",card.getId());option.addProperty("forgeId",card.getId());option.addProperty("label",card.getName());option.addProperty("privateToSeat",1);spec.getAsJsonArray("options").add(option);}
+        for(Card card:cards){if(identities.put(card.getId(),card)!=null)throw new IllegalStateException("Duplicate offered card identity");JsonObject option=new JsonObject();option.addProperty("choiceId",card.getId());option.addProperty("forgeId",card.getId());option.addProperty("label",card.getName());option.addProperty("privateToSeat",inputSeat());spec.getAsJsonArray("options").add(option);}
         sharedDecision(spec,values->{
             if(values==null || values.size()!=identities.size())throw new IllegalArgumentException("Partition must contain every offered card once");
             Set<Integer> seen=new HashSet<>();CardCollection selectedTop=new CardCollection(),selectedRest=new CardCollection();
@@ -1309,7 +1341,7 @@ public final class ForgeLandEngine {
             JsonObject spec=choiceSpec("look",prompt==null?"Look at revealed cards":prompt);int source=resolvingSource();if(source!=0)spec.addProperty("sourceForgeId",source);
             spec.addProperty("min",0);spec.addProperty("max",0);spec.addProperty("repeats",false);
             Set<Integer> seen=new HashSet<>();int ordinal=1;
-            for(var view:cards){Card actual=findCard(view.getId());if(actual==null || !seen.add(view.getId()))throw new UnsupportedOperationException("Reveal contains a stale or duplicate object");JsonObject value=new JsonObject();value.addProperty("choiceId",ordinal++);value.addProperty("forgeId",actual.getId());value.addProperty("label",view.getName());value.addProperty("privateToSeat",1);value.addProperty("identityVisible",true);spec.getAsJsonArray("options").add(value);}
+            for(var view:cards){Card actual=findCard(view.getId());if(actual==null || !seen.add(view.getId()))throw new UnsupportedOperationException("Reveal contains a stale or duplicate object");JsonObject value=new JsonObject();value.addProperty("choiceId",ordinal++);value.addProperty("forgeId",actual.getId());value.addProperty("label",view.getName());value.addProperty("privateToSeat",inputSeat());value.addProperty("identityVisible",true);spec.getAsJsonArray("options").add(value);}
             sharedDecision(spec,values->{if(values==null || !values.isEmpty())throw new IllegalArgumentException("Reveal acknowledgement must not select or move any object");});
         }
         @Override public void reveal(CardCollectionView cards,ZoneType zone,Player owner,String prompt,boolean remember){
@@ -1373,7 +1405,7 @@ public final class ForgeLandEngine {
             return new CardCollection(selectChoice("order","Order cards for "+destination.name(),offered,offered.size(),offered.size(),false,c->entityDescription(c,true),context));
         }
         protected JsonObject entityDescription(GameEntity entity,boolean visible){
-            JsonObject value=new JsonObject();value.addProperty("privateToSeat",1);
+            JsonObject value=new JsonObject();value.addProperty("privateToSeat",inputSeat());
             if(entity instanceof Card card){value.addProperty("forgeId",card.getId());value.addProperty("entityKind","card");value.addProperty("label",visible?card.getName():"Hidden card");value.addProperty("identityVisible",visible);}
             else if(entity instanceof Player player){value.addProperty("entityKind","player");value.addProperty("targetSeat",seat(player));value.addProperty("label",player==local?"You":player.getName());}
             else throw new UnsupportedOperationException("Unmapped shared entity class "+entity.getClass().getName());
@@ -1389,7 +1421,7 @@ public final class ForgeLandEngine {
             JsonObject context=choiceSource(source);JsonArray revealed=new JsonArray();
             // Human Forge temporarily exposes exactly these supplied views to
             // the chooser. They are not added to the public game snapshot.
-            if(reveal!=null)for(var card:reveal.getCards()){JsonObject value=new JsonObject();value.addProperty("forgeId",card.getId());value.addProperty("label",card.getName());value.addProperty("privateToSeat",1);revealed.add(value);}
+            if(reveal!=null)for(var card:reveal.getCards()){JsonObject value=new JsonObject();value.addProperty("forgeId",card.getId());value.addProperty("label",card.getName());value.addProperty("privateToSeat",inputSeat());revealed.add(value);}
             context.add("revealed",revealed);
             return selectChoice(type,prompt,options,Math.min(minimum,options.size()),Math.min(maximum,options.size()),false,e->entityDescription(e,true),context);
         }
@@ -1421,7 +1453,7 @@ public final class ForgeLandEngine {
             if(getPlayer()!=local)return super.chooseCardsToDiscardFrom(player,source,cards,minimum,maximum,visible);
             List<Card> offered=new ArrayList<>();for(Card card:cards)offered.add(card);
             JsonObject context=choiceSource(source);JsonArray revealed=new JsonArray();
-            if(visible!=null)for(Card card:visible){JsonObject value=new JsonObject();value.addProperty("forgeId",card.getId());value.addProperty("label",card.getName());value.addProperty("privateToSeat",1);revealed.add(value);}
+            if(visible!=null)for(Card card:visible){JsonObject value=new JsonObject();value.addProperty("forgeId",card.getId());value.addProperty("label",card.getName());value.addProperty("privateToSeat",inputSeat());revealed.add(value);}
             context.add("revealed",revealed);
             return new CardCollection(selectChoice("discard-effect","Choose cards to discard",offered,Math.min(minimum,offered.size()),Math.min(maximum,offered.size()),false,c->entityDescription(c,player==local || visible!=null && visible.contains(c)),context));
         }
@@ -1639,7 +1671,7 @@ public final class ForgeLandEngine {
                 List<forge.game.mana.Mana> offered=new ArrayList<>();var counts=new IdentityHashMap<forge.game.mana.Mana,Integer>();
                 for(var mana:a0){if(!counts.containsKey(mana))offered.add(mana);counts.merge(mana,1,Integer::sum);}
                 if(offered.isEmpty())return null;if(offered.size()==1)return offered.get(0);
-                return optionChoice("Choose mana to spend",offered,1,1,m->{String color=switch(m.getColor()){case 0,32->"Colorless";case 1->"White";case 2->"Blue";case 4->"Black";case 8->"Red";case 16->"Green";default->throw new UnsupportedOperationException("Unmapped mana color");};return color+" mana from "+m.getSourceCard().getName()+(m.isRestricted()?" (restricted)":"")+(m.isSnow()?" (snow)":"")+" — "+counts.get(m)+" available";},null).get(0);
+                return optionChoice("Choose mana to spend",offered,1,1,m->{String color=switch(m.getColor()){case 0,32->"Colorless";case 1->"White";case 2->"Blue";case 4->"Black";case 8->"Red";case 16->"Green";default->throw new UnsupportedOperationException("Unmapped mana color");};return color+" mana from "+m.getSourceCard().getName()+(m.isRestricted()?" (restricted)":"")+(m.isSnow()?" (snow)":"")+" â€” "+counts.get(m)+" available";},null).get(0);
             }
             unsupportedDecision="Unmapped human callback: public forge.game.mana.Mana forge.ai.PlayerControllerAi.chooseManaFromPool(java.util.List<forge.game.mana.Mana>)";throw new UnsupportedOperationException(unsupportedDecision);
         }
@@ -1789,7 +1821,7 @@ public final class ForgeLandEngine {
                 if(a0.isEmpty())return new ArrayList<>();
                 JsonObject context=new JsonObject();context.addProperty("context","exert-attackers");context.addProperty("sourceForgeId",a0.get(0).getId());
                 return selectChoice("cards-effect","Choose attackers to exert",new ArrayList<>(a0),0,a0.size(),false,c->{
-                    JsonObject option=new JsonObject();option.addProperty("forgeId",c.getId());option.addProperty("entityKind","card");option.addProperty("label",c.getName());option.addProperty("privateToSeat",1);option.addProperty("identityVisible",true);return option;
+                    JsonObject option=new JsonObject();option.addProperty("forgeId",c.getId());option.addProperty("entityKind","card");option.addProperty("label",c.getName());option.addProperty("privateToSeat",inputSeat());option.addProperty("identityVisible",true);return option;
                 },context);
             }
             unsupportedDecision="Unmapped human callback: public java.util.List<forge.game.card.Card> forge.ai.PlayerControllerAi.exertAttackers(java.util.List<forge.game.card.Card>)";throw new UnsupportedOperationException(unsupportedDecision);
@@ -1835,7 +1867,7 @@ public final class ForgeLandEngine {
                 if(actionProbeDepth>0)return super.chooseCardsForConvokeOrImprovise(a0,a1,a2,a3,a4,a5);
                 List<Card> offered=new ArrayList<>();for(Card card:a2)offered.add(card);
                 int max=a5==null?offered.size():Math.min(offered.size(),a5);
-                var chosen=selectChoice("cards-effect","Choose permanents for convoke or improvise",offered,0,max,false,c->{JsonObject o=new JsonObject();o.addProperty("forgeId",c.getId());o.addProperty("entityKind","card");o.addProperty("label",c.getName());o.addProperty("privateToSeat",1);o.addProperty("identityVisible",true);return o;},choiceSource(a0));
+                var chosen=selectChoice("cards-effect","Choose permanents for convoke or improvise",offered,0,max,false,c->{JsonObject o=new JsonObject();o.addProperty("forgeId",c.getId());o.addProperty("entityKind","card");o.addProperty("label",c.getName());o.addProperty("privateToSeat",inputSeat());o.addProperty("identityVisible",true);return o;},choiceSource(a0));
                 Map<Card,forge.card.mana.ManaCostShard> result=new LinkedHashMap<>();
                 var remainder=new forge.game.mana.ManaCostBeingPaid(a1);
                 for(Card card:chosen){
@@ -1873,10 +1905,121 @@ public final class ForgeLandEngine {
         }
     } // 84 inherited callbacks rejected for human research cases
 
+    static class MultiplayerController extends ResearchStrictController {
+        MultiplayerController(Game g,Player p,LobbyPlayer l){super(g,p,l);}
+        @Override public <T extends forge.game.GameEntity> T chooseSingleEntityForEffect(forge.util.collect.FCollectionView<T> p0,forge.game.player.DelayedReveal p1,forge.game.spellability.SpellAbility p2,java.lang.String p3,boolean p4,forge.game.player.Player p5,java.util.Map<java.lang.String, java.lang.Object> p6){try(HumanContext ignored=new HumanContext(getPlayer())){return super.chooseSingleEntityForEffect(p0,p1,p2,p3,p4,p5,p6);}}
+        @Override public <T extends forge.game.GameEntity> java.util.List<T> chooseEntitiesForEffect(forge.util.collect.FCollectionView<T> p0,int p1,int p2,forge.game.player.DelayedReveal p3,forge.game.spellability.SpellAbility p4,java.lang.String p5,forge.game.player.Player p6,java.util.Map<java.lang.String, java.lang.Object> p7){try(HumanContext ignored=new HumanContext(getPlayer())){return super.chooseEntitiesForEffect(p0,p1,p2,p3,p4,p5,p6,p7);}}
+        @Override public boolean chooseBinary(forge.game.spellability.SpellAbility p0,java.lang.String p1,forge.game.player.PlayerController.BinaryChoiceType p2,java.lang.Boolean p3){try(HumanContext ignored=new HumanContext(getPlayer())){return super.chooseBinary(p0,p1,p2,p3);}}
+        @Override public boolean chooseBinary(forge.game.spellability.SpellAbility p0,java.lang.String p1,forge.game.player.PlayerController.BinaryChoiceType p2,java.util.Map<java.lang.String, java.lang.Object> p3){try(HumanContext ignored=new HumanContext(getPlayer())){return super.chooseBinary(p0,p1,p2,p3);}}
+        @Override public boolean confirmAction(forge.game.spellability.SpellAbility p0,forge.game.player.PlayerActionConfirmMode p1,java.lang.String p2,java.util.List<java.lang.String> p3,forge.game.card.Card p4,java.util.Map<java.lang.String, java.lang.Object> p5){try(HumanContext ignored=new HumanContext(getPlayer())){return super.confirmAction(p0,p1,p2,p3,p4,p5);}}
+        @Override public boolean playTrigger(forge.game.card.Card p0,forge.game.trigger.WrappedAbility p1,boolean p2){try(HumanContext ignored=new HumanContext(getPlayer())){return super.playTrigger(p0,p1,p2);}}
+        @Override public boolean confirmReplacementEffect(forge.game.replacement.ReplacementEffect p0,forge.game.spellability.SpellAbility p1,forge.game.GameEntity p2,java.lang.String p3){try(HumanContext ignored=new HumanContext(getPlayer())){return super.confirmReplacementEffect(p0,p1,p2,p3);}}
+        @Override public boolean isAI(){try(HumanContext ignored=new HumanContext(getPlayer())){return super.isAI();}}
+        @Override public boolean mulliganKeepHand(forge.game.player.Player p0,int p1){try(HumanContext ignored=new HumanContext(getPlayer())){return super.mulliganKeepHand(p0,p1);}}
+        @Override public boolean payManaCost(forge.card.mana.ManaCost p0,forge.game.cost.CostPartMana p1,forge.game.spellability.SpellAbility p2,java.lang.String p3,forge.game.mana.ManaConversionMatrix p4,boolean p5){try(HumanContext ignored=new HumanContext(getPlayer())){return super.payManaCost(p0,p1,p2,p3,p4,p5);}}
+        @Override public boolean playChosenSpellAbility(forge.game.spellability.SpellAbility p0){try(HumanContext ignored=new HumanContext(getPlayer())){return super.playChosenSpellAbility(p0);}}
+        @Override public boolean applyManaToCost(forge.game.mana.ManaCostBeingPaid p0,forge.game.spellability.SpellAbility p1,java.lang.String p2,forge.game.mana.ManaConversionMatrix p3,boolean p4){try(HumanContext ignored=new HumanContext(getPlayer())){return super.applyManaToCost(p0,p1,p2,p3,p4);}}
+        @Override public boolean chooseCardsPile(forge.game.spellability.SpellAbility p0,forge.game.card.CardCollectionView p1,forge.game.card.CardCollectionView p2,java.lang.String p3){try(HumanContext ignored=new HumanContext(getPlayer())){return super.chooseCardsPile(p0,p1,p2,p3);}}
+        @Override public boolean chooseFlipResult(forge.game.spellability.SpellAbility p0,forge.game.player.Player p1,boolean p2){try(HumanContext ignored=new HumanContext(getPlayer())){return super.chooseFlipResult(p0,p1,p2);}}
+        @Override public boolean chooseTargetsFor(forge.game.spellability.SpellAbility p0){try(HumanContext ignored=new HumanContext(getPlayer())){return super.chooseTargetsFor(p0);}}
+        @Override public boolean confirmBidAction(forge.game.spellability.SpellAbility p0,forge.game.player.PlayerActionConfirmMode p1,java.lang.String p2,int p3,forge.game.player.Player p4){try(HumanContext ignored=new HumanContext(getPlayer())){return super.confirmBidAction(p0,p1,p2,p3,p4);}}
+        @Override public boolean confirmPayment(forge.game.cost.CostPart p0,java.lang.String p1,forge.game.spellability.SpellAbility p2){try(HumanContext ignored=new HumanContext(getPlayer())){return super.confirmPayment(p0,p1,p2);}}
+        @Override public boolean confirmStaticApplication(forge.game.card.Card p0,forge.game.player.PlayerActionConfirmMode p1,java.lang.String p2,java.lang.String p3){try(HumanContext ignored=new HumanContext(getPlayer())){return super.confirmStaticApplication(p0,p1,p2,p3);}}
+        @Override public boolean confirmTrigger(forge.game.trigger.WrappedAbility p0){try(HumanContext ignored=new HumanContext(getPlayer())){return super.confirmTrigger(p0);}}
+        @Override public boolean payCombatCost(forge.game.card.Card p0,forge.game.cost.Cost p1,forge.game.spellability.SpellAbility p2,java.lang.String p3){try(HumanContext ignored=new HumanContext(getPlayer())){return super.payCombatCost(p0,p1,p2,p3);}}
+        @Override public boolean payCostDuringRoll(forge.game.cost.Cost p0,forge.game.spellability.SpellAbility p1){try(HumanContext ignored=new HumanContext(getPlayer())){return super.payCostDuringRoll(p0,p1);}}
+        @Override public boolean payCostToPreventEffect(forge.game.cost.Cost p0,forge.game.spellability.SpellAbility p1,boolean p2,forge.util.collect.FCollectionView<forge.game.player.Player> p3){try(HumanContext ignored=new HumanContext(getPlayer())){return super.payCostToPreventEffect(p0,p1,p2,p3);}}
+        @Override public boolean playSaFromPlayEffect(forge.game.spellability.SpellAbility p0){try(HumanContext ignored=new HumanContext(getPlayer())){return super.playSaFromPlayEffect(p0);}}
+        @Override public boolean willPutCardOnTop(forge.game.card.Card p0){try(HumanContext ignored=new HumanContext(getPlayer())){return super.willPutCardOnTop(p0);}}
+        @Override public byte chooseColor(java.lang.String p0,forge.game.spellability.SpellAbility p1,forge.card.ColorSet p2){try(HumanContext ignored=new HumanContext(getPlayer())){return super.chooseColor(p0,p1,p2);}}
+        @Override public byte chooseColorAllowColorless(java.lang.String p0,forge.game.card.Card p1,forge.card.ColorSet p2){try(HumanContext ignored=new HumanContext(getPlayer())){return super.chooseColorAllowColorless(p0,p1,p2);}}
+        @Override public forge.card.ColorSet chooseColors(java.lang.String p0,forge.game.spellability.SpellAbility p1,int p2,int p3,forge.card.ColorSet p4){try(HumanContext ignored=new HumanContext(getPlayer())){return super.chooseColors(p0,p1,p2,p3,p4);}}
+        @Override public forge.card.ICardFace chooseSingleCardFace(forge.game.spellability.SpellAbility p0,java.lang.String p1,java.util.function.Predicate<forge.card.ICardFace> p2,java.lang.String p3){try(HumanContext ignored=new HumanContext(getPlayer())){return super.chooseSingleCardFace(p0,p1,p2,p3);}}
+        @Override public forge.card.ICardFace chooseSingleCardFace(forge.game.spellability.SpellAbility p0,java.util.List<forge.card.ICardFace> p1,java.lang.String p2){try(HumanContext ignored=new HumanContext(getPlayer())){return super.chooseSingleCardFace(p0,p1,p2);}}
+        @Override public forge.game.PlanarDice choosePDRollToIgnore(java.util.List<forge.game.PlanarDice> p0){try(HumanContext ignored=new HumanContext(getPlayer())){return super.choosePDRollToIgnore(p0);}}
+        @Override public forge.game.ability.effects.RollDiceEffect.DieRollResult chooseRollToSwap(java.util.List<forge.game.ability.effects.RollDiceEffect.DieRollResult> p0){try(HumanContext ignored=new HumanContext(getPlayer())){return super.chooseRollToSwap(p0);}}
+        @Override public forge.game.card.Card chooseSingleCardForZoneChange(forge.game.zone.ZoneType p0,java.util.List<forge.game.zone.ZoneType> p1,forge.game.spellability.SpellAbility p2,forge.game.card.CardCollection p3,forge.game.player.DelayedReveal p4,java.lang.String p5,boolean p6,forge.game.player.Player p7){try(HumanContext ignored=new HumanContext(getPlayer())){return super.chooseSingleCardForZoneChange(p0,p1,p2,p3,p4,p5,p6,p7);}}
+        @Override public forge.game.card.Card chooseCardToKeepStickers(forge.game.card.CardCollectionView p0){try(HumanContext ignored=new HumanContext(getPlayer())){return super.chooseCardToKeepStickers(p0);}}
+        @Override public forge.game.card.CardCollection chooseCardsToDiscardFrom(forge.game.player.Player p0,forge.game.spellability.SpellAbility p1,forge.game.card.CardCollection p2,int p3,int p4,forge.game.card.CardCollectionView p5){try(HumanContext ignored=new HumanContext(getPlayer())){return super.chooseCardsToDiscardFrom(p0,p1,p2,p3,p4,p5);}}
+        @Override public forge.game.card.CardCollection chooseCardsForEffectMultiple(java.util.Map<java.lang.String, forge.game.card.CardCollection> p0,forge.game.spellability.SpellAbility p1,java.lang.String p2,boolean p3){try(HumanContext ignored=new HumanContext(getPlayer())){return super.chooseCardsForEffectMultiple(p0,p1,p2,p3);}}
+        @Override public forge.game.card.CardCollection orderAttackers(forge.game.card.Card p0,forge.game.card.CardCollection p1){try(HumanContext ignored=new HumanContext(getPlayer())){return super.orderAttackers(p0,p1);}}
+        @Override public forge.game.card.CardCollection orderBlocker(forge.game.card.Card p0,forge.game.card.Card p1,forge.game.card.CardCollection p2){try(HumanContext ignored=new HumanContext(getPlayer())){return super.orderBlocker(p0,p1,p2);}}
+        @Override public forge.game.card.CardCollection orderBlockers(forge.game.card.Card p0,forge.game.card.CardCollection p1){try(HumanContext ignored=new HumanContext(getPlayer())){return super.orderBlockers(p0,p1);}}
+        @Override public forge.game.card.CardCollectionView chooseCardsForEffect(forge.game.card.CardCollectionView p0,forge.game.spellability.SpellAbility p1,java.lang.String p2,int p3,int p4,boolean p5,java.util.Map<java.lang.String, java.lang.Object> p6){try(HumanContext ignored=new HumanContext(getPlayer())){return super.chooseCardsForEffect(p0,p1,p2,p3,p4,p5,p6);}}
+        @Override public forge.game.card.CardCollectionView chooseCardsToDiscardFrom(forge.game.player.Player p0,forge.game.spellability.SpellAbility p1,forge.game.card.CardCollection p2,int p3,int p4){try(HumanContext ignored=new HumanContext(getPlayer())){return super.chooseCardsToDiscardFrom(p0,p1,p2,p3,p4);}}
+        @Override public forge.game.card.CardCollectionView choosePermanentsToSacrifice(forge.game.spellability.SpellAbility p0,int p1,int p2,forge.game.card.CardCollectionView p3,java.lang.String p4){try(HumanContext ignored=new HumanContext(getPlayer())){return super.choosePermanentsToSacrifice(p0,p1,p2,p3,p4);}}
+        @Override public forge.game.card.CardCollectionView orderMoveToZoneList(forge.game.card.CardCollectionView p0,forge.game.zone.ZoneType p1,forge.game.spellability.SpellAbility p2){try(HumanContext ignored=new HumanContext(getPlayer())){return super.orderMoveToZoneList(p0,p1,p2);}}
+        @Override public forge.game.card.CardCollectionView cheatShuffle(forge.game.card.CardCollectionView p0){try(HumanContext ignored=new HumanContext(getPlayer())){return super.cheatShuffle(p0);}}
+        @Override public forge.game.card.CardCollectionView chooseCardsToDiscardToMaximumHandSize(int p0){try(HumanContext ignored=new HumanContext(getPlayer())){return super.chooseCardsToDiscardToMaximumHandSize(p0);}}
+        @Override public forge.game.card.CardCollectionView tuckCardsViaMulligan(forge.game.card.CardCollectionView p0,int p1){try(HumanContext ignored=new HumanContext(getPlayer())){return super.tuckCardsViaMulligan(p0,p1);}}
+        @Override public forge.game.card.CardCollectionView chooseCardsForCost(forge.game.card.CardCollectionView p0,forge.game.spellability.SpellAbility p1,forge.game.cost.CostPartWithList p2,int p3,boolean p4,java.lang.String p5){try(HumanContext ignored=new HumanContext(getPlayer())){return super.chooseCardsForCost(p0,p1,p2,p3,p4,p5);}}
+        @Override public forge.game.card.CardCollectionView chooseCardsToDelve(int p0,forge.game.card.CardCollection p1){try(HumanContext ignored=new HumanContext(getPlayer())){return super.chooseCardsToDelve(p0,p1);}}
+        @Override public forge.game.card.CardCollectionView chooseCardsToDiscardUnlessType(int p0,forge.game.card.CardCollectionView p1,java.lang.String[] p2,forge.game.spellability.SpellAbility p3){try(HumanContext ignored=new HumanContext(getPlayer())){return super.chooseCardsToDiscardUnlessType(p0,p1,p2,p3);}}
+        @Override public forge.game.card.CardCollectionView chooseCardsToRevealFromHand(int p0,int p1,forge.game.card.CardCollectionView p2){try(HumanContext ignored=new HumanContext(getPlayer())){return super.chooseCardsToRevealFromHand(p0,p1,p2);}}
+        @Override public forge.game.card.CardCollectionView choosePermanentsToDestroy(forge.game.spellability.SpellAbility p0,int p1,int p2,forge.game.card.CardCollectionView p3,java.lang.String p4){try(HumanContext ignored=new HumanContext(getPlayer())){return super.choosePermanentsToDestroy(p0,p1,p2,p3,p4);}}
+        @Override public forge.game.card.CardState chooseSingleCardState(forge.game.spellability.SpellAbility p0,java.util.List<forge.game.card.CardState> p1,java.lang.String p2,java.util.Map<java.lang.String, java.lang.Object> p3){try(HumanContext ignored=new HumanContext(getPlayer())){return super.chooseSingleCardState(p0,p1,p2,p3);}}
+        @Override public forge.game.card.CounterType chooseCounterType(java.util.List<forge.game.card.CounterType> p0,forge.game.spellability.SpellAbility p1,java.lang.String p2,java.util.Map<java.lang.String, java.lang.Object> p3){try(HumanContext ignored=new HumanContext(getPlayer())){return super.chooseCounterType(p0,p1,p2,p3);}}
+        @Override public forge.game.card.sticker.Sticker chooseSticker(java.util.List<forge.game.card.sticker.Sticker> p0,forge.game.card.Card p1,forge.game.spellability.SpellAbility p2,boolean p3){try(HumanContext ignored=new HumanContext(getPlayer())){return super.chooseSticker(p0,p1,p2,p3);}}
+        @Override public forge.game.cost.CostDecisionMakerBase getCostDecisionMaker(forge.game.player.Player p0,forge.game.spellability.SpellAbility p1,boolean p2,java.lang.String p3){try(HumanContext ignored=new HumanContext(getPlayer())){return super.getCostDecisionMaker(p0,p1,p2,p3);}}
+        @Override public forge.game.mana.Mana chooseManaFromPool(java.util.List<forge.game.mana.Mana> p0){try(HumanContext ignored=new HumanContext(getPlayer())){return super.chooseManaFromPool(p0);}}
+        @Override public forge.game.player.Player chooseStartingPlayer(boolean p0){try(HumanContext ignored=new HumanContext(getPlayer())){return super.chooseStartingPlayer(p0);}}
+        @Override public forge.game.player.Player choosePlayerToAssistPayment(forge.util.collect.FCollectionView<forge.game.player.Player> p0,forge.game.spellability.SpellAbility p1,java.lang.String p2,int p3){try(HumanContext ignored=new HumanContext(getPlayer())){return super.choosePlayerToAssistPayment(p0,p1,p2,p3);}}
+        @Override public forge.game.replacement.ReplacementEffect chooseSingleReplacementEffect(java.util.List<forge.game.replacement.ReplacementEffect> p0){try(HumanContext ignored=new HumanContext(getPlayer())){return super.chooseSingleReplacementEffect(p0);}}
+        @Override public forge.game.spellability.SpellAbility getAbilityToPlay(forge.game.card.Card p0,java.util.List<forge.game.spellability.SpellAbility> p1,forge.util.ITriggerEvent p2){try(HumanContext ignored=new HumanContext(getPlayer())){return super.getAbilityToPlay(p0,p1,p2);}}
+        @Override public forge.game.spellability.SpellAbility chooseSingleSpellForEffect(java.util.List<forge.game.spellability.SpellAbility> p0,forge.game.spellability.SpellAbility p1,java.lang.String p2,java.util.Map<java.lang.String, java.lang.Object> p3){try(HumanContext ignored=new HumanContext(getPlayer())){return super.chooseSingleSpellForEffect(p0,p1,p2,p3);}}
+        @Override public forge.game.spellability.TargetChoices chooseNewTargetsFor(forge.game.spellability.SpellAbility p0,java.util.function.Predicate<forge.game.GameObject> p1,boolean p2){try(HumanContext ignored=new HumanContext(getPlayer())){return super.chooseNewTargetsFor(p0,p1,p2);}}
+        @Override public forge.game.staticability.StaticAbility chooseSingleStaticAbility(java.util.List<forge.game.staticability.StaticAbility> p0){try(HumanContext ignored=new HumanContext(getPlayer())){return super.chooseSingleStaticAbility(p0);}}
+        @Override public forge.game.zone.PlayerZone chooseStartingHand(java.util.List<forge.game.zone.PlayerZone> p0){try(HumanContext ignored=new HumanContext(getPlayer())){return super.chooseStartingHand(p0);}}
+        @Override public int chooseNumber(forge.game.spellability.SpellAbility p0,java.lang.String p1,int p2,int p3){try(HumanContext ignored=new HumanContext(getPlayer())){return super.chooseNumber(p0,p1,p2,p3);}}
+        @Override public int chooseNumber(forge.game.spellability.SpellAbility p0,java.lang.String p1,int p2,int p3,java.util.Map<java.lang.String, java.lang.Object> p4){try(HumanContext ignored=new HumanContext(getPlayer())){return super.chooseNumber(p0,p1,p2,p3,p4);}}
+        @Override public int chooseNumber(forge.game.spellability.SpellAbility p0,java.lang.String p1,java.util.List<java.lang.Integer> p2,forge.game.player.Player p3){try(HumanContext ignored=new HumanContext(getPlayer())){return super.chooseNumber(p0,p1,p2,p3);}}
+        @Override public int chooseNumberForCostReduction(forge.game.spellability.SpellAbility p0,int p1,int p2){try(HumanContext ignored=new HumanContext(getPlayer())){return super.chooseNumberForCostReduction(p0,p1,p2);}}
+        @Override public int chooseNumberForKeywordCost(forge.game.spellability.SpellAbility p0,forge.game.cost.Cost p1,forge.game.keyword.KeywordInterface p2,java.lang.String p3,int p4){try(HumanContext ignored=new HumanContext(getPlayer())){return super.chooseNumberForKeywordCost(p0,p1,p2,p3,p4);}}
+        @Override public int chooseSprocket(forge.game.card.Card p0,java.util.List<java.lang.Integer> p1){try(HumanContext ignored=new HumanContext(getPlayer())){return super.chooseSprocket(p0,p1);}}
+        @Override public int chooseStickerNamePosition(forge.game.card.sticker.Sticker p0,forge.game.card.Card p1){try(HumanContext ignored=new HumanContext(getPlayer())){return super.chooseStickerNamePosition(p0,p1);}}
+        @Override public java.lang.Integer announceRequirements(forge.game.spellability.SpellAbility p0,int p1,int p2,java.lang.String p3){try(HumanContext ignored=new HumanContext(getPlayer())){return super.announceRequirements(p0,p1,p2,p3);}}
+        @Override public java.lang.Integer chooseRollToIgnore(java.util.List<java.lang.Integer> p0){try(HumanContext ignored=new HumanContext(getPlayer())){return super.chooseRollToIgnore(p0);}}
+        @Override public java.lang.Integer chooseRollToModify(java.util.List<java.lang.Integer> p0){try(HumanContext ignored=new HumanContext(getPlayer())){return super.chooseRollToModify(p0);}}
+        @Override public java.lang.Object vote(forge.game.spellability.SpellAbility p0,java.lang.String p1,java.util.List<java.lang.Object> p2,com.google.common.collect.ListMultimap<java.lang.Object, forge.game.player.Player> p3,forge.game.player.Player p4,boolean p5){try(HumanContext ignored=new HumanContext(getPlayer())){return super.vote(p0,p1,p2,p3,p4,p5);}}
+        @Override public java.lang.String chooseProtectionType(forge.game.spellability.SpellAbility p0,java.util.List<java.lang.String> p1){try(HumanContext ignored=new HumanContext(getPlayer())){return super.chooseProtectionType(p0,p1);}}
+        @Override public java.lang.String chooseCardName(forge.game.spellability.SpellAbility p0,java.util.List<forge.card.ICardFace> p1,java.lang.String p2){try(HumanContext ignored=new HumanContext(getPlayer())){return super.chooseCardName(p0,p1,p2);}}
+        @Override public java.lang.String chooseCardName(forge.game.spellability.SpellAbility p0,java.util.function.Predicate<forge.card.ICardFace> p1,java.lang.String p2,java.lang.String p3){try(HumanContext ignored=new HumanContext(getPlayer())){return super.chooseCardName(p0,p1,p2,p3);}}
+        @Override public java.lang.String chooseKeywordForPump(java.util.List<java.lang.String> p0,forge.game.spellability.SpellAbility p1,java.lang.String p2,forge.game.card.Card p3){try(HumanContext ignored=new HumanContext(getPlayer())){return super.chooseKeywordForPump(p0,p1,p2,p3);}}
+        @Override public java.lang.String chooseRollSwapValue(java.util.List<java.lang.String> p0,java.lang.Integer p1,int p2,int p3){try(HumanContext ignored=new HumanContext(getPlayer())){return super.chooseRollSwapValue(p0,p1,p2,p3);}}
+        @Override public java.lang.String chooseSector(forge.game.card.Card p0,java.lang.String p1,java.util.List<java.lang.String> p2){try(HumanContext ignored=new HumanContext(getPlayer())){return super.chooseSector(p0,p1,p2);}}
+        @Override public java.lang.String chooseSomeType(java.lang.String p0,forge.game.spellability.SpellAbility p1,java.util.Collection<java.lang.String> p2,boolean p3){try(HumanContext ignored=new HumanContext(getPlayer())){return super.chooseSomeType(p0,p1,p2,p3);}}
+        @Override public java.util.List<forge.game.card.Card> chooseCardsForZoneChange(forge.game.zone.ZoneType p0,java.util.List<forge.game.zone.ZoneType> p1,forge.game.spellability.SpellAbility p2,forge.game.card.CardCollection p3,int p4,int p5,forge.game.player.DelayedReveal p6,java.lang.String p7,forge.game.player.Player p8){try(HumanContext ignored=new HumanContext(getPlayer())){return super.chooseCardsForZoneChange(p0,p1,p2,p3,p4,p5,p6,p7,p8);}}
+        @Override public java.util.List<forge.game.card.Card> chooseCardsForSplice(forge.game.spellability.SpellAbility p0,java.util.List<forge.game.card.Card> p1){try(HumanContext ignored=new HumanContext(getPlayer())){return super.chooseCardsForSplice(p0,p1);}}
+        @Override public java.util.List<forge.game.card.Card> chooseContraptionsToCrank(java.util.List<forge.game.card.Card> p0){try(HumanContext ignored=new HumanContext(getPlayer())){return super.chooseContraptionsToCrank(p0);}}
+        @Override public java.util.List<forge.game.card.Card> enlistAttackers(java.util.List<forge.game.card.Card> p0){try(HumanContext ignored=new HumanContext(getPlayer())){return super.enlistAttackers(p0);}}
+        @Override public java.util.List<forge.game.card.Card> exertAttackers(java.util.List<forge.game.card.Card> p0){try(HumanContext ignored=new HumanContext(getPlayer())){return super.exertAttackers(p0);}}
+        @Override public java.util.List<forge.game.cost.CostPart> orderCosts(java.util.List<forge.game.cost.CostPart> p0){try(HumanContext ignored=new HumanContext(getPlayer())){return super.orderCosts(p0);}}
+        @Override public java.util.List<forge.game.spellability.AbilitySub> chooseModeForAbility(forge.game.spellability.SpellAbility p0,java.util.List<forge.game.spellability.AbilitySub> p1,int p2,int p3,boolean p4){try(HumanContext ignored=new HumanContext(getPlayer())){return super.chooseModeForAbility(p0,p1,p2,p3,p4);}}
+        @Override public java.util.List<forge.game.spellability.OptionalCostValue> chooseOptionalCosts(forge.game.spellability.SpellAbility p0,java.util.List<forge.game.spellability.OptionalCostValue> p1){try(HumanContext ignored=new HumanContext(getPlayer())){return super.chooseOptionalCosts(p0,p1);}}
+        @Override public java.util.List<forge.game.spellability.SpellAbility> chooseSpellAbilitiesForEffect(java.util.List<forge.game.spellability.SpellAbility> p0,forge.game.spellability.SpellAbility p1,java.lang.String p2,int p3,java.util.Map<java.lang.String, java.lang.Object> p4){try(HumanContext ignored=new HumanContext(getPlayer())){return super.chooseSpellAbilitiesForEffect(p0,p1,p2,p3,p4);}}
+        @Override public java.util.List<forge.game.spellability.SpellAbility> chooseSpellAbilityToPlay(){try(HumanContext ignored=new HumanContext(getPlayer())){return super.chooseSpellAbilityToPlay();}}
+        @Override public java.util.List<forge.game.spellability.SpellAbility> chooseSaToActivateFromOpeningHand(java.util.List<forge.game.spellability.SpellAbility> p0){try(HumanContext ignored=new HumanContext(getPlayer())){return super.chooseSaToActivateFromOpeningHand(p0);}}
+        @Override public java.util.List<forge.game.spellability.SpellAbility> orderSimultaneousSa(java.util.List<forge.game.spellability.SpellAbility> p0){try(HumanContext ignored=new HumanContext(getPlayer())){return super.orderSimultaneousSa(p0);}}
+        @Override public java.util.List<forge.item.PaperCard> chooseCardsYouWonToAddToDeck(java.util.List<forge.item.PaperCard> p0){try(HumanContext ignored=new HumanContext(getPlayer())){return super.chooseCardsYouWonToAddToDeck(p0);}}
+        @Override public java.util.List<java.lang.Integer> chooseDiceToReroll(java.util.List<java.lang.Integer> p0){try(HumanContext ignored=new HumanContext(getPlayer())){return super.chooseDiceToReroll(p0);}}
+        @Override public java.util.Map<forge.game.GameEntity, java.lang.Integer> divideShield(forge.game.card.Card p0,java.util.Map<forge.game.GameEntity, java.lang.Integer> p1,int p2){try(HumanContext ignored=new HumanContext(getPlayer())){return super.divideShield(p0,p1,p2);}}
+        @Override public java.util.Map<forge.game.card.Card, forge.card.mana.ManaCostShard> chooseCardsForConvokeOrImprovise(forge.game.spellability.SpellAbility p0,forge.card.mana.ManaCost p1,forge.game.card.CardCollectionView p2,boolean p3,boolean p4,java.lang.Integer p5){try(HumanContext ignored=new HumanContext(getPlayer())){return super.chooseCardsForConvokeOrImprovise(p0,p1,p2,p3,p4,p5);}}
+        @Override public java.util.Map<forge.game.card.Card, java.lang.Integer> assignCombatDamage(forge.game.card.Card p0,forge.game.card.CardCollectionView p1,forge.game.card.CardCollectionView p2,int p3,forge.game.GameEntity p4,boolean p5){try(HumanContext ignored=new HumanContext(getPlayer())){return super.assignCombatDamage(p0,p1,p2,p3,p4,p5);}}
+        @Override public java.util.Map<java.lang.Byte, java.lang.Integer> specifyManaCombo(forge.game.spellability.SpellAbility p0,forge.card.ColorSet p1,int p2,boolean p3){try(HumanContext ignored=new HumanContext(getPlayer())){return super.specifyManaCombo(p0,p1,p2,p3);}}
+        @Override public org.apache.commons.lang3.tuple.ImmutablePair<forge.game.card.CardCollection, forge.game.card.CardCollection> arrangeForScry(forge.game.card.CardCollection p0){try(HumanContext ignored=new HumanContext(getPlayer())){return super.arrangeForScry(p0);}}
+        @Override public org.apache.commons.lang3.tuple.ImmutablePair<forge.game.card.CardCollection, forge.game.card.CardCollection> arrangeForSurveil(forge.game.card.CardCollection p0){try(HumanContext ignored=new HumanContext(getPlayer())){return super.arrangeForSurveil(p0);}}
+        @Override public org.apache.commons.lang3.tuple.Pair<forge.game.spellability.SpellAbilityStackInstance, forge.game.GameObject> chooseTarget(forge.game.spellability.SpellAbility p0,java.util.List<org.apache.commons.lang3.tuple.Pair<forge.game.spellability.SpellAbilityStackInstance, forge.game.GameObject>> p1){try(HumanContext ignored=new HumanContext(getPlayer())){return super.chooseTarget(p0,p1);}}
+        @Override public void orderAndPlaySimultaneousSa(java.util.List<forge.game.spellability.SpellAbility> p0){try(HumanContext ignored=new HumanContext(getPlayer())){super.orderAndPlaySimultaneousSa(p0);}}
+        @Override public void reveal(forge.game.card.CardCollectionView p0,forge.game.zone.ZoneType p1,forge.game.player.Player p2,java.lang.String p3,boolean p4){try(HumanContext ignored=new HumanContext(getPlayer())){super.reveal(p0,p1,p2,p3,p4);}}
+        @Override public void reveal(java.util.List<forge.game.card.CardView> p0,forge.game.zone.ZoneType p1,forge.game.player.PlayerView p2,java.lang.String p3,boolean p4){try(HumanContext ignored=new HumanContext(getPlayer())){super.reveal(p0,p1,p2,p3,p4);}}
+        @Override public void declareAttackers(forge.game.player.Player p0,forge.game.combat.Combat p1){try(HumanContext ignored=new HumanContext(getPlayer())){super.declareAttackers(p0,p1);}}
+        @Override public void declareBlockers(forge.game.player.Player p0,forge.game.combat.Combat p1){try(HumanContext ignored=new HumanContext(getPlayer())){super.declareBlockers(p0,p1);}}
+    }
+
     static class LocalSeat extends LobbyPlayerAi {
         final boolean humanSeat;
         LocalSeat(String name,boolean humanSeat){super(name,Collections.emptySet());this.humanSeat=humanSeat;setAiProfile("Default");}
-        @Override public Player createIngamePlayer(Game g,int id){Player p=new Player(getName(),g,id);p.setFirstController(researchAdmission && humanSeat?new ResearchStrictController(g,p,this):new PassiveController(g,p,this));return p;}
+        @Override public Player createIngamePlayer(Game g,int id){Player p=new Player(getName(),g,id);p.setFirstController(multiplayer?new MultiplayerController(g,p,this):researchAdmission && humanSeat?new ResearchStrictController(g,p,this):new PassiveController(g,p,this));return p;}
     }
     static String presentationKey(Card c){
         if(horde!=null && horde.physicalToken(c))return HordeRules.TOKEN;
@@ -2309,7 +2452,7 @@ public final class ForgeLandEngine {
         write(ipc.resolve("responses").resolve(id+".json"),response);
     }
     static JsonObject response(JsonObject request,boolean accepted,String reason){
-        JsonObject r=new JsonObject();r.addProperty("id",request.get("id").getAsString());r.addProperty("session",SESSION);r.addProperty("accepted",accepted);r.addProperty("reason",reason);r.add("state",JSON.toJsonTree(snapshot()));return r;
+        JsonObject r=new JsonObject();r.addProperty("id",request.get("id").getAsString());r.addProperty("session",SESSION);r.addProperty("accepted",accepted);r.addProperty("reason",reason);r.add("state",JSON.toJsonTree(multiplayer?viewFor(request.get("seat").getAsInt()):snapshot()));return r;
     }
     // Normal games remain inside Match.startGame on this one owner thread. The
     // controller waits here, then returns a real ability (or null for a pass) to
@@ -2326,7 +2469,7 @@ public final class ForgeLandEngine {
     static void waitForPodExit(){
         if(game.isGameOver())return;
         try{
-            decision=null;retireFile(ipc.resolve("decision.json"));finishLiveRequests();write(ipc.resolve("state.json"),snapshot());
+            decision=null;retireFile(ipc.resolve("decision.json"));finishLiveRequests();publishState();
             while(!Files.exists(ipc.resolve("stop.request"))){
                 try(var paths=Files.list(ipc.resolve("requests"))){
                     for(Path path:paths.filter(p->p.toString().endsWith(".json")).sorted().toList()){
@@ -2356,7 +2499,7 @@ public final class ForgeLandEngine {
     }
     static List<SpellAbility> waitForPriority(){
         try{
-            finishLiveRequests();write(ipc.resolve("state.json"),snapshot());
+            finishLiveRequests();publishState();
             while(!Files.exists(ipc.resolve("stop.request"))){
                 try(var paths=Files.list(ipc.resolve("requests"))){
                     for(Path path:paths.filter(p->p.toString().endsWith(".json")).sorted().toList()){
@@ -2367,12 +2510,12 @@ public final class ForgeLandEngine {
                         SpellAbility selected=null;boolean advance=false;
                         try{
                             if(!SESSION.equals(request.get("session").getAsString()))throw new IllegalArgumentException("stale session");
-                            if(request.get("seat").getAsInt()!=1)throw new IllegalArgumentException("wrong player");
+                            if(!requestOwner(request))throw new IllegalArgumentException("wrong player");
                             applyTurnPreferences(request);
                             String op=request.get("op").getAsString();
                             if(!op.equals("snapshot") && !op.equals("concede") && !fidelityGap().isEmpty())throw new UnsupportedOperationException(fidelityGap());
                             if(op.equals("snapshot")){remember(request,response(request,true,"snapshot at priority"));}
-                            else if(op.equals("concede")){local.concede();priorityChecks.invoke(game.getPhaseHandler());advance=true;}
+                            else if(op.equals("concede")){(multiplayer?playerAtSeat(request.get("seat").getAsInt()):local).concede();priorityChecks.invoke(game.getPhaseHandler());advance=true;}
                             else if(op.equals("pass_priority"))advance=true;
                             else {
                                 Card card=findCard(request.get("forgeId").getAsInt());
@@ -2401,12 +2544,12 @@ public final class ForgeLandEngine {
     }
     static void publishDecision() throws Exception {
         JsonObject message=new JsonObject();message.addProperty("session",SESSION);message.addProperty("parentRequestId",currentRequest.get("id").getAsString());message.addProperty("token",decision.get("token").getAsString());message.add("state",JSON.toJsonTree(snapshot()));
-        write(ipc.resolve("decision.json"),message);write(ipc.resolve("state.json"),snapshot());
+        write(ipc.resolve("decision.json"),message);publishState();
     }
     static void waitForDecision(String kind,JsonArray options,Consumer<JsonArray> submit){
         if(actionProbeDepth>0)throw new UnsupportedOperationException("A player choice ("+kind+") is required while checking this action; its availability adapter is not connected");
         try {
-            decision=new JsonObject();decision.addProperty("kind",kind);decision.addProperty("seat",1);decision.addProperty("token",UUID.randomUUID().toString());decision.add("options",options);decision.add("assignments",new JsonArray());
+            decision=new JsonObject();decision.addProperty("kind",kind);decisionOwner=local;decision.addProperty("seat",inputSeat());decision.addProperty("token",UUID.randomUUID().toString());decision.add("options",options);decision.add("assignments",new JsonArray());
             if(kind.equals("choice")){if(sharedChoice==null)throw new IllegalStateException("Missing shared choice contract");decision.add("choice",sharedChoice.deepCopy());}
             if(kind.equals("discard") || kind.startsWith("mulligan"))decision.addProperty("count",discardCount);
             if(kind.equals("legend_rule"))decision.addProperty("count",1);
@@ -2437,12 +2580,12 @@ public final class ForgeLandEngine {
                         boolean done=false;JsonObject reply;
                         try {
                             if(!SESSION.equals(request.get("session").getAsString()))throw new IllegalArgumentException("stale session");
-                            if(request.get("seat").getAsInt()!=1)throw new IllegalArgumentException("wrong decision player");
+                            if(!requestOwner(request))throw new IllegalArgumentException("wrong decision player");
                             applyTurnPreferences(request);
                             String op=request.get("op").getAsString();
                             if(op.equals("snapshot")){reply=response(request,true,"snapshot during decision");}
                             else if(op.equals("concede")){
-                                local.concede();priorityChecks.invoke(game.getPhaseHandler());
+                                (multiplayer?playerAtSeat(request.get("seat").getAsInt()):local).concede();priorityChecks.invoke(game.getPhaseHandler());
                                 deferredSubmissions.add(request.deepCopy());done=true;reply=null;
                             }
                             else {
@@ -2493,14 +2636,14 @@ public final class ForgeLandEngine {
             throw new IllegalStateException("Stopped during a pending declaration");
         }catch(StopRequested ex){throw ex;}catch(Exception ex){throw new RuntimeException(ex);}
     }
-    static boolean pendingChoiceReveals(int forgeId){
+    static boolean pendingChoiceReveals(int forgeId){if(multiplayer && decisionOwner!=local)return false;
         if(decision==null || !decision.has("kind") || !decision.get("kind").getAsString().equals("choice"))return false;
         JsonObject spec=decision.getAsJsonObject("choice");if(spec==null)return false;
         for(String field:List.of("options","revealed")){
             JsonArray views=spec.getAsJsonArray(field);if(views==null)continue;
             for(JsonElement item:views){
                 JsonObject view=item.getAsJsonObject();
-                if(view.has("forgeId") && view.get("forgeId").getAsInt()==forgeId && view.has("privateToSeat") && view.get("privateToSeat").getAsInt()==1 && view.has("label") &&
+                if(view.has("forgeId") && view.get("forgeId").getAsInt()==forgeId && view.has("privateToSeat") && view.get("privateToSeat").getAsInt()==inputSeat() && view.has("label") &&
                    (!view.has("identityVisible") || view.get("identityVisible").getAsBoolean()))return true;
             }
         }
@@ -2513,13 +2656,13 @@ public final class ForgeLandEngine {
         if(priorityReady)for(Card c:fullHumanChoices?humanActionCards():local.getCardsIn(ZoneType.Hand))if(fullHumanChoices?!humanLandOptions(c).isEmpty():c.isLand()&&ability(c).canPlay())legal.add(c.getId());
         Map<String,Object> result=new LinkedHashMap<>();
         if(horde!=null)result.put("horde",horde.state());
-        result.put("session",SESSION);result.put("scenario",scenario);result.put("events",events);result.put("decision",decision);result.put("phase",phaseName());result.put("stage",game.getAge().name());result.put("mulligans",mulligans);
+        result.put("session",SESSION);result.put("scenario",scenario);result.put("events",events);result.put("decision",multiplayer && decisionOwner!=local?null:decision);result.put("phase",phaseName());result.put("stage",game.getAge().name());result.put("mulligans",mulligans);
         if(researchAdmission){result.put("keywordPresentationSchema",1);result.put("researchControls",Map.of("strictHumanCallbacks",local.getController() instanceof ResearchStrictController,"auditedAutomaticDecisions",researchCallbackAudit,"effectPresentationOrigins",researchEffectOrigins,"controllerIdentities",seatPlayers.stream().map(p->Map.of("seat",seat(p),"controllerIsAI",p.getController().isAI(),"playerIsAI",p.isAI())).toList()));result.put("researchTrace",researchTrace);}
         result.put("format",commanderMode?"commander-40":arenaBrawl?"arena-brawl":"practice");result.put("startingLifeTotal",local.getStartingLife());result.put("opponentStartingLifeTotal",opponent.getStartingLife());result.put("commanderDamageLimit",commanderMode?21:0);
         List<Map<String,Object>> commanderDamage=new ArrayList<>();for(Player p:seatPlayers)for(var entry:p.getCommanderDamage())commanderDamage.add(Map.of("seat",seat(p),"commanderForgeId",entry.getKey().getId(),"amount",entry.getValue()));result.put("commanderDamage",commanderDamage);result.put("command",zone(ZoneType.Command));result.put("exile",zone(ZoneType.Exile));
         result.put("freeMulliganCount",arenaBrawl || commanderPod?1:0);result.put("players",playerSnapshots());result.put("playerCount",seatPlayers.size());result.put("pod",commanderPod);result.put("attackLeft",tenPlayerPod && seatPlayers.stream().filter(p->!p.hasLost()).count()>4);
         result.put("randomSeed",randomSeed);if(localDeck!=null){result.put("localDeck",localDeck);result.put("opponentDeck",opponentDeck);}
-        result.put("startingSeat",startingSeat);result.put("startingPlayerPolicy",startingPlayerPolicy);result.put("opponentKept",opponentKept);result.put("opponentMulligans",opponentMulligans);
+        result.put("startingSeat",startingSeat);result.put("startingPlayerPolicy",startingPlayerPolicy);result.put("opponentKept",multiplayer?seatKept.getOrDefault(seat(opponent),false):opponentKept);result.put("opponentMulligans",opponentMulligans);
         result.put("prioritySeat",seat(game.getPhaseHandler().getPriorityPlayer()));
         result.put("activeSeat",game.getPhaseHandler().getPlayerTurn()==null?(startingSeat==0?1:startingSeat):seat(game.getPhaseHandler().getPlayerTurn()));
         result.put("spectating",commanderPod && podSpectating && local.hasLost());
@@ -2610,6 +2753,7 @@ public final class ForgeLandEngine {
             stackAbilities.add(object);stackOrder.add(id);
         }
         result.put("stackAbilities",stackAbilities);result.put("stackOrder",stackOrder);
+        if(multiplayer){result.put("multiplayer",true);result.put("viewerSeat",inputSeat());result.put("viewRevision",viewRevision);result.put("inputSeat",game.isGameOver()?0:decision!=null?seat(decisionOwner):seat(game.getPhaseHandler().getPriorityPlayer()));for(String key:List.of("researchControls","researchTrace","randomSeed","localDeck","opponentDeck"))result.remove(key);}
         result.put("scope",normalGame()?"Real Forge Match.startGame, shuffled practice decks, opening hands, London mulligans and full game loop. Starting-player policy: "+startingPlayerPolicy+"; admitted card allowlist only; no constructed deck-legality claim.":aiDuel()?"Seeded six-card hands and 24-card libraries; real Forge AI, phase loop, casts and combat. Admitted card allowlist only; use opening-duel for normal match startup.":"Seeded rules scenario; passive or scripted opponent; admitted card allowlist, native decisions and Forge phase loop. No general cards or normal match startup.");return result;
     }
     static JsonObject handle(JsonObject request) {
@@ -2617,19 +2761,19 @@ public final class ForgeLandEngine {
         boolean accepted=false;String reason="unsupported operation";
         try {
             if(!SESSION.equals(request.get("session").getAsString()))throw new IllegalArgumentException("stale session");
-            if(request.get("seat").getAsInt()!=1)throw new IllegalArgumentException("wrong player");
+            if(!requestOwner(request))throw new IllegalArgumentException("wrong player");
             applyTurnPreferences(request);
             String op=request.get("op").getAsString();
             if(game.isGameOver() && !op.equals("snapshot"))throw new IllegalStateException("game is over");
             if(researchAdmission && !op.equals("snapshot") && !op.equals("concede") && !fidelityGap().isEmpty())throw new UnsupportedOperationException(fidelityGap());
             if(op.equals("snapshot")){accepted=true;reason="snapshot";}
             else if(op.equals("concede")){
-                if(request.get("seat").getAsInt()!=1)throw new IllegalArgumentException("wrong player");
+                if(!requestOwner(request))throw new IllegalArgumentException("wrong player");
                 if(game.isGameOver())throw new IllegalStateException("game is over");
-                local.concede();priorityChecks.invoke(game.getPhaseHandler());accepted=local.hasLost() || game.isGameOver();reason="Forge processed local concession";
+                (multiplayer?playerAtSeat(request.get("seat").getAsInt()):local).concede();priorityChecks.invoke(game.getPhaseHandler());accepted=local.hasLost() || game.isGameOver();reason="Forge processed local concession";
             }
             else if(op.equals("play_land")) {
-                if(request.get("seat").getAsInt()!=1)throw new IllegalArgumentException("wrong player");
+                if(!requestOwner(request))throw new IllegalArgumentException("wrong player");
                 int id=request.get("forgeId").getAsInt();Card selected=null;
                 for(Card c:fullHumanChoices?humanActionCards():local.getCardsIn(ZoneType.Hand))if(c.getId()==id)selected=c;
                 if(selected==null)reason="card is not in an available land-play zone";
@@ -2641,7 +2785,7 @@ public final class ForgeLandEngine {
                 }
             }
             else if(op.equals("cast_spell")) {
-                if(request.get("seat").getAsInt()!=1)throw new IllegalArgumentException("wrong player");
+                if(!requestOwner(request))throw new IllegalArgumentException("wrong player");
                 Card selected=null;int id=request.get("forgeId").getAsInt();
                 for(Card c:fullHumanChoices?game.getCardsInGame():local.getCardsIn(ZoneType.Hand))if(c.getId()==id)selected=c;
                 Card chosenCard=selected;
@@ -2657,7 +2801,7 @@ public final class ForgeLandEngine {
                 else reason="Forge could not pay casting cost";
             }
             else if(op.equals("pass_priority")) {
-                if(request.get("seat").getAsInt()!=1 || game.getPhaseHandler().getPriorityPlayer()!=local)throw new IllegalArgumentException("wrong priority player");
+                if(request.get("seat").getAsInt()!=inputSeat() || game.getPhaseHandler().getPriorityPlayer()!=local)throw new IllegalArgumentException("wrong priority player");
                 if(game.isGameOver())throw new IllegalStateException("game is over");
                 if(!fidelityGap().isEmpty())throw new UnsupportedOperationException(fidelityGap());
                 List<String> transitions=new ArrayList<>();int steps=0;
@@ -2669,7 +2813,7 @@ public final class ForgeLandEngine {
                 response.add("phaseTransitions",JSON.toJsonTree(transitions));accepted=true;reason="Forge mainLoopStep processed local pass and passive opponent";
             }
             else if(op.equals("activate_mana")) {
-                if(request.get("seat").getAsInt()!=1)throw new IllegalArgumentException("wrong player");
+                if(!requestOwner(request))throw new IllegalArgumentException("wrong player");
                 Card selected=null;int id=request.get("forgeId").getAsInt();
                 for(Card c:fullHumanChoices?game.getCardsInGame():local.getCardsIn(ZoneType.Battlefield))if(c.getId()==id)selected=c;
                 SpellAbility mana=selected==null?null:fullHumanChoices?humanManaAbility(selected,request.get("abilityId").getAsInt()):manaAbility(selected);
@@ -2679,7 +2823,7 @@ public final class ForgeLandEngine {
                 else reason="Forge could not pay mana activation cost";
             }
             else if(op.equals("activate_ability") && researchAdmission && scenario.equals("card-family")) {
-                if(request.get("seat").getAsInt()!=1)throw new IllegalArgumentException("wrong player");
+                if(!requestOwner(request))throw new IllegalArgumentException("wrong player");
                 if(!request.has("abilityId") || !request.get("abilityId").isJsonPrimitive() || !request.getAsJsonPrimitive("abilityId").isNumber() || !request.get("abilityId").getAsString().matches("[1-9][0-9]{0,8}"))throw new IllegalArgumentException("Activation requires an exact positive integer ability identity");
                 Card selected=null;int id=request.get("forgeId").getAsInt();
                 for(Card c:fullHumanChoices?game.getCardsInGame():local.getCardsIn(ZoneType.Battlefield))if(c.getId()==id)selected=c;
@@ -2752,9 +2896,9 @@ public final class ForgeLandEngine {
         if(fixtureConfig!=null && fixtureConfig.has("hordeFixturePool") &&
            (!zombieHorde || !manifest.has("researchOnly") || !manifest.get("researchOnly").getAsBoolean()))
             throw new IllegalArgumentException("Horde pool fixtures require an explicitly research-only Horde runtime");
-        arenaBrawl=scenario.equals("brawl-duel");tenPlayerPod=scenario.equals("commander-ten-pod");commanderPod=scenario.equals("commander-pod") || tenPlayerPod;podSize=tenPlayerPod?10:4;commanderMode=scenario.equals("commander-duel") || commanderPod || zombieHorde && localDeck!=null && localDeck.has("commander");
+        multiplayer=scenario.equals("commander-human-duel");arenaBrawl=scenario.equals("brawl-duel");tenPlayerPod=scenario.equals("commander-ten-pod");commanderPod=scenario.equals("commander-pod") || tenPlayerPod;podSize=tenPlayerPod?10:4;commanderMode=multiplayer || scenario.equals("commander-duel") || commanderPod || zombieHorde && localDeck!=null && localDeck.has("commander");
         if(!Set.of("coin-toss","local-first").contains(startingPlayerPolicy))throw new IllegalArgumentException("Unknown starting-player policy");
-        if(!Set.of("zombie-horde","starter","attack-open","attack-multi","attack-blocked","defend","duel","mixed-duel","opening-duel","spell-duel","trigger-duel","trigger-orator","trigger-orator-double","hare-chain","blue-duel","blue-bounce","blue-wrong-color","custom-duel","brawl-duel","commander-duel","commander-pod","commander-ten-pod","card-family","counter-ready","counter-ready-white","counter-ready-idle","defend-arrow","lethal-win","defend-lethal","discard","vanilla-costs","defend-ox","attack-swift","attack-double-blocked","draw-ready","draw-wrong-color").contains(scenario))throw new IllegalArgumentException("Unsupported scenario: "+scenario);
+        if(!Set.of("zombie-horde","starter","attack-open","attack-multi","attack-blocked","defend","duel","mixed-duel","opening-duel","spell-duel","trigger-duel","trigger-orator","trigger-orator-double","hare-chain","blue-duel","blue-bounce","blue-wrong-color","custom-duel","brawl-duel","commander-duel","commander-human-duel","commander-pod","commander-ten-pod","card-family","counter-ready","counter-ready-white","counter-ready-idle","defend-arrow","lethal-win","defend-lethal","discard","vanilla-costs","defend-ox","attack-swift","attack-double-blocked","draw-ready","draw-wrong-color").contains(scenario))throw new IllegalArgumentException("Unsupported scenario: "+scenario);
         if(zombieHorde){validateDeck(localDeck);if(opponentDeck!=null)throw new IllegalArgumentException("Horde opponent is generated by its fixed Arena-only pool");}
         else if(scenario.equals("custom-duel") || commanderGame()){validateDeck(localDeck);if(opponentDeck==null)opponentDeck=localDeck.deepCopy();validateDeck(opponentDeck);if(commanderGame()){String format=commanderMode?"commander-40":"arena-brawl";if(!localDeck.has("format") || !opponentDeck.has("format") || !format.equals(localDeck.get("format").getAsString()) || !format.equals(opponentDeck.get("format").getAsString()))throw new IllegalArgumentException("Commander queue and both deck policies must match");}else if(localDeck.has("format") || opponentDeck.has("format"))throw new IllegalArgumentException("Commander decks require their matching scenario");}
         else if(localDeck!=null || opponentDeck!=null)throw new IllegalArgumentException("Imported decks require custom-duel");
@@ -2789,7 +2933,7 @@ public final class ForgeLandEngine {
             }
             RegisteredPlayer registered=commanderGame() && !(zombieHorde && !players.isEmpty())?RegisteredPlayer.forVariants(commanderPod?podSize:2,EnumSet.of(commanderMode?GameType.Commander:GameType.Brawl),deck,Collections.emptyList(),false,Collections.emptyList(),new forge.deck.CardPool()):new RegisteredPlayer(deck);
             if(zombieHorde){registered.setStartingLife(players.isEmpty()?HordeRules.SURVIVOR_STARTING_LIFE:20);if(!players.isEmpty())registered.setStartingHand(0);}
-            players.add(registered.setPlayer(new LocalSeat(name,players.isEmpty())));
+            players.add(registered.setPlayer(new LocalSeat(name,multiplayer || players.isEmpty())));
         }
         Match match=new Match(rules,players,"Arena local practice");
         game=new PresentedGame(players,rules,match);seatPlayers.clear();seatPlayers.addAll(game.getPlayers());local=seatPlayers.get(0);opponent=seatPlayers.get(1);
@@ -2802,7 +2946,7 @@ public final class ForgeLandEngine {
             try(PrintWriter log=new PrintWriter(Files.newBufferedWriter(ipc.resolve("engine-journal.jsonl")))){
                 journal=log;
                 try{match.startGame(game);}catch(StopRequested ex){System.exit(0);}
-                finishLiveRequests();write(ipc.resolve("state.json"),snapshot());
+                finishLiveRequests();publishState();
                 journal.println(new Gson().toJson(Map.of("event","normal-game-finished","state",snapshot())));journal.flush();
             }
         }
@@ -2985,7 +3129,7 @@ public final class ForgeLandEngine {
             }
             if(fixtureConfig.has("fixtureActiveSeat") && fixtureConfig.get("fixtureActiveSeat").getAsInt()==2){game.getPhaseHandler().devModeSet(PhaseType.MAIN1,opponent,false,2);game.getPhaseHandler().setPriority(local);game.getPhaseHandler().onStackResolved();}
         }
-        write(ipc.resolve("state.json"),snapshot());
+        publishState();
         try(PrintWriter log=new PrintWriter(Files.newBufferedWriter(ipc.resolve("engine-journal.jsonl"),StandardOpenOption.CREATE,normalGame()?StandardOpenOption.APPEND:StandardOpenOption.TRUNCATE_EXISTING))) {
             journal=log;
             journal.println(new Gson().toJson(Map.of("event",normalGame()?"terminal-service-ready":"ready","state",snapshot())));journal.flush();
@@ -3002,7 +3146,7 @@ public final class ForgeLandEngine {
                             for(JsonObject submission:deferredSubmissions){boolean conceded=submission.get("op").getAsString().equals("concede") && game.isGameOver() && local.conceded();boolean accepted=conceded || response.get("accepted").getAsBoolean();remember(submission,response(submission,accepted,conceded?"Forge processed local concession":accepted?"Forge completed submitted declaration":response.get("reason").getAsString()));}
                             deferredSubmissions.clear();currentRequest=null;
                         } else write(ipc.resolve("responses").resolve(id+".json"),response);
-                        write(ipc.resolve("state.json"),snapshot());Files.delete(path);
+                        publishState();Files.delete(path);
                     }
                 }
                 Thread.sleep(40);

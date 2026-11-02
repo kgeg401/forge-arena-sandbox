@@ -99,6 +99,7 @@
     "native commander slot and local format choice",
     "local sandbox pack opening",
     "native local deck browser",
+    "private two-player internet Commander with saved decks and 40 life",
     "solo 40-life 200-card Zombie/Horror reanimation Horde",
     "Horde with saved 99-card-plus-commander decks",
     "optional human Exert choices",
@@ -110,7 +111,7 @@
     "Gamba Gamba Yusri coin-flip Commander deck"
   ],
   "excluded": [
-    "network multiplayer",
+    "human multiplayer pods",
     "online matchmaking",
     "retail account services",
     "complete card support",

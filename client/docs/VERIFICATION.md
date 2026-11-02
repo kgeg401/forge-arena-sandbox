@@ -1,3 +1,20 @@
+# Private internet Commander: alpha 15.mp.1
+
+Two original native client processes, independent saved decks and public HTTPS
+transport have completed bounded real games through commander casts, combat
+damage and opposite native victory/defeat results. A second room reversed the
+host/guest roles without restarting either native client. Both returned Home;
+the guest result remained usable after the host closed the connection. Normal
+opening mulligans and off-turn concession also have real two-human Forge tests.
+These are tests on one PC through a public tunnel, not two households. No
+whole-catalogue or all-combination claim is implied. See [multiplayer setup](MULTIPLAYER.md).
+
+Room tests retain authentication, per-player hidden views, stale input rejection,
+duplicate-command handling, compatibility rejection and paired native display
+acknowledgements. Solo Horde preparation, token combat and ten-player bot
+spectating have separate regression checks. Historical results below retain
+their original scopes and do not establish later features by themselves.
+
 # Local updates after alpha 13
 
 The artwork update has rendered evidence for all 31 paper-card illustrations,

@@ -9,7 +9,7 @@ Use Manage-Updates.ps1 rollback to return to the previous build. Saved decks and
 # Forge Arena Sandbox
 
 An unofficial local Magic sandbox with Arena's installed presentation and Forge
-running the rules. **Windows x64. Experimental. Local bots only.**
+running the rules. **Windows x64. Experimental. Local bots and private two-player Commander.**
 
 ## Install once
 
@@ -56,7 +56,7 @@ A different build is rejected rather than changing your retail installation.
 - Opening the launcher again focuses the existing client instead of starting
   a second game.
 
-All queues create local games. Commander pods are one human and three or nine bots; Horde is solo against its scripted format. Network multiplayer and online matchmaking are not implemented.
+**Private Commander (Internet)** under Brawl connects two human players using their saved decks and 40 life. Choose Host or Join after Play; privately share the complete invitation. Both players need the same release. See [setup and limitations](docs/MULTIPLAYER.md). Commander pods remain one human and three or nine bots; Horde remains solo. Online matchmaking is not implemented.
 The Home menu, navigation, Play panel, deck widgets, pack chamber and game board
 reuse installed Arena assets. Local navigation and queue data replace the online
 services. Advertising, store/account controls and online reward panels are
@@ -74,7 +74,7 @@ sheets, duplicate protection, wildcard rewards and account collection syncing
 are not reconstructed. Opening a card does not add unsupported rule behavior.
 
 The game runs in a Windows AppContainer with **zero network capabilities**.
-The external installer/updater downloads prerequisites and adapter releases.
+The external installer/updater downloads prerequisites and adapter releases. A separate room worker provides private multiplayer through an authenticated temporary HTTPS tunnel; the host must stay open. See [connection and trust](docs/MULTIPLAYER.md).
 Your retail account, collection and saved settings are not used by the sandbox.
 
 ## Updates and saved files

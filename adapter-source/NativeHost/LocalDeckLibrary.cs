@@ -164,10 +164,10 @@ internal sealed class LocalDeckLibrary
     }
     public string[] MatchGaps(JObject deck,string? format=null)
     {
-        string commanderLabel=format=="SandboxCommander" || format=="SandboxCommanderPod" || format=="SandboxCommanderTenPod" || format=="SandboxHordeCommander"?"Commander":"Brawl";
+        string commanderLabel=format=="SandboxCommander" || format=="SandboxCommanderInternet" || format=="SandboxCommanderPod" || format=="SandboxCommanderTenPod" || format=="SandboxHordeCommander"?"Commander":"Brawl";
         var gaps=new List<string>();int count=((JObject)deck["main"]!).Properties().Sum(p=>(int)p.Value);
         var commanders=((JObject)deck["commander"]!).Properties().ToArray();
-        bool brawl=format=="SandboxBrawl" || format=="SandboxCommander" || format=="SandboxCommanderPod" || format=="SandboxCommanderTenPod" || format=="SandboxHordeCommander" || (format==null && (commanders.Length>0 || (string?)deck["format"]=="arena-brawl"));
+        bool brawl=format=="SandboxBrawl" || format=="SandboxCommander" || format=="SandboxCommanderInternet" || format=="SandboxCommanderPod" || format=="SandboxCommanderTenPod" || format=="SandboxHordeCommander" || (format==null && (commanders.Length>0 || (string?)deck["format"]=="arena-brawl"));
         if(brawl)
         {
             if(commanders.Length!=1 || commanders.Sum(p=>(int)p.Value)!=1)gaps.Add(commanderLabel+" requires exactly one commander.");

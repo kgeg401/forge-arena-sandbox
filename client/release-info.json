@@ -1,9 +1,9 @@
 {
-  "version": "0.2.0-alpha.14.rail.10",
-  "displayVersion": "0.2.0 Alpha 14.10",
-  "headline": "Interaction-tested token efficiency, Zombie Horde and ten-player Commander",
+  "version": "0.2.0-alpha.15.mp.1",
+  "displayVersion": "0.2.0 Alpha 15 \u2014 Private Commander",
+  "headline": "Private internet Commander \u2014 play with a friend",
   "testRelease": true,
-  "gameplaySource": "b204733f92be40fd09e220ba71f6fef724e6289d",
+  "gameplaySource": "8d9b5e781f557c165496e21ab236b71d8dd24677",
   "admittedNames": [
     "Plains",
     "Island",

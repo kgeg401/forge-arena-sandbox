@@ -1,5 +1,9 @@
 # Forge Arena Sandbox — development workspace
 
+Internet multiplayer now has a **Private Commander (Internet)** queue, saved-deck
+selection and Host/Join flow for two humans at 40 life. See [setup and limitations](packaging/public-docs/MULTIPLAYER.md)
+and [the implementation evidence](docs/multiplayer-2026-11-02.md).
+
 Local development now includes an **experimental four-player Commander pod**:
 one human and three Forge bots. See [the pod implementation and validation
 notes](docs/commander-pod.md). This is not a claim that the published download
