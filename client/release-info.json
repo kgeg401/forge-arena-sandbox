@@ -1,9 +1,9 @@
 {
-  "version": "0.2.0-alpha.15.mp.2",
-  "displayVersion": "0.2.0 Alpha 15.2 \u2014 Private Commander",
-  "headline": "Private internet Commander \u2014 play with a friend",
+  "version": "0.2.0-alpha.15.mp.3",
+  "displayVersion": "0.2.0 Alpha 15.3 - Shared Deck Library",
+  "headline": "Shared starter decks and collection",
   "testRelease": true,
-  "gameplaySource": "c45f40439f15edeaa9a5c947f50ced1755f3ada1",
+  "gameplaySource": "585d53eeaa96b725add28a0308baec544200ad8e",
   "admittedNames": [
     "Plains",
     "Island",

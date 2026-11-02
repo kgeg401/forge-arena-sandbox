@@ -105,7 +105,7 @@
 - Final host check: no Forge TCP socket and no established Arena connection observed; Arena has ancillary listen0.0.0.0:62455. Mono debugger explicitly disabled. Exact listener owner component unconfirmed (module-level diagnostic requires elevation); no authentication changes made. Native startup logs show blocked DNS attempts. Network restrictions kept intact. Source-mapping audit also checks base creature stats.
 
 
-## 2026-10-21 pack-opening hour (16:27:49–17:27:49 UTC)
+## 2026-10-21 pack-opening hour (16:27:49â€“17:27:49 UTC)
 
 Route: original owned booster chamber/prefabs and native reveal machinery, scoped local inventory adapters in the existing zero-capability AppContainer. Retail installation and account balances remain unchanged. Added source-derived private catalog: 51 sets / 13,326 eligible primary printings, 100 initial packs per set, explicitly custom 5C/2U/1R-or-M collation. LocalPackProfile atomically commits debit, all collection gains and idempotent receipt, preserves backup. PackProfileProbe: 15 checks pass; native audit currently 22 checks across three actual pack transactions, 24 copies. Final bulk/render evidence still being collected.
 
@@ -121,7 +121,7 @@ Failed attempts preserved privately: first startup used stale status and sent pr
 - Atlas accepted both chapter25 and the updated25-chapter22:49compilation, marked Read13:19America/New_York and explicitly acknowledged both, including the stated limits. Native attachment receipt retained privately; no Library API/ID was available. Practice regression opens a healthy normal custom-duel, seven-card mulligan, sessiona7aa8353-551b-419a-bd73-edc8e44d748c, no bridge gap. Returned to ready WOE pack carousel, balances88/99/99 and112copies unchanged. Source catalog builder now independently checks the pinned collation assembly and retains the enum-evidence digest as well as the owned database hash.
 # 2026-10-21 Arena-only catalogue and Hare checkpoint
 
-User timebox: 18:09:23–18:39:23 UTC, no dev log. Reused the existing offline lab,
+User timebox: 18:09:23â€“18:39:23 UTC, no dev log. Reused the existing offline lab,
 owned SQLite and installed Forge scripts. Generated coverage: 20,159 printings,
 16,140 names, 15,814 unique script candidates, 326 unmatched; candidates are not
 playable coverage. Stripping localization rich-text tags recovered 612 matches.
@@ -361,7 +361,7 @@ Final production-policy checkpoint passed25 stable stages and272 engine assertio
 - Curated eight-deck starter metadata, native two-button deletion confirmation, a clear sandbox window caption and player-facing release guides are implemented for the next fresh-profile acceptance pass. All packaged corresponding source is authored; original assets and decompiled references remain private.
 - Admission stays at the verified 252 main-deck names and the two verified Brawl commanders. The unrelated working-tree Paradox admission/test/deck remains excluded. No general-card or complete retail UI parity claim is made.
 
-## 2026-10-22 — Persistent native menu input acceptance
+## 2026-10-22 â€” Persistent native menu input acceptance
 
 Preserved a dedicated instance of the installed CustomUIInputModule and EventSystem with the menu lifetime. Native match scene unloading had destroyed the prior input system while leaving the restored menu visible. The menu input is inactive during a match and restored on return.
 
@@ -369,7 +369,7 @@ Installed acceptance 0.2.0-alpha.0.5: physical Home-to-Decks selection, original
 
 Authored consumer docs distinguish source-reused UI from complete parity, local Forge queues from online matchmaking, and 252 admitted main names from the searchable catalogue. Public source fixtures passed 44 updater, 22 startup, 39 prerequisites and 33 coordinator checks.
 
-## 2026-10-22 — 0.01 alpha published and installed
+## 2026-10-22 â€” 0.01 alpha published and installed
 
 Published v0.2.0-alpha.1 titled 0.01 alpha: https://github.com/kgeg401/forge-arena-sandbox/releases/tag/v0.2.0-alpha.1 . Public source commit 770fec26af7e85a9151b8835243a2aa4612732bc passed 164 hosted Windows source checks. ZIP SHA-256 6b5d5b7ad47527f7e0cd0127253871dd8bfba307facaf8a4c09b4248d676c8df; anonymous public download validated all 110 manifested files. Final package scan: 111 files, zero failures/warnings. Actual test.3 activation/rollback: 12 checks; final installer rejection preflight: 5.
 
@@ -380,36 +380,36 @@ Updated the existing Desktop Forge Arena Sandbox shortcut to the dedicated publi
 Evidence: D:/GAMES/CodexAssets/ForgeArenaSandbox/research/alpha-client-20261022/final-release-acceptance.json . The release retains the verified 252-name admission policy. Unverified Paradox work was preserved in the developer checkout and excluded from shipping. No complete UI parity, general-card coverage, multiplayer or recipient-PC installation claim.
 
 
-## 2026-10-22 — Deathtouch catalogue checkpoint278
+## 2026-10-22 â€” Deathtouch catalogue checkpoint278
 
 Added generic human deathtouch damage allocation and verified 26 source-exact keyword-only creatures. Both supported Forge distributions pass208 cast/payment/resolution,290 per-card combat and29 cross-keyword assertions each. All26 original models/art and all26 original native casts/Resolve callbacks pass. Native damage Done submits one response with1+1 damage; both reach blockers and Nighthawk die and life becomes22/20. Two normal shuffled human/AI matchups finish. The baseline252 regression passes25 stages and272 assertions. Hash-linked promotion requires1,210 family assertions and all independent source/native gates. New audited main-deck count278; published0.01 alpha remains252, and unfinished Paradox work stays excluded. Details and remaining16,092 names: docs/deathtouch-checkpoint.md. No publication or devlog.
 
 
-## 2026-10-22 — Installed278 and consolidated update preparation
+## 2026-10-22 â€” Installed278 and consolidated update preparation
 
 The committed278-name policy passes25 stable stages and272 assertions independently of the252 baseline. Both distributions produce byte-identical rules classes. A normally shuffled native match finishes on turn14 after145 original control actions, life-9/13, without a fidelity gap. Bounded QA resumes the same session without replaying accepted inputs. Native QA now distinguishes rejected unpublished observations from failures after accepted actions; four boundary checks pass.
 
 Package construction compiles current rules instead of copying a stale cache. The unpublished0.2.0-alpha.2 candidate passes16 source/dependency/binary checks,12 real update/rollback checks and5 negative installer checks. Six promotion-boundary checks reject incomplete/changed evidence or existing receipts. Normalized policy output matches committed bytes. Installed the private candidate locally with backup/rollback; all14 original deck records and eight other profile files remain unchanged. Added Black Green Deathtouch, verified its native import and Practice queue admission, and started an installed match through original controls. Public0.01 alpha stays unchanged at252. The remaining16,092 names are grouped by joint capability gaps; nine existing-effect candidates still require full verification. No publication or devlog.
 
 
-## 2026-10-22 — Installed checkpoint acceptance
+## 2026-10-22 â€” Installed checkpoint acceptance
 
 Installed private0.2.0-alpha.2 completes a naturally shuffled Practice Bot game on turn12,36 original control actions, life-8/15, no fidelity gap. No replay seed is exposed or invented. Physical result Continue returns Home; physical Decks navigation works in the same native PID27384. The root launcher returns0 and focuses that existing process. Client is left Home with the saved Black Green Deathtouch practice deck. All14 prior deck records remain identical. Native QA now re-reads the engine after observing the screen and defers disagreeing automatic-yield snapshots; accepted inputs remain ineligible for resending. Family and package counts retain their bounded scopes. Final private receipt: research/catalogue-hour-20261022/checkpoint-278.json. No GitHub publication.
 
 
-## 2026-10-22 — Release admission boundary
+## 2026-10-22 â€” Release admission boundary
 
 Package creation now requires an explicit committed gameplay checkpoint; the unrelated working admission draft cannot silently supply release policy. Two boundary checks reject missing gameplay selection before creating output and preserve existing staged packages. Installed278, its saved profiles and public releases are unchanged by this build-time guard.
 
 
-## 2026-10-22 — Isolated conditional card batch testing
+## 2026-10-22 â€” Isolated conditional card batch testing
 
 Added source-pinned research runtime preparation, declarative input-driven spell suites, independent bounded workers, incremental reports, missing-branch accounting, exclusive runtime leases and resume/retry with immutable prior attempts. Repaired owner-thread failure exit after discovering Forge replaces the default uncaught exception handler during initialization. Final build passes33 conditional/illegal-color cases and355 assertions across nine existing-effect candidates, plus one eight-spell interaction sequence and104 assertions:34 cases,459 assertions. Existing draw/cleanup/decking regression passes15 assertions. Six real fixture boundaries and eleven schema/false-coverage guards pass. Deliberate wrong life expectation is grouped as a life failure while the next case passes; resume, retry, input-drift rejection and concurrent-lease rejection are exercised. Final-build resume performs no new engine runs.
 
 Seven cards cover every currently authored headless branch; Life Goes On still needs actual creature-death coverage and Sphinx's Insight needs opponent-main-phase coverage. All nine retain source-equivalence, native-controls/assets and full-match admission gates. No new card admission, installation, publication or devlog. Installed278 and unrelated Paradox drafts remain unchanged. Evidence: D:/GAMES/CodexAssets/ForgeArenaSandbox/research/card-batch-20261022/guard-revision ; workflow: docs/card-batch-testing.md.
 
 
-## 2026-10-22 — Five-hour catalogue engineering, first milestone
+## 2026-10-22 â€” Five-hour catalogue engineering, first milestone
 
 Research database reuse uses a fresh bridge classloader, game/session and IPC per case, bounded retirement and owned-process watchdogs. Initial33 cases match all95 cold/warm journal entries (UUID renaming only), measured31.876s warm versus352.248s cold. Research human controls explicitly map7 public callbacks, reject85 inherited AI callbacks and audit9 final delegators against pinned parent bytecode. Fixed basic-land payment and mandatory taps are explicit supported automation. Eight authored schema2 target/history scenarios pass153 assertions both ways and match58 records, including actual death/turn expiry for Life Goes On, opponent-main Sphinx, target legality/cancel/stale/hexproof/zone changes.
 
@@ -450,7 +450,7 @@ Complete-match QA now records legitimate fizzles separately and never credits th
 
 Profiles: installed11 files and research8 files backed up under session-backup. Research metadata/plugin originals also retained there. The unfinished Paradox Engine policy, verifier and practice deck are preserved outside committed package admission. No GitHub publication is authorized by this checkpoint.
 
-### Installed 370-card acceptance — completed
+### Installed 370-card acceptance â€” completed
 
 Private0.2.0-alpha.4 adds92 names over the278 baseline:23 creatures,8 positive pumps,2 fixed draw/life,28 removal,13 fixed creature damage,11 signed modifiers and7 conditional draw/life spells. The final59 review references1846 artifacts; all rehash successfully. Current-source targeted validation totals477 cases/10301 assertions,62 fresh-process references/672 exactly matching journal records,24 complete shuffled engine games,899 original native checks and59 native model/art checks. Final production regression passed25 stages/272 engine assertions/three complete games. The compiled package passed17 checks; updater fixtures44. An actual update/rollback/reapply preserved11 profile files and restored the update preference.
 
@@ -1104,3 +1104,10 @@ Add one packaged/public game-mode guide with exact Horde/tenplayer menu names; c
 Add a dependency-free two-player private-room transport, sole-owner Forge IPC adapter, guest-seat projection and 77 bounded source/HTTP/IPC checks. Exact invitation/build/session/revision/decision ownership, private views, at-most-once inputs, held disconnects, actual acknowledgement/rejection, metadata redaction and offered-action gates are explicit. No HTTP file/debug/rules-publication API. Private generated Java prototype gives both players human controllers; product Java/native source unchanged.
 
 Actual public HTTPS case: two scripted processes on this PC, real Forge Commander startup/three lands and commander cast for both/combat/concession, 123 accepted actions. Latest-adapter local HTTP case: 423 accepted real actions/20 turns/targeted Winds of Rebuke/cross-player commander return/concession. Exact 424 published views per seat replay through current bridge/original Arena parser, 848 messages each, one opposite result each. Not two PCs, rendered multiplayer or general interaction parity. Failed fixture/coverage/driver cases retained; approximate initial replay was not a published-stream proof. All tests stay private and bounded. Host/Join menu, native unsolicited updates/input, audited product human controller, complete build pins/deck exchange and two-PC acceptance remain. New modules excluded from release allowlist; installed Alpha14.10, saved decks, GitHub and updater channel unchanged. See docs/multiplayer-2026-11-02.md and the per-run private receipts.
+
+
+## 2026-11-02 - Shared starter decks and collection
+
+Snapshot the actual installed library: 26 saved decks and 521 collection printing entries/928 copies. Distribute only names, formats, four exact-printing piles and collection counts; exclude original profile/deck IDs, account/sign-in data, pack balances, opening receipts, favorites and timestamps. Launcher merges before the native profile owner starts and never writes into an already running client. Same-name edits/higher collection counts and unrelated progress remain. Inline once-only receipts plus atomic per-file writes/backups permit safe partial-I/O retries without repeated grants. Old text starter labels align with shared names to prevent fresh-profile duplicates.
+
+47 shared-content checks, 25 startup, 44 updater and55 coordinator checks pass. Actual original native deck/pack storage classes accept all26 exact decks, all admission checks have no gaps, and a real native pack opening is rewarded once with receipts preserved across reload. This is storage/admission evidence, not exhaustive effect testing or new complete matches for all26. Native gameplay/rules source remains unchanged. Package, update/rollback and publication receipts are maintained in ForgeArenaSharedStarters-20261102; no original assets or private profiles are distributed. Existing live match/profile untouched during preparation.

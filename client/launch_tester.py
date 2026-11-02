@@ -128,6 +128,8 @@ def start_client(args,owned):
     if running:
         focus_native(int(running['ProcessId']))
         return dict(ready=True,reused=True,version=manifest['version'],mode='client',nativePid=running['ProcessId'])
+    from starter_content import seed_profile
+    seed_profile(app,lab)
     ipc=lab/'forge-ipc'
     if (ipc/'backend-process.json').exists():
         old=read_json(ipc/'backend-process.json');running=next((p for p in procs if p['ProcessId']==old['pid']),None)

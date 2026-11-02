@@ -16,6 +16,10 @@ def check(label,condition):
 
 sets={s['collationId']:s for s in catalog['sets']}
 spent=Counter();owned=Counter();ids=[]
+for grant_id,grant in profile.get('starterGrants',{}).items():
+    check('starter grant has a committed once-only receipt',grant_id in profile.get('starterContent',[]) and isinstance(grant,dict))
+    check('starter grant records positive printing quantities',all(k.isdecimal() and type(v) is int and v>0 for k,v in grant.items()))
+    owned.update(grant)
 for receipt in profile['openings']:
     check('receipt has a unique request ID',receipt['id'] not in ids);ids.append(receipt['id'])
     col=sets[receipt['collationId']];spent[receipt['collationId']]+=receipt['quantity']

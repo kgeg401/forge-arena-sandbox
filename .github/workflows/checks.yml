@@ -24,7 +24,7 @@ jobs:
           $reportFolder = Join-Path $env:RUNNER_TEMP 'sandbox-checks'
           New-Item -ItemType Directory -Path $reportFolder -Force | Out-Null
           $env:FORGE_ARENA_TEST_OUTPUT = $reportFolder
-          foreach ($name in @('verify_tester_updates', 'verify_startup_updates', 'verify_dependencies', 'verify_client_service', 'verify_match_archives', 'verify_multiplayer_room', 'verify_multiplayer_rules', 'verify_multiplayer_view', 'verify_multiplayer_presentation')) {
+          foreach ($name in @('verify_starter_content', 'verify_tester_updates', 'verify_startup_updates', 'verify_dependencies', 'verify_client_service', 'verify_match_archives', 'verify_multiplayer_room', 'verify_multiplayer_rules', 'verify_multiplayer_view', 'verify_multiplayer_presentation')) {
             python -X utf8 -B (Join-Path 'development/workspace/packaging' ($name + '.py')) > (Join-Path $reportFolder ($name + '.json'))
             if ($LASTEXITCODE -ne 0) { throw ($name + ' failed') }
           }

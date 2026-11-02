@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.2.0 alpha 15.mp.3 - Shared starter decks and collection
+
+- Every new profile receives the current 26 saved decks and 521 collection entries/928 copies, with original exact-printing piles. Includes Emry, Jace, Darien, Gamba Gamba, Miirym and Zaxara.
+- Existing profiles receive missing starters once; same-name deck edits, higher card counts, unopened packs and opening history are preserved. Safe retry after a partial write and backups before replacement.
+- No account/sign-in information, original profile/deck IDs or private history is shared. This does not change an official Arena account.
+- Native deck/collection storage checks and all 26 admission checks pass. Gameplay/rules binaries are unchanged from 15.2; exhaustive deck interaction and two-household multiplayer testing remain open.
+
 ## 0.2.0 alpha 15.mp.2 - Private internet Commander
 
 - Two human players choose saved Commander decks at 40 life through Brawl > Private Commander (Internet), then Host or Join with a private invitation. No port forwarding.
@@ -82,7 +89,7 @@
 - Native whole-sequence tests cover mana values 0, 2, 3 and an uncounterable 4-mana spell, exact colorless output, correct following main phase, pool clearing and no repeat on the next turn.
 - Existing running matches need the client reopened to load the corrected binding.
 
-## 0.2.0 alpha 7 — Jace Superfriends Brawl
+## 0.2.0 alpha 7 â€” Jace Superfriends Brawl
 
 - Adds the exact 100-card Jace Superfriends Brawl starter, led by Jace, Multiverse Architect.
 - Pins the official Forge 2.0.16 snapshot containing his rules; automatic private engine upgrade retains rollback copies.
@@ -93,7 +100,7 @@
 
 # Changes
 
-## 0.2.0-alpha.6 — smoother turn flow
+## 0.2.0-alpha.6 â€” smoother turn flow
 
 - Advances empty rules steps without the repeated pause at each substep.
 - Restores original turn banners, phase indicators and contextual Next / To Combat / End Turn controls.
@@ -108,7 +115,7 @@ shared-card-mechanics research. Close and reopen the dedicated launcher to updat
 Setup.exe is only needed for a new installation. Decks and collection are preserved.
 
 
-## 0.2 alpha — 370 supported cards
+## 0.2 alpha â€” 370 supported cards
 
 Update version: `0.2.0-alpha.5`.
 

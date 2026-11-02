@@ -11,6 +11,10 @@ Use Manage-Updates.ps1 rollback to return to the previous build. Saved decks and
 An unofficial local Magic sandbox with Arena's installed presentation and Forge
 running the rules. **Windows x64. Experimental. Local bots and private two-player Commander.**
 
+Every profile starts with the shared **26 saved decks** and **521 collection
+entries / 928 copies**. Updates add missing starters once and preserve your own
+decks and progress. See [starter content](docs/STARTER-CONTENT.md).
+
 ## Install once
 
 1. Install MTG Arena separately and let it finish downloading its game content.

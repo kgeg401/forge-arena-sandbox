@@ -4,6 +4,10 @@ Internet multiplayer now has a **Private Commander (Internet)** queue, saved-dec
 selection and Host/Join flow for two humans at 40 life. See [setup and limitations](packaging/public-docs/MULTIPLAYER.md)
 and [the implementation evidence](docs/multiplayer-2026-11-02.md).
 
+The shared starter library adds the current 26 saved decks and 521 collection
+printing entries (928 copies) to new and existing profiles without overwriting
+personal content. See [merge behavior and validation](packaging/public-docs/STARTER-CONTENT.md).
+
 Local development now includes an **experimental four-player Commander pod**:
 one human and three Forge bots. See [the pod implementation and validation
 notes](docs/commander-pod.md). This is not a claim that the published download
@@ -39,8 +43,9 @@ Forge and the pinned runtimes; saved data stays outside version folders.
 - `DeckBackend`, `PackBackend`: local deck and sandbox pack metadata.
 - `packaging`: installer, updater, dependency pins, public documentation and
   explicit release allowlists.
-- `decks`: practice inputs. Only `packaging/starter-decks.json` entries are seeded
-  into profiles. Existing saved deck objects are retained.
+- `decks`: practice inputs selected by `packaging/starter-decks.json`.
+  `packaging/starter-content.json` also seeds the shared exact-printing library
+  and collection. Existing saved deck objects are retained.
 - `ForgeBackend/draft_policies`: disabled research, including Paradox Engine;
   these policies are explicitly research-only and not consumer admission.
 

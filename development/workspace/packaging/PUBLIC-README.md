@@ -3,7 +3,7 @@
 A local Magic sandbox using your installed Arena's original screens, cards and
 animations. Forge runs the bot and supported rules.
 
-**[Download the gameplay alpha for Windows](https://github.com/kgeg401/forge-arena-sandbox/releases/tag/v0.2.0-alpha.15.mp.2)**
+**[Download the gameplay alpha for Windows](https://github.com/kgeg401/forge-arena-sandbox/releases/tag/v0.2.0-alpha.15.mp.3)**
 
 Download **ForgeArenaSandbox-Windows.zip** from that release. GitHub's **Code >
 Download ZIP** contains source code, not the installable client.
@@ -30,6 +30,10 @@ Allow space for an independent Arena copy; setup checks the required space.
 ## Play
 
 **Horde and ten-player Commander are included.** See [all game modes and exact menu locations](docs/GAME-MODES.md).
+
+**Shared starter content:** every profile receives the project's 26 saved decks
+and 521 collection entries (928 copies). Existing decks and collection progress
+are retained. [How starter content is added](docs/STARTER-CONTENT.md).
 
 **Play with a friend:** choose **Brawl > Private Commander (Internet)** with a saved deck, then Host or Join. Two humans, 40 life, private invitation; both need the same build. [Full setup and limits](docs/MULTIPLAYER.md).
 
