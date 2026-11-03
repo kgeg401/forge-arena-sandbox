@@ -9,7 +9,7 @@ selection and Host/Join flow for two humans at 40 life. See [setup and limitatio
 and [the implementation evidence](docs/multiplayer-2026-11-02.md).
 
 The shared starter library adds the current 26 saved decks and 521 collection
-printing entries (928 copies) to new and existing profiles without overwriting
+printing entries (928 copies) to new and existing installations without overwriting
 personal content. See [merge behavior and validation](packaging/public-docs/STARTER-CONTENT.md).
 
 Local development now includes an **experimental four-player Commander pod**:

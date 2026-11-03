@@ -68,6 +68,7 @@ internal sealed class NativeDeckScreen
     public void Hide(){CancelDrag();if(_dirty)Save();_details?.Hide();_advanced?.gameObject.SetActive(false);_surface?.ClearTransientPresentation();if(_wrapper!=null)_wrapper.gameObject.SetActive(false);if(_manager!=null)_manager.gameObject.SetActive(false);}
     public void FlushProfile(){if(_dirty && _deck!=null){_library!.Save(_deck);_dirty=false;_log("Saved pending local deck changes on client exit.");}}
     public LocalDeckLibrary Library=>_library!;
+    public TMP_InputField NameInputTemplate=>_list!.DeckNameInput;
     public List<DeckViewInfo> DeckInfos()=>_library!.Decks.OfType<JObject>().Select(GetInfo).ToList();
     public JObject DeckById(Guid id)=>Find(id.ToString());
     public void EditDeck(Guid id)=>Edit(id.ToString());

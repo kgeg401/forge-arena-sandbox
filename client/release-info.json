@@ -1,9 +1,9 @@
 {
-  "version": "0.2.0-alpha.15.mp.8",
-  "displayVersion": "0.2.0 Alpha 15.8 - File Lock Repair",
-  "headline": "Keep gameplay running during transient status-file locks",
+  "version": "0.2.0-alpha.15.mp.9",
+  "displayVersion": "Alpha 15.9",
+  "headline": "Shared profiles, native friend rooms and recovery repairs",
   "testRelease": true,
-  "gameplaySource": "1cef8f29e35a4914ed70c0b1291af173ae9309d7",
+  "gameplaySource": "05d2676a234cdce94847ad63d3221a836a6560bb",
   "admittedNames": [
     "Plains",
     "Island",

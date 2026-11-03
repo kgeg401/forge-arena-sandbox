@@ -12,11 +12,13 @@ private runtimes. You do not need to install Forge yourself.
 
 ## Why does Check Arena reject my installation?
 
-This alpha supports only the Arena files identified in `requirements.json`:
-Client0.1.14517.1329972 / Unity 6000.3.14f1 and the matching downloaded card
-database. Finish Arena's content download if that database is missing. A newer
-or modified build requires a separately tested compatibility update; changing
-the version label does not make it compatible.
+Setup checks complete fingerprints for the supported Arena installations:
+standalone Client0.1.14589.1332174, its separately pinned Steam executable, and
+retained standalone Client0.1.14517.1329972 copies. Each needs its matching
+libraries and downloaded card database. Finish the official game's content
+download before checking it. See [supported builds and troubleshooting](ARENA-COMPATIBILITY.md).
+Unknown or mixed builds require a compatibility update; changing a version label
+does not make them compatible.
 
 Keep an existing sandbox and its saved profile intact when reporting a failed
 check. The installer does not patch or downgrade the retail game.

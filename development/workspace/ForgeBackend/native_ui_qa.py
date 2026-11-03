@@ -1,9 +1,9 @@
 """One observed action through the original native UI; never writes engine requests."""
 from pathlib import Path
-import json,time,sys,uuid
+import json,time,sys,uuid,os
 from runtime_paths import ROOT
 LAB=ROOT/'native-lab'
-OUT=ROOT/'research/native-ui'
+OUT=Path(os.environ.get('FORGE_ARENA_QA_OUTPUT',str(ROOT/'research/native-ui')))
 OUT.mkdir(parents=True,exist_ok=True)
 
 def read(name):return json.loads((LAB/name).read_text(encoding='utf-8-sig'))

@@ -25,7 +25,7 @@ internal sealed class ForgeLandBridge
     private readonly SharedJsonFile _networkFile;
     private long _networkRevision;
     private bool _networkAwaitPresentation;
-    private bool NetworkMatch=>(bool?)_state["networkMatch"]==true;
+    internal bool NetworkMatch=>(bool?)_state["networkMatch"]==true;
     private bool NetworkWaiting=>NetworkMatch && (int?)_state["inputSeat"]!=1;
     private readonly AsyncJsonRead _responseFile=new AsyncJsonRead(path=>JObject.Parse(ReadShared(path)));
     private readonly LocalGreConnection _connection;
@@ -35,6 +35,8 @@ internal sealed class ForgeLandBridge
     private readonly JObject _keywordBindings;
     private readonly JObject _typeBindings;
     private readonly Dictionary<int,int> _ids = new Dictionary<int,int>();
+    private Dictionary<int,JToken> _sentObjects=new Dictionary<int,JToken>();
+    private readonly bool SparseObjectLab;
     private readonly Dictionary<(int Source,int Seat,int NativeSource),List<int>> _coinReveals=new Dictionary<(int,int,int),List<int>>();
     private JObject _state;
     private readonly string _session;
@@ -68,8 +70,8 @@ internal sealed class ForgeLandBridge
     private bool _slowRequestReported;
     public double RulesWaitSeconds => _pending == null ? 0 : Math.Max(0, _seconds() - _pendingStarted);
     public bool RulesCalculationSlow => _pending != null && RulesWaitSeconds >= 15;
+    internal long ReadRetries=>_responseFile.Retries+_decisionFile.Retries+_networkFile.Retries;
     private void BeginRulesWait(){_pendingStarted=_seconds();_slowRequestReported=false;}
-    private DateTime? _decisionReadDeniedSince;
     public string? Gap { get; private set; }
     internal string? PendingResearchRequestId => _pending;
     internal int ResearchInstanceId(int forgeId)=>_ids[forgeId];
@@ -132,6 +134,7 @@ internal sealed class ForgeLandBridge
         var clock=System.Diagnostics.Stopwatch.StartNew();_seconds=seconds??(()=>clock.Elapsed.TotalSeconds);
         _autoOrderTriggers=autoOrderTriggers??(()=>true);
         _autoChooseReplacementEffects=autoChooseReplacementEffects??(()=>false);
+        SparseObjectLab=File.Exists(Path.Combine(root,"sparse-object-updates-lab.flag"));
         _ipc=researchIpc??Path.Combine(root,"forge-ipc");_wire=Path.Combine(_ipc,"native-wire.jsonl");_connection=connection;_log=log;_presentedState=presentedState;_submitAutomaticPass=submitAutomaticPass;_fullControl=File.Exists(Path.Combine(root,"full-control-test.flag"));
         _decisionFile=new SharedJsonFile(Path.Combine(_ipc,"decision.json"));
         _networkFile=new SharedJsonFile(Path.Combine(_ipc,"network-view.json"));
@@ -178,6 +181,7 @@ internal sealed class ForgeLandBridge
         SubmitQuietPass("spectate");
     }
     public string PlayerName(int seat)=>(string?)((JArray?)_state["players"])?.SingleOrDefault(p=>(int)p["seat"]! == seat)?["name"] ?? (seat==1?"Local Player":"Opponent");
+    public string PlayerAvatar(int seat)=>(string?)((JArray?)_state["players"])?.SingleOrDefault(p=>(int)p["seat"]! == seat)?["avatar"] ?? (seat==1?LocalIdentityLibrary.DefaultAvatar:AvatarIdConstants.Sparky);
     private void ExtendPodTemplate()
     {
         if(PlayerCount==2)return;
@@ -554,6 +558,7 @@ internal sealed class ForgeLandBridge
         state["type"]="GameStateType_Full";state["gameStateId"]=_stateId;state["pendingMessageCount"]=NetworkWaiting?0:1;
         state["gameInfo"]=GameInfo();
         state["zones"]=Zones();state["gameObjects"]=new JArray(VisibleCards(_state).Select(CardObject));
+        if(SparseObjectLab && ((JArray)state["gameObjects"]!).Select(c=>(int)c["instanceId"]!).Distinct().Count()==((JArray)state["gameObjects"]!).Count)_sentObjects=((JArray)state["gameObjects"]!).ToDictionary(c=>(int)c["instanceId"]!);
         int turnAnnotationId=(int)_stateId*100;state["annotations"]=NativeTurnProtocol.Changes(null,_state,ref turnAnnotationId);state["persistentAnnotations"]=new JArray(TargetAnnotations().Concat(SharedCounterProtocol.Persistent(_state,id=>_ids[id])).Concat(SharedAttachmentProtocol.Persistent(_state,id=>_ids[id])).Concat(SharedKeywordProtocol.Persistent(_state,id=>_ids[id],_keywordBindings,_cardManifest)));state.Remove("diffDeletedInstanceIds");
         state["players"]=Players();state["turnInfo"]=TurnInfo();
         state["actions"]=new JArray(Offers().Select(a=>new JObject{["seatId"]=1,["action"]=a.DeepClone()}));
@@ -765,15 +770,8 @@ internal sealed class ForgeLandBridge
         if(File.Exists(progressPath))
         {
             JObject? progress=null;
-            try{progress=_decisionFile.Read();_decisionReadDeniedSince=null;}
-            catch(FileNotFoundException){_decisionReadDeniedSince=null;}
-            catch(UnauthorizedAccessException){
-                // Windows can report access denied while an atomically replaced
-                // file is delete-pending. Retry on a later frame, never sleep on
-                // Unity's thread. A persistent ACL failure must still stop.
-                _decisionReadDeniedSince??=DateTime.UtcNow;
-                if(DateTime.UtcNow-_decisionReadDeniedSince.Value>TimeSpan.FromSeconds(1))throw;
-            }
+            try{progress=_decisionFile.Read();}
+            catch(FileNotFoundException){}
             if(progress!=null && (string?)progress["session"]==_session && (string?)progress["parentRequestId"]==_pending && (string?)progress["token"]!=_lastDecisionToken)
             {
                 _responseFile.Forget();_lastDecisionToken=(string)progress["token"]!;_pending=null;AdoptState((JObject)progress["state"]!);return;
@@ -862,12 +860,15 @@ internal sealed class ForgeLandBridge
         }
         var priorAbilities=(JArray?)prior["stackAbilities"] ?? new JArray();
         var nextAbilities=(JArray?)_state["stackAbilities"] ?? new JArray();
-        foreach(var ability in nextAbilities.Where(a=>!priorAbilities.Any(p=>(int)p["forgeId"]! == (int)a["forgeId"]!))){
+        // Preserve stack order while making membership linear for large trigger piles.
+        var priorAbilityIds=priorAbilities.Select(a=>(int)a["forgeId"]!).ToHashSet();
+        var nextAbilityIds=nextAbilities.Select(a=>(int)a["forgeId"]!).ToHashSet();
+        foreach(var ability in nextAbilities.Where(a=>!priorAbilityIds.Contains((int)a["forgeId"]!))){
             int source=(int)ability["sourceForgeId"]!;
-            var sourceCard=Cards(prior).FirstOrDefault(c=>(int)c["forgeId"]! == source) ?? Cards(_state).First(c=>(int)c["forgeId"]! == source);
+            var sourceCard=priorCardsById.TryGetValue(source,out var priorSource)?priorSource:Cards(_state).First(c=>(int)c["forgeId"]! == source);
             annotations.Add(new JObject{["id"]=annotationId++,["affectorId"]=_ids[source],["affectedIds"]=new JArray(Id(ability)),["type"]=new JArray("AnnotationType_AbilityInstanceCreated"),["details"]=new JArray(Detail("source_zone",ZoneId(sourceCard)))});
         }
-        var resolvedAbilities=priorAbilities.Where(a=>!nextAbilities.Any(n=>(int)n["forgeId"]! == (int)a["forgeId"]!)).ToList();
+        var resolvedAbilities=priorAbilities.Where(a=>!nextAbilityIds.Contains((int)a["forgeId"]!)).ToList();
         foreach(var ability in resolvedAbilities)
             annotations.Add(new JObject{["id"]=annotationId++,["affectorId"]=oldIds[(int)ability["forgeId"]!],["affectedIds"]=new JArray(oldIds[(int)ability["forgeId"]!]),["type"]=new JArray("AnnotationType_ResolutionStart"),["details"]=new JArray(Detail("grpid",StackAbilityId(ability)))});
         // The owned TokenCreatedEventParser requires an explicit annotation;
@@ -956,8 +957,12 @@ internal sealed class ForgeLandBridge
         bool quiet=!GameOver && ShouldAutoPass(false);
         bool combatPriority=_renderedCombatPresentation && !quiet && !GameOver && !LocalPodEliminated && Decision==null && ((bool?)_state["canPass"]??false)
             && ((JArray?)_state["events"]??new JArray()).Any(e=>(long)e["id"]!>previousEventId && (string?)e["kind"]=="damage" && (bool?)e["combat"]==true);
+        var allObjects=new JArray(nowVisible.Select(CardObject).Concat(concealed));
+        bool sparseObjects=SparseObjectLab,uniqueObjects=!sparseObjects || allObjects.Select(c=>(int)c["instanceId"]!).Distinct().Count()==allObjects.Count;
+        // Private experiment: omit only exactly unchanged objects, never states/events.
+        var changedObjects=sparseObjects && uniqueObjects?new JArray(allObjects.Where(c=>!_sentObjects.TryGetValue((int)c["instanceId"]!,out var before) || !JToken.DeepEquals(before,c))):allObjects;
         var delta=new JObject { ["type"]="GameStateType_Diff",["gameStateId"]=_stateId,["prevGameStateId"]=previous,["pendingMessageCount"]=quiet || LocalPodEliminated || combatPriority || NetworkWaiting?0:1,
-            ["zones"]=Zones(retired),["players"]=Players(),["turnInfo"]=TurnInfo(),["gameObjects"]=new JArray(nowVisible.Select(CardObject).Concat(concealed)),["annotations"]=annotations,
+            ["zones"]=Zones(retired),["players"]=Players(),["turnInfo"]=TurnInfo(),["gameObjects"]=changedObjects,["annotations"]=annotations,
             ["persistentAnnotations"]=new JArray(TargetAnnotations().Concat(nextCounterState).Concat(nextAttachmentState).Concat(nextKeywordState)),
             ["diffDeletedInstanceIds"]=new JArray(resolvedAbilities.Select(a=>oldIds[(int)a["forgeId"]!]).Concat(vanishedTokens).Concat(vanishedCopies).Concat(eliminatedObjects).Distinct()),
             ["diffDeletedPersistentAnnotationIds"]=new JArray(((JArray)prior["stack"]!).Concat(priorAbilities).Where(c=>(((JArray?)c["targetForgeIds"])?.Count ?? 0)+(((JArray?)c["targetSeats"])?.Count ?? 0)>0 && !((JArray)_state["stack"]!).Concat(nextAbilities).Any(n=>(int)n["forgeId"]! == (int)c["forgeId"]!)).Select(c=>900000+(int)c["forgeId"]!)),
@@ -979,6 +984,7 @@ internal sealed class ForgeLandBridge
             ((JArray)delta["persistentAnnotations"]!).Add(new JObject{["id"]=annotationId++,["affectedIds"]=new JArray(Enumerable.Range(1,PlayerCount).Where(PlayerLost)),["type"]=new JArray("AnnotationType_LossOfGame"),["details"]=new JArray(new JObject{["key"]="reason",["type"]="KeyValuePairValueType_string",["valueString"]=new JArray(reason)})});
         }
         Queue(Parse(Envelope("GREMessageType_GameStateMessage",delta,"gameStateMessage")));
+        if(sparseObjects)_sentObjects=uniqueObjects?allObjects.ToDictionary(c=>(int)c["instanceId"]!):new Dictionary<int,JToken>();else _sentObjects.Clear();
         _quietAdvance=quiet;
         if(combatPriority){_combatPriorityRefresh=true;_requestId=0;}
         else if(quiet)_requestId=0;

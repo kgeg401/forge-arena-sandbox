@@ -10,7 +10,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/kgeg401/forge-arena-sandbox/releases/tag/v0.2.0-alpha.15.mp.8"><img src="docs/images/download-windows.svg" alt="Download the Windows alpha" width="296" height="60"></a>
+  <a href="https://github.com/kgeg401/forge-arena-sandbox/releases/tag/v0.2.0-alpha.15.mp.9"><img src="docs/images/download-windows.svg" alt="Download the Windows alpha" width="296" height="60"></a>
 </p>
 
 <p align="center">
@@ -41,7 +41,7 @@
 
 **Before you begin:** a Windows x64 PC, a fully downloaded installation of MTG Arena, and at least 20 GiB free. Setup checks compatibility and the space needed for its separate game copy.
 
-1. **Get the client.** Open the [Windows release](https://github.com/kgeg401/forge-arena-sandbox/releases/tag/v0.2.0-alpha.15.mp.8) and download **ForgeArenaSandbox-Windows.zip**.
+1. **Get the client.** Open the [Windows release](https://github.com/kgeg401/forge-arena-sandbox/releases/tag/v0.2.0-alpha.15.mp.9) and download **ForgeArenaSandbox-Windows.zip**.
 2. **Install once.** Extract the entire ZIP, open **Setup.exe**, and choose your Arena folder plus a separate sandbox destination. Select **Check Arena**, then **Install sandbox**. Setup handles Forge, Python if needed, and the private runtimes. The first download and game-file copy can take several minutes.
 3. **Play.** Open **Forge Arena Sandbox** from the installed folder. For a first match, choose **Play → Practice Bot → White-Lifegain**.
 
@@ -90,3 +90,7 @@ Rules are powered by [Card-Forge/Forge](https://github.com/Card-Forge/forge). Cr
 ---
 
 <sub>Unofficial, independent project. Not affiliated with Wizards of the Coast. MTG Arena and its assets belong to their respective owners and must be installed separately. Screenshots document gameplay; reusable Arena assets are not included in the download.</sub>
+
+## Alpha 15.9
+
+Shared cosmetic profiles, native private-room controls and recovery repairs. [Details](docs/ALPHA-15.9.md). Public matchmaking is planned, not included.

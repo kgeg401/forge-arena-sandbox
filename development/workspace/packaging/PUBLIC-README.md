@@ -1,106 +1,92 @@
-# Forge Arena Sandbox
+<h1 align="center">Forge Arena Sandbox</h1>
 
-A local Magic sandbox using your installed Arena's original screens, cards and
-animations. Forge runs the bot and supported rules.
+<p align="center">
+  <img src="docs/images/hero.svg" alt="Your decks. Your table. Play solo or bring a friend to Commander." width="1200">
+</p>
 
-**[Download the gameplay alpha for Windows](https://github.com/kgeg401/forge-arena-sandbox/releases/tag/v0.2.0-alpha.15.mp.8)**
+<p align="center">
+  A personal Magic sandbox with <strong>Arena's original presentation</strong> and <strong>Forge's rules engine</strong>.<br>
+  Solo matches, private Commander, and a few unusual ways to play.
+</p>
 
-Download **ForgeArenaSandbox-Windows.zip** from that release. GitHub's **Code >
-Download ZIP** contains source code, not the installable client.
+<p align="center">
+  <a href="https://github.com/kgeg401/forge-arena-sandbox/releases/tag/v0.2.0-alpha.15.mp.8"><img src="docs/images/download-windows.svg" alt="Download the Windows alpha" width="296" height="60"></a>
+</p>
 
-![The persistent native Home menu](docs/images/home.png)
+<p align="center">
+  <a href="#quick-start">Quick start</a> · <a href="#play-with-a-friend">Play with a friend</a> · <a href="docs/SCREENS.md">Screenshots</a> · <a href="docs/FAQ.md">Help</a>
+</p>
 
-*Actual sandbox capture. Original Arena presentation is loaded from the user's
-separate installation; game assets are not bundled with the client.*
+<p align="center"><sub>Windows x64 · Experimental alpha · MTG Arena installed separately</sub></p>
 
-## Install
+![An actual sandbox match with Emry on the battlefield](docs/images/emry-match.png)
 
-1. Install MTG Arena separately and finish downloading its game content.
-2. Extract the entire sandbox release ZIP and run **Setup.exe**.
-3. Choose your Arena folder and a separate sandbox folder. **Check Arena**
-   verifies compatibility; **Install sandbox** checks and installs everything.
-4. Open **Forge Arena Sandbox** in the installed folder. Its dedicated launcher
-   is **ForgeArenaSandbox.exe**.
+<p align="center"><sub>Actual sandbox gameplay. Arena artwork and presentation load from your own installation.</sub></p>
 
-Setup handles Forge, private Java/.NET runtimes and the loader. It installs the
-pinned official Python build if needed. Tested Arena builds are
-**Client0.1.14589.1332174** and **Client0.1.14517.1329972**, each with its matching
-database and Unity 6000.3.14f1. [Compatibility and tested boundaries](docs/ARENA-COMPATIBILITY.md).
-Allow space for an independent Arena copy; setup checks the required space.
+## Pick your next game
 
-## Play
+| Mode | Your table |
+| :--- | :--- |
+| **Practice & Brawl** | Test a deck against a Forge bot. Brawl uses 99 cards plus a commander and 25 life. |
+| **Commander duel** | Play a bot with 40 life, commander tax, and commander damage. |
+| **Private Commander** | Invite one friend over the internet. Two humans, your own decks, 40 life. |
+| **Commander pods** | Play with three or nine bots. The experimental ten-player mode attacks left until four players remain. |
+| **Zombie Horde** | Bring a commander deck against 200 Zombie/Horror cards. Start at 40 life, with preparation turns based on your commander's mana value. Solo for now. |
 
-**Horde and ten-player Commander are included.** See [all game modes and exact menu locations](docs/GAME-MODES.md).
+[See every mode, its rules, and where to find it →](docs/GAME-MODES.md)
 
-**Shared starter content:** every profile receives the project's 26 saved decks
-and 521 collection entries (928 copies). Existing decks and collection progress
-are retained. [How starter content is added](docs/STARTER-CONTENT.md).
+**A library to start with.** Every profile receives **26 saved decks** and a shared starter collection. Import Arena deck text, edit your list, or try one of the included builds. Decks, packs, collection progress, and preferences stay on your PC. [Starter content](docs/STARTER-CONTENT.md)
 
-**Play with a friend:** choose **Brawl > Private Commander (Internet)** with a saved deck, then Host or Join. Two humans, 40 life, private invitation; both need the same build. [Full setup and limits](docs/MULTIPLAYER.md).
+## Quick start
 
-- **Home > Play > Play:** choose Practice Bot and a valid deck. **White Lifegain**
-  is a straightforward first match.
-- **Home > Play > Brawl:** choose Brawl Bot and **Jace Superfriends Brawl**, **Emry Brawl**, or **Isamaru Brawl**.
-  These use 99 cards plus a commander, 25 life and a free first mulligan.
-- **Commander:** in the Brawl tab choose **Commander Bot (40 Life)** for one opponent, or **Commander Pod (4 Players)** for you and three easy Forge bots. These use 40 life, commander tax and 21 commander combat damage. The four-player table and public-zone controls are experimental. Choose **Commander Pod (10 Players - Experimental)** for one human and nine bots: attacks go left until four players remain, then may target anyone. The larger table uses a player rail and selectable watched boards.
-- **Zombie Horde:** choose **Zombie Horde (Commander Deck)** under Brawl to use a saved commander deck, or **Zombie Horde (Solo)** under Play for a practice deck. You start at 40 life against a 200-card Zombie/Horror Horde containing 52 revival cards. Commander prep turns equal the commander’s mana value (minimum one); practice decks get three. See [Horde rules and limits](docs/ZOMBIE-HORDE.md).
-- **Paper Darien:** select **FREAK-OFF Darien (Paper Commander)** in Commander Horde for the original 100-card paper list and six prep turns. Its 31 paper-only cards have working local presentation/rules mappings and load locally cached illustrations through the original renderer. See [deck details and limits](docs/PAPER-DARIEN.md).
-- **New practice decks:** visit Decks for **Fire and Growth** and **Trample and Growth**.
-- **Decks:** create, import Arena deck text, edit, duplicate, export and delete
-  local decks. The Brawl editor has the original commander slot.
-- **Packs:** use the original pack carousel, reveal animations and Continue
-  controls. Fresh profiles receive 100 sandbox packs for each supported set.
-- Finish or concede a game, then Continue to Home. Start another match without
-  restarting the client.
+**Before you begin:** a Windows x64 PC, a fully downloaded installation of MTG Arena, and at least 20 GiB free. Setup checks compatibility and the space needed for its separate game copy.
 
-The original deck search, color/land controls, advanced type/rarity/mana filters,
-card zoom and size controls are connected to local data. Graphics and audio use
-the native Options screens. Home, decks, packs and preferences persist locally.
-Upgraded installations retain their existing deck names and libraries.
+1. **Get the client.** Open the [Windows release](https://github.com/kgeg401/forge-arena-sandbox/releases/tag/v0.2.0-alpha.15.mp.8) and download **ForgeArenaSandbox-Windows.zip**.
+2. **Install once.** Extract the entire ZIP, open **Setup.exe**, and choose your Arena folder plus a separate sandbox destination. Select **Check Arena**, then **Install sandbox**. Setup handles Forge, Python if needed, and the private runtimes. The first download and game-file copy can take several minutes.
+3. **Play.** Open **Forge Arena Sandbox** from the installed folder. For a first match, choose **Play → Practice Bot → White-Lifegain**.
 
-## Latest interaction and efficiency update
+Using Steam? **Manage → Browse local files** opens the Arena folder to select. [Supported Arena builds and setup help](docs/ARENA-COMPATIBILITY.md)
 
-- Reuses visible-card projections during token changes to reduce repeated work. Real interaction checks cover token creation/combat, copies, hidden choices, phasing and Class level/reset behavior.
-- Null release checksums retain the verified installed client instead of stopping startup.
-- Recoverable display errors show the original Continue dialog; fatal errors offer Return Home without replacing another open dialog.
-- Small UI notices no longer reparse the entire board every second.
-- Future marked closed-match diagnostics are limited to three folders and 512 MiB. Older unmarked archives and saved decks are preserved; export and full-history options are in [Help](docs/FAQ.md).
-- Includes the previous rail updates: Arena-styled pod controls, elimination/spectator flow, paged commander damage, exile ordering, concurrent coin flips, combat protection and reduced rules-response memory retention.
+## Play with a friend
 
-## Alpha limits
+Choose **Brawl → Private Commander (Internet)**, select a saved Commander deck, and choose **Host** or **Join**. The host shares the complete private invitation and keeps their client open.
 
-**370 main-deck card names remain in the verified baseline.** Another **1,421 names** are enabled experimentally (1,791 primary names total). These include the Arena-compatible Moxfield pool, Zombie/Horror cards, paper Darien, Gamba Gamba and the newer creature-combo/copy decks. Experimental admission is not proof of every effect or interaction. See [coverage](docs/MOXFIELD-COVERAGE.md), [supported cards](docs/SUPPORTED-CARDS.md) and [verification](docs/VERIFICATION.md).
+Both players need the same current client build. **You can use different decks.** [Connection guide and limits →](docs/MULTIPLAYER.md)
 
-Mandatory triggers now use the original **Auto Order Triggers** preference and advance without an ordering prompt by default. **Auto Choose Replacement Effects** also works, using Forge's automatic chooser while retaining the manual override. Genuine target selections, optional effects and response windows remain. This release also connects the original spell-damage allocation controls and adds shared support for several targeting, channel, cycling, ninjutsu, Class and Battle scenarios.
+## Familiar from the first click
 
-Private Commander connects two humans over the internet. Horde is solo against a scripted format using Forge's rules and AI choices; Commander pods mean one human and three or nine bots on this PC. Human multiplayer pods, online matchmaking, retail account services, full card coverage and complete retail UI parity are unfinished. Packs use custom sandbox collation, without retail wildcard rewards, bonus sheets or duplicate protection. Opening a card does not enable its rules.
+| Choose your match | Open your packs |
+| :---: | :---: |
+| <img src="docs/images/brawl-queue.png" alt="Arena's original Play panel showing local Brawl decks" width="430"> | <img src="docs/images/packs.png" alt="The original Arena pack-opening presentation in the sandbox" width="430"> |
+| Original deck selection and commander controls. | Local packs, original reveal animations, saved balances. |
 
-Return Home or closing the client ends that match; player-facing durable match save/restore is not implemented. Decks, packs and preferences persist separately.
+Home, Decks, Packs, and Options use the installed game's presentation. Pack contents follow custom sandbox collation; retail wildcard rewards and duplicate protection are not reconstructed. [More screenshots](docs/SCREENS.md)
 
-[See the Brawl panel and a native Emry match](docs/SCREENS.md).
+## Know the alpha
 
-This is an unofficial experiment. Arena is required separately; its assets are
-not distributed here. The game runs with zero Windows network capabilities.
-The external installer/updater downloads prerequisites and adapter releases. A separate worker connects private rooms through a temporary authenticated HTTPS tunnel; the host must stay open. [Connection and trust](docs/MULTIPLAYER.md).
+**370 card names are in the verified baseline; another 1,421 are enabled experimentally.** Verification covers recorded scenarios, not every possible interaction. Experimental cards can still encounter an explicit unsupported-action gap. [Card coverage](docs/MOXFIELD-COVERAGE.md) · [Verification record](docs/VERIFICATION.md)
 
-## Update
+- Private rooms support **two humans**. Four- and ten-player pods use bots; Horde is solo.
+- Closing the client or returning Home **ends the match**. Durable match saves are unfinished; your decks, collection, packs, and settings persist separately.
+- Official Arena accounts, collections, rewards, and online matchmaking are not connected to this sandbox.
 
-Close the game and reopen **ForgeArenaSandbox.exe**. It checks GitHub and applies
-a newer release automatically. Running Setup.exe again is normally unnecessary.
-Saved decks, packs and settings stay outside the version folders and are backed
-up before updates. Failed/offline checks retain the verified installed version.
+## Updates are in the launcher
 
-An older test.3/test.6 launcher may show its old hub once after updating. Choose
-**Start practice** once; subsequent launches use the new dedicated launcher.
+Close all sandbox windows, then reopen **ForgeArenaSandbox.exe** or your desktop shortcut. The launcher checks for updates and backs up your saved profile before applying one. Use the launcher for future updates after the first setup.
 
-## Help and source
+[Release notes](CHANGELOG.md) · [Troubleshooting](docs/FAQ.md) · [Report a problem](https://github.com/kgeg401/forge-arena-sandbox/issues/new/choose)
 
-- [Installation, updates and troubleshooting](docs/FAQ.md)
-- [What has actually been tested](docs/VERIFICATION.md)
-- [Report a reproducible problem](https://github.com/kgeg401/forge-arena-sandbox/issues/new/choose)
-- [Developer notes and source layout](docs/DEVELOPMENT.md)
-- [Catalogue batch checks and development tools](development/README.md)
+<details>
+<summary><strong>Connection, credits, and project source</strong></summary>
 
-Dependencies retain their licenses. Credits include Card-Forge/Forge, BepInEx,
-Eclipse Adoptium, Microsoft .NET, Python and Google Gson. Development is AI
-assisted with OpenAI Codex. See [testing permission and attribution](LICENSE.txt).
+The game process runs in a Windows AppContainer with zero network capabilities. The separate installer/updater downloads prerequisites and client releases. Private Commander uses an external worker and an authenticated temporary HTTPS tunnel. [Connection and trust](docs/MULTIPLAYER.md)
+
+Rules are powered by [Card-Forge/Forge](https://github.com/Card-Forge/forge). Credits also include BepInEx, Eclipse Adoptium, Microsoft .NET, Python, and Google Gson. Development is assisted by OpenAI Codex. Dependencies retain their own licenses; see [testing permission and attribution](LICENSE.txt).
+
+[Developer guide](docs/DEVELOPMENT.md) · [Source and catalogue tools](development/README.md)
+
+</details>
+
+---
+
+<sub>Unofficial, independent project. Not affiliated with Wizards of the Coast. MTG Arena and its assets belong to their respective owners and must be installed separately. Screenshots document gameplay; reusable Arena assets are not included in the download.</sub>

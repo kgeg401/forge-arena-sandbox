@@ -9,6 +9,7 @@ from client_service import atomic,read,NativeLifetime
 from multiplayer_room import Room,RoomClient,RoomServer,RoomError
 from multiplayer_rules import RulesRoom
 from multiplayer_view import project_view,restore_action
+from profile_identity import selected_identity,public_identity
 
 TUNNEL_VERSION='2026.10.7'
 TUNNEL_SHA='2493dbc168923bb3e59e5e7716f71deced92992eea9acd6e9d74f84ac7751343'
@@ -30,7 +31,7 @@ def compatibility(root):
     semantic={k:manifest[k] for k in ('cards','keywordAbilityIds','typeEnumIds','sourceForgeScriptsSha256','policySha256')}
     classes={p.name:digest(p) for p in sorted((root/'build/ForgeBackend/classes').glob('ForgeLandEngine*.class'))}
     if not classes:raise ValueError('Missing two-player rules build')
-    transport={name:digest(Path(__file__).with_name(name)) for name in ('multiplayer_session.py','multiplayer_room.py','multiplayer_rules.py','multiplayer_view.py','client_service.py')}
+    transport={name:digest(Path(__file__).with_name(name)) for name in ('multiplayer_session.py','multiplayer_room.py','multiplayer_rules.py','multiplayer_view.py','profile_identity.py','client_service.py')}
     managed={'reviewedArenaFamily':family}
     return dict(protocol=1,rules=hashlib.sha256(json.dumps(classes,sort_keys=True).encode()).hexdigest(),forge=digest(root/'forge-runtime/forge.jar'),gson=digest(root/'forge-runtime/gson.jar'),native=digest(lab/'BepInEx/plugins/ForgeArenaSandbox/NativeHost.dll'),catalogue=hashlib.sha256(json.dumps(semantic,sort_keys=True,separators=(',',':')).encode()).hexdigest(),transport=hashlib.sha256(json.dumps(transport,sort_keys=True).encode()).hexdigest(),managed=hashlib.sha256(json.dumps(managed,sort_keys=True).encode()).hexdigest(),humanChoices=manifest.get('fullHumanChoices') is True)
 
@@ -49,15 +50,22 @@ def native_action(native,session,role):
 class Session:
     def __init__(self,config,ipc,deck):
         self.config=config;self.root=Path(config['privateRoot']);self.ipc=Path(ipc);self.deck=validated_deck(deck)
+        self.identity=selected_identity(self.root/'native-lab')
         self.children=[];self.logs=[];self.room=None;self.server=None;self.server_thread=None;self.client=None
         self.broker=None;self.engine=None;self.last_revision=-1;self.pending=None;self.ack=0;self.terminal=False
+        self.closed=False;self.context={};self.reports_enabled=False
+        context=maybe(self.ipc/'network-context.json')
+        if context is not None:
+            if not isinstance(context,dict) or set(context) not in ({'schema','clientSession','requestId'},{'schema','clientSession','requestId','reportsEnabled'}) or type(context.get('reportsEnabled',False)) is not bool or type(context['schema']) is not int or context['schema']!=1 or any(not isinstance(context[k],str) or str(uuid.UUID(context[k]))!=context[k] for k in ('clientSession','requestId')):raise ValueError('Invalid native room context')
+            self.context={k:context[k] for k in ('clientSession','requestId')}
+            self.reports_enabled=context.get('reportsEnabled',False)
         self.compat=compatibility(self.root);self.started=time.monotonic();self.join_id=str(uuid.uuid4())
         atomic(self.ipc/'network-build.json',self.compat)
         for name in ('requests','responses'):(self.ipc/name).mkdir(exist_ok=True)
     def stopped(self):return (self.ipc/'stop.request').exists()
     def check_stop(self):
         if self.stopped():raise InterruptedError('Room closed by this player')
-    def status(self,message,**extra):atomic(self.ipc/'network-status.json',dict(message=message,**extra))
+    def status(self,message,**extra):atomic(self.ipc/'network-status.json',dict(message=message,**self.context,**extra))
     def child(self,args,log):
         handle=log.open('w',encoding='utf8');self.logs.append(handle)
         process=subprocess.Popen(args,stdout=handle,stderr=subprocess.STDOUT,creationflags=subprocess.CREATE_NO_WINDOW)
@@ -85,7 +93,8 @@ class Session:
         if digest(pending)!=TUNNEL_SHA:raise ValueError('Internet helper download failed checksum verification')
         pending.replace(target);return target
     def host(self):
-        self.room=Room(self.compat,require_presentation=True);self.room.deck(self.room.host_token,self.deck)
+        self.room=Room(self.compat,require_presentation=True);self.room.profile(self.room.host_token,self.identity);self.room.deck(self.room.host_token,self.deck)
+        if self.context and self.reports_enabled:self.room.failure_callback=self.queue_peer_failure
         self.server=RoomServer(self.room);self.server_thread=threading.Thread(target=self.server.serve_forever,daemon=True);self.server_thread.start()
         binary=self.tunnel_binary();log=self.ipc/'tunnel.log';process=self.child([str(binary),'tunnel','--no-autoupdate','--protocol','http2','--url','http://127.0.0.1:'+str(self.server.server_port)],log)
         self.status('Creating a private internet room…');deadline=time.monotonic()+120;url=None
@@ -104,9 +113,16 @@ class Session:
         self.status('Copy the invitation to your brother. Keep this PC and client open.',invitation=url+'#'+self.room.invite)
     def join(self,code):
         url,token=invite(code);self.status('Joining the private room…')
-        response=RoomClient(url,token).call('/v1/join',dict(id=self.join_id,protocol=1,compatibility=self.compat))
-        self.role=2;self.client=RoomClient(url,response['token']);self.client.call('/v1/deck',self.deck)
-        self.status('Deck locked. Waiting for the host to start the match…')
+        deadline=time.monotonic()+90
+        while True:
+            self.check_stop()
+            try:
+                response=RoomClient(url,token).call('/v1/join',dict(id=self.join_id,protocol=1,compatibility=self.compat))
+                self.role=2;self.client=RoomClient(url,response['token']);self.client.call('/v1/profile',self.identity);self.client.call('/v1/deck',self.deck)
+                self.status('Deck locked. Waiting for the host to start the match…');return
+            except OSError:
+                if time.monotonic()>=deadline:raise TimeoutError('The room could not finish joining. Ask the host to create a new room.') from None
+                self.status('Connection interrupted while joining. Keeping your invitation and trying again…');time.sleep(.5)
     def start_rules(self):
         decks={role:validated_deck(self.room.decks[role]) for role in (1,2)}
         rules=self.ipc/'host-rules';rules.mkdir();atomic(rules/'scenario.json',dict(scenario='commander-human-duel',localDeck=decks[1],opponentDeck=decks[2],startingPlayerPolicy='coin-toss'))
@@ -116,6 +132,11 @@ class Session:
         self.rules_started=time.monotonic();self.status('Both decks are ready. Starting Commander…')
     def projected(self,packet):
         state=project_view(packet['state'],self.role);state['networkMatch']=True;state['networkRevision']=packet['revision']
+        profiles={int(k):public_identity(v) for k,v in packet.get('profiles',{}).items()}
+        if set(profiles)-{1,2}:raise ValueError('Unknown cosmetic player seat')
+        for player in state.get('players',[]):
+            original=self.role if player['seat']==1 else 3-self.role
+            if original in profiles:player.update(profiles[original])
         return state
     def tick(self):
         if self.room:
@@ -137,21 +158,21 @@ class Session:
         presented=maybe(self.ipc/'network-presented.json')
         if presented and presented.get('session')==packet['session'] and self.ack<presented.get('revision',0)<=packet['revision']:
             self.client.call('/v1/ack',presented);self.ack=presented['revision']
-        if self.pending is not None:
-            native,command=self.pending;response=self.client.call('/v1/command',command)
-            if response['status']=='completed' and (not response['accepted'] or packet['revision']>command['revision']):
-                atomic(self.ipc/'responses'/(native['id']+'.json'),dict(id=native['id'],session=native['session'],accepted=response['accepted'],reason=response['reason'],state=state));self.pending=None
         if self.pending is None:
             paths=sorted((self.ipc/'requests').glob('*.json'))
             if paths:
                 path=paths[0];native=read(path)
                 action=native_action(native,packet['session'],self.role)
                 command=dict(id=str(uuid.uuid4()),session=packet['session'],revision=packet['revision'],decisionToken=(packet['state'].get('decision') or {}).get('token'),action=action)
-                try:self.client.call('/v1/command',command)
-                except RoomError as error:
-                    atomic(self.ipc/'responses'/(native['id']+'.json'),dict(id=native['id'],session=native['session'],accepted=False,reason=str(error),state=state))
-                else:self.pending=(native,command)
-                path.unlink()
+                # Retain the same envelope before I/O: a lost reply is not a new action.
+                self.pending=(native,command,path)
+        if self.pending is not None:
+            native,command,path=self.pending
+            try:response=self.client.call('/v1/command',command)
+            except RoomError as error:response=dict(status='completed',accepted=False,reason=str(error))
+            if response['status']=='completed' and (not response['accepted'] or packet['revision']>command['revision']):
+                atomic(self.ipc/'responses'/(native['id']+'.json'),dict(id=native['id'],session=native['session'],accepted=response['accepted'],reason=response['reason'],state=state))
+                path.unlink(missing_ok=True);self.pending=None
     def run(self,choice):
         try:
             if choice['mode']=='host':self.host()
@@ -161,7 +182,7 @@ class Session:
             while not self.stopped():
                 if self.terminal and self.pending is None and self.ack>=self.last_revision:
                     self.wait_for_home();break
-                try:self.tick();missing_since=None
+                try:self.relay_failure();self.tick();missing_since=None
                 except RoomError as error:
                     if self.terminal:self.wait_for_home();break
                     raise
@@ -172,11 +193,27 @@ class Session:
                 time.sleep(.08)
         except InterruptedError:pass
         finally:self.close()
+    def queue_peer_failure(self,code):
+        atomic(self.ipc/'peer-failure.json',dict(schema=1,**self.context,code=code))
+    def relay_failure(self):
+        if getattr(self,'role',None)!=2 or not getattr(self,'context',None) or getattr(self,'_failure_relayed',False):return
+        if time.monotonic()<getattr(self,'_failure_poll_at',0):return
+        self._failure_poll_at=time.monotonic()+1
+        try:
+            path=self.root/'native-lab/client-failure.json'
+            if path.stat().st_size>4096:return
+            value=read(path)
+            if not isinstance(value,dict) or set(value)!={'schema','session','requestId','code'} or type(value['schema']) is not int or value['schema']!=1 or value['session']!=self.context['clientSession'] or value['requestId']!=self.context['requestId'] or value['code']!='NATIVE_DISPLAY_FAILED':return
+            result=self.client.call('/v1/report',dict(code='NATIVE_DISPLAY_FAILED'))
+            self._failure_relayed=isinstance(result,dict) and result.get('queued') is True
+        except (OSError,ValueError,KeyError,TypeError):pass
     def wait_for_home(self):
         # The finished result remains usable after the host closes its tunnel.
         self.status('Match finished. Return Home to play again.',boardReady=True)
         while not self.stopped():time.sleep(.2)
     def close(self):
+        if self.closed:return
+        self.closed=True
         if self.client:
             try:self.client.call('/v1/leave',{})
             except (OSError,ValueError):pass
@@ -197,13 +234,20 @@ def main(args):
     if not backend.is_dir():backend=app.parent/'ForgeBackend'
     sys.path.insert(0,str(backend));ipc=Path(args.ipc)
     if ipc.resolve()!=(Path(config['privateRoot'])/'native-lab/forge-ipc').resolve():raise ValueError('Wrong private match directory')
-    from multiplayer_lobby import lobby
-    session=Session(config,ipc,read(ipc/'network-deck.json'))
-    def work(choice):
-        try:session.run(choice)
-        except Exception as error:
-            atomic(ipc/'engine-error.json',dict(reason=str(error)));atomic(ipc/'network-status.json',dict(message=str(error),error=True));raise
-    lobby(ipc,session.deck['name'],work)
+    session=None
+    try:
+        from multiplayer_lobby import lobby
+        session=Session(config,ipc,read(ipc/'network-deck.json'))
+        lobby(ipc,session.deck['name'],session.run,context=session.context)
+    except Exception as error:
+        category='ROOM_CLOSED' if isinstance(error,RoomError) and error.status==410 else 'NETWORK_SESSION_FAILED'
+        try:
+            atomic(ipc/'engine-error.json',dict(reason=str(error),category=category))
+            atomic(ipc/'network-status.json',dict(message=str(error),error=True,**(session.context if session else {})))
+        except OSError:pass
+        raise
+    finally:
+        if session:session.close()
 
 if __name__=='__main__':
     parser=argparse.ArgumentParser();parser.add_argument('--config',required=True);parser.add_argument('--ipc',required=True);main(parser.parse_args())

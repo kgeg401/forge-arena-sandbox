@@ -1,9 +1,10 @@
 # Shared starter library
 
 Alpha 15.3 includes the current project library as defaults: **26 saved decks**
-and **521 collection printing entries, totaling 928 copies**. Every new local
-profile receives the same starter content, including Emry, Jace Superfriends,
-Darien, Gamba Gamba, Miirym Mass Arrival and Zaxara Copy Army.
+and **521 collection printing entries, totaling 928 copies**. Every new client
+installation receives the same starter content, including Emry, Jace Superfriends,
+Darien, Gamba Gamba, Miirym Mass Arrival and Zaxara Copy Army. Cosmetic name/avatar
+profiles share this library and do not repeat starter grants.
 
 Existing players receive missing starter decks at the next normal client launch.
 A saved deck with the same name is retained, including your edits. Collection

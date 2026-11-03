@@ -295,7 +295,7 @@ public sealed class Plugin : BaseUnityPlugin
             }
             StatusJsonFile.TryWrite(Path.Combine(_root, "native-host-status.json"), JsonConvert.SerializeObject(new
             {
-                utc = DateTime.UtcNow, phase = _phase, gap = _gap, scenes,
+                utc = DateTime.UtcNow, phase = _phase, gap = _gap, scenes, readRetries=_forge?.ReadRetries,
                 papa = papa != null, realDatabase = papa != null && papa.CardDatabase != null,
                 matchServices = papa != null && papa.Matchmaking != null,
                 nativeGameManager = game != null, nativeState = game != null ? game.CurrentGameState?.Id : null, presentationBusy = game != null && game.UXEventQueue.IsRunning,
@@ -425,8 +425,15 @@ public sealed class Plugin : BaseUnityPlugin
         // Installed ProfileUtilities names Ajani as its default-login fallback;
         // Sparky is the installed tutorial opponent constant. Let the original
         // PlayerCreatedMediator resolve portraits through the native asset tree.
-        manager.LocalPlayerInfo.AvatarSelection = "Avatar_Basic_AjaniGoldmane";
-        manager.OpponentInfo.AvatarSelection = AvatarIdConstants.Sparky;
+        manager.LocalPlayerInfo.AvatarSelection = _forge?.NetworkMatch==true?_forge.PlayerAvatar(1):LocalIdentityLibrary.DefaultAvatar;
+        JObject? cosmeticIdentity=null;
+        if(_forge?.NetworkMatch!=true)
+        {
+            cosmeticIdentity=new LocalIdentityLibrary(_root,id=>!string.IsNullOrEmpty(ProfileUtilities.GetAvatarBustImagePath(papa.AssetLookupSystem,id))).Current;
+            manager.LocalPlayerInfo.AvatarSelection=(string)cosmeticIdentity["avatar"]!;
+        }
+        manager.OpponentInfo.AvatarSelection = _forge?.NetworkMatch==true?_forge.PlayerAvatar(2):AvatarIdConstants.Sparky;
+        if(_forge?.NetworkMatch==true){manager.LocalPlayerInfo.ScreenName=_forge.PlayerName(1);manager.OpponentInfo.ScreenName=_forge.PlayerName(2);}
         var localPortrait=ProfileUtilities.GetAvatarBustImagePath(papa.AssetLookupSystem,manager.LocalPlayerInfo.AvatarSelection);
         var opponentPortrait=ProfileUtilities.GetAvatarBustImagePath(papa.AssetLookupSystem,manager.OpponentInfo.AvatarSelection);
         if(string.IsNullOrEmpty(localPortrait) || string.IsNullOrEmpty(opponentPortrait))throw new NotSupportedException("Installed native avatar portrait mapping is unavailable.");
@@ -447,6 +454,7 @@ public sealed class Plugin : BaseUnityPlugin
         var fixture = JObject.Parse(File.ReadAllText(Path.Combine(_root, "board-fixture.json")));
         var full = GREToClientMessage.Parser.ParseJson(fixture["messages"]![0]!.ToString(Formatting.None));
         _phase = "loading-native-match-scene";
+        if(cosmeticIdentity!=null)manager.LocalPlayerInfo.ScreenName=(string)cosmeticIdentity["name"]!;
         MatchSceneManager.Load(papa, "", () =>
         {
             try

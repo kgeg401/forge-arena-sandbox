@@ -25,8 +25,27 @@ import forge.model.FModel;
 
 /** Local practice-match adapter; the installed Forge engine owns game rules. */
 public final class ForgeLandEngine {
-    static final Gson JSON = new GsonBuilder().setPrettyPrinting().create();
+    static final Gson JSON = new Gson();
     static Path ipc;
+    static RequestWakeup requestWakeup;
+    // Wake on published requests, retaining timed stop checks and a polling fallback.
+    static final class RequestWakeup implements AutoCloseable {
+        WatchService watcher;
+        RequestWakeup(Path directory) {
+            try {
+                watcher=directory.getFileSystem().newWatchService();
+                directory.register(watcher,StandardWatchEventKinds.ENTRY_CREATE);
+            } catch(IOException|UnsupportedOperationException ex) {
+                close();System.err.println("Request notifications unavailable; retaining bounded polling: "+ex);
+            }
+        }
+        void await(long milliseconds) throws InterruptedException {
+            if(watcher==null){Thread.sleep(milliseconds);return;}
+            WatchKey key=watcher.poll(milliseconds,java.util.concurrent.TimeUnit.MILLISECONDS);
+            if(key!=null){key.pollEvents();if(!key.reset())close();}
+        }
+        public void close(){if(watcher!=null){try{watcher.close();}catch(IOException ignored){}watcher=null;}}
+    }
     static Game game;
     static final class PresentedGame extends Game {
         PresentedGame(Iterable<RegisteredPlayer> players,GameRules rules,Match match){super(players,rules,match);}
@@ -2492,7 +2511,7 @@ public final class ForgeLandEngine {
                         Files.delete(path);
                     }
                 }
-                Thread.sleep(25);
+                requestWakeup.await(25);
             }
             throw new StopRequested();
         }catch(StopRequested ex){throw ex;}catch(Exception ex){throw new RuntimeException(ex);}
@@ -2537,7 +2556,7 @@ public final class ForgeLandEngine {
                         if(advance){currentRequest=request;deferredSubmissions.add(request.deepCopy());if(commanderPod && local.hasLost())waitForPodExit();return selected==null?null:List.of(selected);}
                     }
                 }
-                Thread.sleep(25);
+                requestWakeup.await(25);
             }
             throw new StopRequested();
         }catch(StopRequested ex){throw ex;}catch(Exception ex){throw new RuntimeException(ex);}
@@ -2630,7 +2649,7 @@ public final class ForgeLandEngine {
                         remember(request,reply);
                     }
                 }
-                Thread.sleep(25);
+                requestWakeup.await(25);
             }
             if(normalGame())throw new StopRequested();
             throw new IllegalStateException("Stopped during a pending declaration");
@@ -2867,6 +2886,9 @@ public final class ForgeLandEngine {
         warmResearch=true;run(args);
     }
     static void run(String[] args) throws Exception {
+        try{runGame(args);}finally{if(requestWakeup!=null){requestWakeup.close();requestWakeup=null;}}
+    }
+    static void runGame(String[] args) throws Exception {
         // GuiDesktop initializes AWT helpers. An uncaught owner-thread failure
         // must not leave those helpers alive masquerading as a healthy backend.
         Thread.setDefaultUncaughtExceptionHandler((thread,error)->{error.printStackTrace();System.exit(1);});
@@ -2908,6 +2930,7 @@ public final class ForgeLandEngine {
             for(JsonElement item:podOpponentDecks){if(!item.isJsonObject())throw new IllegalArgumentException("Pod opponent deck must be an object");validateDeck(item.getAsJsonObject());if(!"commander-40".equals(item.getAsJsonObject().get("format").getAsString()))throw new IllegalArgumentException("Every pod deck must use Commander policy");}
         }else if(podOpponentDecks!=null)throw new IllegalArgumentException("Multiple opponent decks require Commander pod mode");
         Files.createDirectories(ipc.resolve("requests"));Files.createDirectories(ipc.resolve("responses"));
+        requestWakeup=new RequestWakeup(ipc.resolve("requests"));
         if(!warmResearch){
             GuiBase.setInterface(new GuiDesktop(){@Override public String getAssetsDir(){return runtime.toString()+File.separator;}});
             FModel.initialize(null,null);
@@ -3149,7 +3172,7 @@ public final class ForgeLandEngine {
                         publishState();Files.delete(path);
                     }
                 }
-                Thread.sleep(40);
+                requestWakeup.await(40);
             }
         }
         if(!warmResearch)System.exit(0);

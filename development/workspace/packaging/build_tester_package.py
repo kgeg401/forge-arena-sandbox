@@ -11,7 +11,8 @@ PRIVATE=Path(r'D:\GAMES\CodexAssets\ForgeArenaSandbox')
 ARENA=Path(r'D:\GAMES\MTGA')
 FORGE=Path.home()/'Games/Forge'
 LOADER=PRIVATE/'tools/BepInEx-5.4.23.5'
-OWN_SCRIPTS=('multiplayer_room.py','multiplayer_rules.py','multiplayer_view.py','multiplayer_session.py','multiplayer_lobby.py','install_tester.py','launch_tester.py','update_tester.py','rules_runtime.py','tester_common.py','match_archives.py','board_template.py','client_bootstrap.py','client_entry.py','client_service.py','setup_client.py','auto_install.py','dependencies.py','dependencies-lock.json','starter-decks.json','starter_content.py','starter-content.json','paper_art.py','paper-art.json','Setup.cmd','Start-Client.ps1','Manage-Updates.ps1','TESTER-README.md','LICENSE.txt')
+OWN_SCRIPTS=('multiplayer_room.py','multiplayer_rules.py','multiplayer_view.py','multiplayer_session.py','multiplayer_lobby.py','profile_identity.py','install_tester.py','launch_tester.py','update_tester.py','rules_runtime.py','tester_common.py','match_archives.py','board_template.py','client_bootstrap.py','client_entry.py','client_service.py','setup_client.py','auto_install.py','dependencies.py','dependencies-lock.json','starter-decks.json','starter_content.py','starter-content.json','paper_art.py','paper-art.json','Setup.cmd','Start-Client.ps1','Manage-Updates.ps1','TESTER-README.md','LICENSE.txt')
+OWN_SCRIPTS+=('failure_reports.py',)
 PYTHON_FILES=('ForgeBackend/runtime_paths.py','ForgeBackend/arena_catalog.py','ForgeBackend/card_support.py','ForgeBackend/start_backend.py','ForgeBackend/deck_import.py','ForgeBackend/experimental_cards.py','ForgeBackend/build_card_coverage.py','ForgeBackend/bridge_support.json','DeckBackend/build_deck_catalog.py','PackBackend/build_pack_catalog.py')
 
 def build(tag,output,gameplay_ref=None,headline='Public launcher and automatic update test',support_index=None,display_version=None,native_build_root=None,experimental_admission=None,forge_build_jar=None,arena_install=None):
@@ -153,8 +154,10 @@ def build(tag,output,gameplay_ref=None,headline='Public launcher and automatic u
         arenaFiles=arena_files,forgeJar=jar,forgeFiles=forge_files,
         forgeVariants=[dict(id='legacy-snapshot-08.31',jar=jar,files=forge_files),*stable.get('compatibilityVariants',[]),dict(id=stable.get('variant','official-2.0.15'),jar=stable_jar,files=stable['files'])],preferredForgeVariant=stable.get('variant','official-2.0.15'),loaderFiles=loader_files,
         admission=str(len(policy['verifiedNames']))+' explicitly admitted Arena names plus separately admitted commanders/tokens; no general-card support claim',features=['dedicated Windows client launcher','automatic startup updates','automatic Forge and runtime setup','persistent native Home/Decks/Packs/Play','normal practice bot matches','100-card Brawl bot matches','40-life Commander bot matches','four-player local Commander with one human and three bots','experimental shared table and public zones','native commander slot and local format choice','local sandbox pack opening','native local deck browser'],
-        excluded=['human multiplayer pods','online matchmaking','retail account services','complete card support','retail banlist/format legality','retail pack collation','automatic client-asset migration'])
+        excluded=['human multiplayer pods','public matchmaking queues','retail account services','complete card support','retail banlist/format legality','retail pack collation','automatic client-asset migration'])
     requirements['features']+=['private two-player internet Commander with saved decks and 40 life']
+    requirements['features']+=['local cosmetic names and avatars with shared decks and collection','in-client private room Host and Join']
+    requirements['features']+=['bounded code-only failure outbox with optional authenticated GitHub delivery','authenticated guest display-failure relay to the host']
     requirements['arenaVariants']=profiles['builds']
     requirements['arenaFamily']=profiles['family']
     # Pre-15.4 updaters read only the primary fingerprint. Retain their exact

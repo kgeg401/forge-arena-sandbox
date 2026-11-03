@@ -1,3 +1,5 @@
+**Alpha 15.9:** shared cosmetic profiles and recovery repairs. See [release details](docs/ALPHA-15.9.md). Public matchmaking is not included.
+
 # Experimental card catalogue
 
 This build enables 1421 additional experimental card names. The verified catalogue remains 370 names. See docs/VERIFICATION.md and docs/MOXFIELD-COVERAGE.md for tested scenarios and per-card coverage. Permission to start a match is not exhaustive proof of its effects or combos. Actual unmapped mechanics still report a gap.
@@ -11,7 +13,7 @@ Use Manage-Updates.ps1 rollback to return to the previous build. Saved decks and
 An unofficial local Magic sandbox with Arena's installed presentation and Forge
 running the rules. **Windows x64. Experimental. Local bots and private two-player Commander.**
 
-Every profile starts with the shared **26 saved decks** and **521 collection
+Each installation starts with the shared **26 saved decks** and **521 collection
 entries / 928 copies**. Updates add missing starters once and preserve your own
 decks and progress. See [starter content](docs/STARTER-CONTENT.md).
 
@@ -49,21 +51,29 @@ standalone assets. Unknown or mixed files are rejected without changing Arena.
 - **Ten-player Commander:** under Brawl choose **Commander Pod (10 Players - Experimental)** for you and nine Forge bots, 40 life, attacks to the nearest living opponent on your left until four remain, then normal legal opponents.
 - **Zombie Horde:** under Brawl choose **Zombie Horde (Commander Deck)** for a saved commander deck, or under Play choose **Zombie Horde (Solo)** for a practice deck. You start at 40 life against 200 Zombie/Horror cards with extensive revival. Commander preparation equals mana value (minimum one); practice gets three turns. See [all modes and controls](docs/GAME-MODES.md).
 - **Decks:** create, import Arena deck text, edit, duplicate, export or delete
-  local decks. Fresh profiles receive recommended starters. Choose Practice or Brawl when creating a deck. Click the deck
+  local decks. Fresh installations receive recommended starters. Choose Practice or Brawl when creating a deck. Click the deck
   header to change its local format. Brawl uses the native commander slot.
   Original search, color/land, type, rarity, mana and card-size controls are connected.
   Local deck changes also save on a normal client exit.
 - The original Graphics and Audio screens control local settings. Window size
   and fullscreen choice reopen from the saved profile, along with audio preferences.
 - **Packs:** open local sandbox packs using the original carousel, reveal
-  animations and card presentation. New profiles receive 100 packs for each
+  animations and card presentation. New installations receive 100 packs for each
   supported catalog set. Pack balances and collected cards persist locally.
 - Use the original in-match Options menu to concede. Continue from the result
   screen returns to Home. Another match does not require restarting the client.
 - Opening the launcher again focuses the existing client instead of starting
   a second game.
 
-**Private Commander (Internet)** under Brawl connects two human players using their saved decks and 40 life. Choose Host or Join after Play; privately share the complete invitation. Both players need the same release. See [setup and limitations](docs/MULTIPLAYER.md). Commander pods remain one human and three or nine bots; Horde remains solo. Online matchmaking is not implemented.
+**Profile** changes your local name and avatar. Cosmetic identities share the same decks, collection, packs and settings; creating one does not grant starter content again or create a separate account.
+
+Technical failures can queue an automatic report containing only the release
+version and a fixed failure code. Sending requires an existing GitHub CLI
+sign-in on this PC, or the host of a connected private match for a guest display
+failure. Otherwise reports remain local. No decks, collection, invitations or
+detailed logs are attached automatically. [Reporting and recovery limits](docs/FAILURE-REPORTS.md).
+
+**Private Commander (Internet)** under Brawl connects two human players using their saved decks and 40 life. Choose Host room or Join copied invite inside the client after Play; privately share the complete invitation. Both players need the same release. See [setup and limitations](docs/MULTIPLAYER.md). Commander pods remain one human and three or nine bots; Horde remains solo. Public matchmaking queues are not implemented.
 The Home menu, navigation, Play panel, deck widgets, pack chamber and game board
 reuse installed Arena assets. Local navigation and queue data replace the online
 services. Advertising, store/account controls and online reward panels are

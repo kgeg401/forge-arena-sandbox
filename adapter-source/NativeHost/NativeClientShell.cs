@@ -34,12 +34,14 @@ internal sealed class NativeClientShell
     private NativePackChamber? _packs;
     private NativeClientDialogs? _dialogs;
     private NativeDisplayProfile? _display;
+    private NativeProfileMenu? _profiles;
     private readonly MonoBehaviour _runner;
     private readonly Action _startMatch;
     private readonly Func<IEnumerator> _endMatch;
     private readonly Action _spectatePod;
     private readonly Func<JObject?> _matchNotice;
     private (string session,string message,bool recoverable)? _pendingBridgeFailure;
+    private string? _pendingFailureReport;
     private readonly HashSet<string> _reportedBridgeFailures=new HashSet<string>();
     private string _session="";
     private string? _matchRequest;
@@ -58,6 +60,11 @@ internal sealed class NativeClientShell
     private float _packsDeadline;
     private GameObject? _loading;
     private CustomButton? _cancel;
+    private CustomButton? _copyInvitation;
+    private bool _internetQueue;
+    private int _networkMenuStep;
+    private string? _networkInvitation;
+    private Action? _deferredMenuAction;
     private TMP_Text? _progress;
     private string _queueMessage="";
     private string _screen="starting";
@@ -83,13 +90,18 @@ internal sealed class NativeClientShell
         if(failure.session!=_rulesSession || _matchRequest==null || _returning)return;
         _reportedBridgeFailures.Add(failure.session+"\n"+failure.message);
         if(failure.recoverable)_dialogs.Show("Action not completed",failure.message+"\n\nYour match is still open. You can try another action.","Continue");
-        else _dialogs.Show("Local match display stopped",failure.message+"\n\nYour decks and collection are preserved.","Return Home",()=>{if(_matchActive)RequestReturn();else CancelQueue();});
+        else
+        {
+            _pendingFailureReport=JsonConvert.SerializeObject(new{schema=1,session=_session,requestId=_matchRequest,code="NATIVE_DISPLAY_FAILED"});
+            _dialogs.Show("Local match display stopped",failure.message+"\n\nYour decks and collection are preserved.","Return Home",()=>{if(_matchActive)RequestReturn();else CancelQueue();});
+        }
     }
     private static bool Owned(Component obj)=>_active!=null && (_active._constructing || (_active.Surface!=null && obj.transform.IsChildOf(_active.Surface.Root)));
     private static bool SkipOnline(Component __instance)=>!Owned(__instance);
     private static void Clear(UnityEventBase value){for(int i=0;i<value.GetPersistentEventCount();i++)value.SetPersistentListenerState(i,UnityEventCallState.Off);value.RemoveAllListeners();}
     private void Bind(CustomButton button,Action action){Clear(button.OnClick);button.Interactable=true;button.OnClick.AddListener(()=>Act(action));}
     private void Act(Action action){_error=null;try{action();}catch(Exception ex){_error=ex.ToString();_log(_error);_dialogs?.Show("Sandbox could not complete that action",ex.Message);}WriteStatus();}
+    private void DeferMenu(Action action){if(_deferredMenuAction==null)_deferredMenuAction=action;}
     public void Open()
     {
         if(_home!=null){Home();return;}
@@ -134,6 +146,7 @@ internal sealed class NativeClientShell
                 if(field.FieldType==typeof(GameObject) && (field.Name.EndsWith("Overlay") || field.Name.EndsWith("Lock") || field.Name.EndsWith("Indicator")))
                     (field.GetValue(_nav) as GameObject)?.SetActive(false);
             Bind(_nav.HomeButton,Home);Bind(_nav.DecksButton,Decks);Bind(_nav.PacksButton,Packs);
+            _nav.ProfileButton.gameObject.SetActive(true);Bind(_nav.ProfileButton,Profiles);
             _nav.OptionsButton.gameObject.SetActive(true);Bind(_nav.OptionsButton,()=>_runner.StartCoroutine(OpenSettings()));
             Home();
             _log("Original Home and navigation prefabs opened with offline routes.");
@@ -147,6 +160,13 @@ internal sealed class NativeClientShell
     private void Decks(){RequireMenu();_packs?.Hide();_play?.Hide();_home!.gameObject.SetActive(false);if(_decks==null)_decks=new NativeDeckScreen(_root,_papa,_log,Surface,_dialogs);_decks.Open();_screen="decks";Select(_nav!.DecksButton);}
     private void Packs(){RequireMenu();_play?.Hide();_decks?.Hide();if(_packs==null)_packs=new NativePackChamber(_root,_papa,_log,Surface);_packs.Open();_home!.gameObject.SetActive(false);_screen="packs";Select(_nav!.PacksButton);if(!_packs.Ready){_warmingPacks=true;_packsDeadline=Time.realtimeSinceStartup+60;_screen="loading-packs";Surface.Camera.enabled=false;_nav!.gameObject.SetActive(false);_dialogs!.ShowLoading("Preparing packs…");}}
     private void Play(){RequireMenu();_packs?.Hide();if(_decks==null){_decks=new NativeDeckScreen(_root,_papa,_log,Surface,_dialogs);_decks.Open();}_decks.Hide();_home!.gameObject.SetActive(true);if(_play==null)_play=new NativePlayMenu(_root,_papa,Surface,_decks,_runner,(q,id)=>Act(()=>Join(q,id)),id=>Act(()=>{_play?.Hide();Decks();_decks.EditDeck(id);}));_play.Open();_screen="play";}
+    private void Profiles()
+    {
+        RequireMenu();_packs?.Hide();_play?.Hide();
+        if(_decks==null){_decks=new NativeDeckScreen(_root,_papa,_log,Surface,_dialogs);_decks.Open();}_decks.Hide();
+        _profiles=_profiles??new NativeProfileMenu(_root,_papa,_dialogs!,_decks.NameInputTemplate,DeferMenu,Home);
+        _home!.gameObject.SetActive(true);_screen="profiles";Select(_nav?.ProfileButton);_profiles.Open();
+    }
     private void Send(string action,JObject? extra=null)
     {
         var value=extra??new JObject();value["schema"]=1;value["session"]=_session;value["id"]=Guid.NewGuid().ToString();value["action"]=action;
@@ -163,6 +183,7 @@ internal sealed class NativeClientShell
         var service=JObject.Parse(File.ReadAllText(target));if((string?)service["session"]!=_session || !new[]{"idle","cancelled","error"}.Contains((string?)service["phase"]) || !DateTimeOffset.TryParse((string?)service["utc"],out var heartbeat) || DateTimeOffset.UtcNow-heartbeat>TimeSpan.FromSeconds(15))throw new InvalidOperationException("The local match service is not ready. Close and reopen the client.");
         _matchRequest=Guid.NewGuid().ToString();
         _queuedDeckId=id;
+        _internetQueue=queue=="SandboxCommanderInternet";_networkMenuStep=0;_networkInvitation=null;
         _cancelRequested=false;_reportedServiceError=null;_rulesSession=null;_reportedPodElimination=false;_reportedUnavailableActions.Clear();_queuedAt=DateTime.UtcNow;
         var request=new JObject{["schema"]=1,["session"]=_session,["id"]=_matchRequest,["action"]="start",["queue"]=queue,["deckId"]=id.ToString()};
         string path=Path.Combine(_root,"client-service.request.json");if(File.Exists(path)){_matchRequest=null;throw new InvalidOperationException("A local match request is still pending.");}
@@ -185,7 +206,49 @@ internal sealed class NativeClientShell
         _home!.MainButton.gameObject.SetActive(false);
         _nav!.gameObject.SetActive(false);
     }
-    private void HideQueue(){_loading?.SetActive(false);_cancel?.gameObject.SetActive(false);_nav!.gameObject.SetActive(true);_home!.MainButton.gameObject.SetActive(true);}
+    private void HideQueue(){_copyInvitation?.gameObject.SetActive(false);_loading?.SetActive(false);_cancel?.gameObject.SetActive(false);_nav!.gameObject.SetActive(true);_home!.MainButton.gameObject.SetActive(true);}
+    private void SubmitNetworkChoice(bool host)
+    {
+        if(_matchRequest==null || !_internetQueue || _cancelRequested)return;
+        var choice=new JObject{["mode"]=host?"host":"join"};
+        if(!host)
+        {
+            string invitation=GUIUtility.systemCopyBuffer.Trim();
+            if(invitation.Length==0 || invitation.Length>2048 || !Uri.TryCreate(invitation,UriKind.Absolute,out var uri) || uri.Scheme!="https" || uri.Fragment.Length<2)
+            {_networkMenuStep=0;throw new InvalidOperationException("Copy the complete private invitation, including the part after #, then choose Join copied invite.");}
+            choice["invitation"]=invitation;
+        }
+        string path=Path.Combine(_root,"forge-ipc","network-choice.json");
+        if(File.Exists(path))throw new InvalidOperationException("A private room choice is already pending.");
+        File.WriteAllText(path+".pending",choice.ToString(Formatting.None));File.Move(path+".pending",path);
+    }
+    private bool PollNetworkLobby()
+    {
+        string path=Path.Combine(_root,"forge-ipc","network-status.json");if(!File.Exists(path))return false;
+        JObject status;using(var stream=new FileStream(path,FileMode.Open,FileAccess.Read,FileShare.ReadWrite|FileShare.Delete))using(var reader=new StreamReader(stream))status=JObject.Parse(reader.ReadToEnd());
+        if((string?)status["clientSession"]!=_session || (string?)status["requestId"]!=_matchRequest)return false;
+        if((string?)status["message"] is string message && _progress!=null)_progress.text=_queueMessage=message;
+        if((string?)status["lobbyPhase"]=="choose" && _networkMenuStep==0 && !_dialogs!.IsOpen)
+        {
+            _networkMenuStep=1;
+            _dialogs.Choose("Private Commander","Host a room, or copy your friend's complete invitation and join it. Two players, 40 life, your own saved decks.",new (string,Action)[]{
+                ("Host room",()=>DeferMenu(()=>SubmitNetworkChoice(true))),
+                ("Join copied invite",()=>DeferMenu(()=>SubmitNetworkChoice(false))),
+                ("Cancel",()=>DeferMenu(CancelQueue))});
+        }
+        if((string?)status["invitation"] is string invitation && invitation.Length>0)
+        {
+            _networkInvitation=invitation;
+            if(_copyInvitation==null)
+            {
+                _copyInvitation=UnityEngine.Object.Instantiate(_cancel!,_loading!.transform);_copyInvitation.name="Copy private invitation";
+                Bind(_copyInvitation,()=>{if(_networkInvitation!=null)GUIUtility.systemCopyBuffer=_networkInvitation;});_copyInvitation.SetText("Copy invitation");
+                ((RectTransform)_copyInvitation.transform).anchorMin=((RectTransform)_copyInvitation.transform).anchorMax=new Vector2(.5f,.4f);
+            }
+            _copyInvitation.gameObject.SetActive(true);
+        }
+        return true;
+    }
     private void CancelQueue(){if(_matchRequest==null || _cancelRequested)return;Send("cancel",new JObject{["matchRequestId"]=_matchRequest});_cancelRequested=true;_queueMessage="Cancelling the local match…";if(_progress!=null)_progress.text=_queueMessage;}
     private static bool ExitLocalMatch(MatchSceneManager __instance){if(_active==null || !_active._matchActive)return true;_active.RequestReturn();return false;}
     public void RequestReturn(){if(!_matchActive || _returning)return;_returning=true;_screen="returning-home";_runner.StartCoroutine(ReturnHome());}
@@ -250,11 +313,12 @@ internal sealed class NativeClientShell
         else if(new[]{"idle","cancelled","error"}.Contains(phase))
         {
             _error=phase=="error"?(string?)service["message"]:null;_matchRequest=null;HideQueue();Home();
-            if(_error!=null)_dialogs!.Show("Bot match could not start",_error);
+            if(_error!=null)_dialogs!.Show("Match could not start",_error);
         }
+        else if(_internetQueue && !_cancelRequested && PollNetworkLobby()){}
         else if(_progress!=null)_progress.text=_queueMessage=(string?)service["message"]??"Starting local match…";
     }
-    private void Select(CustomButton? selected){if(_nav==null)return;foreach(var b in new[]{_nav.HomeButton,_nav.DecksButton,_nav.PacksButton})b.GetComponent<Animator>()?.SetBool("Selected",b==selected);_nav.transform.SetAsLastSibling();}
+    private void Select(CustomButton? selected){if(_nav==null)return;foreach(var b in new[]{_nav.HomeButton,_nav.DecksButton,_nav.PacksButton,_nav.ProfileButton})b.GetComponent<Animator>()?.SetBool("Selected",b==selected);_nav.transform.SetAsLastSibling();}
     private IEnumerator OpenSettings()
     {
         var task=Pantry.Get<SettingsMenuHost>().Open();while(!task.IsCompleted)yield return null;
@@ -279,6 +343,13 @@ internal sealed class NativeClientShell
     }
     public void Poll()
     {
+        if(_pendingFailureReport!=null)
+        {
+            try{if(StatusJsonFile.TryWrite(Path.Combine(_root,"client-failure.json"),_pendingFailureReport))_pendingFailureReport=null;}
+            catch(Exception error) when(error is IOException || error is UnauthorizedAccessException || error is System.ComponentModel.Win32Exception){_pendingFailureReport=null;_log("The local failure report could not be queued.");}
+        }
+        // The original dialog invokes its callback before hiding itself.
+        if(_deferredMenuAction!=null && _dialogs?.IsOpen==false){var action=_deferredMenuAction;_deferredMenuAction=null;Act(action);}
         _display?.Poll();
         _decks?.Poll();
         _packs?.Poll();
@@ -302,7 +373,9 @@ internal sealed class NativeClientShell
                 if(value["expectedScreen"]!=null && (string?)value["expectedScreen"]!=_screen)throw new InvalidOperationException("The native screen changed; inspect again.");
                 switch((string?)value["op"])
                 {
-                    case "home":Home();break;case "decks":Decks();break;case "play":Play();break;case "packs":Packs();break;case "inspect":Dump();break;
+                    case "home":Home();break;case "decks":Decks();break;case "play":Play();break;case "packs":Packs();break;case "profiles":Profiles();break;case "inspect":Dump();break;
+                    case "dialog-button":_dialogs!.Click((string)value["label"]!);break;
+                    case "profile-name":_dialogs!.SetInput((string)value["text"]!);break;
                     case "resume-match":
                         RequireMenu();
                         var recovery=JObject.Parse(File.ReadAllText(Path.Combine(_root,"client-service-status.json")));
@@ -355,6 +428,6 @@ internal sealed class NativeClientShell
         }
         if(messages.Count>0)_dialogs.Show("Card action unavailable",string.Join("\n\n",messages)+"\n\nThe rest of the match can continue.","Continue");
     }
-    private void WriteStatus()=>StatusJsonFile.TryWrite(Path.Combine(_root,"client-ui-status.json"),JsonConvert.SerializeObject(new{utc=DateTime.UtcNow,screen=_screen,error=_error,nativeHome=_home!=null,nativeNavigation=_nav!=null,persistent=true,matchRequest=_matchRequest,matchActive=_matchActive,cancelRequested=_cancelRequested,queueMessage=_queueMessage,dialogOpen=_dialogs?.IsOpen,unavailableActionsReported=_reportedUnavailableActions.ToArray(),selection=_play?.Snapshot(),buttons=Surface==null?null:Surface.Root.GetComponentsInChildren<CustomButton>(false).Select(b=>new{name=b.name,enabled=b.Interactable,path=PathOf(b.transform)}).ToArray()},Formatting.Indented));
+    private void WriteStatus()=>StatusJsonFile.TryWrite(Path.Combine(_root,"client-ui-status.json"),JsonConvert.SerializeObject(new{utc=DateTime.UtcNow,screen=_screen,error=_error,nativeHome=_home!=null,nativeNavigation=_nav!=null,persistent=true,matchRequest=_matchRequest,matchActive=_matchActive,cancelRequested=_cancelRequested,queueMessage=_queueMessage,dialogOpen=_dialogs?.IsOpen,profileInputFocused=_dialogs?.NameInputFocused,dialogButtons=_dialogs?.Buttons(),unavailableActionsReported=_reportedUnavailableActions.ToArray(),selection=_play?.Snapshot(),buttons=Surface==null?null:Surface.Root.GetComponentsInChildren<CustomButton>(false).Select(b=>new{name=b.name,enabled=b.Interactable,path=PathOf(b.transform)}).ToArray()},Formatting.Indented));
     private static string PathOf(Transform node){var names=new List<string>();for(;node!=null;node=node.parent)names.Add(node.name);names.Reverse();return string.Join("/",names);}
 }

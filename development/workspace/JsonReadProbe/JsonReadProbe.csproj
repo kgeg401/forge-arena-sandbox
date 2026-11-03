@@ -4,4 +4,5 @@
     <Compile Include="../NativeHost/AsyncJsonRead.cs" Link="AsyncJsonRead.cs" />
     <Reference Include="Newtonsoft.Json"><HintPath>$(ArenaManagedDir)/Newtonsoft.Json.dll</HintPath></Reference>
   </ItemGroup>
+  <ItemGroup><Compile Include="../NativeHost/SharedJsonFile.cs" Link="SharedJsonFile.cs" /></ItemGroup>
 </Project>

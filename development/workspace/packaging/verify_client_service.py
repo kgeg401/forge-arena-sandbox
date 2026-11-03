@@ -136,7 +136,7 @@ try:check('A real kernel handle tracks the exact executable lifetime',life.alive
 finally:life.close()
 reject('An unrelated executable cannot satisfy native ownership',lambda:NativeLifetime(os.getpid(),Path(sys.executable).with_name('MTGA.exe')))
 with tempfile.TemporaryDirectory(prefix='forge-engine-failure-') as temp:
-    c=Coordinator.__new__(Coordinator);c.ipc=Path(temp)
+    c=Coordinator.__new__(Coordinator);c.ipc=Path(temp);c.internet=False
     check('An unreported engine exit keeps the recovery instruction','Return Home' in c.engine_failure())
     atomic(c.ipc/'engine-error.json',dict(session=str(uuid.uuid4()),reason='Unmapped triggered target from Bojuka Bog',recoverable=False))
     check('A reported rules failure reaches the client with its actual source','Unmapped triggered target from Bojuka Bog' in c.engine_failure())

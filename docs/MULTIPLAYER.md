@@ -13,11 +13,12 @@ each original Arena board receives only that player's permitted view.
 2. Save or import a valid Commander deck in **Decks**. Saved Brawl decks work here
    with the mode's 40-life rules and enabled sandbox card catalogue.
 3. Open **Home > Play > Brawl > Private Commander (Internet)**, choose the deck
-   and click **Play**. A small private-room window opens.
-4. One person clicks **Host**, waits for the invitation, then clicks **Copy
+   and click **Play**. The client opens its private-room dialog.
+4. One person clicks **Host room**, waits for the invitation, then clicks **Copy
    invitation** and privately sends it to their friend. Keep the entire invitation,
    including everything after `#`. This is the room's access secret.
-5. The other person pastes it into their room window and clicks **Join**. When both
+5. The other person copies the complete invitation and chooses **Join copied
+   invite** inside their client. When both
    decks are locked, the original game board opens, including play/draw and
    mulligan choices. Each player controls their own cards and response windows.
 6. Finish or concede through the original Options menu, then Continue to Home.
@@ -50,7 +51,7 @@ Two independent native clients on one PC have played through the public HTTPS
 route, with separate decks, hidden hands, mulligans, real casts and combat, and
 opposite native win/loss results. This is preparation for the first two-household
 test, not a claim that your particular networks or every card combination have
-been verified. Human four-/ten-player pods, Horde co-op, matchmaking and public
+been verified. Human four-/ten-player pods, Horde co-op, public matchmaking and public
 rooms are not included. Existing bot and solo modes remain available.
 
 If stuck, record the turn, card/action, both players' visible prompts and which

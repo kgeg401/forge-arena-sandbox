@@ -39,6 +39,7 @@ install=ROOT/'Test Installation';data=install/'data';(data/'forge-runtime').mkdi
 (data/'forge-runtime/forge.jar').write_bytes(b'authored fake engine fixture; not executable')
 profile=data/'native-lab/local-profile';profile.mkdir(parents=True)
 (profile/'decks.json').write_text('{"my deck":"never overwrite"}');(profile/'packs.json').write_text('{"cards":112,"packs":99}')
+profile_id=str(uuid.uuid4());(profile/'identities.json').write_text(json.dumps(dict(schema=1,revision=3,activeId=profile_id,profiles=[dict(id=profile_id,name='Shared collection profile',avatar='Avatar_Basic_Sparky')])))
 original={p.name:p.read_bytes() for p in profile.iterdir()}
 config=dict(schema=1,profileSchema=1,privateRoot=str(data));(install/'sandbox-install.json').write_text(json.dumps(config))
 

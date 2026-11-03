@@ -2,6 +2,7 @@
 import sys
 sys.dont_write_bytecode=True
 import copy,hashlib,hmac,json,re,secrets,threading,time,uuid
+from profile_identity import public_identity
 from http.server import BaseHTTPRequestHandler,ThreadingHTTPServer
 from urllib.parse import urlsplit
 from urllib.request import Request,build_opener,HTTPRedirectHandler
@@ -39,6 +40,20 @@ class Room:
         self.lock=threading.RLock();self.join_id=None;self.closed=False;self.revision=0;self.session=None;self.actor=None;self.views={};self.decision=None
         self.seen={1:time.monotonic(),2:0.0};self.requests={};self.pending=None;self.dispatched=False
         self.require_presentation=require_presentation;self.acknowledged={1:0,2:0};self.decks={}
+        self.profiles={}
+        self.failure_callback=None;self.reported_failures=set()
+
+    def report_failure(self,token,value):
+        with self.lock:
+            role=self.role(token)
+            if role!=2:raise RoomError(403,'Only the connected guest can relay a failure')
+            if not isinstance(value,dict) or set(value)!={'code'} or value['code']!='NATIVE_DISPLAY_FAILED':raise RoomError(400,'Only a fixed display failure code can be relayed')
+            if self.session is None:raise RoomError(409,'No active match')
+            if value['code'] in self.reported_failures:return dict(queued=True)
+            if self.failure_callback is None:return dict(queued=False)
+            try:self.failure_callback('NATIVE_DISPLAY_FAILED')
+            except OSError:return dict(queued=False)
+            self.reported_failures.add(value['code']);return dict(queued=True)
 
     def alive(self):
         if self.closed:raise RoomError(410,'Room closed')
@@ -67,17 +82,29 @@ class Room:
         with self.lock:
             role=self.role(token);now=time.monotonic();self.seen[role]=now
             return dict(protocol=PROTOCOL,player=role,revision=self.revision,session=self.session,inputPlayer=self.actor or 0,pendingAction=self.pending is not None,peerConnected=self.join_id is not None and now-self.seen[3-role]<30,
-                        readyPlayers=sorted(self.decks),phase='waiting-for-player' if self.join_id is None else 'waiting-for-rules' if self.session is None else 'match',state=copy.deepcopy(self.views.get(role)))
+                        readyPlayers=sorted(self.decks),profiles=copy.deepcopy(self.profiles),phase='waiting-for-player' if self.join_id is None else 'waiting-for-rules' if self.session is None else 'match',state=copy.deepcopy(self.views.get(role)))
+
+    def profile(self,token,value):
+        with self.lock:
+            role=self.role(token)
+            try:value=public_identity(value)
+            except ValueError:raise RoomError(400,'Use a valid local name and supported avatar') from None
+            if role in self.profiles:
+                if self.profiles[role]!=value:raise RoomError(409,'Identity is locked for this room')
+            elif self.session is not None:raise RoomError(409,'The match has already started')
+            self.profiles[role]=value;return dict(ready=True)
 
     def deck(self,token,value):
         with self.lock:
             role=self.role(token)
-            if self.session is not None:raise RoomError(409,'The match has already started')
             if not isinstance(value,dict) or set(value)!={'name','format','commander','cards'} or not isinstance(value['name'],str) or len(value['name'])>200 or value['format']!='commander-40':raise RoomError(400,'A Commander deck is required')
             entries=[value['commander']]+value['cards'] if isinstance(value['cards'],list) else []
             if not 2<=len(entries)<=100 or any(not isinstance(c,dict) or set(c)!={'name','count'} or not isinstance(c['name'],str) or not 1<=len(c['name'])<=200 or type(c['count']) is not int or not 1<=c['count']<=99 for c in entries):raise RoomError(400,'Invalid deck entries')
             if entries[0]['count']!=1 or sum(c['count'] for c in entries)!=100:raise RoomError(400,'Use 99 cards and one commander')
-            if role in self.decks and self.decks[role]!=value:raise RoomError(409,'Deck already locked for this room')
+            if role in self.decks:
+                if self.decks[role]!=value:raise RoomError(409,'Deck already locked for this room')
+                return dict(ready=True)
+            if self.session is not None:raise RoomError(409,'The match has already started')
             self.decks[role]=copy.deepcopy(value);return dict(ready=True)
 
     def acknowledge(self,token,value):
@@ -178,7 +205,7 @@ class RoomHandler(BaseHTTPRequestHandler):
             if len(auth)!=1 or not auth[0].startswith('Bearer '):raise RoomError(401,'Player access required')
             token=auth[0][7:]
             if self.command=='GET' and self.path=='/v1/state':result=self.server.room.state(token)
-            elif self.command=='POST' and self.path in ('/v1/join','/v1/command','/v1/deck','/v1/ack','/v1/leave'):
+            elif self.command=='POST' and self.path in ('/v1/join','/v1/command','/v1/deck','/v1/profile','/v1/report','/v1/ack','/v1/leave'):
                 lengths=self.headers.get_all('Content-Length',[])
                 if self.headers.get('Transfer-Encoding') or len(lengths)!=1 or not lengths[0].isdigit():raise RoomError(400,'Exact JSON length required')
                 size=int(lengths[0])
@@ -189,7 +216,7 @@ class RoomHandler(BaseHTTPRequestHandler):
                 value=decode(raw)
                 if self.path=='/v1/leave':
                     with self.server.room.lock:self.server.room.role(token);self.server.room.close();result=dict(closed=True)
-                else:result={'/v1/join':self.server.room.join,'/v1/command':self.server.room.command,'/v1/deck':self.server.room.deck,'/v1/ack':self.server.room.acknowledge}[self.path](token,value)
+                else:result={'/v1/join':self.server.room.join,'/v1/command':self.server.room.command,'/v1/deck':self.server.room.deck,'/v1/profile':self.server.room.profile,'/v1/report':self.server.room.report_failure,'/v1/ack':self.server.room.acknowledge}[self.path](token,value)
             else:raise RoomError(404,'Unknown room operation')
         except RoomError as error:status=error.status;result=dict(error=str(error))
         except (ValueError,TypeError,KeyError,RecursionError,UnicodeError):status=400;result=dict(error='Invalid room request')
@@ -210,7 +237,7 @@ class RoomClient:
         if not isinstance(token,str) or not re.fullmatch(r'[A-Za-z0-9_-]{40,128}',token):raise ValueError('Invalid invitation or player access')
         self.url=url.rstrip('/');self.token=token;self.opener=build_opener(NoRedirect())
     def call(self,path,value=None):
-        if path not in ('/v1/state','/v1/join','/v1/command','/v1/deck','/v1/ack','/v1/leave'):raise ValueError('Unknown room operation')
+        if path not in ('/v1/state','/v1/join','/v1/command','/v1/deck','/v1/profile','/v1/report','/v1/ack','/v1/leave'):raise ValueError('Unknown room operation')
         req=Request(self.url+path,data=None if value is None else encoded(value),headers={'Authorization':'Bearer '+self.token,'Content-Type':'application/json','User-Agent':'ForgeArenaSandbox-Room/1'})
         try:
             with self.opener.open(req,timeout=15) as response:
@@ -218,6 +245,8 @@ class RoomClient:
                 if len(raw)>MAX_STATE_BYTES+8192:raise ValueError('Room response exceeds limit')
                 return decode(raw)
         except HTTPError as error:
+            if error.code in (502,503,504):
+                error.close();raise ConnectionError('Private room connection temporarily unavailable') from None
             raw=error.read(8192)
             try:message=decode(raw)['error']
             except (ValueError,KeyError,TypeError):message='Room request rejected'

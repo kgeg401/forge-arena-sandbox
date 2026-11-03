@@ -1142,3 +1142,39 @@ All1840 mapped native card rows remain byte-value identical; all existing enum, 
 Actual current native Home/Decks/shared-library load and ordinary saved White Lifegain practice game pass throughturn7, casting/combat/damage and Return Home. Two original old/current native clients connect through public HTTPS, keep hands, play lands, cast real saved Isamaru/Emry commanders, process combat and agree on40/38 life atturn6, then return Home. Both actual boards inspected. Their five semantic mapping fields are exactly identical; multiplayer requires the recognized full fingerprint, correct per-build DB and unchanged canonical mappings before using the reviewed ABI family. This is not arbitrary version bypass, full-game, advanced-choice/every-card or two-household proof.
 
 All owned tests closed;37 fresh private legacy groups independently restored by hash. The live installed client/game/profile and original retail install remain unchanged. Source/build/native evidence and earlier setup/driver failures stay in ForgeArenaCompatibility-20261102. Current14GB private owned game copy is test-only. Release/install/update/rollback receipts are tracked there separately; no original game assets or private captures belong in the public package.
+
+## 2026-11-03 - Large-stack request and projection optimization
+
+Keep every real Forge resolution and original input boundary. Transition-local
+stack ID sets replace repeated ability scans; existing prior-card index resolves
+sources. Compact replies and filesystem request notifications remove polling
+waits while retaining timed stop checks, owner-thread processing, fallback,
+exact request replay and all choices. Same actual 288-trigger seeded scenario:
+436 passes 29.69->15.84s rules driver, 67.54->56.91s original headless handlers;
+441 complete states identical except session UUID, replies 40percent smaller.
+One optimized rules repeat retained. Large-stack plus six existing recorded
+sequences retain all1106 exact GRE messages. 100 wake/archive/native/startup
+contracts pass. No rendered timing/fps/internet claim. Fresh private runtime
+only; owned tests exited, no user install/GitHub/updater changes. See
+docs/large-stack-performance-2026-11-03.md and private task evidence.
+
+## 2026-11-03 - Cosmetic profiles and native private-room menu checkpoint
+
+User selected shared decks/collection and different name/avatar only. Add an
+atomic cosmetic identity library, original Profile nav/dialog/name-input flow
+and source-backed avatar selections; shared saved data stays in place. Replace
+external Tk room choice with original Host/Join copied invite/Cancel plus native
+Copy Invitation, qualified by current client/match IDs. Bind original dialog
+callbacks after their native Hide to preserve subsequent prompts. Authenticated
+room profile DTO exports only name/avatar and maps both roles into native seats.
+19storage/27lobby/24identity-HTTP-projection checks and existing coordinator/room
+suites pass; native profile and cancellation sequence passes6 checks, screenshots
+inspected.36private groups restored and independently hashed,4immutable assets
+verified. Remote rendered aliases/gameplay still pending. No live install/release.
+
+Private changed-object-only diff experiment: same actual288-trigger case retains
+all441 original parser/rules states and captured events,93181->587 object updates;
+headless time52.86->52.26s does not establish rendering improvement. Six payment
+groups/three phasing scenarios pass; experiment remains private opt-in pending
+rendered/wider fidelity tests. Ordered4h profiles/matchmaking then3h recovery and
+reporting task remains active. See docs/profiles-matchmaking-2026-11-03.md.

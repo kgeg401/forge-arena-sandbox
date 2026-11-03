@@ -133,7 +133,27 @@ class Coordinator:
         self.internet=False
         self.ipc=self.lab/'forge-ipc';self.state_path=self.lab/'client-service-status.json'
         self.catalog={str(c['grpId']):c for c in read(self.lab/'deck-catalog.json')['cards']}
+        self.reporter=None;self.last_failures=set()
+        from failure_reports import packaged_version,Reporter
+        version=packaged_version(self.app)
+        if version:
+            try:self.reporter=Reporter(self.lab,version)
+            except (OSError,ValueError):pass
         self.publish('idle','Ready to play')
+    def report_failure(self,code):
+        reporter=getattr(self,'reporter',None)
+        if reporter:reporter.record(code)
+    def poll_native_failure(self):
+        if not getattr(self,'reporter',None) or self.phase not in ('starting','ready','playing'):return
+        for path,session_key in [(self.lab/'client-failure.json','session'),(self.ipc/'peer-failure.json','clientSession')]:
+            if session_key=='clientSession' and not self.internet:continue
+            try:
+                if path.stat().st_size>4096:continue
+                value=read(path)
+                if not isinstance(value,dict) or set(value)!={'schema',session_key,'requestId','code'} or type(value['schema']) is not int or value['schema']!=1 or value[session_key]!=self.session or value['requestId']!=self.request_id or value['code']!='NATIVE_DISPLAY_FAILED':continue
+                identity=(path.name,self.session,self.request_id,value['code'])
+                if identity not in self.last_failures and self.reporter.record('NATIVE_DISPLAY_FAILED'):self.last_failures.add(identity)
+            except (OSError,ValueError,KeyError,TypeError):pass
     def publish(self,phase,message,**extra):
         self.phase=phase
         value=dict(schema=1,session=self.session,nativePid=self.pid,utc=datetime.now(timezone.utc).isoformat(),requestId=self.request_id,phase=phase,message=message,enginePid=self.process.pid if self.process else None,**extra)
@@ -159,7 +179,7 @@ class Coordinator:
             filename='Brawl-Isamaru-Bot.txt' if queue in ('SandboxBrawl','SandboxCommander') else 'White-Lifegain.txt'
             format='commander-40' if queue=='SandboxCommander' else 'arena-brawl' if queue=='SandboxBrawl' else 'practice'
             opponent=read_deck(self.app/'decks'/filename,format)
-        self.request_id=request['id'];self.error=None
+        self.request_id=request['id'];self.error=None;self.last_failures.clear()
         self.publish('starting','Opening your private Commander room…' if self.internet else 'Starting experimental Forge match — these cards are unverified' if deck.get('experimental') else 'Starting the local Forge bot…',queue=queue,deckName=deck['name'])
         if self.ipc.exists():
             metadata=self.ipc/'backend-process.json'
@@ -171,13 +191,14 @@ class Coordinator:
             archive_match(self.lab,keep_all=self.config.get('retainFullMatchDiagnostics') is True)
         self.ipc.mkdir()
         if self.internet:
+            atomic(self.ipc/'network-context.json',dict(schema=1,clientSession=self.session,requestId=self.request_id,reportsEnabled=self.reporter is not None))
             atomic(self.ipc/'network-deck.json',deck)
             (self.lab/'enable-forge-land-test.flag').write_text('Authoritative private internet match')
             self.log=(self.ipc/'engine.log').open('w',encoding='utf8')
             script=Path(__file__).with_name('multiplayer_session.py')
             self.process=subprocess.Popen([self.config['python'],'-B',str(script),'--config',os.environ['FORGE_ARENA_CONFIG'],'--ipc',str(self.ipc)],stdout=self.log,stderr=subprocess.STDOUT,creationflags=subprocess.CREATE_NO_WINDOW)
             atomic(self.ipc/'backend-process.json',dict(pid=self.process.pid,**{'class':'InternetRoom'},ipc=str(self.ipc),started=time.time(),clientSession=self.session,requestId=self.request_id))
-            self.deadline=time.monotonic()+1800;self.publish('starting','Choose Host or Join in the private-room window.');return
+            self.deadline=time.monotonic()+1800;self.publish('starting','Choose Host or Join in the client.');return
         scenario=dict(scenario='zombie-horde' if horde else 'commander-ten-pod' if queue=='SandboxCommanderTenPod' else 'commander-pod' if queue=='SandboxCommanderPod' else 'commander-duel' if queue=='SandboxCommander' else 'brawl-duel' if queue=='SandboxBrawl' else 'custom-duel',localDeck=deck)
         if not horde:scenario['opponentDeck']=opponent
         if pod:scenario['opponentDecks']=pod
@@ -200,13 +221,22 @@ class Coordinator:
         if isinstance(self.process,RecoveredRulesProcess):self.process.close()
         self.process=None
         self.publish(self.after_stop,self.error if self.after_stop=='error' and self.error else 'Match cancelled' if self.after_stop=='cancelled' else 'Ready to play again')
+    def report_engine_failure(self):
+        if self.internet:
+            try:
+                failure=read(self.ipc/'engine-error.json')
+                if isinstance(failure,dict) and failure.get('category')=='ROOM_CLOSED':return
+            except (OSError,ValueError):pass
+            self.report_failure('NETWORK_SESSION_FAILED')
+        else:self.report_failure('RULES_ENGINE_EXITED')
     def engine_failure(self):
         try:
             failure=read(self.ipc/'engine-error.json')
+            if self.internet and isinstance(failure,dict) and failure.get('category')=='ROOM_CLOSED':return 'Your private room closed. Return Home to start another match.'
             reason=failure.get('reason') if isinstance(failure,dict) else None
             if isinstance(reason,str) and reason.strip():return 'Local match stopped: '+reason[:1500]+'. Return Home to start another match.'
         except (OSError,ValueError,TypeError):pass
-        return 'The local rules engine exited. Return Home and start another match.'
+        return 'The private match connection stopped. Return Home and start another match.' if self.internet else 'The local rules engine exited. Return Home and start another match.'
     def handle(self,request):
         if request.get('schema')!=1 or request.get('session')!=self.session:raise RequestRejected('Stale client session request rejected')
         try:request_id=str(uuid.UUID(request.get('id','')))
@@ -258,9 +288,11 @@ class Coordinator:
             if self.process.poll() is not None:
                 if self.internet and self.process.poll()==0 and (self.ipc/'stop.request').is_file() and not (self.ipc/'engine-error.json').exists():
                     self.publish('cancelled','Private room cancelled')
-                else:self.publish('error',self.engine_failure())
+                else:
+                    self.report_engine_failure();self.publish('error',self.engine_failure())
                 self.stopped_log()
             elif time.monotonic()>self.deadline:
+                self.report_failure('RULES_START_TIMEOUT')
                 self.error='Forge startup timed out; the engine was stopped';self.stop('error')
             elif (self.ipc/'state.json').exists():
                 try:
@@ -269,7 +301,8 @@ class Coordinator:
                     if state.get('session') and (state.get('decision') or state.get('networkMatch')):
                         self.publish('ready','Both players ready — opening the Arena board' if self.internet else 'Bot ready — opening the Arena board',engineSession=state['session'],scenario=state['scenario'])
                 except (OSError,json.JSONDecodeError):pass
-                except ValueError as error:self.error=str(error);self.stop('error')
+                except ValueError as error:
+                    self.report_failure('RULES_FIDELITY_GAP');self.error=str(error);self.stop('error')
         elif self.phase=='stopping':
             if not self.process or self.process.poll() is not None:self.stopped()
             elif time.monotonic()>self.deadline:
@@ -285,13 +318,17 @@ class Coordinator:
                         except RuntimeError:pass
                 self.process.terminate();self.process.wait(timeout=10);self.stopped()
         elif self.phase in ('ready','playing') and self.process and self.process.poll() is not None:
-            self.publish('error',self.engine_failure());self.stopped_log()
+            self.report_engine_failure();self.publish('error',self.engine_failure());self.stopped_log()
+        self.poll_native_failure()
     def stopped_log(self):
         if self.log:self.log.close();self.log=None
     def close(self):
-        self.stop('closed');end=time.monotonic()+(45 if self.internet else 15)
-        while self.phase=='stopping' and time.monotonic()<end:self.tick(process_requests=False);time.sleep(.1)
-        self.stopped_log()
+        try:
+            self.stop('closed');end=time.monotonic()+(45 if self.internet else 15)
+            while self.phase=='stopping' and time.monotonic()<end:self.tick(process_requests=False);time.sleep(.1)
+            self.stopped_log()
+        finally:
+            if getattr(self,'reporter',None):self.reporter.close()
 
 
 def main(args):

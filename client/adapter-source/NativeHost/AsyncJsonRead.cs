@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
@@ -12,6 +13,8 @@ internal sealed class AsyncJsonRead
     private readonly Func<string,JObject> _load;
     private string? _path;
     private Task<JObject>? _read;
+    private int _retries;
+    internal int Retries=>Volatile.Read(ref _retries);
     internal AsyncJsonRead(Func<string,JObject> load)=>_load=load;
 
     internal bool TryRead(string path,out JObject value)
@@ -20,10 +23,25 @@ internal sealed class AsyncJsonRead
         if(_path!=path)
         {
             Forget();_path=path;
-            _read=Task.Run(()=>_load(path));
+            _read=Task.Run(()=>Load(path));
         }
         if(!_read!.IsCompleted)return false;
         value=_read.GetAwaiter().GetResult();return true;
+    }
+
+    private JObject Load(string path)
+    {
+        var retry=Stopwatch.StartNew();
+        while(true)
+        {
+            try{return _load(path);}
+            catch(Exception error) when(SharedJsonFile.TransientRead(error) && retry.Elapsed.TotalSeconds<1)
+            {
+                // Only the worker waits; the exact response and input remain pending.
+                Interlocked.Increment(ref _retries);
+                Thread.Sleep(20);
+            }
+        }
     }
 
     internal void Forget()
