@@ -139,7 +139,10 @@ public sealed class Plugin : BaseUnityPlugin
             {
                 File.Delete(prepare);
                 if (papa == null) _gap = "Native application context has not been created.";
-                else StartCoroutine(PrepareLocalAssets(papa));
+                else StartCoroutine(GuardedCoroutine.Run(PrepareLocalAssets(papa),ex=>
+                {
+                    _phase="local-assets-failed";_gap=ex.ToString();Logger.LogError(ex);
+                }));
             }
             var command = Path.Combine(_root, "start-board.request");
             if (File.Exists(command))
@@ -332,7 +335,10 @@ public sealed class Plugin : BaseUnityPlugin
         var provisioner = AssetBundleProvisioner.Create();
         var downloads = Path.Combine(Application.dataPath, "Downloads");
         var seen = new HashSet<string>();
-        foreach (var file in Directory.GetFiles(downloads, "Manifest*.mtga"))
+        var localManifest=JObject.Parse(File.ReadAllText(Path.Combine(_root,"bridge-card-manifest.json")));
+        var databaseHash=(string?)localManifest["sourceDatabaseSha256"]
+            ?? throw new InvalidDataException("Missing validated local card-database identity.");
+        foreach (var file in InstalledManifestPlan.Select(downloads,databaseHash,message=>_events.Add(message)))
         {
             var manifest = JsonConvert.DeserializeObject<AssetFileManifest>(File.ReadAllText(file));
             if (manifest == null) throw new InvalidOperationException("Cannot parse installed manifest: " + file);

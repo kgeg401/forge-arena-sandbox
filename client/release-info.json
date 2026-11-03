@@ -1,9 +1,9 @@
 {
-  "version": "0.2.0-alpha.15.mp.5",
-  "displayVersion": "0.2.0 Alpha 15.5 - Steam Compatibility",
-  "headline": "Steam Arena installation compatibility",
+  "version": "0.2.0-alpha.15.mp.6",
+  "displayVersion": "0.2.0 Alpha 15.6 - Startup Repair",
+  "headline": "Fix black-screen startup from overlapping Arena manifests",
   "testRelease": true,
-  "gameplaySource": "90e4e6d3bae72a11782a860a01b16f25728774cf",
+  "gameplaySource": "0c8bcfac2d636d3f29e22e181404782b60efd807",
   "admittedNames": [
     "Plains",
     "Island",

@@ -1,3 +1,9 @@
+## 2026-11-02 - Alpha 15.6 installed-manifest startup repair
+
+Recipient Unity evidence: AssetBundleManager.Initialize dictionary insertion failed on Assets/Core/CardArt/458000/458294_AIF.tga, leaving preparing-installed-local-assets with no gap. Source review confirmed the native manager requires unique bundle names and indexed paths; the adapter had merged all cached manifests while only deduplicating bundle names. Select full manifests by the validated card-database signature, preserve stale files, validate selected path conflicts, and surface nested startup coroutine failures. No online manifest provider or download/deletion path is invoked.
+
+Native validation in a private current-build copy: original old+current manifests reproduced the same duplicate-key class; candidate with identical inputs and a fresh profile opened original Home,26shared decks and returned Home. Deliberately conflicting current manifests reported local-assets-failed with the exact path instead of a timeout. Actual retained old/current manifest inventories pass the authored planner checks. All36fresh private groups restored and hash-verified after owned processes exited. Recipient Steam launch remains pending; no all-card gameplay or remote-PC acceptance claim.
+
 ## 2026-11-02 - Alpha 15.5 Steam executable compatibility
 
 Recipient report identifies one difference from the current standalone profile: MTGA.exe SHA256 e22c729eef75383888cb3d26a8cb4c2372bc6acdae7d7d9215c5020ba257fa37 (667648 bytes). The other eight checked library/database hashes match. Added a separate exact Steam profile; no hash checks waived. Deduplicate identical catalogue identities for store variants, retain explicit configured variant, and report nearest mismatching file names. Standalone native play evidence from Alpha15.4 remains applicable to unchanged adapter/rules binaries; Steam executable launch on recipient PC is pending.

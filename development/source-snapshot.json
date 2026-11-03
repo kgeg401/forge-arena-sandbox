@@ -1,7 +1,7 @@
 {
   "schema": 1,
-  "localSourceCommit": "90e4e6d3bae72a11782a860a01b16f25728774cf",
-  "packageSourceCommit": "90e4e6d3bae72a11782a860a01b16f25728774cf",
+  "localSourceCommit": "0c8bcfac2d636d3f29e22e181404782b60efd807",
+  "packageSourceCommit": "0c8bcfac2d636d3f29e22e181404782b60efd807",
   "productionPolicySha256": "5752392f087eede8e69c546fe2fc31dfc1b2243235c5c61bfcb34a86207d67b5",
   "productionCards": 370,
   "files": {
@@ -305,7 +305,7 @@
     "LocalTransport/LocalGreConnection.cs": "0f3b86a466c04fe6076a89045b93f221c81a88f3b1709686efbd54ae631c5b6f",
     "LocalTransport/LocalTransport.csproj": "ac4a4dc2e87e0f6508cd9d411c3f3d0bac391ddd60a614e278dc1d7deead9577",
     "MODDING_PLAN.md": "dae58f7576ac540189b2ca688677d7beae038c0c5eebd95b68d19e7f40aefd86",
-    "MODLOG.md": "22d27ed647d831434ff203ad8fd20f2fbc1bd750eb8ea226cd791fb9a4bf10b0",
+    "MODLOG.md": "f5908c79030508afae25f70d2d974dd00b3cd6ffc6ac094eaa32cfe1fee2e95c",
     "NativeHost/AsyncJsonRead.cs": "1e2e94b051660f99a89307c4e3524bd3355f39ff7717399753dc3988bb4eff14",
     "NativeHost/AutomaticPassPacing.cs": "175569d3b42e46a4bf9ed8407ca9077b3c232593191518b5225d141605ad95e4",
     "NativeHost/CoinBurstLayout.cs": "57e7017782abc05623b3500661e5f9e3d2819300fee3c6d5ed96707eea81bb9a",
@@ -339,7 +339,7 @@
     "NativeHost/NativePlayMenu.cs": "c6751cd48c5f6908de038c62c6e37de5ea10ba7435aa77f599574b6a0c177672",
     "NativeHost/NativePodLayoutPatches.cs": "5d730bd97960e1073bd35c1e5100cfa4467d2829de2758199f2dbbe7f16d640a",
     "NativeHost/NativeTurnProtocol.cs": "b7e4cdd2cb86595c89aaca3d6ca1032ce5050c41897651c2709f8cc23e4ff228",
-    "NativeHost/Plugin.cs": "1d2e2e40993988ee1e68ba51c4180fccfc8fecce3dbadd3a5ebbd749c0c10249",
+    "NativeHost/Plugin.cs": "b169c0c61f78e46c81023d2c4dc60230d9be3edbb497619ddd49703ab5736b12",
     "NativeHost/PodSpectatorPolicy.cs": "3933e17121a6571b1c77cba5ef64994f4044834446e0683abca4d998f0cf0577",
     "NativeHost/PodTableLayout.cs": "d9bc9c47e714c9cb3d4a123fc69695321807a2d76eb42a44e5787f1bf25fdd8b",
     "NativeHost/SharedAttachmentProtocol.cs": "3dc8a9ce20a42c437d37299096142f542a979d45bf8ad2bf3b393ba864f6e37c",
@@ -471,7 +471,7 @@
     "packaging/DisplaySettingsTests.cs": "171beca35ec2eecadace362a7347aa696557de30f00ecbcca74093feb3286672",
     "packaging/LICENSE.txt": "a20787ad43cee5a1e3461a40eccdbed3fc806810959084793c2b90d1a8cb1837",
     "packaging/Manage-Updates.ps1": "835f24d8c0cf57ea68a8d5f204a325673465f5a1c209ae11a863f2276b529a02",
-    "packaging/PUBLIC-README.md": "6caf78bd92308471e0bff0f8fb0685e0f8623e715bd35ea2b85a9047dccef0b7",
+    "packaging/PUBLIC-README.md": "83f6cf4a62a389bc1827fe9c4e5e7b32905927cc3d3a817c4fb6c88431db59d9",
     "packaging/PodLayoutProbe/PodLayoutProbe.csproj": "bdc52c43acba55250c57eef100fa37c8009e5e6e17539c521c155d723279ffbc",
     "packaging/PodLayoutProbe/Program.cs": "ded011c1e8141dc6704874461fc4ee78e68357f2b4efa9b5ebfd631a959cf53b",
     "packaging/PodRuntimeProbe/PodRuntimeProbe.csproj": "10cf54c29f113f87accf437f336278c2ad51887acd0306d856ca54ddba4c527f",
@@ -501,7 +501,7 @@
     "packaging/multiplayer_view.py": "a5b4dbaf9eb334a1ef5252f6b543b09f934daa3f04574f259360df0c59cb8a93",
     "packaging/paper-art.json": "6606e117aa1d6cfa23b214294b20f548a706ed43c2055e58f15b59627d898318",
     "packaging/paper_art.py": "be8e3544ca92246e297ad66c51ff3db07f543f831aca0ea49bd27d116f08b319",
-    "packaging/public-docs/ARENA-COMPATIBILITY.md": "575d5bbf5efad0820a85b47f3abd84f165588e63c24dce6d3e54a8022f9be9a8",
+    "packaging/public-docs/ARENA-COMPATIBILITY.md": "e6aac0e08f9b28a067507a2706c9cf8ea5a758c33622c432fe48f0c581de8fb6",
     "packaging/public-docs/DEVELOPMENT.md": "535bf6cdfab057c18da87097b8560de974d2b972176369006fc1a406df8776f0",
     "packaging/public-docs/FAQ.md": "edee7b906d0ea3fbf38123ee44c133c2eb0ec2fca2aeb2ea11eb1a0d4c18a2ef",
     "packaging/public-docs/FORGE-DEPENDENCY.md": "43b49c95026c28458d229b75c80b0afba48fb94969edb9e742b4b0ab328a0a62",
@@ -553,7 +553,11 @@
     "ForgeBackend/experimental-admission-14589.json": "967b1fb8dbcd9b03d66f87137a4039d2f69b4c2eee1a6f0efe02e5719cf2db52",
     "packaging/Check-Arena-Files.cmd": "8c9184b49c235f14cb82dfeee60d69de3d89bf744fcfd0785924242cf58e9dc5",
     "packaging/Check-Arena-Files.ps1": "12433924efbf90a7fe0dae28ac06f95bcb7156802cec50d9292f0c0d240e7d82",
-    "packaging/verify_arena_diagnostic.py": "ea53db928b9f02a36a31cc1a555768a8487a8d44654f311bb25dfbb136aaab58"
+    "packaging/verify_arena_diagnostic.py": "ea53db928b9f02a36a31cc1a555768a8487a8d44654f311bb25dfbb136aaab58",
+    "NativeHost/GuardedCoroutine.cs": "a3a148499b0ba8cdec12a0346ce38b1af4b39113ef8de4d90e6b476ac652505d",
+    "NativeHost/InstalledManifestPlan.cs": "949dd83e484c408582d4fbfd01cb81ae4c81c156dc703c1705769778596c3298",
+    "packaging/ManifestStartupProbe/ManifestStartupProbe.csproj": "f78aa159c2839c56d31a1ecc6798ada516c1ddd88dd4878c661b829b4933e957",
+    "packaging/ManifestStartupProbe/Program.cs": "947fdd6c71246f509aa3a0b36098ea4eb21beb30c0dc9a24791bb6873fe8eb0d"
   },
   "generatedReleaseConfiguration": [
     "ForgeBackend/experimental-admission.json",

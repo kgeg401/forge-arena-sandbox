@@ -1,0 +1,8 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework></PropertyGroup>
+  <ItemGroup>
+    <Compile Include="../../NativeHost/InstalledManifestPlan.cs" Link="InstalledManifestPlan.cs" />
+    <Compile Include="../../NativeHost/GuardedCoroutine.cs" Link="GuardedCoroutine.cs" />
+    <Reference Include="Newtonsoft.Json"><HintPath>$(MSBuildToolsPath)/Newtonsoft.Json.dll</HintPath></Reference>
+  </ItemGroup>
+</Project>
