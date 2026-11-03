@@ -1,9 +1,9 @@
 {
-  "version": "0.2.0-alpha.15.mp.6",
-  "displayVersion": "0.2.0 Alpha 15.6 - Startup Repair",
-  "headline": "Fix black-screen startup from overlapping Arena manifests",
+  "version": "0.2.0-alpha.15.mp.7",
+  "displayVersion": "0.2.0 Alpha 15.7 - Upgrade Repair",
+  "headline": "Repair automatic upgrades from older client versions",
   "testRelease": true,
-  "gameplaySource": "0c8bcfac2d636d3f29e22e181404782b60efd807",
+  "gameplaySource": "c6766a9772751fb02cdafbd31731956cd22092a5",
   "admittedNames": [
     "Plains",
     "Island",

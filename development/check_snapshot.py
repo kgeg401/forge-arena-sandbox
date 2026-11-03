@@ -47,3 +47,6 @@ for build in requirements.get('arenaVariants',[]):
  check('Variant retains primary card definitions: '+build['id'],cfg['cards']==experimental['cards'])
  for key in ['cardOverrides','presentationObjects','keywordAbilityIds','typeEnumIds','cardNameIds']:
   check('Variant retains presentation '+build['id']+' '+key,cfg['humanChoices'][key]==choices[key])
+
+legacy=next(v for v in requirements["arenaVariants"] if v["id"]=="arena-14517")
+check("Legacy updater bootstrap retains the original Arena fingerprint",requirements["arenaFiles"]==legacy["arenaFiles"] and requirements["arenaBuild"]==legacy["arenaBuild"])

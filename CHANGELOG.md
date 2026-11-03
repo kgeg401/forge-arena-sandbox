@@ -1,3 +1,7 @@
+# Alpha 15.7 - Legacy automatic-upgrade repair
+
+Retains the exact legacy primary Arena fingerprint needed by Alpha15.2 updaters while preserving all current standalone/Steam variant checks. The actual shipped15.2 updater reproduced the earlier rejection and accepted this package with saved profile bytes preserved. Native/gameplay binaries are unchanged from Alpha15.6. Different Commander decks remain supported.
+
 # Alpha 15.6 - Black-screen startup repair
 
 Select installed asset manifests by the validated card-database identity, preventing old/new manifests from registering the same art path. Preserve installed source files and report unresolved conflicts immediately. Native reproduction and fresh-profile Home/26decks/return-Home validation passed. Existing clients update through the launcher; no Arena/Forge recopy is required. Both friends should update the native adapter.

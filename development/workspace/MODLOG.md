@@ -1,3 +1,7 @@
+## 2026-11-02 - Alpha15.7 legacy automatic-upgrade contract
+
+Live read-only evidence: host remained15.2; last-startup-update warned that newer release needed another Arena build. The pre15.4 updater understands only top-level arenaFiles; changing the package primary fingerprint to current standalone blocked the variant-aware upgrade before it could run. Reproduced rejection using the exact installed15.2 updater with copied prerequisite fingerprints and disposable saved-profile bytes; production room untouched. Retain the known legacy primary fingerprint in packages and keep all recognized arenaVariants for new setup/launch. Native/rules binaries stay exactly as Alpha15.6. Different player decks remain supported; mismatch comes from old engine/adapter/catalogue compatibility identity.
+
 ## 2026-11-02 - Alpha 15.6 installed-manifest startup repair
 
 Recipient Unity evidence: AssetBundleManager.Initialize dictionary insertion failed on Assets/Core/CardArt/458000/458294_AIF.tga, leaving preparing-installed-local-assets with no gap. Source review confirmed the native manager requires unique bundle names and indexed paths; the adapter had merged all cached manifests while only deduplicating bundle names. Select full manifests by the validated card-database signature, preserve stale files, validate selected path conflicts, and surface nested startup coroutine failures. No online manifest provider or download/deletion path is invoked.

@@ -157,8 +157,11 @@ def build(tag,output,gameplay_ref=None,headline='Public launcher and automatic u
     requirements['features']+=['private two-player internet Commander with saved decks and 40 life']
     requirements['arenaVariants']=profiles['builds']
     requirements['arenaFamily']=profiles['family']
-    requirements['arenaBuild']=selected['arenaBuild']
-    requirements['arenaVariant']=selected['id']
+    # Pre-15.4 updaters read only the primary fingerprint. Retain their exact
+    # original assets here; current setup/launch selects a full store variant.
+    bootstrap=next(b for b in profiles['builds'] if b['id']=='arena-14517')
+    for key in ('arenaBuild','arenaFiles','unity'):requirements[key]=bootstrap[key]
+    requirements['arenaVariant']=bootstrap['id']
     requirements['features']+=['solo 40-life 200-card Zombie/Horror reanimation Horde','Horde with saved 99-card-plus-commander decks','optional human Exert choices']
     requirements['features']+=['Horde preparation based on commander mana value','original FREAK-OFF Darien paper Commander deck','private cached paper-card illustrations through the original renderer']
     requirements['features']+=['survivor-aware Commander table and camera','experimental ten-player attack-left Commander pod','Gamba Gamba Yusri coin-flip Commander deck']
