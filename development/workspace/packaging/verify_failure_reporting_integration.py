@@ -19,7 +19,7 @@ class Process:
     def wait(self,timeout=None):self.code=0
 
 with tempfile.TemporaryDirectory(prefix='forge-report-wiring-') as temp:
-    root=Path(temp);lab=root/'native-lab';lab.mkdir();app=root/'app';app.mkdir()
+    root=Path(temp).resolve();lab=root/'native-lab';lab.mkdir();app=root/'app';app.mkdir()
     session=str(uuid.uuid4());request=str(uuid.uuid4());pid=777777
     atomic(lab/'sandbox-lab.json',dict(schema=1,fixture=True));atomic(lab/'deck-catalog.json',dict(cards=[]))
     atomic(lab/'launch-receipt.json',dict(pid=pid,appContainer=True,capabilityCount=0,networkCapability=False,executable=str(lab/'MTGA.exe')))
