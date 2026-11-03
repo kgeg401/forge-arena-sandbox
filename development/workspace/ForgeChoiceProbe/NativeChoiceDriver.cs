@@ -115,7 +115,14 @@ internal static class NativeChoiceDriver
             case SelectNRequest selection:selection.SubmitSelection(assignments.Select(Native));break;
             case OrderRequest order:order.SubmitOrder(assignments.Select(Native));break;
             case NumericInputRequest numeric:numeric.SubmitValue(checked((uint)(int)assignments[0]!["number"]!));break;
-            case CastingTimeOptionRequest casting when casting.ChildRequests.Count==1 && casting.ChildRequests[0] is CastingTimeOption_ModalRequest modal:
+            case CastingTimeOptionRequest casting:
+                var modal=(object)casting as CastingTimeOption_ModalRequest;
+                if(modal==null)
+                {
+                    var children=(casting.GetType().GetProperty("ChildRequests")?.GetValue(casting) ?? casting.GetType().GetField("ChildRequests")?.GetValue(casting)) as System.Collections.IEnumerable;
+                    modal=children?.Cast<object>().SingleOrDefault() as CastingTimeOption_ModalRequest;
+                }
+                if(modal==null)throw new NotSupportedException("Unsupported installed modal-request layout");
                 modal.SubmitModal(assignments.Select(value=>checked((uint)(int)options.Single(o=>(int)o["choiceId"]! == (int)value["choiceId"]!)["nativeAbilityId"]!)));break;
             case OptionalActionMessageRequest confirm:confirm.SubmitResponse((bool)assignments[0]!["accept"]!?OptionResponse.AllowYes:OptionResponse.CancelNo);break;
             default:throw new NotSupportedException("Unexpected native shared interaction "+interaction?.GetType().Name);

@@ -7,6 +7,9 @@ Every profile starts with the shared **26 saved decks** and **521 collection
 entries / 928 copies**. Updates add missing starters once and preserve your own
 decks and progress. See [starter content](docs/STARTER-CONTENT.md).
 
+Arena compatibility: this release supports **0.1.14589.1332174** and the older
+**0.1.14517.1329972** asset copies. [Supported builds and limits](docs/ARENA-COMPATIBILITY.md).
+
 ## Install once
 
 1. Install MTG Arena separately and let it finish downloading its game content.

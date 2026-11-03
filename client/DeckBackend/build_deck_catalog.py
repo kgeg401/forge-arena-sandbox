@@ -6,7 +6,7 @@ from deck_import import VERIFIED, EXPERIMENTAL
 from arena_catalog import clean_name, indexed_printings
 from runtime_paths import ROOT, DB, SUPPORT_POLICY
 
-EXPECTED = '1be0105411ad989ca60e233f1341eaaa9276e3a679c89f1ef6f07e07ede10d25'
+from runtime_paths import DATABASE_SHA256 as EXPECTED
 POLICY=json.loads(SUPPORT_POLICY.read_text())
 PINNED = {name:POLICY['preferredPrintings'][name] for name in VERIFIED}
 PINNED.update({name:card['grpId'] for name,card in EXPERIMENTAL['cards'].items()})
@@ -29,7 +29,8 @@ def build():
              for r in indexed_printings(rows)]
     for name,card in EXPERIMENTAL['cards'].items():
         if not card.get('paperOnly'):continue
-        if any(c['grpId']==card['grpId'] or c['name']==name for c in cards):raise ValueError('Paper identity collides with the owned catalogue: '+name)
+        # New Arena printings can share a name; retain the distinct saved paper ID.
+        if any(c['grpId']==card['grpId'] for c in cards):raise ValueError('Paper identity collides with the owned catalogue: '+name)
         cards.append(dict(grpId=card['grpId'],name=name,set='PAPER',collector=str(card['grpId']-2000000),sort=[int('Land' in card['types']),card['paperDefinition']['manaValue'],0,name.casefold()],rebalanced=False,matchSupported=True,commanderSupported=bool(card.get('commanderAdmitted')),experimental=True,colorIdentity=card['colorIdentity'],preferred=True,paperOnly=True))
     result = dict(schema=1,sourceDatabaseSha256=digest,policySha256=hashlib.sha256(SUPPORT_POLICY.read_bytes()).hexdigest(),cards=cards,
                   policy=f'Local sandbox deck storage; {len(VERIFIED)} verified names plus {len(EXPERIMENTAL["cards"])} explicitly enabled experimental names. No retail format legality claim.')

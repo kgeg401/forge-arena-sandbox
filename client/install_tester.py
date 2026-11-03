@@ -116,6 +116,8 @@ $shortcut.Save()
 
 def inspect_install(arena,forge,java,loader,destination,package,dotnet=None):
     manifest=verify_tree(package);requirements=json.loads((package/'requirements.json').read_text())
+    from arena_compat import select_arena
+    requirements=select_arena(requirements,arena)
     for p in (arena,forge,java,loader):
         no_links(p)
         if not p.is_dir():raise ValueError('Missing prerequisite directory: '+str(p))
@@ -200,6 +202,7 @@ def install(args):
         net_copy=data/'runtimes/dotnet';shutil.copytree(Path(dotnet).parent,net_copy);dotnet=str(net_copy/'dotnet.exe')
     config=dict(schema=1,profileSchema=1,privateRoot=str(data),arenaInstall=str(arena),catalogueInstall=str(lab),forgeInstall=str(forge),forgeResourcesRoot=str(runtime),javaHome=str(java),python=sys.executable,dotnet=plan['dotnet'])
     config['dotnet']=dotnet;config['forgeVariant']=plan['forgeVariant']['id']
+    if plan['requirements'].get('arenaVariant'):config['arenaVariant']=plan['requirements']['arenaVariant']
     if getattr(args,'copy_runtimes',False):config['forgeInstall']=str(runtime)
     if args.repository:
         config['updateRepository']=args.repository

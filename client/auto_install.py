@@ -11,6 +11,8 @@ from install_tester import check_destination
 def check_arena(arena,destination,package):
     arena=Path(arena).absolute();destination=Path(destination).absolute();package=Path(package).resolve()
     verify_tree(package);req=json.loads((package/'requirements.json').read_text())
+    from arena_compat import select_arena
+    req=select_arena(req,arena)
     for path in (arena,destination,package):no_links(path)
     if not arena.is_dir():raise ValueError('Select your installed Arena folder first. Arena is installed separately.')
     check_destination(destination)

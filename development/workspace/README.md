@@ -1,5 +1,9 @@
 # Forge Arena Sandbox — development workspace
 
+The compatibility port supports original Arena builds 0.1.14589.1332174 and
+0.1.14517.1329972 with full fingerprint checks and matching catalogue profiles.
+See [the tested scope](packaging/public-docs/ARENA-COMPATIBILITY.md).
+
 Internet multiplayer now has a **Private Commander (Internet)** queue, saved-deck
 selection and Host/Join flow for two humans at 40 life. See [setup and limitations](packaging/public-docs/MULTIPLAYER.md)
 and [the implementation evidence](docs/multiplayer-2026-11-02.md).

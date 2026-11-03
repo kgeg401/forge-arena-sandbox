@@ -86,7 +86,7 @@ public sealed class Plugin : BaseUnityPlugin
     {
         if(_forge?.RulesCalculationSlow!=true)return;
         float width=Math.Min(440,Screen.width-20);
-        GUI.Box(new Rect((Screen.width-width)/2,12,width,32),"Still calculating this turn… ("+(int)_forge.RulesWaitSeconds+"s)");
+        GUI.Box(new Rect((Screen.width-width)/2,12,width,32),"Still calculating this turnâ€¦ ("+(int)_forge.RulesWaitSeconds+"s)");
     }
 
     private void Update()
@@ -305,6 +305,23 @@ public sealed class Plugin : BaseUnityPlugin
         catch (Exception ex) { _gap = ex.ToString(); Logger.LogError(ex); _shell?.ReportBridgeFailure(_forge?.Session,ex.Message); }
     }
 
+    private static IEnumerator LoadInstalledLocalization()
+    {
+        var assembly=typeof(PAPA).Assembly;
+        var asynchronous=assembly.GetType("Core.Shared.Code.ServiceFactories.LoadLocDatabaseUniTask");
+        if(asynchronous!=null)
+        {
+            var load=asynchronous.GetMethod("Load",Type.EmptyTypes);
+            if(load==null || load.IsStatic || load.ReturnType!=typeof(UniTask))throw new MissingMethodException("Unsupported installed localization loader.");
+            yield return ((UniTask)load.Invoke(Activator.CreateInstance(asynchronous),null)!).ToCoroutine();
+            yield break;
+        }
+        var synchronous=assembly.GetType("Core.Shared.Code.ServiceFactories.LoadLocDatabase");
+        var method=synchronous?.GetMethod("Load",System.Reflection.BindingFlags.Public|System.Reflection.BindingFlags.Static,null,Type.EmptyTypes,null);
+        if(method==null || method.ReturnType!=typeof(void))throw new MissingMethodException("Unsupported installed localization loader.");
+        method.Invoke(null,null);
+    }
+
     private IEnumerator PrepareLocalAssets(PAPA papa)
     {
         _gap = null;
@@ -327,7 +344,7 @@ public sealed class Plugin : BaseUnityPlugin
         AudioManager.InitializeAudioManager(papa.AssetLookupSystem, PlatformContext.GetStorageContext());
         _events.Add("Installed manifest assets: " + provisioner.AvailableBundles.Count);
         _phase = "loading-native-localization";
-        yield return new LoadLocDatabaseUniTask().Load().ToCoroutine();
+        yield return LoadInstalledLocalization();
         _phase = "loading-native-card-database";
         yield return new LoadCardDatabaseUniTask().Load().ToCoroutine();
         var database = Pantry.Get<CardDatabase>();

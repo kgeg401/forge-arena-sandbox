@@ -6,7 +6,8 @@ import os
 
 
 def load_experimental(path=None):
-    path=Path(path) if path else Path(os.environ.get('FORGE_ARENA_EXPERIMENTAL',str(Path(__file__).with_name('experimental-admission.json'))))
+    from runtime_paths import ARENA_BUILD
+    path=Path(path) if path else Path(os.environ.get('FORGE_ARENA_EXPERIMENTAL',str(Path(__file__).with_name(ARENA_BUILD['experimentalFile']))))
     if not path.exists():return dict(cards={},blockedCards={},enabled=False)
     value=json.loads(path.read_text(encoding='utf-8-sig'))
     if value.get('schema')!=1 or value.get('enabled') is not True:

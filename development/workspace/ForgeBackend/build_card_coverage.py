@@ -10,7 +10,7 @@ import hashlib, html, json, re, sqlite3, unicodedata, zipfile
 from runtime_paths import ROOT, DB, FORGE_SCRIPTS, SUPPORT_POLICY
 from arena_catalog import clean_name, indexed_printings
 
-EXPECTED='1be0105411ad989ca60e233f1341eaaa9276e3a679c89f1ef6f07e07ede10d25'
+from runtime_paths import DATABASE_SHA256 as EXPECTED
 FORGE=FORGE_SCRIPTS
 POLICY=SUPPORT_POLICY
 

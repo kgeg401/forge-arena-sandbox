@@ -6,8 +6,8 @@ rare/mythic (one in eight when a mythic pool exists). It is NOT retail odds.
 from pathlib import Path
 import hashlib, json, sqlite3, sys
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'ForgeBackend'))
-from runtime_paths import ROOT,DB
-EXPECTED='1be0105411ad989ca60e233f1341eaaa9276e3a679c89f1ef6f07e07ede10d25'
+from runtime_paths import ROOT,DB,ARENA_BUILD
+from runtime_paths import DATABASE_SHA256 as EXPECTED
 
 def build():
     digest=hashlib.sha256(DB.read_bytes()).hexdigest()
@@ -17,7 +17,7 @@ def build():
     mapping_path=ROOT/'native-lab/pack-collation-map.json'
     mapping_bytes=mapping_path.read_bytes();mapping=json.loads(mapping_bytes)
     assembly_digest=mapping.get('sourceAssemblySha256')
-    if mapping.get('schema')!=1 or assembly_digest!='42f2fb5f062ccc6098182a902d411746070759a404e875b6e0aac44d3b7ccc6e':raise ValueError('Installed collation source identity changed; inspect before rebuilding.')
+    if mapping.get('schema')!=1 or assembly_digest!=ARENA_BUILD['arenaFiles']['MTGA_Data/Managed/SharedClientCore.dll']:raise ValueError('Installed collation source identity changed; inspect before rebuilding.')
     mappings=mapping['mappings']
     if not isinstance(mappings,dict) or not mappings or any(not isinstance(k,str) or type(v)is not int or not 60000<v<200000 for k,v in mappings.items()):raise ValueError('Invalid installed collation mapping')
     connection=sqlite3.connect(DB.as_uri()+'?mode=ro',uri=True)

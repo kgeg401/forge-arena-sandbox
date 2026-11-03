@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.2.0 alpha 15.mp.4 - Current Arena compatibility
+
+- Setup accepts complete tested Arena 0.1.14589.1332174 and retained 0.1.14517.1329972 installations, with matching databases. Unknown/mixed/modified files remain blocked.
+- Adapt original localization loaders and retain saved paper printing IDs alongside new native printings. Validate pack-collation metadata against the selected original build.
+- Reviewed old/current ABI family supports private Commander between the two asset versions on the same custom-client release. Two real native clients tested through HTTPS with lands, both commander casts, combat, reciprocal life and Return Home. No complete-game, all-card or two-household certification.
+- Includes the 26 shared decks/521 collection entries/928 copies from 15.3; saved data and separate game copies remain.
+
 ## 0.2.0 alpha 15.mp.3 - Shared starter decks and collection
 
 - Every new profile receives the current 26 saved decks and 521 collection entries/928 copies, with original exact-printing piles. Includes Emry, Jace, Darien, Gamba Gamba, Miirym and Zaxara.

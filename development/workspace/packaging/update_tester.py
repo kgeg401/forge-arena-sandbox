@@ -55,6 +55,8 @@ def compatible(manifest,folder,config):
         # Game admission is deferred only when no game has been configured.
         if (lab/'MTGA.exe').exists() or (data/'forge-runtime/forge.jar').exists():raise ValueError('Unexpected game files in launcher-only install; inspect setup before updating')
         return
+    from arena_compat import select_arena
+    req=select_arena(req,lab)
     for rel,digest in req['arenaFiles'].items():
         if sha(lab/rel)!=digest:raise ValueError('Update needs a different Arena build; preserve this sandbox until a tested asset migration exists')
     from dependencies import match_forge

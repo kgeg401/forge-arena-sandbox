@@ -87,6 +87,8 @@ def start_client(args,owned):
     data=Path(config['privateRoot']);lab=data/'native-lab'
     if data.resolve()!=install/'data' or not within(lab,install):raise ValueError('Install paths escaped configured sandbox data tree')
     requirements=read_json(app/'requirements.json')
+    from arena_compat import select_arena
+    requirements=select_arena(requirements,lab)
     for rel,digest in requirements['arenaFiles'].items():
         if sha(lab/rel)!=digest:raise ValueError('This release does not support the copied Arena build: '+rel)
     if not args.check_only:

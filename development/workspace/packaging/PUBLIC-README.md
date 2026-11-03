@@ -3,7 +3,7 @@
 A local Magic sandbox using your installed Arena's original screens, cards and
 animations. Forge runs the bot and supported rules.
 
-**[Download the gameplay alpha for Windows](https://github.com/kgeg401/forge-arena-sandbox/releases/tag/v0.2.0-alpha.15.mp.3)**
+**[Download the gameplay alpha for Windows](https://github.com/kgeg401/forge-arena-sandbox/releases/tag/v0.2.0-alpha.15.mp.4)**
 
 Download **ForgeArenaSandbox-Windows.zip** from that release. GitHub's **Code >
 Download ZIP** contains source code, not the installable client.
@@ -23,8 +23,9 @@ separate installation; game assets are not bundled with the client.*
    is **ForgeArenaSandbox.exe**.
 
 Setup handles Forge, private Java/.NET runtimes and the loader. It installs the
-pinned official Python build if needed. Only the tested Arena build is accepted:
-**Client0.1.14517.1329972 / Unity 6000.3.14f1**, with its matching card database.
+pinned official Python build if needed. Tested Arena builds are
+**Client0.1.14589.1332174** and **Client0.1.14517.1329972**, each with its matching
+database and Unity 6000.3.14f1. [Compatibility and tested boundaries](docs/ARENA-COMPATIBILITY.md).
 Allow space for an independent Arena copy; setup checks the required space.
 
 ## Play

@@ -24,11 +24,14 @@ def invite(value):
 
 def compatibility(root):
     root=Path(root);lab=root/'native-lab';manifest=read(lab/'bridge-card-manifest.json')
-    semantic={k:manifest[k] for k in ('cards','keywordAbilityIds','typeEnumIds','sourceDatabaseSha256','sourceForgeScriptsSha256','policySha256')}
+    from arena_compat import validated_family
+    family,build=validated_family(lab)
+    if manifest['sourceDatabaseSha256']!=build['databaseSha256']:raise ValueError('Multiplayer catalogue does not match the validated installed Arena build')
+    semantic={k:manifest[k] for k in ('cards','keywordAbilityIds','typeEnumIds','sourceForgeScriptsSha256','policySha256')}
     classes={p.name:digest(p) for p in sorted((root/'build/ForgeBackend/classes').glob('ForgeLandEngine*.class'))}
     if not classes:raise ValueError('Missing two-player rules build')
     transport={name:digest(Path(__file__).with_name(name)) for name in ('multiplayer_session.py','multiplayer_room.py','multiplayer_rules.py','multiplayer_view.py','client_service.py')}
-    managed={name:digest(lab/'MTGA_Data/Managed'/name) for name in ('Core.dll','Wizards.MDN.GreProtobuf.dll','SharedClientCore.dll')}
+    managed={'reviewedArenaFamily':family}
     return dict(protocol=1,rules=hashlib.sha256(json.dumps(classes,sort_keys=True).encode()).hexdigest(),forge=digest(root/'forge-runtime/forge.jar'),gson=digest(root/'forge-runtime/gson.jar'),native=digest(lab/'BepInEx/plugins/ForgeArenaSandbox/NativeHost.dll'),catalogue=hashlib.sha256(json.dumps(semantic,sort_keys=True,separators=(',',':')).encode()).hexdigest(),transport=hashlib.sha256(json.dumps(transport,sort_keys=True).encode()).hexdigest(),managed=hashlib.sha256(json.dumps(managed,sort_keys=True).encode()).hexdigest(),humanChoices=manifest.get('fullHumanChoices') is True)
 
 def validated_deck(value):

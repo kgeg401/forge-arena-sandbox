@@ -16,7 +16,9 @@ def read(path):
 def verify(a):
     package=a.package.resolve();config=read(a.config);root=Path(config['privateRoot']);lab=root/'native-lab'
     tree=verify_tree(package);info=read(package/'release-info.json');policy_path=package/'ForgeBackend/bridge_support.json'
-    policy=read(policy_path);experimental=read(package/'ForgeBackend/experimental-admission.json')
+    from arena_compat import select_arena
+    selected=select_arena(read(package/'requirements.json'),lab)
+    policy=read(policy_path);experimental=read(package/'ForgeBackend'/selected.get('experimentalFile','experimental-admission.json'))
     verified=set(policy['verifiedNames']);extra=set(experimental['cards']);expected=verified|extra
     manifest=read(lab/'bridge-card-manifest.json');catalog=read(lab/'deck-catalog.json');checks=[]
     def check(label,value):

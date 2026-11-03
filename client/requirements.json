@@ -1,7 +1,7 @@
 {
   "schema": 1,
   "platform": "Windows x64",
-  "arenaBuild": "Client0.1.14517.1329972",
+  "arenaBuild": "Client0.1.14589.1332174",
   "unity": "6000.3.14f1",
   "javaMajor": 17,
   "dotnetMajor": 8,
@@ -15,15 +15,15 @@
     }
   },
   "arenaFiles": {
-    "MTGA_Data/Managed/Core.dll": "3e85d45e88b10a2fd3841e3abe6f5b37a17e0c42d360c93988e2270b4fdc858a",
-    "MTGA_Data/Managed/SharedClientCore.dll": "42f2fb5f062ccc6098182a902d411746070759a404e875b6e0aac44d3b7ccc6e",
-    "MTGA_Data/Managed/Wizards.MDN.GreProtobuf.dll": "7ca28480089cc2b21417abfea82b9c8721ff855f0369966858d70d58f2afcdae",
-    "MTGA_Data/Managed/Wizards.Arena.TcpConnection.dll": "7dede471d86d3db641cc8167ab054fafd70cd0b65910f1b73e1b02b6cfe35cbf",
+    "MTGA_Data/Managed/Core.dll": "48347a833961d311da7a3ccdecc6116f3ee75b6db8fa313b1871aecea8b54e85",
+    "MTGA_Data/Managed/SharedClientCore.dll": "aceb0cd5004b322ceb59b28b0ad44ec799b3d47a46666b17a50150da5449e392",
+    "MTGA_Data/Managed/Wizards.MDN.GreProtobuf.dll": "9569420c5ba7f6b33316d74d8208ffa29a872ab96566a45fe26cd63cf1e75306",
+    "MTGA_Data/Managed/Wizards.Arena.TcpConnection.dll": "0cf6273dfd0db7914a87e280cf36c37a78b3f59f8103f960d86908ee9e4b9501",
     "MTGA_Data/Managed/Google.Protobuf.dll": "592761c0cea52110c818978c94e33202d942a9a36ef8742b224d08fac5d42f2b",
     "MTGA_Data/Managed/Wizards.Arena.Client.Logging.dll": "f655ec0b5941afa8080ff4c9279b466ef94686aea14865b529893529cca2592d",
-    "MTGA.exe": "fb54f9daa199452fe5d51f4c48d34cb953876a7b119900b64ab787a60feb8113",
+    "MTGA.exe": "1683d9be1e33b877d0dc83ab625a71ff3a9a58c04b1efcd30c2c21ad4d1efa1e",
     "UnityPlayer.dll": "bbdf3e73522223ea45c3a54049b716f9da3e632994636734c5d53326aa2c36d0",
-    "MTGA_Data/Downloads/Raw/Raw_CardDatabase_c344d0dccdfb898a5e3fd4101eedbd48.mtga": "1be0105411ad989ca60e233f1341eaaa9276e3a679c89f1ef6f07e07ede10d25"
+    "MTGA_Data/Downloads/Raw/Raw_CardDatabase_fafba06321a1376b823c459d89e17bf1.mtga": "455e1ca683404b842193f243a1f2bb3de4f517c4a6e76cd9080ad9e4dcf41891"
   },
   "forgeJar": "forge-gui-desktop-2.0.15-SNAPSHOT-jar-with-dependencies.jar",
   "forgeFiles": {
@@ -118,5 +118,47 @@
     "retail banlist/format legality",
     "retail pack collation",
     "automatic client-asset migration"
-  ]
+  ],
+  "arenaVariants": [
+    {
+      "id": "arena-14517",
+      "arenaBuild": "Client0.1.14517.1329972",
+      "unity": "6000.3.14f1",
+      "databaseName": "Raw_CardDatabase_c344d0dccdfb898a5e3fd4101eedbd48.mtga",
+      "databaseSha256": "1be0105411ad989ca60e233f1341eaaa9276e3a679c89f1ef6f07e07ede10d25",
+      "experimentalFile": "experimental-admission.json",
+      "arenaFiles": {
+        "MTGA_Data/Managed/Core.dll": "3e85d45e88b10a2fd3841e3abe6f5b37a17e0c42d360c93988e2270b4fdc858a",
+        "MTGA_Data/Managed/SharedClientCore.dll": "42f2fb5f062ccc6098182a902d411746070759a404e875b6e0aac44d3b7ccc6e",
+        "MTGA_Data/Managed/Wizards.MDN.GreProtobuf.dll": "7ca28480089cc2b21417abfea82b9c8721ff855f0369966858d70d58f2afcdae",
+        "MTGA_Data/Managed/Wizards.Arena.TcpConnection.dll": "7dede471d86d3db641cc8167ab054fafd70cd0b65910f1b73e1b02b6cfe35cbf",
+        "MTGA_Data/Managed/Google.Protobuf.dll": "592761c0cea52110c818978c94e33202d942a9a36ef8742b224d08fac5d42f2b",
+        "MTGA_Data/Managed/Wizards.Arena.Client.Logging.dll": "f655ec0b5941afa8080ff4c9279b466ef94686aea14865b529893529cca2592d",
+        "MTGA.exe": "fb54f9daa199452fe5d51f4c48d34cb953876a7b119900b64ab787a60feb8113",
+        "UnityPlayer.dll": "bbdf3e73522223ea45c3a54049b716f9da3e632994636734c5d53326aa2c36d0",
+        "MTGA_Data/Downloads/Raw/Raw_CardDatabase_c344d0dccdfb898a5e3fd4101eedbd48.mtga": "1be0105411ad989ca60e233f1341eaaa9276e3a679c89f1ef6f07e07ede10d25"
+      }
+    },
+    {
+      "id": "arena-14589",
+      "arenaBuild": "Client0.1.14589.1332174",
+      "unity": "6000.3.14f1",
+      "databaseName": "Raw_CardDatabase_fafba06321a1376b823c459d89e17bf1.mtga",
+      "databaseSha256": "455e1ca683404b842193f243a1f2bb3de4f517c4a6e76cd9080ad9e4dcf41891",
+      "experimentalFile": "experimental-admission-14589.json",
+      "arenaFiles": {
+        "MTGA_Data/Managed/Core.dll": "48347a833961d311da7a3ccdecc6116f3ee75b6db8fa313b1871aecea8b54e85",
+        "MTGA_Data/Managed/SharedClientCore.dll": "aceb0cd5004b322ceb59b28b0ad44ec799b3d47a46666b17a50150da5449e392",
+        "MTGA_Data/Managed/Wizards.MDN.GreProtobuf.dll": "9569420c5ba7f6b33316d74d8208ffa29a872ab96566a45fe26cd63cf1e75306",
+        "MTGA_Data/Managed/Wizards.Arena.TcpConnection.dll": "0cf6273dfd0db7914a87e280cf36c37a78b3f59f8103f960d86908ee9e4b9501",
+        "MTGA_Data/Managed/Google.Protobuf.dll": "592761c0cea52110c818978c94e33202d942a9a36ef8742b224d08fac5d42f2b",
+        "MTGA_Data/Managed/Wizards.Arena.Client.Logging.dll": "f655ec0b5941afa8080ff4c9279b466ef94686aea14865b529893529cca2592d",
+        "MTGA.exe": "1683d9be1e33b877d0dc83ab625a71ff3a9a58c04b1efcd30c2c21ad4d1efa1e",
+        "UnityPlayer.dll": "bbdf3e73522223ea45c3a54049b716f9da3e632994636734c5d53326aa2c36d0",
+        "MTGA_Data/Downloads/Raw/Raw_CardDatabase_fafba06321a1376b823c459d89e17bf1.mtga": "455e1ca683404b842193f243a1f2bb3de4f517c4a6e76cd9080ad9e4dcf41891"
+      }
+    }
+  ],
+  "arenaFamily": "reviewed-arena-14517-14589-v1",
+  "arenaVariant": "arena-14589"
 }

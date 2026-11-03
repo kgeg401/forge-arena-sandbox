@@ -20,7 +20,7 @@ check('Experimental inventory is enabled and matches release metadata',experimen
 check('Experimental access never promotes or duplicates verified names',not verified&extra and all(c.get('experimental') is True and c.get('verified') is False and c.get('admitted') is True for c in experimental['cards'].values()))
 check('Blocked cards remain outside both admitted inventories',not set(experimental['blockedCards'])&(verified|extra))
 check('Experimental overlay is pinned to the same policy',experimental['policySha256']==sha(policy))
-database_hashes={v for k,v in requirements['arenaFiles'].items() if 'Raw_CardDatabase_' in k}
+database_hashes={v for build in [requirements,*requirements.get('arenaVariants',[])] for k,v in build['arenaFiles'].items() if 'Raw_CardDatabase_' in k}
 check('Experimental identities use the packaged Arena database',experimental['sourceDatabaseSha256'] in database_hashes)
 script_hashes={v['files'].get('res/cardsfolder/cardsfolder.zip') for v in requirements['forgeVariants']}
 check('Experimental rules use a supported pinned Forge script set',experimental['sourceForgeScriptsSha256'] in script_hashes)
@@ -40,3 +40,10 @@ for f in (C/'adapter-source').rglob('*.cs'):
  check('Native source identity: '+str(rel),source.is_file() and sha(f)==sha(source))
 check('Rules bridge source identity',sha(C/'adapter-source/ForgeLandEngine.java')==sha(W/'ForgeBackend/ForgeLandEngine.java'))
 print(json.dumps(dict(passed=True,checks=len(checks),sourceFiles=len(s['files']),verified=len(verified),experimental=len(extra),primary=len(verified|extra),version=info['version']),indent=2))
+
+for build in requirements.get('arenaVariants',[]):
+ cfg=read(C/'ForgeBackend'/build['experimentalFile'])
+ check('Variant catalogue fingerprint: '+build['id'],cfg['sourceDatabaseSha256']==cfg['humanChoices']['sourceDatabaseSha256']==build['databaseSha256'])
+ check('Variant retains primary card definitions: '+build['id'],cfg['cards']==experimental['cards'])
+ for key in ['cardOverrides','presentationObjects','keywordAbilityIds','typeEnumIds','cardNameIds']:
+  check('Variant retains presentation '+build['id']+' '+key,cfg['humanChoices'][key]==choices[key])

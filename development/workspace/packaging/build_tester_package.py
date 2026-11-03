@@ -30,9 +30,9 @@ def build(tag,output,gameplay_ref=None,headline='Public launcher and automatic u
         '/r:System.Windows.Forms.dll','/r:System.Drawing.dll','/r:System.Web.Extensions.dll',
         '/out:'+str(output/'ForgeArenaSandbox.exe'),str(REPO/'packaging/ClientLauncher.cs')],check=True)
     (output/'client-launcher-info.json').write_text(json.dumps(dict(schema=1,sourceSha256=sha(REPO/'packaging/ClientLauncher.cs'),sha256=sha(output/'ForgeArenaSandbox.exe')),indent=2))
-    for filename in OWN_SCRIPTS:shutil.copy2(REPO/'packaging'/filename,output/filename)
+    for filename in (*OWN_SCRIPTS,'arena_compat.py'):shutil.copy2(REPO/'packaging'/filename,output/filename)
     shutil.copy2(REPO/'packaging/TESTER-README.md',output/'README.md')
-    for filename in PYTHON_FILES:
+    for filename in (*PYTHON_FILES,'ForgeBackend/arena-builds.json','ForgeBackend/experimental-admission-14589.json'):
         target=output/filename;target.parent.mkdir(exist_ok=True);shutil.copy2(REPO/filename,target)
     shutil.copytree(REPO/'decks',output/'decks',ignore=shutil.ignore_patterns('__pycache__'))
     if gameplay_ref:
@@ -63,6 +63,19 @@ def build(tag,output,gameplay_ref=None,headline='Public launcher and automatic u
                 portable[label]=digest
             source['inputs']=portable
         (output/'ForgeBackend/experimental-admission.json').write_text(json.dumps(experimental,indent=2),encoding='utf8')
+        current_path=output/'ForgeBackend/experimental-admission-14589.json'
+        current=json.loads(current_path.read_text(encoding='utf8'))
+        profile=next(b for b in json.loads((output/'ForgeBackend/arena-builds.json').read_text(encoding='utf8'))['builds'] if b['id']=='arena-14589')
+        if current['sourceDatabaseSha256']!=profile['databaseSha256'] or current['humanChoices']['sourceDatabaseSha256']!=profile['databaseSha256'] or current['policySha256']!=experimental['policySha256'] or current['cards']!=experimental['cards']:
+            raise ValueError('Current Arena overlay does not preserve the reviewed catalogue')
+        for key in ('cardOverrides','presentationObjects','keywordAbilityIds','typeEnumIds','cardNameIds'):
+            if current['humanChoices'][key]!=experimental['humanChoices'][key]:raise ValueError('Current Arena presentation identities drifted: '+key)
+        inputs=current['humanChoices'].get('provenance',{}).get('source',{}).get('inputs')
+        if inputs:
+            labels={PureWindowsPath(name).name if '\\' in name else PurePosixPath(name).name:digest for name,digest in inputs.items()}
+            if len(labels)!=len(inputs):raise ValueError('Ambiguous current Arena evidence input name')
+            current['humanChoices']['provenance']['source']['inputs']=labels
+        current_path.write_text(json.dumps(current,indent=2),encoding='utf8')
     if support_index:
         index=json.loads(Path(support_index).read_text(encoding='utf8'))
         if index.get('schema')!=1 or index.get('provenance',{}).get('policySha256')!=sha(output/'ForgeBackend/bridge_support.json'):
@@ -121,9 +134,10 @@ def build(tag,output,gameplay_ref=None,headline='Public launcher and automatic u
     gson=PRIVATE/'tools/gson-2.13.2'
     if sha(gson/'gson.jar')!='dd0ce1b55a3ed2080cb70f9c655850cda86c206862310009dcb5e5c95265a5e0':raise ValueError('Unrecognized Gson dependency; retrieve the pinned official Maven artifact')
     shutil.copytree(gson,output/'third-party/gson')
-    identity=json.loads((PRIVATE/'research/build-identity.json').read_text())
-    arena_files={str(Path(row['path']).relative_to(ARENA)).replace('\\','/'):row['sha256'] for row in identity['files']}
-    for rel in ('MTGA.exe','UnityPlayer.dll','MTGA_Data/Downloads/Raw/Raw_CardDatabase_c344d0dccdfb898a5e3fd4101eedbd48.mtga'):arena_files[rel]=sha(arena/rel)
+    profiles=json.loads((REPO/'ForgeBackend/arena-builds.json').read_text(encoding='utf8'))
+    from arena_compat import select_arena
+    selected=select_arena({'arenaVariants':profiles['builds']},arena)
+    arena_files=selected['arenaFiles']
     for rel,digest in arena_files.items():
         if sha(arena/rel)!=digest:raise ValueError('Arena input differs from pinned build identity: '+rel)
     jar='forge-gui-desktop-2.0.15-SNAPSHOT-jar-with-dependencies.jar'
@@ -141,6 +155,10 @@ def build(tag,output,gameplay_ref=None,headline='Public launcher and automatic u
         admission=str(len(policy['verifiedNames']))+' explicitly admitted Arena names plus separately admitted commanders/tokens; no general-card support claim',features=['dedicated Windows client launcher','automatic startup updates','automatic Forge and runtime setup','persistent native Home/Decks/Packs/Play','normal practice bot matches','100-card Brawl bot matches','40-life Commander bot matches','four-player local Commander with one human and three bots','experimental shared table and public zones','native commander slot and local format choice','local sandbox pack opening','native local deck browser'],
         excluded=['human multiplayer pods','online matchmaking','retail account services','complete card support','retail banlist/format legality','retail pack collation','automatic client-asset migration'])
     requirements['features']+=['private two-player internet Commander with saved decks and 40 life']
+    requirements['arenaVariants']=profiles['builds']
+    requirements['arenaFamily']=profiles['family']
+    requirements['arenaBuild']=selected['arenaBuild']
+    requirements['arenaVariant']=selected['id']
     requirements['features']+=['solo 40-life 200-card Zombie/Horror reanimation Horde','Horde with saved 99-card-plus-commander decks','optional human Exert choices']
     requirements['features']+=['Horde preparation based on commander mana value','original FREAK-OFF Darien paper Commander deck','private cached paper-card illustrations through the original renderer']
     requirements['features']+=['survivor-aware Commander table and camera','experimental ten-player attack-left Commander pod','Gamba Gamba Yusri coin-flip Commander deck']
