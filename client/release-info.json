@@ -1,9 +1,9 @@
 {
-  "version": "0.2.0-alpha.15.mp.7",
-  "displayVersion": "0.2.0 Alpha 15.7 - Upgrade Repair",
-  "headline": "Repair automatic upgrades from older client versions",
+  "version": "0.2.0-alpha.15.mp.8",
+  "displayVersion": "0.2.0 Alpha 15.8 - File Lock Repair",
+  "headline": "Keep gameplay running during transient status-file locks",
   "testRelease": true,
-  "gameplaySource": "c6766a9772751fb02cdafbd31731956cd22092a5",
+  "gameplaySource": "1cef8f29e35a4914ed70c0b1291af173ae9309d7",
   "admittedNames": [
     "Plains",
     "Island",

@@ -708,7 +708,7 @@ internal sealed class ForgeLandBridge
             if(_networkAwaitPresentation)
             {
                 if(_presentedState()!=_stateId)return;
-                File.WriteAllText(Path.Combine(_ipc,"network-presented.json"),new JObject{["session"]=_session,["revision"]=_networkRevision}.ToString(Formatting.None));
+                if(!StatusJsonFile.TryWrite(Path.Combine(_ipc,"network-presented.json"),new JObject{["session"]=_session,["revision"]=_networkRevision}.ToString(Formatting.None)))return;
                 _networkAwaitPresentation=false;
             }
             if(_pending==null)

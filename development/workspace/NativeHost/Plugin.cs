@@ -293,7 +293,7 @@ public sealed class Plugin : BaseUnityPlugin
                 var captureType = Type.GetType("UnityEngine.ScreenCapture, UnityEngine.ScreenCaptureModule", true);
                 captureType!.GetMethod("CaptureScreenshot", new[] { typeof(string) })!.Invoke(null, new object[] { Path.Combine(_root, "native-board.png") });
             }
-            File.WriteAllText(Path.Combine(_root, "native-host-status.json"), JsonConvert.SerializeObject(new
+            StatusJsonFile.TryWrite(Path.Combine(_root, "native-host-status.json"), JsonConvert.SerializeObject(new
             {
                 utc = DateTime.UtcNow, phase = _phase, gap = _gap, scenes,
                 papa = papa != null, realDatabase = papa != null && papa.CardDatabase != null,

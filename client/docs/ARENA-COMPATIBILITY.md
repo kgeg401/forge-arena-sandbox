@@ -1,6 +1,6 @@
 # Supported Arena installations
 
-Alpha 15.7 supports both owned Windows Arena builds:
+Alpha 15.8 supports both owned Windows Arena builds:
 
 - **Client0.1.14589.1332174**: standalone assets tested in native play. The Steam executable is separately pinned from the supplied recipient report; all eight checked libraries/database files are identical. Steam installation admission is regression-tested, but launching that executable on the recipient PC remains to be confirmed.
 - **Client0.1.14517.1329972**: the older assets retained by existing sandbox installs.
@@ -46,3 +46,9 @@ Existing installations should close the client and reopen ForgeArenaSandbox.exe 
 Older updaters compare only the primary Arena fingerprint and retained Alpha15.2 when later packages advertised current standalone files there. Alpha15.7 retains the exact legacy fingerprint as the bootstrap contract while new installers/launchers continue validating every supported store variant. This permits the original15.2 updater to activate the new release without changing its Arena copy. The actual old updater is tested against preserved real prerequisite fingerprints and disposable profile bytes.
 
 If the launcher previously reported a different Arena build, close it and the client fully, then reopen the same dedicated launcher after this release is available. Both friends should update. They can choose different legal Commander decks; catalogue compatibility checks the shared rules/presentation mapping, not deck equality.
+
+## Status-file1224 during card play
+
+Alpha15.8 fixes a transient Windows mapped-file failure while rewriting deck-host-status.json. Deck, pack, shell and host snapshots now write a separate pending file and replace the published snapshot; busy mappings/sharing locks defer publication until a later poll. The prior complete snapshot stays readable. Durable player saves and one-shot commands keep their existing contracts. Multiplayer presentation acknowledgement remains pending until its snapshot is successfully published.
+
+The exact1224exception was reproduced in an original native client with an external mapped status reader. The candidate kept that reader open through an ordinary native bot sequence:14original UI callbacks, card plays/combat through turn7, normal return Home, and resumed status publication after reader release. Sixteen authored Windows checks include actual memory mapping, blocked replacement, read-only/unrelated failures and concurrent complete-JSON reads. Recipient internet-match verification is pending. Both players should restart into Alpha15.8.

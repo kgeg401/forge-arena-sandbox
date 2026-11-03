@@ -46,6 +46,10 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw 'Manifest startup probe build failed' }
           dotnet (Join-Path $displayBuild 'ManifestStartupProbe/bin/Debug/net8.0/ManifestStartupProbe.dll') > (Join-Path $reportFolder 'manifest-startup.json')
           if ($LASTEXITCODE -ne 0) { throw 'Manifest startup checks failed' }
+          dotnet build development/workspace/packaging/StatusSnapshotProbe/StatusSnapshotProbe.csproj "-p:SandboxBuildRoot=$displayBuild" --nologo > (Join-Path $reportFolder 'status-snapshot-build.txt')
+          if ($LASTEXITCODE -ne 0) { throw 'Status snapshot build failed' }
+          dotnet (Join-Path $displayBuild 'StatusSnapshotProbe/bin/Debug/net8.0/StatusSnapshotProbe.dll') > (Join-Path $reportFolder 'status-snapshot.json')
+          if ($LASTEXITCODE -ne 0) { throw 'Status snapshot checks failed' }
       - name: Keep headless reports
         if: always()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2

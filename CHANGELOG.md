@@ -1,3 +1,7 @@
+# Alpha15.8 - Shared status-file lock repair
+
+A mapped reader of deck-host-status.json could make a diagnostic write abort native card presentation. Periodic status snapshots now publish separately and defer transient locks. Presentation acknowledgements remain pending until publication succeeds. Reproduced the exact1224native error; candidate played cards/combat through turn7with the same mapping held and resumed publishing afterward. Both players should update the native adapter.
+
 # Alpha 15.7 - Legacy automatic-upgrade repair
 
 Retains the exact legacy primary Arena fingerprint needed by Alpha15.2 updaters while preserving all current standalone/Steam variant checks. The actual shipped15.2 updater reproduced the earlier rejection and accepted this package with saved profile bytes preserved. Native/gameplay binaries are unchanged from Alpha15.6. Different Commander decks remain supported.
