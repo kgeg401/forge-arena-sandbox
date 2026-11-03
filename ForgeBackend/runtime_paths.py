@@ -12,6 +12,11 @@ JAVA_HOME=Path(CONFIG.get('javaHome',str(Path.home()/'Games/ForgeRuntime-Java17/
 _builds=json.loads(Path(__file__).with_name('arena-builds.json').read_text(encoding='utf8'))['builds']
 _raw=Path(CONFIG.get('catalogueInstall',str(ARENA)))/'MTGA_Data/Downloads/Raw'
 _matches=[b for b in _builds if b['id']==CONFIG['arenaVariant']] if CONFIG.get('arenaVariant') else [b for b in _builds if (_raw/b['databaseName']).is_file()]
+if not CONFIG.get('arenaVariant'):
+    # Store variants may share the exact catalogue and choice bindings.
+    _catalogues={}
+    for _build in _matches:_catalogues.setdefault((_build['databaseName'],_build['databaseSha256'],_build['experimentalFile']),_build)
+    _matches=list(_catalogues.values())
 if not _matches and not CONFIG.get('arenaVariant'):_matches=[_builds[0]]
 if len(_matches)!=1:raise ValueError('Select exactly one supported Arena catalogue build in the installation config')
 ARENA_BUILD=_matches[0]

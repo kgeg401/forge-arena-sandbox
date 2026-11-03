@@ -26,9 +26,9 @@ pinned official Python build first. You do not need to install Forge yourself.
 Arena files stay on your computer and are copied into an independent sandbox.
 Setup reports the space required before installation.
 
-Only the tested Arena build is accepted: **Client0.1.14517.1329972 / Unity
-6000.3.14f1**, including its matching downloaded card database and assemblies.
-A different build is rejected rather than changing your retail installation.
+Exact supported fingerprints are required: **Client0.1.14589.1332174**
+(standalone or the pinned Steam executable) and retained **Client0.1.14517.1329972**
+standalone assets. Unknown or mixed files are rejected without changing Arena.
 
 ## Play
 

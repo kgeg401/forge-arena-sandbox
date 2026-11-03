@@ -58,7 +58,7 @@ def show():
             if (p/'MTGA.exe').exists():arena_default=str(p);break
     field('arena','Installed Arena',arena_default)
     field('destination','Sandbox folder',str(installed or Path.home()/'Games/ForgeArenaSandbox'))
-    ttk.Label(panel,text='Forge 2.0.15 is pinned to an official release. Existing launcher installations\ncan be completed here; saved decks are backed up and retained.',wraplength=740).pack(anchor='w',pady=12)
+    ttk.Label(panel,text='Forge 2.0.16 is pinned to an official release. Existing launcher installations\ncan be completed here; saved decks are backed up and retained.',wraplength=740).pack(anchor='w',pady=12)
     status=tk.StringVar(value='Ready to check Arena and install the sandbox.');ttk.Label(panel,textvariable=status,wraplength=740).pack(anchor='w',pady=8)
     buttons=ttk.Frame(panel);buttons.pack(anchor='w',pady=8);events=queue.Queue();busy=False
     def work(kind):

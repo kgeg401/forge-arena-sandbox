@@ -1,8 +1,8 @@
 # Supported Arena installations
 
-Alpha 15.4 supports both owned Windows Arena builds:
+Alpha 15.5 supports both owned Windows Arena builds:
 
-- **Client0.1.14589.1332174**: current official installation tested for this release.
+- **Client0.1.14589.1332174**: standalone assets tested in native play. The Steam executable is separately pinned from the supplied recipient report; all eight checked libraries/database files are identical. Steam installation admission is regression-tested, but launching that executable on the recipient PC remains to be confirmed.
 - **Client0.1.14517.1329972**: the older assets retained by existing sandbox installs.
 
 Fresh setup recognizes either complete fingerprint. Existing sandbox users keep

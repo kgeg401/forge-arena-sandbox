@@ -1,3 +1,7 @@
+# Alpha 15.5 - Steam Arena compatibility
+
+Recognizes the exact Steam MTGA.exe reported by the recipient while retaining all eight existing current-build library/database pins. Shared store catalogue selection no longer becomes ambiguous, and unsupported files are identified in the error. Steam launch on the recipient PC remains pending; the adapter/rules binaries are unchanged from the tested Alpha15.4.
+
 # Changelog
 
 ## 0.2.0 alpha 15.mp.4 - Current Arena compatibility

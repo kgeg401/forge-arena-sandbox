@@ -1,3 +1,7 @@
+## 2026-11-02 - Alpha 15.5 Steam executable compatibility
+
+Recipient report identifies one difference from the current standalone profile: MTGA.exe SHA256 e22c729eef75383888cb3d26a8cb4c2372bc6acdae7d7d9215c5020ba257fa37 (667648 bytes). The other eight checked library/database hashes match. Added a separate exact Steam profile; no hash checks waived. Deduplicate identical catalogue identities for store variants, retain explicit configured variant, and report nearest mismatching file names. Standalone native play evidence from Alpha15.4 remains applicable to unchanged adapter/rules binaries; Steam executable launch on recipient PC is pending.
+
 # Forge x Arena development journal
 
 ## 2026-10-28: headless match stability research

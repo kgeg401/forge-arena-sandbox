@@ -12,14 +12,18 @@ def select_arena(requirements,root):
         path=root/safe_relative(name);no_links(path)
         if name not in cache:cache[name]=sha(path) if path.is_file() else None
         return cache[name]==digest
+    nearest=None
     for variant in variants:
         files=variant.get('arenaFiles',{})
         if not isinstance(files,dict) or 'MTGA_Data/Managed/Core.dll' not in files:raise ValueError('Invalid Arena build fingerprint')
         if not matches('MTGA_Data/Managed/Core.dll',files['MTGA_Data/Managed/Core.dll']):continue
-        if all(matches(name,digest) for name,digest in files.items()):
+        differences=[name for name,digest in files.items() if not matches(name,digest)]
+        if not differences:
             return {**requirements,**variant,'arenaVariant':variant['id']}
+        if nearest is None or len(differences)<len(nearest):nearest=differences
     builds=', '.join(v.get('arenaBuild',v.get('id','unknown')) for v in variants)
-    raise ValueError('Arena files do not match a tested build ('+builds+'). Finish Arena updates and use a supported installation; existing sandbox data was preserved.')
+    detail=' Differing or missing files: '+', '.join(nearest[:3])+'.' if nearest else ''
+    raise ValueError('Arena files do not match a tested build ('+builds+').'+detail+' Finish Arena updates and use a supported installation; existing sandbox data was preserved.')
 
 def validated_family(lab):
     for parent in (Path(__file__).parent,Path(__file__).parent.parent):

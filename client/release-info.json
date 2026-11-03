@@ -1,9 +1,9 @@
 {
-  "version": "0.2.0-alpha.15.mp.4",
-  "displayVersion": "0.2.0 Alpha 15.4 - Arena Compatibility",
-  "headline": "Current Arena compatibility and shared decks",
+  "version": "0.2.0-alpha.15.mp.5",
+  "displayVersion": "0.2.0 Alpha 15.5 - Steam Compatibility",
+  "headline": "Steam Arena installation compatibility",
   "testRelease": true,
-  "gameplaySource": "c24ea1d5716856761100811b7b4d47e64bdec211",
+  "gameplaySource": "90e4e6d3bae72a11782a860a01b16f25728774cf",
   "admittedNames": [
     "Plains",
     "Island",
