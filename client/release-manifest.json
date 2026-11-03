@@ -3,7 +3,7 @@
   "version": "0.2.0-alpha.15.mp.9",
   "profileSchema": 1,
   "createdUtc": "2026-11-03T13:30:18.361805+00:00",
-  "sourceCommit": "6fd269921c27f708e83a6db2dcd700721221832c",
+  "sourceCommit": "3c77512b3d8f41704a2701a830e5e113f826d7e6",
   "sourceDirty": false,
   "published": false,
   "files": {
@@ -188,7 +188,7 @@
     "paper_art.py": "be8e3544ca92246e297ad66c51ff3db07f543f831aca0ea49bd27d116f08b319",
     "profile_identity.py": "291fb694acdc08de4cbd73d62c10ecbce4784ddb6e59de931b22548c9b28c1ed",
     "README.md": "98412e781a65e1c41afa5660b5cd410e07f84844b909dbb9cbff711495623b48",
-    "release-info.json": "41b1058238e80e6ef68a39b214155ec0ca6c7e8b2e4ec6fd4a423e27298ec435",
+    "release-info.json": "6e0f0f46ad7f0b9858b9a30ec90d019736dbfdc2270655196ae09a0505ca0208",
     "requirements.json": "1cb4025cbf9f1db35a0fcba8ef9c10b392f8622a11179084148d2124cca58b5b",
     "rules_runtime.py": "f85a9e74e2f77ec00a63ab6d8488c47f3da35c55c4885d4be87ebe3a2b370665",
     "Setup.cmd": "dcda5ac659306449f36de6e4e8667a2236d7065d105c56fdf2a169f049e544cf",

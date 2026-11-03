@@ -63,11 +63,14 @@ with tempfile.TemporaryDirectory(prefix='forge-report-wiring-') as temp:
         def create(self,value):posts.append(issue(value));return dict(number=1,html_url='https://github.com/kgeg401/forge-arena-sandbox/issues/1',body=issue(value)['body'])
     with patch('failure_reports.GitHub',GatePublisher):
         reporter=Reporter(lab,'1.2.3');start=time.monotonic();check('Report creation is durable and returns promptly',reporter.record('RULES_ENGINE_EXITED') and time.monotonic()-start<.2)
+        def report_rows():
+            # Observe under the writer's lock so this fixture cannot block Windows replace.
+            with reporter.outbox.lock:return reporter.outbox.rows()
         assert entered.wait(2);start=time.monotonic();reporter.record('RULES_ENGINE_EXITED')
-        check('An unavailable publisher never blocks the caller or duplicates the outbox',time.monotonic()-start<.2 and len(reporter.outbox.rows())==1 and worker_threads[0]!=threading.get_ident())
+        check('An unavailable publisher never blocks the caller or duplicates the outbox',time.monotonic()-start<.2 and len(report_rows())==1 and worker_threads[0]!=threading.get_ident())
         release.set();end=time.monotonic()+3
-        while time.monotonic()<end and reporter.outbox.rows()[0][1]['status']!='sent':time.sleep(.01)
-        check('The background publisher records its verified receipt',len(posts)==1 and reporter.outbox.rows()[0][1]['status']=='sent')
+        while time.monotonic()<end and report_rows()[0][1]['status']!='sent':time.sleep(.01)
+        check('The background publisher records its verified receipt',len(posts)==1 and report_rows()[0][1]['status']=='sent')
         reporter.close();check('Closing the reporter leaves no publishing thread',not reporter.thread.is_alive())
     with patch('failure_reports.write',side_effect=OSError('disk unavailable')):
         check('A failed report write cannot crash the game caller',reporter.record('RULES_START_TIMEOUT') is False)

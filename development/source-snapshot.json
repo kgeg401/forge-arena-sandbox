@@ -1,7 +1,7 @@
 {
   "schema": 1,
-  "localSourceCommit": "6fd269921c27f708e83a6db2dcd700721221832c",
-  "packageSourceCommit": "6fd269921c27f708e83a6db2dcd700721221832c",
+  "localSourceCommit": "3c77512b3d8f41704a2701a830e5e113f826d7e6",
+  "packageSourceCommit": "3c77512b3d8f41704a2701a830e5e113f826d7e6",
   "productionPolicySha256": "5752392f087eede8e69c546fe2fc31dfc1b2243235c5c61bfcb34a86207d67b5",
   "productionCards": 370,
   "files": {
@@ -552,7 +552,7 @@
     "packaging/verify_client_service.py": "4bde446e8443912e71dda52a548e3580f4b260de5a6ebb4655f48c7378c99e9d",
     "packaging/verify_consumer_catalogue.py": "a08cf0799e95d0c89f383affd23d74cf2b1ca54ba481a9156289e5eab0991e09",
     "packaging/verify_dependencies.py": "0c7749ba096a8c1d4a424564a8c18204cd672cebe5c451b87ddbb8589ae4f1cc",
-    "packaging/verify_failure_reporting_integration.py": "bebdbda2725c0ab36d4906c8c6d98aba85c61e60ffea5bc9121a57e8470f38be",
+    "packaging/verify_failure_reporting_integration.py": "b4c68b7fcc7810d0f5b4d117e98c7acbec2af4ba24e87d2643cdc46c5dd19493",
     "packaging/verify_failure_reports.py": "f21717b6cd50dfa15bd28db8bb9c0939f4a70804752ab2b3bdbc126cabf172b0",
     "packaging/verify_installed_catalogue.py": "e6a30121509b9ad3adc2ee2224270576d154e73a7277cf1b5c3a9460b1916051",
     "packaging/verify_installer_preflight.py": "9df9ec7c0bae0cd91649167865b7e753704eaa2cad84f0b29e060c39ff840fb2",
