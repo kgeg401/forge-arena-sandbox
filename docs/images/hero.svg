@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="310" viewBox="0 0 1200 310" role="img" aria-labelledby="title description">
+  <title id="title">Your decks. Your table.</title>
+  <desc id="description">Forge Arena Sandbox. A charcoal banner with warm amber accents and three decorative card outlines.</desc>
+  <defs>
+    <linearGradient id="canvas" x2="1" y2="1"><stop stop-color="#18232d"/><stop offset="1" stop-color="#090e14"/></linearGradient>
+    <radialGradient id="glow"><stop stop-color="#ba813f" stop-opacity=".24"/><stop offset="1" stop-color="#ba813f" stop-opacity="0"/></radialGradient>
+    <linearGradient id="card" x2="1" y2="1"><stop stop-color="#343832"/><stop offset="1" stop-color="#111923"/></linearGradient>
+  </defs>
+  <rect x="1" y="1" width="1198" height="308" rx="24" fill="url(#canvas)" stroke="#35414b"/>
+  <ellipse cx="1000" cy="145" rx="310" ry="230" fill="url(#glow)"/>
+  <g font-family="Segoe UI,Arial,sans-serif">
+    <text x="52" y="55" font-size="13" font-weight="600" letter-spacing="3" fill="#b9c6d0">PLAY. BUILD. EXPERIMENT.</text>
+    <text x="48" y="135" font-size="60" font-weight="650" letter-spacing="-2" fill="#f5f4ef">Your decks. <tspan fill="#f0bb77">Your table.</tspan></text>
+    <text x="52" y="189" font-size="21" fill="#bdc8d1">Magic's familiar presentation. Forge-powered play.</text>
+    <text x="52" y="224" font-size="18" fill="#bdc8d1">Play solo. Bring a friend to Commander.</text>
+    <path d="M52 257h38" stroke="#f0bb77" stroke-width="3" stroke-linecap="round"/>
+    <text x="105" y="262" font-size="12" font-weight="600" letter-spacing="2" fill="#a9b7c2">WINDOWS x64  /  EXPERIMENTAL ALPHA</text>
+  </g>
+  <g fill="#14202a" stroke="#52616b" stroke-width="1.5">
+    <rect x="844" y="64" width="130" height="192" rx="10" transform="rotate(-16 909 160)"/>
+    <rect x="995" y="63" width="130" height="192" rx="10" transform="rotate(15 1060 159)"/>
+  </g>
+  <g transform="rotate(2 985 156)">
+    <rect x="906" y="42" width="158" height="229" rx="12" fill="url(#card)" stroke="#d8ad77" stroke-width="1.5"/>
+    <rect x="917" y="53" width="136" height="207" rx="7" fill="none" stroke="#d8ad77" stroke-opacity=".3"/>
+    <path d="m985 100 39 54-39 54-39-54z" fill="none" stroke="#f0bb77" stroke-width="1.5"/>
+    <path d="m985 124 22 30-22 30-22-30z" fill="#f0bb77" fill-opacity=".14" stroke="#f0bb77" stroke-opacity=".7"/>
+    <path d="M944 81h82M944 232h82" stroke="#d8ad77" stroke-opacity=".5"/>
+    <circle cx="985" cy="154" r="5" fill="#f0bb77"/>
+  </g>
+</svg>
