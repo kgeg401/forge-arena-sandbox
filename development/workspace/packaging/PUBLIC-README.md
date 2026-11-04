@@ -10,14 +10,14 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/kgeg401/forge-arena-sandbox/releases/tag/v0.2.0-beta.1"><img src="docs/images/download-windows.svg" alt="Download Beta 1 for Windows" width="296" height="60"></a>
+  <a href="https://github.com/kgeg401/forge-arena-sandbox/releases/tag/v0.2.0-beta.2"><img src="docs/images/download-windows.svg" alt="Download Beta 2 for Windows" width="296" height="60"></a>
 </p>
 
 <p align="center">
   <a href="#quick-start">Quick start</a> · <a href="#play-with-a-friend">Play with a friend</a> · <a href="docs/BETA.md">Beta notes</a> · <a href="docs/KNOWN-ISSUES.md">Known issues</a> · <a href="docs/REPORTING-BUGS.md">Report a bug</a>
 </p>
 
-<p align="center"><sub>Beta 1 · Windows x64 · Public testing prerelease · MTG Arena installed separately</sub></p>
+<p align="center"><sub>Beta 2 · Windows x64 · Public testing prerelease · MTG Arena installed separately</sub></p>
 
 ![An actual sandbox match with Emry on the battlefield](docs/images/emry-match.png)
 
@@ -41,7 +41,7 @@
 
 **Before you begin:** a Windows x64 PC, a fully downloaded installation of MTG Arena, and at least 20 GiB free. Setup checks compatibility and the space needed for its separate game copy.
 
-1. **Get the client.** Open the [Beta 1 Windows release](https://github.com/kgeg401/forge-arena-sandbox/releases/tag/v0.2.0-beta.1) and download **ForgeArenaSandbox-Windows.zip**. GitHub's **Source code** archives are for developers.
+1. **Get the client.** Open the [Beta 2 Windows release](https://github.com/kgeg401/forge-arena-sandbox/releases/tag/v0.2.0-beta.2) and download **ForgeArenaSandbox-Windows.zip**. GitHub's **Source code** archives are for developers.
 2. **Install once.** Extract the entire ZIP, open **Setup.exe**, and choose your Arena folder plus a separate sandbox destination. Select **Check Arena**, then **Install sandbox**. Setup handles Forge, Python if needed, and the private runtimes. The first download and game-file copy can take several minutes.
 3. **Play.** Open **Forge Arena Sandbox** from the installed folder. For a first match, choose **Play → Practice Bot → White-Lifegain**.
 
@@ -62,7 +62,7 @@ Both players need the same current client build. **You can use different decks.*
 
 Home, Decks, Packs, and Options use the installed game's presentation. Pack contents follow custom sandbox collation; retail wildcard rewards and duplicate protection are not reconstructed. [More screenshots](docs/SCREENS.md)
 
-## What is in Beta 1?
+## What is in Beta 2?
 
 The beta brings together the existing modes with the **500-card Zombie Legion**, real-card combo decks and artwork, native castable-card outlines, and the original X selector for supported repeatable combos. Large local stacks retain the backend processing improvements while using the **normal game animation clock**. [Beta release notes](docs/BETA.md) · [All guides](docs/README.md)
 

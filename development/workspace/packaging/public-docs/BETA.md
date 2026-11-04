@@ -1,12 +1,19 @@
-# Beta 1 — public testing release
+# Beta 2 — public testing release
 
-Update version: **`0.2.0-beta.1`**. Windows x64; MTG Arena must be installed
+Update version: **`0.2.0-beta.2`**. Windows x64; MTG Arena must be installed
 separately. Download **ForgeArenaSandbox-Windows.zip** from the
-[Beta 1 release](https://github.com/kgeg401/forge-arena-sandbox/releases/tag/v0.2.0-beta.1).
+[Beta 2 release](https://github.com/kgeg401/forge-arena-sandbox/releases/tag/v0.2.0-beta.2).
 The **Source code** archives are developer checkouts, not the Windows installer.
 
 Beta marks a consolidated public test build. Experimental modes, card mappings
 and incomplete capabilities retain the limits listed below.
+
+## New in Beta 2
+
+**Settings → Report a bug** saves a private-data-free technical session timeline,
+opens a prefilled GitHub form and its report folder, and leaves the match open.
+Add screenshots/details and drag the log into the form before submitting. A
+GitHub browser sign-in is needed; GitHub CLI is not needed for this button.
 
 ## Included
 

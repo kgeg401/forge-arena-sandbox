@@ -1,3 +1,12 @@
+# Beta 2 — 0.2.0-beta.2
+
+- Adds Settings → Report a bug, available without ending the match.
+- Saves a bounded, allowlisted technical session timeline and opens a prefilled GitHub form and report folder. Players add details/screenshots and submit using their own browser sign-in; GitHub CLI is unnecessary for manual reports.
+- Excludes raw logs, hidden card names, decks, player names, invitation secrets, paths and credentials; preserves match priority/state.
+- Includes offline shortcuts, duplicate/rate limits, privacy tests and native menu verification. Forge rules, card catalogue and normal animation speed are unchanged.
+
+---
+
 # Beta 1 — 0.2.0-beta.1
 
 Public testing prerelease consolidating the locally tested Alpha 15.11 gameplay.

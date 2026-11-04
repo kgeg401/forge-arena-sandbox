@@ -4,6 +4,27 @@ Start with [known issues](KNOWN-ISSUES.md) and [setup help](FAQ.md), then open
 [the matching GitHub issue form](https://github.com/kgeg401/forge-arena-sandbox/issues/new/choose).
 Manual issues use the browser; you do not need to install GitHub CLI.
 
+## Report from the client
+
+Open **Settings → Report a bug → Create report**, either from the Home screen
+or during a match. The match remains open. The client saves `session-report.txt`
+and opens its folder alongside a prefilled GitHub issue draft. Add the card
+sequence, expected result and screenshots; drag the text file into the draft,
+then submit. GitHub may ask you to sign in. Nothing is posted automatically by
+this button before you submit.
+
+The report includes the release version and up to 120 changed technical samples
+from this client session: turn/phase, priority seats, stack/battlefield counts and
+fixed status flags. Sampling is bounded to once per second. This is a technical
+timeline, not a complete action replay or save. Raw logs, private card names,
+deck lists, player names, invitations, local paths and credentials are excluded.
+Review screenshots yourself for hidden information before attaching them.
+
+If the browser cannot open, the saved folder contains **GitHub issue.url** and
+instructions. The in-client notice gives its location under
+`data/native-lab/bug-reports/<report-id>`. These files remain local until you
+submit or attach them on GitHub.
+
 ## Include enough to reproduce it
 
 - **Version:** the display/update version from `release-info.json` in the active

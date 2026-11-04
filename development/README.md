@@ -1,6 +1,6 @@
 # Development sources and catalogue tools
 
-Current package: **Beta 1 (`0.2.0-beta.1`)**. See [beta scope](../docs/BETA.md).
+Current package: **Beta 2 (`0.2.0-beta.2`)**. See [beta scope](../docs/BETA.md).
 
 `workspace/` mirrors the authored local development workspace. The snapshot
 manifest records the original commit and SHA-256 for every included source file.

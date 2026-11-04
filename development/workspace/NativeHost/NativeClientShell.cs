@@ -42,6 +42,9 @@ internal sealed class NativeClientShell
     private readonly Func<JObject?> _matchNotice;
     private (string session,string message,bool recoverable)? _pendingBridgeFailure;
     private string? _pendingFailureReport;
+    private string? _manualReport;
+    private float _manualReportDeadline;
+    private SharedJsonFile? _manualReportStatus;
     private readonly HashSet<string> _reportedBridgeFailures=new HashSet<string>();
     private string _session="";
     private string? _matchRequest;
@@ -336,13 +339,47 @@ internal sealed class NativeClientShell
         }
         foreach(var button in __instance.GetComponentsInChildren<CustomButton>(true).Where(b=>b.name=="Link_ReportABug" || b.name=="Link_LocalClientHelp"))
         {
-            button.name="Link_LocalClientHelp";
-            foreach(var text in button.GetComponentsInChildren<TMP_Text>(true)){foreach(var loc in text.GetComponents<Localize>())loc.enabled=false;text.text="Client help";}
-            _active.Bind(button,()=>_active._dialogs!.Show("Local client help","This is the offline Forge Arena client. Your decks and collection are saved locally. Report client issues in your project chat.","Close"));
+            button.name="Link_ReportABug";
+            foreach(var text in button.GetComponentsInChildren<TMP_Text>(true)){foreach(var loc in text.GetComponents<Localize>())loc.enabled=false;text.text="Report a bug";}
+            _active.Bind(button,()=>{__instance.OnCloseClicked();_active.DeferMenu(_active.ReportBug);});
         }
+    }
+    private void ReportBug()
+    {
+        if(_manualReport!=null){_dialogs!.Show("Preparing report","Your session report is already being prepared. Your match stays open.");return;}
+        _dialogs!.Confirm("Report a bug","Save a short technical session log and open a GitHub draft. Add details and screenshots, attach the log, then submit. Private cards, decks, invitations and sign-in data are excluded. Your match stays open.","Create report",()=>DeferMenu(BeginReport));
+    }
+    private void BeginReport()
+    {
+        string id=Guid.NewGuid().ToString(),path=Path.Combine(_root,"manual-report.request.json");
+        if(File.Exists(path))throw new InvalidOperationException("A report request is already being processed.");
+        File.WriteAllText(path+".pending",JsonConvert.SerializeObject(new{schema=1,session=_session,id}));File.Move(path+".pending",path);
+        _manualReport=id;_manualReportDeadline=Time.realtimeSinceStartup+30;
+        _manualReportStatus=new SharedJsonFile(Path.Combine(_root,"manual-report-status.json"));
+    }
+    private void PollManualReport()
+    {
+        if(_manualReport==null || _dialogs==null || _dialogs.IsOpen)return;
+        JObject? status=null;
+        try{status=_manualReportStatus?.Read();}catch(Exception error) when(error is IOException || error is UnauthorizedAccessException || error is JsonException){}
+        if((string?)status?["session"]==_session && (string?)status?["id"]==_manualReport)
+        {
+            string result=(string?)status?["status"]??"";
+            if(result=="ready"){
+                bool opened=(bool?)status?["browserOpened"]==true,folder=(bool?)status?["folderOpened"]==true;
+                string saved=Path.Combine(_root,"bug-reports",_manualReport);
+                _manualReport=null;
+                _dialogs.Show("Bug report ready",(opened?"The GitHub draft is open. ":"The browser could not open. ")+(folder?"The report folder is open. ":"")+"Add details and screenshots, then drag session-report.txt into the draft and submit. Nothing has been posted yet.\n\nSaved report: "+saved);return;
+            }
+            if(result=="failed" || result=="busy"){
+                _manualReport=null;_dialogs.Show("Report not ready",result=="busy"?"Please wait a few seconds before creating another report.":"The report could not be saved. Your match is still open. Try again from Settings.");return;
+            }
+        }
+        if(Time.realtimeSinceStartup>_manualReportDeadline){_manualReport=null;_dialogs.Show("Report not confirmed","The report service did not confirm in time. Your match is still open. Check the bug-reports folder before trying again.");}
     }
     public void Poll()
     {
+        PollManualReport();
         if(_pendingFailureReport!=null)
         {
             try{if(StatusJsonFile.TryWrite(Path.Combine(_root,"client-failure.json"),_pendingFailureReport))_pendingFailureReport=null;}
@@ -374,6 +411,10 @@ internal sealed class NativeClientShell
                 switch((string?)value["op"])
                 {
                     case "home":Home();break;case "decks":Decks();break;case "play":Play();break;case "packs":Packs();break;case "profiles":Profiles();break;case "inspect":Dump();break;
+                    case "settings":_runner.StartCoroutine(OpenSettings());break;
+                    case "settings-report":
+                        var settings=UnityEngine.Object.FindFirstObjectByType<SettingsMenu>()??throw new InvalidOperationException("The original Settings menu is not open.");
+                        settings.GetComponentsInChildren<CustomButton>(false).Single(b=>b.name=="Link_ReportABug" && b.Interactable).OnClick.Invoke();break;
                     case "dialog-button":_dialogs!.Click((string)value["label"]!);break;
                     case "profile-name":_dialogs!.SetInput((string)value["text"]!);break;
                     case "resume-match":

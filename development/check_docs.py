@@ -8,7 +8,7 @@ def check(label,ok):
  checks.append(label)
 read=lambda p:json.loads(p.read_text(encoding='utf-8-sig'))
 info=read(C/'release-info.json');starter=read(C/'starter-content.json');extra=read(C/'ForgeBackend/experimental-admission.json');policy=read(C/'ForgeBackend/bridge_support.json')
-check('Beta update/display version',info['version']=='0.2.0-beta.1' and info['displayVersion']=='Beta 1')
+check('Beta update/display version',info['version']=='0.2.0-beta.2' and info['displayVersion']=='Beta 2')
 check('Actual card counts',len(policy['verifiedNames'])==370 and len(extra['cards'])==1590 and not set(policy['verifiedNames'])&extra['cards'].keys())
 check('Actual shared starter content',len(starter['decks'])==32 and len(starter['cards'])==907 and sum(starter['cards'].values())==1338)
 current=['README.md','CONTRIBUTING.md']+['docs/'+n for n in ['README.md','BETA.md','KNOWN-ISSUES.md','REPORTING-BUGS.md','FAQ.md','GAME-MODES.md','MULTIPLAYER.md','STARTER-CONTENT.md','STACK-RESOLUTION.md','LOOP-REPEAT.md','ARCHITECTURE.md','ARENA-COMPATIBILITY.md','LIBRARY-HEIST.md','FIVE-MECHANICS.md','CAST-HIGHLIGHTS.md','DEVELOPMENT.md']]
@@ -21,7 +21,7 @@ for rel in current:
  for phrase in ['1,421 are enabled','**26 saved decks**','**521 collection','Stop** prevents','Multiplayer is unfinished.']:
   check('No stale current claim: '+rel+' '+phrase,phrase not in s)
 readme=(R/'README.md').read_text(encoding='utf8')
-check('Pinned beta download',readme.count('/releases/tag/v0.2.0-beta.1')==2 and '/releases/tag/v0.2.0-alpha.' not in readme)
+check('Pinned beta download',readme.count('/releases/tag/v0.2.0-beta.2')==2 and '/releases/tag/v0.2.0-alpha.' not in readme)
 check('Documented lifetime/coverage limits','durable match saves' in (D/'KNOWN-ISSUES.md').read_text().lower() or 'not durable' in (D/'KNOWN-ISSUES.md').read_text().lower())
 for f in (D/'images').glob('*.svg'):ET.parse(f);check('Well-formed SVG: '+f.name,True)
 check('Hero and download image identify the beta',all('ALPHA' not in (D/'images'/name).read_text().upper() for name in ['hero.svg','download-windows.svg']))

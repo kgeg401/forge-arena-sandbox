@@ -1,12 +1,13 @@
-# Beta 1 — verification scope
+# Beta 2 — verification scope
 
-This page separates the current package from historical alpha records. Beta 1
+This page separates the current package from historical alpha records. Beta 2
 contains 370 baseline verified names and 1,590 experimental primary names
 (1,960 total). No card is promoted merely because it has an Arena presentation,
 a matching Forge script or a passing smoke case.
 
 | Area | Evidence and boundary |
 | --- | --- |
+| Manual bug reporting | 23 bounded privacy, request, file/worker and coordinator checks; actual native Settings link, Cancel, saved report and confirmation at Home. Running-match process/priority preservation checked at the coordinator boundary. Browser/folder OS handoffs mocked in native regression; separate browser check reached the expected GitHub sign-in page. No public test issue posted. |
 | Normal-speed stack processing | A paid original-handler 304-trigger seeded reproduction completed in native Unity at 1280×720 with Unity time scale 1 in all 322 recorded samples. Every final rules field matched the prior demo except session identity. The 40.31-second board-ready observation began with 294 triggers remaining; it is not total 304-trigger or retail timing. |
 | 500-card Zombie Legion | 47 bounded original-parser/input-handler cases, including two scripted complete games won by the Horde. Small-pool cases cover revival, copies, lords, death triggers, physical-token distinctions and legal removal. Broad balance and a survivor win remain unverified. |
 | Repeat controls and cast outlines | Original native UI/handler tests cover supported deterministic repeats, cancellation, opponent interruption and current legal cast offers. General arbitrary loops and every card combination remain outside coverage. |
@@ -15,8 +16,8 @@ a matching Forge script or a passing smoke case.
 | Packaging | Source/binary identity, supported prerequisite fingerprints, package integrity, update/rollback and saved-profile preservation are separate checks. CI fixtures cannot establish native gameplay or a recipient-PC installation. |
 
 The gameplay source is the locally tested Alpha 15.11 normal-clock checkpoint
-plus beta documentation; no new animation multiplier or rules engine is introduced.
-See [Beta 1](BETA.md), [known issues](KNOWN-ISSUES.md),
+plus the manual-report menu/coordinator and beta documentation; no new animation multiplier or rules engine is introduced.
+See [Beta 2](BETA.md), [known issues](KNOWN-ISSUES.md),
 [stack resolution](STACK-RESOLUTION.md), and [Horde details](ZOMBIE-HORDE.md).
 
 ## Historical verification records

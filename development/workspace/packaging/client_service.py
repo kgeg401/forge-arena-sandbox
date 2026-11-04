@@ -134,6 +134,8 @@ class Coordinator:
         self.ipc=self.lab/'forge-ipc';self.state_path=self.lab/'client-service-status.json'
         self.catalog={str(c['grpId']):c for c in read(self.lab/'deck-catalog.json')['cards']}
         self.reporter=None;self.last_failures=set()
+        from manual_reports import ManualReports
+        self.manual_reports=ManualReports(self.lab,self.app,self.session)
         from failure_reports import packaged_version,Reporter
         version=packaged_version(self.app)
         if version:
@@ -157,6 +159,8 @@ class Coordinator:
     def publish(self,phase,message,**extra):
         self.phase=phase
         value=dict(schema=1,session=self.session,nativePid=self.pid,utc=datetime.now(timezone.utc).isoformat(),requestId=self.request_id,phase=phase,message=message,enginePid=self.process.pid if self.process else None,**extra)
+        if phase in ('playing','error') and self.last_snapshot and self.last_snapshot.get('requestId')==self.request_id and self.last_snapshot.get('engineSession'):
+            value.setdefault('engineSession',self.last_snapshot['engineSession'])
         self.last_snapshot=value;self.heartbeat_at=time.monotonic()+3
         atomic(self.state_path,value)
     def start(self,request):
@@ -268,6 +272,7 @@ class Coordinator:
             (self.lab/'match-recovery.json').rename(self.lab/('match-recovery-consumed-'+request_id+'.json'))
         else:raise RequestRejected('Unknown client action')
     def tick(self,process_requests=True):
+        if process_requests:self.manual_reports.poll(self.phase,self.internet,(self.last_snapshot or {}).get('engineSession'))
         if time.monotonic()>=self.heartbeat_at and self.last_snapshot:
             self.last_snapshot['utc']=datetime.now(timezone.utc).isoformat();atomic(self.state_path,self.last_snapshot);self.heartbeat_at=time.monotonic()+3
         request_path=self.lab/'client-service.request.json'
@@ -329,6 +334,7 @@ class Coordinator:
             self.stopped_log()
         finally:
             if getattr(self,'reporter',None):self.reporter.close()
+            self.manual_reports.close()
 
 
 def main(args):
