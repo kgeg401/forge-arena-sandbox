@@ -306,7 +306,7 @@ internal sealed class NativeClientShell
             if((string?)engine["session"]!=(string?)service["engineSession"])throw new InvalidDataException("The local match session changed before the board opened.");
             _rulesSession=(string?)engine["session"];
             HideQueue();Surface.SetVisible(false);_matchActive=true;_screen="match";
-            try{_startMatch();Send("match-started",new JObject{["matchRequestId"]=_matchRequest});}
+            try{_startMatch();if((bool?)service["recovered"]==true){_pendingBridgeFailure=null;_dialogs?.DismissMatchFailure();}Send("match-started",new JObject{["matchRequestId"]=_matchRequest});}
             catch{_matchActive=false;Surface.SetVisible(true);throw;}
             if(_queuedDeckId is Guid played){try{_decks!.RecordPlayed(played);}catch(Exception error){_log("Could not record last-played time; match continues: "+error.Message);}_queuedDeckId=null;}
         }

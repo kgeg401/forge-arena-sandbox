@@ -1,5 +1,6 @@
 """Merge packaged starter decks/collection before the native profile owner starts."""
 import copy
+import hashlib
 import json
 import os
 from pathlib import Path
@@ -8,6 +9,10 @@ import uuid
 from tester_common import no_links
 
 PILES=('main','sideboard','commander','companion')
+
+def deck_signature(deck):
+    value={k:deck.get(k) for k in ('name','format',*PILES)}
+    return hashlib.sha256(json.dumps(value,sort_keys=True,separators=(',',':')).encode()).hexdigest()
 
 def read(path):
     return json.loads(Path(path).read_text(encoding='utf-8-sig'))
@@ -23,6 +28,12 @@ def load_content(app,lab):
     if content.get('schema')!=1 or not isinstance(content.get('id'),str) or not content['id'] or not isinstance(content.get('decks'),list):
         raise ValueError('Invalid starter content')
     known={str(c['grpId']) for c in read(Path(lab)/'deck-catalog.json')['cards']}
+    retired=content.get('retiredCards',[])
+    if not isinstance(retired,list) or any(not isinstance(k,str) or not k.isdecimal() or str(int(k))!=k or not 2000000<=int(k)<2100000 or k in known for k in retired):
+        raise ValueError('Invalid retired custom card identities')
+    signatures=content.get('retiredStarterDeckSignatures',{})
+    if not isinstance(signatures,dict) or any(not isinstance(k,str) or not isinstance(v,str) or len(v)!=64 or any(c not in '0123456789abcdef' for c in v) for k,v in signatures.items()):
+        raise ValueError('Invalid retired starter deck signatures')
     counts(content.get('cards'),known,100000)
     keys=set();names=set()
     for deck in content['decks']:
@@ -68,6 +79,28 @@ def seed_profile(app,lab):
         if type(state.get('revision')) is not int or not 0<=state['revision']<2147483647 or not isinstance(state.get('starterContent',[]),list) or any(not isinstance(x,str) for x in state.get('starterContent',[])):
             raise ValueError('Invalid saved profile receipt; original preserved')
     if any(type(v) is not int or v<0 for v in packs['cards'].values()):raise ValueError('Invalid saved collection count; original preserved')
+    retired=set(content.get('retiredCards',[]));signatures=content.get('retiredStarterDeckSignatures',{})
+    retired_decks=0;removed_copies=0;edited_decks=0;retained=[]
+    for deck in decks['decks']:
+        # Only an untouched supplied custom deck is retired wholesale.
+        # User edits retain every real card and lose only the retired printing.
+        if signatures.get(deck.get('id'))==deck_signature(deck):retired_decks+=1;continue
+        changed=False
+        for pile in PILES:
+            if not isinstance(deck.get(pile),dict):raise ValueError('Invalid saved deck piles; original preserved')
+            for card in retired:
+                if card in deck[pile]:deck[pile].pop(card);changed=True
+        if changed:edited_decks+=1
+        retained.append(deck)
+    decks['decks']=retained
+    for card in retired:removed_copies+=packs['cards'].pop(card,0)
+    retired_grants=False
+    for grant in packs.get('starterGrants',{}).values():
+        if not isinstance(grant,dict):raise ValueError('Invalid saved starter grant; original preserved')
+        for card in retired:
+            if card in grant:grant.pop(card);retired_grants=True
+    if retired_decks or edited_decks:decks['revision']+=1
+    if removed_copies or retired_grants:packs['revision']+=1
     added=0;granted=0
     if content['id'] not in decks.get('starterContent',[]):
         names={d['name'].casefold() for d in decks['decks']};ids={d.get('id') for d in decks['decks']}
@@ -88,4 +121,4 @@ def seed_profile(app,lab):
     # Each receipt commits with its data, so a partial I/O failure can be retried safely.
     if not decks_path.exists() or read(decks_path)!=decks:commit(decks_path,decks)
     if not packs_path.exists() or read(packs_path)!=packs:commit(packs_path,packs)
-    return dict(decksAdded=added,collectionCopiesAdded=granted,starter=content['id'])
+    return dict(decksAdded=added,collectionCopiesAdded=granted,starter=content['id'],retiredDecks=retired_decks,retiredCopies=removed_copies,editedDecksCleaned=edited_decks)

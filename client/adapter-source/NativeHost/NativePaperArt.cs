@@ -44,6 +44,8 @@ internal static class NativePaperArt
         harmony.Patch(AccessTools.Method(typeof(CardArtTextureLoader),"AcquireCardArt"),prefix:new HarmonyMethod(typeof(NativePaperArt),nameof(Acquire)));
         harmony.Patch(AccessTools.Method(typeof(AltReferencedMaterialAndBlock),"SetMainTexture",new[]{typeof(string)}),prefix:new HarmonyMethod(typeof(NativePaperArt),nameof(MainTexture)));
         harmony.Patch(AccessTools.Method(typeof(AltReferencedMaterialAndBlock),"SetTexture",new[]{typeof(string),typeof(string)}),prefix:new HarmonyMethod(typeof(NativePaperArt),nameof(TextureProperty)));
+        // Deck boxes use a separate property-block loader from card previews.
+        harmony.Patch(AccessTools.Method(typeof(MaterialPropertyBlockTextureLoader),"TrySetTexture",new[]{typeof(string),typeof(string)}),prefix:new HarmonyMethod(typeof(NativePaperArt),nameof(BlockTexture)));
     }
     private static bool ArtPath(string originalAssetPath,ref string __result)
     {if(originalAssetPath==null || !Textures.ContainsKey(originalAssetPath))return true;__result=originalAssetPath;return false;}
@@ -53,4 +55,9 @@ internal static class NativePaperArt
     {if(texturePath==null || !Textures.TryGetValue(texturePath,out var texture))return true;__instance.SetMainTexture(texture);return false;}
     private static bool TextureProperty(AltReferencedMaterialAndBlock __instance,string property,string texturePath)
     {if(texturePath==null || !Textures.TryGetValue(texturePath,out var texture))return true;__instance.MatBlock.SetTexture(property,texture);return false;}
+    private static bool BlockTexture(MaterialPropertyBlockTextureLoader __instance,string property,string texturePath,ref bool __result)
+    {
+        if(property!="_MainTex" || texturePath==null || !Textures.TryGetValue(texturePath,out var texture))return true;
+        __instance.SetMainTexture(texture);__result=true;return false;
+    }
 }

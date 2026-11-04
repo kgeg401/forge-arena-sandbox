@@ -37,14 +37,29 @@ def objects():
     return cards
 
 x=inspect();op=sys.argv[1] if len(sys.argv)>1 else 'inspect'
-summary=dict(workflow=x['workflow'],state=x['nativeState'],modalCards=x.get('modalCards'),orderCardIds=x.get('orderCardIds'),damageAssignments=x.get('damageAssignments'),damageControls=x.get('damageControls'),distributionControls=x.get('distributionControls'),buttons=x.get('buttons'),uiButtons=x.get('uiButtons'),clickable=[v for v in x['views'] if v['click'] and v['active']])
+summary=dict(workflow=x['workflow'],state=x['nativeState'],repeat=x.get('repeat'),confirmWidget=x.get('confirmWidget'),modalCards=x.get('modalCards'),orderCardIds=x.get('orderCardIds'),damageAssignments=x.get('damageAssignments'),damageControls=x.get('damageControls'),distributionControls=x.get('distributionControls'),buttons=x.get('buttons'),uiButtons=x.get('uiButtons'),clickable=[v for v in x['views'] if v['click'] and v['active']])
 if op=='inspect':print(json.dumps(summary,indent=2));raise SystemExit(0)
 if '--expected-state' in sys.argv and x['nativeState']!=int(sys.argv[sys.argv.index('--expected-state')+1]):
     raise RuntimeError('Native QA observation changed before publication; inspect again')
 action=dict(expectedWorkflow=x['workflow'],nativeState=x['nativeState'],primary='--primary' in sys.argv)
-if op=='modal-card':
+if op in ('loop-start','loop-stop','loop-open','loop-close'):
+    control=x.get('repeat') or {}
+    if op=='loop-open':
+        if not control.get('launcherVisible'):raise RuntimeError('Observed repeat launcher is not visible')
+    elif op=='loop-close':
+        if not control.get('visible') or control.get('stopEnabled'):raise RuntimeError('Observed idle repeat panel is not closable')
+    elif op=='loop-stop':
+        if not control.get('cancelVisible',control.get('visible')) or not control.get('stopEnabled'):raise RuntimeError('Observed repeat Cancel is not enabled')
+    elif not control.get('visible') or not control.get('repeatEnabled'):raise RuntimeError('Observed repeat control is not enabled')
+    action.update(op=op.replace('-','_'))
+    if op=='loop-start':action['count']=sys.argv[2]
+elif op=='confirm-ability':
+    ability=int(sys.argv[2]);matches=[v for v in x.get('confirmWidget') or [] if v['abilityGrpId']==ability and v['enabled']]
+    if x['workflow']!='ActionsAvailableWorkflow' or len(matches)!=1:raise RuntimeError('Original ability confirmation is not uniquely enabled')
+    action.update(op='confirm_ability',abilityGrpId=ability)
+elif op=='modal-card':
     ability=int(sys.argv[2]);matches=[c for c in x.get('modalCards') or [] if c['abilityGrpId']==ability and c['visible'] and c['active']]
-    if x['workflow']!='CastingTimeOptionWorkflow' or len(matches)!=1:raise RuntimeError('Original modal card is not uniquely selectable')
+    if x['workflow'] not in ('CastingTimeOptionWorkflow','ActionsAvailableWorkflow') or len(matches)!=1:raise RuntimeError('Original modal card is not uniquely selectable')
     action.update(op='modal_card',abilityGrpId=ability)
 elif op=='button':
     matches=[b for b in x['buttons'] if b['enabled'] and b['text']==sys.argv[2]]

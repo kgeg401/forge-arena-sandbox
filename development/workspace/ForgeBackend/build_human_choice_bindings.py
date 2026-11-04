@@ -372,6 +372,10 @@ for kind in ('CardType','SubType','SuperType'):
         name=row['Loc'].lower();value=row['Value']
         if name in target and target[name]!=value:raise ValueError('Conflicting native type enum '+name)
         target[name]=value
+        # Native labels can contain display-only markup (Assembly-Worker).
+        plain=html.unescape(re.sub(r'<[^>]+>','',name))
+        if plain in target and target[plain]!=value:raise ValueError('Conflicting plain native type enum '+plain)
+        target[plain]=value
 for color in ('white','blue','black','red','green'):
     text='Hexproof from '+color
     ids=[r[0] for r in db.execute('SELECT a.Id FROM Abilities a JOIN Localizations_enUS l ON a.TextId=l.LocId AND l.Formatted=1 WHERE a.Category=3 AND l.Loc=?',(text,))]

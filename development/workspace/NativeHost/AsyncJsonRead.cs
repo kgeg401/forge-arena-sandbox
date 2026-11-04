@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
@@ -13,18 +14,30 @@ internal sealed class AsyncJsonRead
     private readonly Func<string,JObject> _load;
     private string? _path;
     private Task<JObject>? _read;
+    private CancellationTokenSource? _cancel;
     private int _retries;
+    private long _readTicks;
     internal int Retries=>Volatile.Read(ref _retries);
+    internal double ReadMilliseconds=>Interlocked.Read(ref _readTicks)*1000d/Stopwatch.Frequency;
     internal AsyncJsonRead(Func<string,JObject> load)=>_load=load;
+
+    // Parse while Forge is calculating, rather than spending another UI frame
+    // starting the read after its atomic response first becomes visible.
+    internal void Begin(string path)=>Start(path,true);
+    private void Start(string path,bool awaitPublication)
+    {
+        if(_path==path)return;
+        Forget();_path=path;_cancel=new CancellationTokenSource();var token=_cancel.Token;
+        _read=Task.Run(()=>{
+            if(awaitPublication)while(!File.Exists(path)){token.ThrowIfCancellationRequested();Thread.Sleep(4);}
+            token.ThrowIfCancellationRequested();long before=Stopwatch.GetTimestamp();var value=Load(path);Interlocked.Exchange(ref _readTicks,Stopwatch.GetTimestamp()-before);return value;
+        },token);
+    }
 
     internal bool TryRead(string path,out JObject value)
     {
         value=null!;
-        if(_path!=path)
-        {
-            Forget();_path=path;
-            _read=Task.Run(()=>Load(path));
-        }
+        Start(path,false);
         if(!_read!.IsCompleted)return false;
         value=_read.GetAwaiter().GetResult();return true;
     }
@@ -48,7 +61,7 @@ internal sealed class AsyncJsonRead
     {
         // An obsolete read cannot publish into a newer request. Observe its
         // failure even if a choice or match exit has retired that response.
-        var old=_read;_read=null;_path=null;
+        var old=_read;_read=null;_path=null;_cancel?.Cancel();_cancel?.Dispose();_cancel=null;
         if(old==null)return;
         if(old.IsCompleted){if(old.IsFaulted)_=old.Exception;return;}
         _=old.ContinueWith(task=>{_=task.Exception;},CancellationToken.None,

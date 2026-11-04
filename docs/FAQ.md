@@ -42,9 +42,14 @@ not cause it to be added again every time the client opens.
 
 ## Are these Arena bots or online opponents?
 
-All queues start local games in the native Arena board. Commander pods are one human and three or nine Forge bots on this PC; Zombie Horde is solo against its scripted format. Brawl Bot uses 25 life; Commander Bot and Commander pods use 40 life and 21 commander combat damage. See [all modes and menu locations](GAME-MODES.md). They do
-not connect to Arena matchmaking or use its server AI. Multiplayer is unfinished.
-Games are not resumable after closing the client.
+Practice, Brawl and Commander Bot use Forge bots on this PC. Commander pods are
+one human and three or nine bots; Zombie Horde is solo against its format policy.
+**Private Commander (Internet)** connects two humans through a private invitation.
+There is no public matchmaking queue or connection to official Arena opponents.
+Brawl Bot starts at 25 life. Commander and Horde start the human at 40 life;
+Commander also tracks 21 commander combat damage. See [all modes](GAME-MODES.md)
+and [private multiplayer setup](MULTIPLAYER.md). Games are not durably resumable
+after closing the client.
 
 ## How do packs and collection work?
 
@@ -104,6 +109,8 @@ Include the sandbox version, Arena build, steps, expected result and actual
 result. A short relevant log excerpt or screenshot helps. The local match notice
 provides Return Home when the engine stops; reopen the client if its coordinator
 is unavailable. Decks and collection are saved separately from matches.
+Use the [bug-report guide](REPORTING-BUGS.md) and check [known issues](KNOWN-ISSUES.md).
+Do not attach your entire sandbox folder, invitation or unreviewed match export.
 
 ## How do I remove it?
 

@@ -18,6 +18,8 @@ def rejected(label,action):
 
 check('Semantic prerelease numbers compare numerically',version('0.1.0-preview.10')>version('0.1.0-preview.2'))
 check('A stable release sorts after its prereleases',version('0.1.0')>version('0.1.0-rc.20'))
+check('Beta 1 supersedes the published and local Alpha 15 releases',version('0.2.0-beta.1')>version('0.2.0-alpha.15.mp.9.heist.11')>version('0.2.0-alpha.15.mp.9'))
+check('Beta remains below a future stable release',version('0.2.0')>version('0.2.0-beta.1'))
 check('New patch version supersedes older stable release',version('0.1.1')>version('0.1.0'))
 check('Explicit GitHub repository identity is retained',repository_name('Card-Forge/forge')=='Card-Forge/forge')
 recipe_app=ROOT/'authored-index-fixture'

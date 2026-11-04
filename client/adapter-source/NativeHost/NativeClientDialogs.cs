@@ -30,6 +30,10 @@ internal sealed class NativeClientDialogs
         var scaler=obj.GetComponent<CanvasScaler>();scaler.uiScaleMode=CanvasScaler.ScaleMode.ScaleWithScreenSize;scaler.referenceResolution=new Vector2(1920,1080);scaler.matchWidthOrHeight=.5f;
     }
     public bool IsOpen=>_view!=null && _view.IsOpen;
+    public void DismissMatchFailure()
+    {
+        if(IsOpen && ((TMP_Text)AccessTools.Field(typeof(SystemMessageView),"_titleText").GetValue(_view)).text=="Local match display stopped")_view!.Hide();
+    }
     public bool NameInputFocused=>_input!=null && _input.isFocused;
     private IEnumerable<SystemMessageButtonView> ActiveButtons()
     {

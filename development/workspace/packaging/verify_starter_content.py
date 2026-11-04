@@ -26,10 +26,10 @@ def main():
         ids=set(payload['cards'])|{key for d in payload['decks'] for p in starter.PILES for key in d[p]}
         write(lab/'deck-catalog.json',dict(cards=[dict(grpId=int(key)) for key in ids]))
         result=starter.seed_profile(app,lab);decks=read(profile/'decks.json');packs=read(profile/'packs.json')
-        check('Fresh profile gets every actual saved deck',result['decksAdded']==len(payload['decks']) and len(decks['decks'])==26)
+        check('Fresh profile gets every actual saved deck',result['decksAdded']==len(payload['decks']) and len(decks['decks'])==len(payload['decks']))
         for expected,actual in zip(payload['decks'],decks['decks']):
             check('Exact printing counts and all piles: '+expected['name'],all(actual[k]==expected[k] for k in ('name','format',*starter.PILES)))
-        check('Fresh collection exactly matches shared snapshot',packs['cards']==payload['cards'] and sum(packs['cards'].values())==928)
+        check('Fresh collection exactly matches shared snapshot',packs['cards']==payload['cards'])
         check('Fresh starter grant records exact separately auditable quantities',packs['starterGrants']=={payload['id']:payload['cards']})
         check('No opening history or identity copied',packs['openings']==[] and packs['packs']=={} and str(uuid.UUID(packs['profileId']))==packs['profileId'])
         check('Starter deck IDs are distinct',len({d['id'] for d in decks['decks']})==len(decks['decks']))
@@ -84,6 +84,6 @@ def main():
         except FileExistsError:pass
         else:raise AssertionError('Existing pending file overwritten')
         check('Existing pending file is preserved',pending.read_text()=='retain previous incomplete write')
-    print(json.dumps(dict(checks=len(checks),passed=checks,scope='Actual 26-deck/521-entry payload and disposable filesystem profiles; native class acceptance is separate'),indent=2))
+    print(json.dumps(dict(checks=len(checks),passed=checks,decks=len(payload['decks']),collectionEntries=len(payload['cards']),scope='Actual packaged payload and disposable filesystem profiles; native class acceptance is separate'),indent=2))
 
 if __name__=='__main__':main()

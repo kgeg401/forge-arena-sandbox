@@ -92,6 +92,8 @@ with TemporaryDirectory(prefix='forge-startup-') as temp:
         def read(self,*a):return json.dumps(self.payload).encode()
     with patch('update_tester.urllib.request.urlopen',return_value=Response(feed)):
         check('Test feed chooses numeric newest matching non-draft prerelease',latest(config['updateRepository'],'test')['version']=='0.1.0-test.10')
+    with patch('update_tester.urllib.request.urlopen',return_value=Response([row('v0.2.0-alpha.15.mp.9.heist.11'),row('v0.2.0-beta.1')])):
+        check('Existing test channel selects Beta 1 over Alpha 15',latest(config['updateRepository'],'test')['version']=='0.2.0-beta.1')
     # GitHub permits null digests. Even an older asset must not prevent a
     # healthy copied-game client from launching when its update is rejected.
     (versions/'0.1.0-test.3/application.txt').write_text('Authored test 0.1.0-test.3')

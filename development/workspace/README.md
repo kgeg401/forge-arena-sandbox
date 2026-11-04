@@ -1,5 +1,10 @@
 # Forge Arena Sandbox — development workspace
 
+Solo Horde now uses a fixed **500-card Zombie Legion**: 300 physical Zombie
+token cards and 200 support cards. A public-state sequencing policy prioritizes
+engines, lords and useful revival while preserving real stack responses.
+See [the list, rules and tested limits](packaging/public-docs/ZOMBIE-HORDE.md).
+
 The compatibility port supports original Arena builds 0.1.14589.1332174 and
 0.1.14517.1329972 with full fingerprint checks and matching catalogue profiles.
 See [the tested scope](packaging/public-docs/ARENA-COMPATIBILITY.md).
@@ -8,28 +13,27 @@ Internet multiplayer now has a **Private Commander (Internet)** queue, saved-dec
 selection and Host/Join flow for two humans at 40 life. See [setup and limitations](packaging/public-docs/MULTIPLAYER.md)
 and [the implementation evidence](docs/multiplayer-2026-11-02.md).
 
-The shared starter library adds the current 26 saved decks and 521 collection
-printing entries (928 copies) to new and existing installations without overwriting
+The Beta 1 starter library contains 32 shared decks and 907 collection
+printing entries (1,338 copies), merged into installations without overwriting
 personal content. See [merge behavior and validation](packaging/public-docs/STARTER-CONTENT.md).
 
 Local development now includes an **experimental four-player Commander pod**:
 one human and three Forge bots. See [the pod implementation and validation
-notes](docs/commander-pod.md). This is not a claim that the published download
-already contains this checkpoint.
+notes](docs/commander-pod.md). The mode remains experimental in Beta 1.
 
-The release catalogue has a **370-name verified baseline** and **1,296 additional
+The beta catalogue has a **370-name verified baseline** and **1,590 additional
 experimental primary names**. Experimental admission permits testing; it does
 not certify every card effect or interaction. See the
 [latest catalogue evidence](packaging/public-docs/VERIFICATION.md).
 
-The alpha 11 changes also connect optional Exert choices and repair a pause
+The client connects optional Exert choices and repairs a pause
 after combat-damage presentation. The [combat checkpoint](docs/combat-exert-20261101.md)
 records the tested sequences and remaining limits. Editing this workspace does
 not update the installed client or public download.
 
 Local development also includes **solo Zombie Horde**, including a queue for
 your saved 99-card-plus-commander decks. See [the Horde rules and tested
-boundaries](packaging/public-docs/ZOMBIE-HORDE.md). Alpha 11 includes this
+boundaries](packaging/public-docs/ZOMBIE-HORDE.md). The beta includes this
 experimental mode in the regular client.
 
 The public player download and automatic-update channel are maintained at

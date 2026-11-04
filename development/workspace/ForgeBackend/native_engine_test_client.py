@@ -43,6 +43,7 @@ class NativeEngine(Engine):
     def native_call(self,op,forgeId=0,**fields):
         status=self.native_status
         request=dict(id=uuid.uuid4().hex,worker=status['worker'],session=self.session,nativeStateId=status['nativeStateId'],nativeMessageId=status['nativeMessageId'],op=op,forgeId=forgeId);request.update(fields)
+        if op=='loop_stop' and 'loopRunId' not in request:request['loopRunId']=status.get('loop',{}).get('runId','')
         path=self.native_folder/'requests'/(request['id']+'.json');temporary=path.with_suffix('.pending');temporary.write_text(json.dumps(request),encoding='utf8');temporary.replace(path)
         reply=self.native_wait(self.native_folder/'responses'/path.name)
         if reply.get('worker')==status['worker'] and reply.get('session')==self.session and 'state' in reply:

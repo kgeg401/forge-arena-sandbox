@@ -1,3 +1,23 @@
+# Beta 1 — 0.2.0-beta.1
+
+Public testing prerelease consolidating the locally tested Alpha 15.11 gameplay.
+
+- Includes the 500-card Zombie Legion and Horde sequencing policy; commander preparation follows printed mana value.
+- Shares 32 real-card starter decks and 907 collection printing entries (1,338 copies), retaining existing saved content.
+- Adds the real-card library-heist and five-mechanic decks, cached paper illustrations and deck-box artwork; invented custom-rule cards remain disabled.
+- Uses native castable-card outlines, the original X selector and blue Cancel for supported deterministic repeats.
+- Keeps large-stack backend optimizations with the normal global game clock; removes the earlier 16× clock override. No universal 30-second or retail timing claim.
+- Retains cosmetic profiles, private two-human Commander, read-lock/reconnection safeguards and bounded sanitized reporting.
+- Refreshes setup, mode, compatibility, reporting and known-issue guides; adds current architecture and verification summaries plus focused bug forms.
+
+The catalogue is 370 baseline verified names plus 1,590 experimental primary names (1,960 total). Card admission is not exhaustive interaction certification. Four-/ten-player pods use bots; Horde is solo. Public matchmaking, human pods, durable match saves, host migration and general two-household reliability remain open.
+
+Update by closing the sandbox and reopening the dedicated launcher. Both friends need the same custom-client release. Beta remains a prerelease on the existing test channel; stable-channel behavior is unchanged. See [release notes](docs/BETA.md) and [known issues](docs/KNOWN-ISSUES.md).
+
+Validation combines the prior original-handler/native gameplay records with this beta's package/source identity, upgrade/rollback, version-feed and support checks. See [verification scope](docs/VERIFICATION.md); CI does not prove rendered gameplay or a recipient-PC installation.
+
+---
+
 # Alpha 15.9 — profiles and recovery
 
 - Create, rename and switch local names/avatars. Decks, collection, packs and preferences remain shared on this installation.

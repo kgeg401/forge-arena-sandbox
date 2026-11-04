@@ -1,10 +1,10 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="296" height="60" viewBox="0 0 296 60" role="img" aria-labelledby="title">
-  <title id="title">Download the Windows alpha</title>
+  <title id="title">Download Beta 1 for Windows</title>
   <defs><linearGradient id="button" y2="1" x2="0"><stop stop-color="#ffd39a"/><stop offset="1" stop-color="#ecad61"/></linearGradient></defs>
   <rect x="1" y="1" width="294" height="58" rx="12" fill="url(#button)" stroke="#e8b378"/>
   <path fill="#242018" d="M24 20h9v9h-9zm11 0h9v9h-9zM24 31h9v9h-9zm11 0h9v9h-9z"/>
   <g font-family="Segoe UI,Arial,sans-serif" fill="#242018">
     <text x="61" y="28" font-size="17" font-weight="700">Download for Windows</text>
-    <text x="61" y="46" font-size="12">Experimental alpha · Arena required</text>
+    <text x="61" y="46" font-size="12">Beta 1 · Arena required</text>
   </g>
 </svg>

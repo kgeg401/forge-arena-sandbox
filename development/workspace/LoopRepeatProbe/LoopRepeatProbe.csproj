@@ -1,0 +1,10 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework></PropertyGroup>
+  <ItemGroup>
+    <Compile Include="..\NativeHost\RecordedLoop.cs" Link="RecordedLoop.cs" />
+    <Compile Include="..\NativeHost\LoopPanelVisibility.cs" Link="LoopPanelVisibility.cs" />
+    <Reference Include="Wizards.MDN.GreProtobuf"><HintPath>$(ArenaManagedDir)\Wizards.MDN.GreProtobuf.dll</HintPath></Reference>
+    <Reference Include="Google.Protobuf"><HintPath>$(ArenaManagedDir)\Google.Protobuf.dll</HintPath></Reference>
+    <Reference Include="Newtonsoft.Json"><HintPath>$(ArenaManagedDir)\Newtonsoft.Json.dll</HintPath></Reference>
+  </ItemGroup>
+</Project>

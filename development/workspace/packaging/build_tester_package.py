@@ -165,7 +165,7 @@ def build(tag,output,gameplay_ref=None,headline='Public launcher and automatic u
     bootstrap=next(b for b in profiles['builds'] if b['id']=='arena-14517')
     for key in ('arenaBuild','arenaFiles','unity'):requirements[key]=bootstrap[key]
     requirements['arenaVariant']=bootstrap['id']
-    requirements['features']+=['solo 40-life 200-card Zombie/Horror reanimation Horde','Horde with saved 99-card-plus-commander decks','optional human Exert choices']
+    requirements['features']+=['solo 40-life 500-card Zombie/Horror reanimation Horde','Horde with saved 99-card-plus-commander decks','optional human Exert choices']
     requirements['features']+=['Horde preparation based on commander mana value','original FREAK-OFF Darien paper Commander deck','private cached paper-card illustrations through the original renderer']
     requirements['features']+=['survivor-aware Commander table and camera','experimental ten-player attack-left Commander pod','Gamba Gamba Yusri coin-flip Commander deck']
     (output/'requirements.json').write_text(json.dumps(requirements,indent=2))

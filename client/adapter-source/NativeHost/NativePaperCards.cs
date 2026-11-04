@@ -32,7 +32,8 @@ public static class NativePaperCards
         foreach(var a in (JArray)extension["abilities"]!)
         {
             uint id=(uint)a["id"]!;
-            Abilities.Add(id,new AbilityPrintingRecord(id:id,baseId:(uint?)a["baseId"]??id,textId:(uint)a["textId"]!,category:(AbilityCategory)(int)a["category"]!,subCategory:(AbilitySubCategory)(int)a["subCategory"]!));
+            Abilities.Add(id,new AbilityPrintingRecord(id:id,baseId:(uint?)a["baseId"]??id,textId:(uint)a["textId"]!,category:(AbilityCategory)(int)a["category"]!,subCategory:(AbilitySubCategory)(int)a["subCategory"]!,
+                hiddenAbilityIds:Ids(a["hiddenAbilityIds"]),modalChildIds:Ids(a["modalChildIds"]),modalParentIds:Ids(a["modalParentIds"])));
         }
         foreach(var c in ((JObject)manifest["cards"]!).Properties().Where(p=>(bool?)p.Value["paperOnly"]==true))
         {
@@ -51,6 +52,7 @@ public static class NativePaperCards
         Patch(h,typeof(SqlAbilityDataProvider),"GetAbilityPrintingById",nameof(AbilityPrinting));
         Patch(h,typeof(SqlGreLocalizationProvider),"GetLocalizedText",nameof(Localized));
     }
+    private static uint[] Ids(JToken? values)=>(values as JArray ?? new JArray()).Select(v=>(uint)v).ToArray();
     private static void Patch(Harmony h,Type type,string method,string handler)=>h.Patch(AccessTools.Method(type,method),prefix:new HarmonyMethod(typeof(NativePaperCards),handler));
     private static bool CardRecord(uint id,ref CardPrintingRecord __result){if(!Cards.TryGetValue(id,out __result))return true;return false;}
     private static bool CardPrinting(SqlCardDataProvider __instance,uint id,ref CardPrintingData __result)

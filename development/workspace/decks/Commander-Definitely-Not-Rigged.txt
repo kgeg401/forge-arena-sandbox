@@ -1,0 +1,100 @@
+Commander
+1 Tivit, Seller of Secrets
+
+Deck
+1 Sol Ring
+1 Arcane Signet
+1 Fellwar Stone
+1 Azorius Signet
+1 Dimir Signet
+1 Orzhov Signet
+1 Talisman of Dominance
+1 Talisman of Progress
+1 Talisman of Hierarchy
+1 Mana Vault
+1 Time Sieve
+1 Academy Manufactor
+1 Anointed Procession
+1 Mondrak, Glory Dominus
+1 Panharmonicon
+1 Roaming Throne
+1 Strionic Resonator
+1 Sakashima of a Thousand Faces
+1 Spark Double
+1 Teleportation Circle
+1 Thassa, Deep-Dwelling
+1 Displacer Kitten
+1 Deadeye Navigator
+1 Conjurer's Closet
+1 Ephemerate
+1 Cloudshift
+1 Momentary Blink
+1 Brago, King Eternal
+1 Ballot Broker
+1 Brago's Representative
+1 Grudge Keeper
+1 Council's Judgment
+1 Expropriate
+1 Plea for Power
+1 Split Decision
+1 Capital Punishment
+1 Marionette Master
+1 Marionette Apprentice
+1 Mirkwood Bats
+1 Cyberdrive Awakener
+1 Urza, Lord High Artificer
+1 Tezzeret the Seeker
+1 Sensei's Divining Top
+1 The One Ring
+1 Mystic Remora
+1 Rhystic Study
+1 Esper Sentinel
+1 Demonic Tutor
+1 Vampiric Tutor
+1 Enlightened Tutor
+1 Mystical Tutor
+1 Whir of Invention
+1 Fabricate
+1 Swan Song
+1 An Offer You Can't Refuse
+1 Force of Will
+1 Fierce Guardianship
+1 Mana Drain
+1 Counterspell
+1 Swords to Plowshares
+1 Cyclonic Rift
+1 Silence
+1 Teferi's Protection
+1 Command Tower
+1 Raffine's Tower
+1 Hallowed Fountain
+1 Watery Grave
+1 Godless Shrine
+1 Tundra
+1 Underground Sea
+1 Scrubland
+1 Morphic Pool
+1 Sea of Clouds
+1 Vault of Champions
+1 Adarkar Wastes
+1 Underground River
+1 Caves of Koilos
+1 Mana Confluence
+1 City of Brass
+1 Exotic Orchard
+1 Polluted Delta
+1 Flooded Strand
+1 Marsh Flats
+1 Verdant Catacombs
+1 Misty Rainforest
+1 Windswept Heath
+1 Arid Mesa
+1 Scalding Tarn
+1 Bloodstained Mire
+1 Ancient Tomb
+1 Otawara, Soaring City
+1 Eiganjo, Seat of the Empire
+1 Academy Ruins
+3 Island
+2 Plains
+1 Swamp

@@ -258,7 +258,7 @@ class Coordinator:
             if self.process and self.process.poll() is None:raise RequestRejected('A rules owner is already active')
             receipt=read(self.lab/'match-recovery.json');state=read(self.ipc/'state.json')
             if receipt.get('schema')!=1 or receipt.get('clientSession')!=self.session or time.time()>receipt.get('expires',0):raise RequestRejected('Recovery receipt expired or belongs to another client')
-            if Path(receipt['ipc']).resolve()!=self.ipc.resolve() or state.get('session')!=receipt['engineSession'] or state.get('gameOver') or not state.get('decision') or state.get('fidelityGap'):raise RequestRejected('The recovered match changed or is not ready')
+            if Path(receipt['ipc']).resolve()!=self.ipc.resolve() or state.get('session')!=receipt['engineSession'] or state.get('gameOver') or not (state.get('decision') or state.get('canPass') is True and state.get('prioritySeat')==1) or state.get('fidelityGap'):raise RequestRejected('The recovered match changed or is not ready')
             import hashlib
             if hashlib.sha256((self.ipc/'state.json').read_bytes()).hexdigest()!=receipt['stateSha256']:raise RequestRejected('Recovered state differs from the verified handoff')
             owner=RecoveredRulesProcess(receipt,self.ipc)

@@ -53,6 +53,8 @@ public sealed class Plugin : BaseUnityPlugin
         if (!IsNetworkIsolated())
             throw new InvalidOperationException("Local host requires the independent zero-capability AppContainer lab.");
         _phase = "waiting-for-native-services";
+        NativeCastAvailability.AuthoritativeCast=action=>_forge?.CanHighlightCast(action)==true;
+        HarmonyLib.Harmony.CreateAndPatchAll(typeof(NativeCastAvailability),"local.forge-arena.cast-availability");
         HarmonyLib.Harmony.CreateAndPatchAll(typeof(NativeInputDiagnostics),"local.forge-arena.input-observation");
         HarmonyLib.Harmony.CreateAndPatchAll(typeof(NativeCoinFlipPresentation),"local.forge-arena.coin-presentation");
         HarmonyLib.Harmony.CreateAndPatchAll(typeof(NativeCoinFlipOrder),"local.forge-arena.coin-order");
@@ -155,6 +157,7 @@ public sealed class Plugin : BaseUnityPlugin
             }
             var scenes = Enumerable.Range(0, SceneManager.sceneCount).Select(i => SceneManager.GetSceneAt(i).name).ToArray();
             var game = UnityEngine.Object.FindFirstObjectByType<GameManager>();
+            if(game!=null && game.CurrentGameState!=null && _forge!=null)NativeLoopPanel.Ensure(game,_forge);
             if(game!=null && papa!=null && _forge?.IsCommanderPod==true)NativeCommanderPodView.Ensure(game,papa,()=>{if(_forge?.IsCommanderPod==true)_shell?.ShowPodDetails(_forge.PodDetails());});
             NativeInputDiagnostics.Enabled=File.Exists(Path.Combine(_root,"input-diagnostics.flag"));
             var nativeActionPath=Path.Combine(_root,"native-action.request.json");
@@ -165,8 +168,17 @@ public sealed class Plugin : BaseUnityPlugin
                 try
                 {
                   var activeWorkflow=game?.WorkflowController.CurrentWorkflow;
+                  var actionVariant=activeWorkflow is global::ActionsAvailableWorkflow?typeof(global::ActionsAvailableWorkflow).GetField("_currentVariant",System.Reflection.BindingFlags.Instance|System.Reflection.BindingFlags.NonPublic)?.GetValue(activeWorkflow) as Wotc.Mtga.DuelScene.Interactions.ActionsAvailable.ConfirmChoice_Widget:null;
+                  var confirmWidget=actionVariant==null?null:typeof(Wotc.Mtga.DuelScene.Interactions.ActionsAvailable.ConfirmChoice_Widget).GetField("_widget",System.Reflection.BindingFlags.Instance|System.Reflection.BindingFlags.NonPublic)?.GetValue(actionVariant) as ConfirmWidget;
+                  var confirmOptions=actionVariant==null?null:typeof(Wotc.Mtga.DuelScene.Interactions.ActionsAvailable.ConfirmChoice_Widget).GetField("_options",System.Reflection.BindingFlags.Instance|System.Reflection.BindingFlags.NonPublic)?.GetValue(actionVariant) as ConfirmWidget.Option[];
+                  var confirmMap=actionVariant==null?null:typeof(Wotc.Mtga.DuelScene.Interactions.ActionsAvailable.ConfirmChoice_Widget).GetField("_optionToActionMap",System.Reflection.BindingFlags.Instance|System.Reflection.BindingFlags.NonPublic)?.GetValue(actionVariant) as Dictionary<ConfirmWidget.Option,Wotc.Mtgo.Gre.External.Messaging.Action>;
+                  var confirmChoices=confirmWidget?.IsOpen==true && confirmOptions!=null && confirmMap!=null?confirmOptions.Select((option,index)=>new{index,text=option.Text,abilityGrpId=confirmMap[option].AbilityGrpId,enabled=index<confirmWidget.Buttons.Count && confirmWidget.Buttons[index].gameObject.activeInHierarchy}).ToArray():null;
                   var modalWorkflow=(activeWorkflow as IParentWorkflow)?.ChildWorkflows.OfType<Wotc.Mtga.DuelScene.Interactions.CastingTimeOption.ModalWorkflow>().SingleOrDefault();
-                  var modalCards=modalWorkflow?.GetBrowserHighlights().Where(v=>v.Value==HighlightType.Hot || v.Value==HighlightType.Cold).Select(v=>v.Key).ToArray();
+                  var clientModalBrowser=typeof(Wotc.Mtga.DuelScene.Interactions.ActionsAvailable.ClientSideInteraction).GetField("_modalSelectionBrowser",System.Reflection.BindingFlags.Static|System.Reflection.BindingFlags.NonPublic)?.GetValue(null) as BrowserBase;
+                  var clientModal=activeWorkflow is ActionsAvailableWorkflow && clientModalBrowser!=null?typeof(BrowserBase).GetField("_duelSceneBrowserProvider",System.Reflection.BindingFlags.Instance|System.Reflection.BindingFlags.NonPublic)?.GetValue(clientModalBrowser) as ModalBrowserProvider_ClientSide:null;
+                  var clientModalData=clientModal==null?null:typeof(ModalBrowserProvider_ClientSide).GetField("_browserData",System.Reflection.BindingFlags.Instance|System.Reflection.BindingFlags.NonPublic)?.GetValue(clientModal) as ModalBrowserProvider_ClientSide.ModalBrowserData;
+                  uint ModalAbility(DuelScene_CDC view)=>clientModalData!=null && clientModalData.GreActionByCardView.TryGetValue(view,out var option)?option.AbilityGrpId:view.Model.GrpId;
+                  var modalCards=clientModalData?.Selectable.ToArray()??modalWorkflow?.GetBrowserHighlights().Where(v=>v.Value==HighlightType.Hot || v.Value==HighlightType.Cold).Select(v=>v.Key).ToArray();
                   var workflow=activeWorkflow as IClickableWorkflow;
                   string ButtonPath(StyledButton button){var names=new List<string>();for(var node=button.transform;node!=null;node=node.parent)names.Add(node.name);names.Reverse();return string.Join("/",names);}
                   var uiButtons=UnityEngine.Object.FindObjectsByType<StyledButton>(FindObjectsSortMode.None).Where(b=>b.gameObject.activeInHierarchy && b.HasInteraction).ToArray();
@@ -190,17 +202,33 @@ public sealed class Plugin : BaseUnityPlugin
                   bool? KeepTargetsCurrent()=>mulliganBrowser==null?null:(mulliganBrowser.GetType().GetField("KeepPressed",System.Reflection.BindingFlags.Instance|System.Reflection.BindingFlags.NonPublic)?.GetValue(mulliganBrowser) as Delegate)?.GetInvocationList().All(d=>ReferenceEquals(d.Target,activeWorkflow));
                   GreClient.Rules.BaseUserRequest? observedRequest=null;
                   for(var type=activeWorkflow?.GetType();type!=null;type=type.BaseType){var field=type.GetField("_request",System.Reflection.BindingFlags.Instance|System.Reflection.BindingFlags.NonPublic|System.Reflection.BindingFlags.DeclaredOnly);if(field!=null){observedRequest=field.GetValue(activeWorkflow) as GreClient.Rules.BaseUserRequest;break;}}
+                  var castAvailability=(observedRequest as GreClient.Rules.ActionsAvailableRequest)?.Actions.Where(a=>a.ActionType==ActionType.Cast).Select(a=>new{instanceId=a.InstanceId,grpId=a.GrpId,nativeAffordable=global::ActionExtensions.CanAffordToCast(a),forgeAffordable=_forge?.CanHighlightCast(a)==true}).ToArray();
                 var clickType=(bool?)action["primary"]==true?SimpleInteractionType.Primary:SimpleInteractionType.DoublePrimary;
                 var views=UnityEngine.Object.FindObjectsByType<DuelScene_CDC>(FindObjectsSortMode.None);
                 var hits=new List<RaycastResult>();
                 var point=new Vector2((float?)action["x"]??0,(float?)action["y"]??0);
                 if(EventSystem.current!=null && action["x"]!=null)EventSystem.current.RaycastAll(new PointerEventData(EventSystem.current){position=point},hits);
-                  File.WriteAllText(Path.Combine(_root,"native-action-probe.json"),JsonConvert.SerializeObject(new{utc=DateTime.UtcNow,workflow=activeWorkflow?.GetType().Name,pod=NativeCommanderPodView.Active?.Snapshot(),applied=activeWorkflow?.AppliedState.ToString(),nativeState=game?.CurrentGameState?.Id,modalCards=modalCards?.Select(v=>new{abilityGrpId=v.Model.GrpId,visible=v.IsVisible,active=v.gameObject.activeInHierarchy}).ToArray(),orderCardIds,damageAssignments,damageControls,distributionControls,nativeRequest=observedRequest==null?null:new{type=observedRequest.GetType().Name,state=observedRequest.OriginalMessage.GameStateId,message=observedRequest.OriginalMessage.MsgId,submitListeners=observedRequest.OnSubmit?.GetInvocationList().Length ?? 0},uiButtons=uiButtonInfo,mulliganHandlers=new{browser=mulliganBrowser?.GetType().Name,keep=HandlerCount("KeepPressed"),mulligan=HandlerCount("MulliganPressed"),keepTargetsCurrent=KeepTargetsCurrent()},buttons=activeWorkflow?.Buttons?.WorkflowButtons.Select(b=>new{text=b.ButtonText.ToString(),tag=b.Tag.ToString(),enabled=b.Enabled}).ToArray(),screen=new{width=Screen.width,height=Screen.height},focused=Application.isFocused,inputModule=EventSystem.current?.currentInputModule?.GetType().FullName,
+                  File.WriteAllText(Path.Combine(_root,"native-action-probe.json"),JsonConvert.SerializeObject(new{utc=DateTime.UtcNow,workflow=activeWorkflow?.GetType().Name,pod=NativeCommanderPodView.Active?.Snapshot(),repeat=NativeLoopPanel.Active?.Snapshot(),confirmWidget=confirmChoices,applied=activeWorkflow?.AppliedState.ToString(),nativeState=game?.CurrentGameState?.Id,modalCards=modalCards?.Select(v=>new{abilityGrpId=ModalAbility(v),visible=v.IsVisible,active=v.gameObject.activeInHierarchy}).ToArray(),orderCardIds,damageAssignments,damageControls,distributionControls,nativeRequest=observedRequest==null?null:new{type=observedRequest.GetType().Name,state=observedRequest.OriginalMessage.GameStateId,message=observedRequest.OriginalMessage.MsgId,submitListeners=observedRequest.OnSubmit?.GetInvocationList().Length ?? 0},uiButtons=uiButtonInfo,mulliganHandlers=new{browser=mulliganBrowser?.GetType().Name,keep=HandlerCount("KeepPressed"),mulligan=HandlerCount("MulliganPressed"),keepTargetsCurrent=KeepTargetsCurrent()},buttons=activeWorkflow?.Buttons?.WorkflowButtons.Select(b=>new{text=b.ButtonText.ToString(),tag=b.Tag.ToString(),enabled=b.Enabled}).ToArray(),screen=new{width=Screen.width,height=Screen.height},focused=Application.isFocused,inputModule=EventSystem.current?.currentInputModule?.GetType().FullName,
                     mouse=UnityEngine.InputSystem.Mouse.current?.position.ReadValue().ToString(),hovered=Wotc.Mtga.CustomInput.CustomUIInputModule.GetHovered().Select(g=>g.name).ToArray(),inputEvents=NativeInputDiagnostics.Events.ToArray(),
                     raycasters=UnityEngine.Object.FindObjectsByType<BaseRaycaster>(FindObjectsSortMode.None).Select(r=>new{name=r.name,type=r.GetType().Name,enabled=r.enabled,camera=r.eventCamera?.name}).ToArray(),
                     raycast=hits.Select(h=>new{name=h.gameObject.name,module=h.module.GetType().Name,card=h.gameObject.GetComponentInParent<DuelScene_CDC>()?.InstanceId,distance=h.distance}).ToArray(),
-                    views=views.Select(v=>new{id=v.InstanceId,holder=v.CurrentCardHolder?.CardHolderType.ToString(),click=workflow?.CanClick(v,clickType),visible=v.IsVisible,inputEnabled=v.InputHandler!=null && v.InputHandler.enabled,active=v.gameObject.activeInHierarchy,layer=v.gameObject.layer,position=Camera.main!=null?Camera.main.WorldToScreenPoint(v.transform.position).ToString():null}).ToArray()},Formatting.Indented));
-                if((string?)action["op"]=="pod_inspect" || (string?)action["op"]=="pod_follow")
+                    castAvailability,views=views.Select(v=>new{id=v.InstanceId,holder=v.CurrentCardHolder?.CardHolderType.ToString(),click=workflow?.CanClick(v,clickType),visible=v.IsVisible,inputEnabled=v.InputHandler!=null && v.InputHandler.enabled,active=v.gameObject.activeInHierarchy,layer=v.gameObject.layer,position=Camera.main!=null?Camera.main.WorldToScreenPoint(v.transform.position).ToString():null}).ToArray()},Formatting.Indented));
+                if((string?)action["op"]=="stack_cancel")
+                {
+                    if(_forge?.FastStackResolving!=true || (string?)action["fastRunId"]!=(string?)_forge.LoopStatus["fastRunId"])throw new NativeQaRejectedException("Stack resolution batch changed; inspect again.");
+                    var buttons=uiButtons.Where(b=>b.name=="Repeat Cancel").ToArray();
+                    if(buttons.Length!=1)throw new NativeQaRejectedException("The original blue Cancel control is not uniquely visible.");
+                    ((PromptButtonData)buttonModel.GetValue(buttons[0])).ButtonCallback();
+                }
+                else if((string?)action["op"] is "loop_start" or "loop_stop" or "loop_open" or "loop_close")
+                {
+                    if(game?.CurrentGameState?.Id!=(uint?)action["nativeState"] || NativeLoopPanel.Active==null)throw new NativeQaRejectedException("Loop controls changed; inspect again.");
+                    if((string?)action["op"]=="loop_stop")NativeLoopPanel.Active.Stop();
+                    else if((string?)action["op"]=="loop_open")NativeLoopPanel.Active.Open();
+                    else if((string?)action["op"]=="loop_close")NativeLoopPanel.Active.Close();
+                    else{NativeLoopPanel.Active.SetCount((string)action["count"]!);NativeLoopPanel.Active.Repeat();}
+                }
+                else if((string?)action["op"]=="pod_inspect" || (string?)action["op"]=="pod_follow")
                 {
                     if(game?.CurrentGameState?.Id!=(uint?)action["nativeState"] || NativeCommanderPodView.Active?.IsReady!=true)throw new NativeQaRejectedException("Pod context changed; inspect again.");
                     if((string?)action["op"]=="pod_follow")NativeCommanderPodView.Active.ShowTable();
@@ -208,11 +236,18 @@ public sealed class Plugin : BaseUnityPlugin
                 }
                 else if((string?)action["op"]=="modal_card")
                 {
-                    if(activeWorkflow?.AppliedState!=InteractionAppliedState.Applied || activeWorkflow.GetType().Name!=(string?)action["expectedWorkflow"] || game?.CurrentGameState?.Id!=(uint?)action["nativeState"] || modalWorkflow==null)throw new NativeQaRejectedException("Native modal context changed; inspect again.");
-                    var choices=modalCards?.Where(v=>v.Model.GrpId==(uint)action["abilityGrpId"]! && v.gameObject.activeInHierarchy && v.IsVisible).ToArray();
+                    if(activeWorkflow?.AppliedState!=InteractionAppliedState.Applied || activeWorkflow.GetType().Name!=(string?)action["expectedWorkflow"] || game?.CurrentGameState?.Id!=(uint?)action["nativeState"] || modalWorkflow==null && clientModal==null)throw new NativeQaRejectedException("Native modal context changed; inspect again.");
+                    var choices=modalCards?.Where(v=>ModalAbility(v)==(uint)action["abilityGrpId"]! && v.gameObject.activeInHierarchy && v.IsVisible && (clientModalData==null || clientModalData.Selectable.Contains(v))).ToArray();
                     if(choices==null || choices.Length!=1)throw new NativeQaRejectedException("Original modal card is no longer uniquely selectable.");
-                    var selected=typeof(Wotc.Mtga.DuelScene.Interactions.CastingTimeOption.ModalWorkflow).GetMethod("CardBrowser_OnCardViewSelected",System.Reflection.BindingFlags.Instance|System.Reflection.BindingFlags.NonPublic)!;
-                    selected.Invoke(modalWorkflow,new object[]{choices[0]});
+                    object provider=(object?)modalWorkflow??clientModal!;var selected=provider.GetType().GetMethod("CardBrowser_OnCardViewSelected",System.Reflection.BindingFlags.Instance|System.Reflection.BindingFlags.NonPublic)!;
+                    selected.Invoke(provider,new object[]{choices[0]});
+                }
+                else if((string?)action["op"]=="confirm_ability")
+                {
+                    if(activeWorkflow?.AppliedState!=InteractionAppliedState.Applied || activeWorkflow.GetType().Name!=(string?)action["expectedWorkflow"] || game?.CurrentGameState?.Id!=(uint?)action["nativeState"] || confirmWidget?.IsOpen!=true)throw new NativeQaRejectedException("Native confirmation context changed; inspect again.");
+                    var choice=confirmChoices?.SingleOrDefault(v=>v.abilityGrpId==(uint)action["abilityGrpId"]! && v.enabled)??throw new NativeQaRejectedException("Original ability confirmation is not uniquely available.");
+                    var button=typeof(ConfirmWidgetButton).GetField("_button",System.Reflection.BindingFlags.Instance|System.Reflection.BindingFlags.NonPublic)?.GetValue(confirmWidget.Buttons[choice.index]) as UnityEngine.UI.Button;
+                    if(button==null || !button.IsInteractable())throw new NativeQaRejectedException("Original confirmation button is disabled.");button.onClick.Invoke();
                 }
                 else if((string?)action["op"]=="click")
                 {
@@ -299,6 +334,7 @@ public sealed class Plugin : BaseUnityPlugin
                 papa = papa != null, realDatabase = papa != null && papa.CardDatabase != null,
                 matchServices = papa != null && papa.Matchmaking != null,
                 nativeGameManager = game != null, nativeState = game != null ? game.CurrentGameState?.Id : null, presentationBusy = game != null && game.UXEventQueue.IsRunning,
+                stackPlayback = _forge?.LoopStatus, presentationScale = Time.timeScale, stackTiming = _forge?.StackTiming,
                 audio = new { initialized = AudioManager.Instance != null && AudioManager.Instance.Initialized, loadError = AudioManager.Instance != null && AudioManager.Instance.HadLoadError, packages = AudioManager.AvailableAudioPackages?.Count ?? 0 },
                 players = game != null && game.CurrentGameState != null ? game.CurrentGameState.Players.Select(p => new { seat = p.InstanceId, life = p.LifeTotal }).ToArray() : null,
                 forge = _forge == null ? null : new { session = _forge.Session, scenario = _forge.Scenario, gameOver = _forge.GameOver, decision = _forge.DecisionKind, landsPlayed = _forge.LandsPlayed, mana = _forge.ManaTotal, turn = _forge.Turn, phase = _forge.Phase, activeSeat = _forge.ActiveSeat, hand = _forge.HandCount, battlefield = _forge.BattlefieldCount, rulesWaitSeconds = _forge.RulesWaitSeconds, rulesCalculationSlow = _forge.RulesCalculationSlow, gap = _forge.Gap },
@@ -408,8 +444,16 @@ public sealed class Plugin : BaseUnityPlugin
                 workflow.OnAutoYieldEnabled();
                 return true;
             },autoOrderTriggers:()=>MDNPlayerPrefs.AutoOrderTriggers,autoChooseReplacementEffects:()=>MDNPlayerPrefs.AutoChooseReplacementEffects);
+            _forge.ConfigureLoopSubmission(command=>{
+                var visible=VisibleGame();var workflow=visible?.WorkflowController.CurrentWorkflow;
+                if(workflow==null || workflow.AppliedState!=InteractionAppliedState.Applied || visible!.UXEventQueue.IsRunning)return false;
+                var request=NativeLoopSubmission.Request(workflow);
+                if(request?.OnSubmit==null || request.OriginalMessage.GameStateId!=visible.CurrentGameState?.Id)return false;
+                NativeLoopSubmission.Submit(request,command);return true;
+            });
         }
         _forge?.EnableRenderedCombatPresentation();
+        _gap=null;
         manager.Initialize(_connection, papa.CardDatabase);
         // Multiplayer layout captures the local seat during scene initialization.
         HarmonyLib.AccessTools.Property(typeof(MatchManager),"LocalPlayerSeatId").SetValue(manager,1u,null);

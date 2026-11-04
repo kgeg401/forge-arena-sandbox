@@ -83,8 +83,11 @@ public final class ForgeLandEngine {
     }
     static Map<String,Object> viewFor(int player){try(HumanContext ignored=new HumanContext(playerAtSeat(player))){return snapshot();}}
     static void publishState() throws Exception {
+        publishState(null);
+    }
+    static void publishState(JsonElement boundaryState) throws Exception {
         if(multiplayer)viewRevision++;
-        write(ipc.resolve("state.json"),snapshot());
+        write(ipc.resolve("state.json"),!multiplayer && boundaryState!=null?boundaryState:snapshot());
         if(multiplayer)for(int role=1;role<=2;role++)write(ipc.resolve("state-"+role+".json"),viewFor(role));
     }
 
@@ -204,13 +207,23 @@ public final class ForgeLandEngine {
     /** Solo Horde format rules; all card resolution, damage and movement remain Forge-owned. */
     static final class HordeRules {
         static final int SURVIVOR_STARTING_LIFE=40;
+        static final int DECK_SIZE=500;
         static final String TOKEN="token:b_2_2_zombie";
         static final Map<String,Integer> DECK=Map.ofEntries(
-            Map.entry(TOKEN,120),Map.entry("Gravedigger",12),Map.entry("Ghoulraiser",12),
-            Map.entry("Rise from the Grave",8),Map.entry("Diregraf Rebirth",8),Map.entry("Rise of the Dark Realms",4),
-            Map.entry("Mire Triton",6),Map.entry("Undead Butler",8),Map.entry("Death Baron",4),Map.entry("Lord of the Accursed",4),
-            Map.entry("Phyrexian Rager",4),Map.entry("Phyrexian Gargantua",2),Map.entry("Walking Corpse",4),Map.entry("Rotting Mastodon",4));
-        static final Set<String> FIXTURE_CARDS=Set.of("Scathe Zombies","Those Who Serve","Lazotep Behemoth");
+            Map.entry(TOKEN,300),Map.entry("Champion of the Perished",12),Map.entry("Undead Augur",8),Map.entry("Headless Rider",8),
+            Map.entry("Death Baron",10),Map.entry("Lord of the Accursed",10),Map.entry("Diregraf Captain",8),Map.entry("Bladestitched Skaab",8),
+            Map.entry("Diregraf Colossus",8),Map.entry("Wayward Servant",10),Map.entry("Gray Merchant of Asphodel",6),
+            Map.entry("Stitcher's Supplier",8),Map.entry("Undead Butler",8),Map.entry("Mire Triton",6),
+            Map.entry("Gravedigger",8),Map.entry("Ghoulraiser",8),Map.entry("Rise from the Grave",8),Map.entry("Diregraf Rebirth",6),
+            Map.entry("Rise of the Dark Realms",4),Map.entry("Mikaeus, the Unhallowed",4),
+            Map.entry("Liliana's Mastery",8),Map.entry("Necroduality",4),Map.entry("Open the Graves",4),Map.entry("Army of the Damned",4),
+            Map.entry("Geralf's Messenger",6),Map.entry("Accursed Marauder",6),Map.entry("Skinrender",6),
+            Map.entry("Murder",4),Map.entry("Go for the Throat",4),Map.entry("Archghoul of Thraben",6));
+        static final Set<String> FIXTURE_CARDS=Set.of("Scathe Zombies","Those Who Serve","Lazotep Behemoth","Walking Corpse","Phyrexian Rager","Phyrexian Gargantua","Rotting Mastodon");
+        static final Set<String> ENGINES=Set.of("Champion of the Perished","Undead Augur","Headless Rider","Diregraf Captain","Diregraf Colossus","Wayward Servant","Archghoul of Thraben","Necroduality","Open the Graves","Mikaeus, the Unhallowed");
+        static final Set<String> LORDS=Set.of("Death Baron","Lord of the Accursed","Bladestitched Skaab","Liliana's Mastery");
+        static final Set<String> REVIVAL=Set.of("Gravedigger","Ghoulraiser","Rise from the Grave","Diregraf Rebirth","Rise of the Dark Realms");
+        static final Set<String> REMOVAL=Set.of("Murder","Go for the Throat");
         final Set<Integer> physicalCards=new HashSet<>();
         final Set<Integer> attempted=new HashSet<>();
         Card ruleEffect;int survivorsTurns,waves,lastWaveTurn=-1,initialCards,damageMilled,preparationTurns=3;boolean prepared,initialized,finished;
@@ -221,14 +234,14 @@ public final class ForgeLandEngine {
             physicalPrinting=new PaperCard(sourceToken.getRules(),sourceToken.getEdition(),forge.card.CardRarity.Common);
             List<String> pool=new ArrayList<>();
             for(var row:DECK.entrySet().stream().sorted(Map.Entry.comparingByKey()).toList())for(int i=0;i<row.getValue();i++)pool.add(row.getKey());
-            if(pool.size()!=200)throw new IllegalStateException("Horde production deck must contain exactly 200 cards");
+            if(pool.size()!=DECK_SIZE)throw new IllegalStateException("Horde production deck must contain exactly "+DECK_SIZE+" cards");
             Collections.shuffle(pool,forge.util.MyRandom.getRandom());
             if(fixtureConfig!=null && fixtureConfig.has("hordeFixturePool")){
                 if(!researchAdmission)throw new IllegalArgumentException("Horde initial-order fixtures are research-only");
-                var values=fixtureConfig.getAsJsonArray("hordeFixturePool");if(values.isEmpty() || values.size()>200)throw new IllegalArgumentException("Bounded initial Horde order required");
+                var values=fixtureConfig.getAsJsonArray("hordeFixturePool");if(values.isEmpty() || values.size()>DECK_SIZE)throw new IllegalArgumentException("Bounded initial Horde order required");
                 pool.clear();for(var value:values)pool.add(value.getAsString());
             }
-            Deck deck=new Deck("200-card Zombie and Horror Reanimation Horde");
+            Deck deck=new Deck("500-card Zombie Legion Horde");
             for(String name:pool){
                 if(name.equals(TOKEN))deck.getMain().add(physicalPrinting,1);
                 else{if((!DECK.containsKey(name) && !(researchAdmission && FIXTURE_CARDS.contains(name))) || !ADMITTED_CARDS.contains(name))throw new IllegalArgumentException("Horde card lacks existing Arena admission: "+name);deck.getMain().add(Objects.requireNonNull(FModel.getMagicDb().getCommonCards().getCard(name)),1);}
@@ -292,12 +305,43 @@ public final class ForgeLandEngine {
                 }
                 event(Map.of("kind","horde-wave","wave",waves,"turn",turn,"revealed",revealed,"remaining",opponent.getCardsIn(ZoneType.Library).size()));
             }
-            List<SpellAbility> spells=new ArrayList<>();
-            for(Card c:opponent.getCardsIn(ZoneType.Hand))if(attempted.add(c.getId())){
+            SpellAbility best=null;int bestScore=Integer.MIN_VALUE;
+            for(Card c:opponent.getCardsIn(ZoneType.Hand))if(!attempted.contains(c.getId())){
                 var spell=c.getFirstSpellAbility();if(spell==null || !spell.isSpell())throw new UnsupportedOperationException("Horde card has no real spell: "+c.getName());
-                spell.setActivatingPlayer(opponent);spells.add(spell);
+                spell.setActivatingPlayer(opponent);if(!usefulTargets(spell))continue;
+                int score=priority(c);if(best==null || score>bestScore){best=spell;bestScore=score;}
             }
-            return spells.isEmpty()?null:spells;
+            if(best!=null){
+                attempted.add(best.getHostCard().getId());
+                event(Map.of("kind","horde-plan","sourceForgeId",best.getHostCard().getId(),"name",best.getHostCard().getName(),"priority",bestScore,"wave",waves,"policy","public-state-synergy-v1"));
+                // Resolve each real spell before reconsidering the next one, so
+                // lords/engines apply to arrivals and revival sees fresh deaths.
+                return List.of(best);
+            }
+            // Defer uncastable cards until all useful wave spells have resolved.
+            // Discarding only then preserves the existing exhausted-Horde rule.
+            for(Card c:new ArrayList<>(opponent.getCardsIn(ZoneType.Hand)))if(attempted.add(c.getId())){
+                game.getAction().moveToGraveyard(c,null);
+                event(Map.of("kind","horde-uncastable-discard","sourceForgeId",c.getId(),"name",c.getName(),"reason","no-useful-legal-targets","wave",waves));
+            }
+            return null;
+        }
+        boolean usefulTargets(SpellAbility spell){
+            for(SpellAbility part=spell;part!=null;part=part.getSubAbility())if(part.usesTargeting() && part.getMinTargets()>0 && part.getTargetRestrictions().getNumCandidates(part)<part.getMinTargets())return false;
+            if(REMOVAL.contains(spell.getHostCard().getName()))return local.getCreaturesInPlay().stream().anyMatch(spell::canTarget);
+            return true;
+        }
+        int priority(Card c){
+            // This policy sees only its own hand and public battlefield/graves.
+            String name=c.getName();int dead=(int)opponent.getCardsIn(ZoneType.Graveyard).stream().filter(Card::isCreature).count();
+            if(REMOVAL.contains(name))return 120+local.getCreaturesInPlay().stream().mapToInt(Card::getNetPower).max().orElse(0);
+            if(ENGINES.contains(name))return 110;
+            if(LORDS.contains(name))return 100;
+            if(name.equals("Rise of the Dark Realms"))return dead>1?105+Math.min(dead,20):5;
+            if(REVIVAL.contains(name))return dead>0?90:10;
+            if(name.equals("Gray Merchant of Asphodel"))return 20;
+            if(name.equals("Skinrender") || name.equals("Accursed Marauder"))return local.getCreaturesInPlay().isEmpty()?15:125;
+            return physicalToken(c)?40:60;
         }
         boolean cast(PlayerController controller,SpellAbility spell){
             int id=spell.getHostCard().getId();
@@ -315,7 +359,7 @@ public final class ForgeLandEngine {
             if(!onStack)throw new UnsupportedOperationException("Horde spell did not enter the real response stack: "+spell.getHostCard().getName());
             event(Map.of("kind","horde-free-cast","sourceForgeId",id,"wave",waves));return true;
         }
-        Map<String,Object> state(){var value=new LinkedHashMap<String,Object>(Map.of("solo",true,"initialCards",initialCards,"remainingCards",opponent.getCardsIn(ZoneType.Library).size(),"wave",waves,"survivorTurns",survivorsTurns,"preparationTurnsRemaining",Math.max(0,preparationTurns-survivorsTurns),"damageMilled",damageMilled,"hasLifeTotal",false,"finished",finished,"initialized",initialized));value.put("preparationTurns",preparationTurns);value.put("rulesEffectForgeId",ruleEffect==null?0:ruleEffect.getId());return value;}
+        Map<String,Object> state(){var value=new LinkedHashMap<String,Object>(Map.of("solo",true,"initialCards",initialCards,"remainingCards",opponent.getCardsIn(ZoneType.Library).size(),"wave",waves,"survivorTurns",survivorsTurns,"preparationTurnsRemaining",Math.max(0,preparationTurns-survivorsTurns),"damageMilled",damageMilled,"hasLifeTotal",false,"finished",finished,"initialized",initialized));value.put("preparationTurns",preparationTurns);value.put("rulesEffectForgeId",ruleEffect==null?0:ruleEffect.getId());value.put("aiPolicy","public-state-synergy-v1");return value;}
         @SuppressWarnings("unchecked") void presentation(Card c,Map<String,Object> value){
             var grants=(List<Map<String,Object>>)value.get("keywordGrants");
             if(grants!=null && ruleEffect!=null)for(int i=0;i<grants.size();i++){
@@ -1769,9 +1813,15 @@ public final class ForgeLandEngine {
             if(getPlayer()!=local){return super.chooseRollToModify(a0);}
             unsupportedDecision="Unmapped human callback: public java.lang.Integer forge.ai.PlayerControllerAi.chooseRollToModify(java.util.List<java.lang.Integer>)";throw new UnsupportedOperationException(unsupportedDecision);
         }
-        @Override public java.lang.Object vote(forge.game.spellability.SpellAbility a0,java.lang.String a1,java.util.List<java.lang.Object> a2,com.google.common.collect.ListMultimap<java.lang.Object, forge.game.player.Player> a3,forge.game.player.Player a4,boolean a5) {
-            if(getPlayer()!=local){return super.vote(a0,a1,a2,a3,a4,a5);}
-            unsupportedDecision="Unmapped human callback: public java.lang.Object forge.ai.PlayerControllerAi.vote(forge.game.spellability.SpellAbility,java.lang.String,java.util.List<java.lang.Object>,com.google.common.collect.ListMultimap<java.lang.Object, forge.game.player.Player>,forge.game.player.Player,boolean)";throw new UnsupportedOperationException(unsupportedDecision);
+        @Override public Object vote(SpellAbility source,String prompt,List<Object> options,com.google.common.collect.ListMultimap<Object,Player> votes,Player voter,boolean optional) {
+            if(getPlayer()!=local)return super.vote(source,prompt,options,votes,voter,optional);
+            List<Object> selected=optionChoice(prompt,options,optional?0:1,1,option->{
+                String label=option instanceof SpellAbility?((SpellAbility)option).getDescription():option instanceof Card?((Card)option).getName():option.toString();
+                // Secret ballots must not expose earlier voters' choices.
+                if(!source.hasParam("Secretly"))label+=" ("+votes.get(option).size()+" votes so far)";
+                return label;
+            },source);
+            return selected.isEmpty()?null:selected.get(0);
         }
         @Override public java.lang.String chooseCardName(forge.game.spellability.SpellAbility a0,java.util.List<forge.card.ICardFace> a1,java.lang.String a2) {
             if(getPlayer()!=local){return super.chooseCardName(a0,a1,a2);}
@@ -2166,7 +2216,7 @@ public final class ForgeLandEngine {
         if(!card.isInZone(ZoneType.Battlefield) || card.getController()!=local)return null;
         for(SpellAbility a:card.getManaAbilities())if(nativeAbility(a,false)==nativeId){
             a.setActivatingPlayer(local);
-            if(a.canPlay() && ComputerUtilCost.canPayCost(a,local,false))return a;
+            if(a.canPlay() && canPayHumanCosts(a))return a;
         }
         return null;
     }
@@ -2181,8 +2231,12 @@ public final class ForgeLandEngine {
         // random refusal to spend a planeswalker's last loyalty). Human action
         // availability must depend on original rules/resources only.
         for(var part:ability.getPayCosts().getCostParts())if(!(part instanceof forge.game.cost.CostPartMana) && !part.canPay(ability,local,false))return false;
-        if(!ability.getPayCosts().hasManaCost() || ComputerUtilMana.canPayManaCost(ability.getPayCosts(),ability,local,0,false))return true;
-        var mana=ComputerUtilMana.calculateManaCost(ability.getPayCosts(),ability,local,true,0,false);int life=0;
+        if(!ability.getPayCosts().hasManaCost())return true;
+        var mana=ComputerUtilMana.calculateManaCost(ability.getPayCosts(),ability,local,true,0,false);
+        // Even a printed zero can be taxed. Adjust through Forge first, then
+        // avoid planning hundreds of mana sources for an already-paid cost.
+        if(mana.isPaid() || ComputerUtilMana.canPayManaCost(mana,ability,local,false))return true;
+        int life=0;
         for(var shard:new ArrayList<>(mana.getUnpaidShards()))if(shard.isPhyrexian()){mana.decreaseShard(shard,1);life+=2;}
         if(life>0 && local.canPayLife(life,false,ability) && ComputerUtilMana.canPayManaCost(mana,ability,local,false))return true;
         // The original human payment allows K'rrik even with no untapped mana
@@ -2220,7 +2274,8 @@ public final class ForgeLandEngine {
         return choices;
     }
     static boolean hasHumanAnnouncementTargets(SpellAbility ability){
-        if(hasAvailableTargets(ability))return true;
+        // Every required announcement target must exist, including subabilities.
+        if(hasAvailableTargets(ability) && targetChainHasCandidates(ability))return true;
         // Optional gift can replace a narrow target clause with a broader
         // subability. Probe the original cost copy, then leave the real choice
         // to PlaySpellAbility's announcement/payment sequence.
@@ -2471,16 +2526,23 @@ public final class ForgeLandEngine {
         write(ipc.resolve("responses").resolve(id+".json"),response);
     }
     static JsonObject response(JsonObject request,boolean accepted,String reason){
-        JsonObject r=new JsonObject();r.addProperty("id",request.get("id").getAsString());r.addProperty("session",SESSION);r.addProperty("accepted",accepted);r.addProperty("reason",reason);r.add("state",JSON.toJsonTree(multiplayer?viewFor(request.get("seat").getAsInt()):snapshot()));return r;
+        return response(request,accepted,reason,JSON.toJsonTree(multiplayer?viewFor(request.get("seat").getAsInt()):snapshot(accepted && deferActionOffers(request))));
+    }
+    static JsonObject response(JsonObject request,boolean accepted,String reason,JsonElement boundaryState){
+        JsonObject r=new JsonObject();r.addProperty("id",request.get("id").getAsString());r.addProperty("session",SESSION);r.addProperty("accepted",accepted);r.addProperty("reason",reason);r.add("state",boundaryState);return r;
     }
     // Normal games remain inside Match.startGame on this one owner thread. The
     // controller waits here, then returns a real ability (or null for a pass) to
     // Forge's own priority loop. Acknowledgements are published at its next stable
     // controller boundary, never from a second rules thread.
-    static void finishLiveRequests() throws Exception {
-        if(!normalGame())return;
-        for(JsonObject request:deferredSubmissions){String failure=failedPlays.remove(request.get("id").getAsString());remember(request,response(request,failure==null,failure==null?"Forge reached the next controller boundary":failure));}
+    static JsonElement finishLiveRequests() throws Exception {
+        if(!normalGame())return null;
+        // Acknowledge and publish the same immutable single-player boundary.
+        // Multiplayer retains its separate private viewer projections.
+        JsonElement boundaryState=!multiplayer && !deferredSubmissions.isEmpty()?JSON.toJsonTree(snapshot(deferActionOffers(deferredSubmissions.get(deferredSubmissions.size()-1)))):null;
+        for(JsonObject request:deferredSubmissions){String failure=failedPlays.remove(request.get("id").getAsString());String reason=failure==null?"Forge reached the next controller boundary":failure;remember(request,boundaryState==null?response(request,failure==null,reason):response(request,failure==null,reason,boundaryState));}
         deferredSubmissions.clear();
+        return boundaryState;
     }
     // After elimination, pause until the human chooses to watch. Spectator
     // advances release one real AI priority boundary at a time, so the native
@@ -2488,7 +2550,7 @@ public final class ForgeLandEngine {
     static void waitForPodExit(){
         if(game.isGameOver())return;
         try{
-            decision=null;retireFile(ipc.resolve("decision.json"));finishLiveRequests();publishState();
+            decision=null;retireFile(ipc.resolve("decision.json"));publishState(finishLiveRequests());
             while(!Files.exists(ipc.resolve("stop.request"))){
                 try(var paths=Files.list(ipc.resolve("requests"))){
                     for(Path path:paths.filter(p->p.toString().endsWith(".json")).sorted().toList()){
@@ -2518,7 +2580,7 @@ public final class ForgeLandEngine {
     }
     static List<SpellAbility> waitForPriority(){
         try{
-            finishLiveRequests();publishState();
+            publishState(finishLiveRequests());
             while(!Files.exists(ipc.resolve("stop.request"))){
                 try(var paths=Files.list(ipc.resolve("requests"))){
                     for(Path path:paths.filter(p->p.toString().endsWith(".json")).sorted().toList()){
@@ -2562,8 +2624,12 @@ public final class ForgeLandEngine {
         }catch(StopRequested ex){throw ex;}catch(Exception ex){throw new RuntimeException(ex);}
     }
     static void publishDecision() throws Exception {
-        JsonObject message=new JsonObject();message.addProperty("session",SESSION);message.addProperty("parentRequestId",currentRequest.get("id").getAsString());message.addProperty("token",decision.get("token").getAsString());message.add("state",JSON.toJsonTree(snapshot()));
-        write(ipc.resolve("decision.json"),message);publishState();
+        publishDecision(null);
+    }
+    static void publishDecision(JsonElement boundaryState) throws Exception {
+        JsonElement state=!multiplayer && boundaryState!=null?boundaryState:JSON.toJsonTree(snapshot());
+        JsonObject message=new JsonObject();message.addProperty("session",SESSION);message.addProperty("parentRequestId",currentRequest.get("id").getAsString());message.addProperty("token",decision.get("token").getAsString());message.add("state",state);
+        write(ipc.resolve("decision.json"),message);publishState(state);
     }
     static void waitForDecision(String kind,JsonArray options,Consumer<JsonArray> submit){
         if(actionProbeDepth>0)throw new UnsupportedOperationException("A player choice ("+kind+") is required while checking this action; its availability adapter is not connected");
@@ -2577,7 +2643,7 @@ public final class ForgeLandEngine {
             if(kind.equals("targets")){decision.addProperty("sourceForgeId",targetSourceId);decision.addProperty("sourceAbilityId",targetSourceAbilityId);decision.addProperty("minTargets",targetMinimum);decision.addProperty("maxTargets",targetMaximum);decision.addProperty("canCancel",!mandatoryTriggerTarget);if(targetSourceContext!=null && targetSourceContext.has("pendingCopyObject"))decision.add("pendingCopyObject",targetSourceContext.get("pendingCopyObject").deepCopy());}
             if(kind.equals("assign_damage")){decision.addProperty("sourceForgeId",damageSourceId);decision.addProperty("totalDamage",damageTotal);decision.addProperty("policy",damagePolicy);decision.addProperty("canCancel",damagePolicy.equals("divided-spell") && damageCanCancel);}
             if(kind.equals("commander_return")){decision.addProperty("sourceForgeId",commanderDecisionId);decision.addProperty("fromZone",findCard(commanderDecisionId).getZone().getZoneType().name());decision.addProperty("choiceZone",commanderDecisionZone);}
-            finishLiveRequests();
+            JsonElement boundaryState=finishLiveRequests();
             // A resolving spell may ask several consecutive questions. Publish
             // the previous answer at this stable controller boundary even in a
             // fixture, so the caller can answer the next question without a
@@ -2586,7 +2652,7 @@ public final class ForgeLandEngine {
                 for(JsonObject request:deferredSubmissions)remember(request,response(request,true,"Forge reached the next decision boundary"));
                 deferredSubmissions.clear();
             }
-            publishDecision();
+            publishDecision(boundaryState);
             if(journal!=null){journal.println(new Gson().toJson(Map.of("event","decision-open","decision",decision)));journal.flush();}
             while(!Files.exists(ipc.resolve("stop.request"))){
                 try(var paths=Files.list(ipc.resolve("requests"))){
@@ -2668,12 +2734,21 @@ public final class ForgeLandEngine {
         }
         return false;
     }
-    static Map<String,Object> snapshot() {
+    static boolean deferActionOffers(JsonObject request){
+        if(multiplayer || request==null || !request.has("op") || !request.get("op").isJsonPrimitive() || !request.getAsJsonPrimitive("op").isString() || !"pass_priority".equals(request.get("op").getAsString()) || !request.has("automaticRulesStep") || !request.get("automaticRulesStep").isJsonPrimitive() || !request.getAsJsonPrimitive("automaticRulesStep").isBoolean() || !request.get("automaticRulesStep").getAsBoolean())return false;
+        var policy=request.get("deferActionOffers");if(policy==null || !policy.isJsonPrimitive() || !policy.getAsJsonPrimitive().isString() || game.getStack().isEmpty())return false;
+        return policy.getAsString().equals("all") || policy.getAsString().equals("own") && game.getStack().peekAbility().getActivatingPlayer()==local;
+    }
+    static Map<String,Object> snapshot(){return snapshot(false);}
+    static Map<String,Object> snapshot(boolean deferOffers) {
         unavailableActions.clear();
         boolean priorityReady=game.getAge()==GameStage.Play && !local.hasLost() && game.getPhaseHandler().getPriorityPlayer()==local && decision==null && !game.isGameOver() && fidelityGap().isEmpty();
+        boolean offersDeferred=deferOffers && priorityReady && !game.getStack().isEmpty();
+        boolean offersReady=priorityReady && !offersDeferred;
         List<Integer> legal=new ArrayList<>();
-        if(priorityReady)for(Card c:fullHumanChoices?humanActionCards():local.getCardsIn(ZoneType.Hand))if(fullHumanChoices?!humanLandOptions(c).isEmpty():c.isLand()&&ability(c).canPlay())legal.add(c.getId());
+        if(offersReady)for(Card c:fullHumanChoices?humanActionCards():local.getCardsIn(ZoneType.Hand))if(fullHumanChoices?!humanLandOptions(c).isEmpty():c.isLand()&&ability(c).canPlay())legal.add(c.getId());
         Map<String,Object> result=new LinkedHashMap<>();
+        if(offersDeferred)result.put("actionOffersDeferred",true);
         if(horde!=null)result.put("horde",horde.state());
         result.put("session",SESSION);result.put("scenario",scenario);result.put("events",events);result.put("decision",multiplayer && decisionOwner!=local?null:decision);result.put("phase",phaseName());result.put("stage",game.getAge().name());result.put("mulligans",mulligans);
         if(researchAdmission){result.put("keywordPresentationSchema",1);result.put("researchControls",Map.of("strictHumanCallbacks",local.getController() instanceof ResearchStrictController,"auditedAutomaticDecisions",researchCallbackAudit,"effectPresentationOrigins",researchEffectOrigins,"controllerIdentities",seatPlayers.stream().map(p->Map.of("seat",seat(p),"controllerIsAI",p.getController().isAI(),"playerIsAI",p.isAI())).toList()));result.put("researchTrace",researchTrace);}
@@ -2696,13 +2771,13 @@ public final class ForgeLandEngine {
         List<Integer> legalCasts=new ArrayList<>();List<Object> castOffers=new ArrayList<>();
         List<Card> castCandidates=new ArrayList<>();
         if(fullHumanChoices)castCandidates.addAll(humanActionCards());else for(ZoneType z:new ZoneType[]{ZoneType.Hand,ZoneType.Command,ZoneType.Graveyard})castCandidates.addAll(local.getCardsIn(z));
-        if(priorityReady)for(Card c:castCandidates){
+        if(offersReady)for(Card c:castCandidates){
             var offer=probeAction(c,"cast",()->{var a=castAbility(c);return a==null?null:Map.<String,Object>of("forgeId",c.getId(),"manaCost",manaCost(a));});
             if(offer!=null){legalCasts.add(c.getId());castOffers.add(offer);}
         }
         result.put("castOffers",castOffers);
         List<Object> activations=new ArrayList<>();
-        if(priorityReady)for(ZoneType z:fullHumanChoices?new ZoneType[]{ZoneType.Battlefield,ZoneType.Hand,ZoneType.Graveyard,ZoneType.Exile,ZoneType.Command}:new ZoneType[]{ZoneType.Battlefield})for(Card c:local.getCardsIn(z)){
+        if(offersReady)for(ZoneType z:fullHumanChoices?new ZoneType[]{ZoneType.Battlefield,ZoneType.Hand,ZoneType.Graveyard,ZoneType.Exile,ZoneType.Command}:new ZoneType[]{ZoneType.Battlefield})for(Card c:local.getCardsIn(z)){
             // Commander ninjutsu has separate hand/command Forge abilities but
             // one native identity. Offer the currently legal variant once and
             // use that variant's actual cost, not the inactive zone's sibling.
@@ -2719,7 +2794,7 @@ public final class ForgeLandEngine {
         result.put("hand",zone(ZoneType.Hand));result.put("battlefield",zone(ZoneType.Battlefield));result.put("graveyard",zone(ZoneType.Graveyard));result.put("legalLands",legal);
         List<Integer> legalMana=new ArrayList<>();
         List<Object> legalManaOffers=new ArrayList<>();
-        if(priorityReady)for(Card c:local.getCardsIn(ZoneType.Battlefield)){
+        if(offersReady)for(Card c:local.getCardsIn(ZoneType.Battlefield)){
             if(fullHumanChoices){
                 for(SpellAbility a:c.getManaAbilities()){
                     int nativeId=nativeAbility(a,false);
@@ -2862,7 +2937,7 @@ public final class ForgeLandEngine {
             // mainLoopStep normally calls this on its next iteration, before consulting a controller.
             if(accepted && !op.equals("snapshot") && !game.isGameOver())priorityChecks.invoke(game.getPhaseHandler());
         }catch(Exception ex){reason=ex.toString();}
-        response.addProperty("accepted",accepted);response.addProperty("reason",reason);response.add("state",JSON.toJsonTree(snapshot()));return response;
+        response.addProperty("accepted",accepted);response.addProperty("reason",reason);response.add("state",JSON.toJsonTree(snapshot(accepted && deferActionOffers(request))));return response;
     }
     public static void main(String[] args) {
         // FModel installs its own uncaught handler. Catch owner-thread failures
@@ -2905,7 +2980,7 @@ public final class ForgeLandEngine {
         if(scenario.equals("card-family") && (!manifest.has("researchOnly") || !manifest.get("researchOnly").getAsBoolean()))throw new IllegalArgumentException("Card-family fixtures require an explicit research-only manifest");
         if(fixtureConfig!=null && (fixtureConfig.has("fixtureAttacker") || fixtureConfig.has("fixtureBlockers")) && (!Set.of("attack-double-blocked","defend").contains(scenario) || !manifest.has("researchOnly") || !manifest.get("researchOnly").getAsBoolean()))throw new IllegalArgumentException("Combat fixture overrides require an explicit research-only combat scenario");
         if(fixtureConfig!=null && fixtureConfig.has("fixtureOpponentBattlefield") && !scenario.equals("card-family"))throw new IllegalArgumentException("Research opponent overrides require the card-family scenario");
-        if(fixtureConfig!=null && Set.of("fixtureBattlefield","fixtureBattlefieldReady","fixtureGraveyard","fixtureOpponentGraveyard","fixtureLibrary","fixtureCounters","fixtureOpponentSpell","fixtureOpponentLands","fixtureOpponentHand","fixtureOpponentSpellPlan","fixtureLocalLife","fixtureCommander").stream().anyMatch(fixtureConfig::has) && (!scenario.equals("card-family") || !manifest.has("researchOnly") || !manifest.get("researchOnly").getAsBoolean()))throw new IllegalArgumentException("Initial zone fixtures require an explicit research-only card-family scenario");
+        if(fixtureConfig!=null && Set.of("fixtureBattlefield","fixtureBattlefieldReady","fixtureGraveyard","fixtureOpponentGraveyard","fixtureLibrary","fixtureOpponentLibrary","fixtureCounters","fixtureOpponentSpell","fixtureOpponentLands","fixtureOpponentHand","fixtureOpponentSpellPlan","fixtureLocalLife","fixtureCommander").stream().anyMatch(fixtureConfig::has) && (!scenario.equals("card-family") || !manifest.has("researchOnly") || !manifest.get("researchOnly").getAsBoolean()))throw new IllegalArgumentException("Initial zone fixtures require an explicit research-only card-family scenario");
         if(fixtureConfig!=null && fixtureConfig.has("fixtureBattlefieldReady") && (!fixtureConfig.get("fixtureBattlefieldReady").isJsonPrimitive() || !fixtureConfig.getAsJsonPrimitive("fixtureBattlefieldReady").isBoolean()))throw new IllegalArgumentException("Initial ready-state fixture must be boolean");
         if(fixtureConfig!=null && (fixtureConfig.has("fixtureActiveSeat") || fixtureConfig.has("fixtureOpponentPolicy"))){
             if(!researchAdmission || !scenario.equals("card-family"))throw new IllegalArgumentException("Starting turn policy requires the research card-family scenario");
@@ -3083,10 +3158,11 @@ public final class ForgeLandEngine {
                 boolean inPlay=fixtureConfig.has("fixtureCommanderInPlay") && fixtureConfig.get("fixtureCommanderInPlay").getAsBoolean();
                 local.getZone(inPlay?ZoneType.Battlefield:ZoneType.Command).add(c);if(inPlay && fixtureConfig.has("fixtureBattlefieldReady") && fixtureConfig.get("fixtureBattlefieldReady").getAsBoolean())c.setSickness(false);
             }
-            if(fixtureConfig.has("fixtureLibrary")){
-                JsonArray names=fixtureConfig.getAsJsonArray("fixtureLibrary");if(names.size()>100)throw new IllegalArgumentException("Initial library fixture is bounded to100 cards");
-                List<Card> seeded=new ArrayList<>();for(JsonElement value:names){String name=value.getAsString();if(!ADMITTED_CARDS.contains(name))throw new IllegalArgumentException("Unmapped initial library card: "+name);seeded.add(Card.fromPaperCard(Objects.requireNonNull(FModel.getMagicDb().getCommonCards().getCard(name)),local));}
-                local.getZone(ZoneType.Library).removeAllCards(true);for(Card card:seeded)local.getZone(ZoneType.Library).add(card);
+            for(String key:List.of("fixtureLibrary","fixtureOpponentLibrary"))if(fixtureConfig.has(key)){
+                Player owner=key.equals("fixtureLibrary")?local:opponent;
+                JsonArray names=fixtureConfig.getAsJsonArray(key);if(names.size()>100)throw new IllegalArgumentException("Initial library fixture is bounded to100 cards");
+                List<Card> seeded=new ArrayList<>();for(JsonElement value:names){String name=value.getAsString();if(!ADMITTED_CARDS.contains(name))throw new IllegalArgumentException("Unmapped initial library card: "+name);seeded.add(Card.fromPaperCard(Objects.requireNonNull(FModel.getMagicDb().getCommonCards().getCard(name)),owner));}
+                owner.getZone(ZoneType.Library).removeAllCards(true);for(Card card:seeded)owner.getZone(ZoneType.Library).add(card);
             }
             // Seed only the starting environment. Effects and zone changes after
             // this point must occur through normal Forge actions and rules.
@@ -3161,7 +3237,7 @@ public final class ForgeLandEngine {
                     for(Path path:paths.filter(p->p.toString().endsWith(".json")).sorted().toList()) {
                         JsonObject request=JsonParser.parseString(Files.readString(path)).getAsJsonObject();
                         String id=request.get("id").getAsString();if(!id.matches("[a-zA-Z0-9_-]{1,80}"))throw new IllegalArgumentException("Invalid request ID");
-                        JsonObject response=acceptedRequests.get(id);
+                        JsonObject response=acceptedRequests.get(id);boolean fresh=response==null;
                         if(response!=null && !requestBodies.get(id).equals(request)) {
                             response=new JsonObject();response.addProperty("id",id);response.addProperty("session",SESSION);response.addProperty("accepted",false);response.addProperty("reason","request ID reused with different payload");response.add("state",JSON.toJsonTree(snapshot()));
                         }
@@ -3169,7 +3245,7 @@ public final class ForgeLandEngine {
                             for(JsonObject submission:deferredSubmissions){boolean conceded=submission.get("op").getAsString().equals("concede") && game.isGameOver() && local.conceded();boolean accepted=conceded || response.get("accepted").getAsBoolean();remember(submission,response(submission,accepted,conceded?"Forge processed local concession":accepted?"Forge completed submitted declaration":response.get("reason").getAsString()));}
                             deferredSubmissions.clear();currentRequest=null;
                         } else write(ipc.resolve("responses").resolve(id+".json"),response);
-                        publishState();Files.delete(path);
+                        publishState(fresh?response.get("state"):null);Files.delete(path);
                     }
                 }
                 requestWakeup.await(40);

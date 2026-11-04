@@ -6,7 +6,7 @@ Myriad Landscape, Nomad Stadium and Sunscorched Desert.
 
 Open Play, choose **Zombie Horde (Commander Deck)** under Brawl, then select
 **FREAK-OFF Darien (Paper Commander)**. You start at **40 life**, receive
-**six preparation turns**, and face the normal **200-card Zombie/Horror Horde**.
+**six preparation turns**, and face the normal **500-card Zombie/Horror Horde**.
 The same deck can also use the local Commander Bot and experimental Commander Pod.
 These are sandbox formats; the paper list is not an official Arena-legal deck.
 

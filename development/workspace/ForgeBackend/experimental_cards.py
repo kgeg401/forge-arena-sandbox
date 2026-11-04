@@ -18,6 +18,8 @@ def load_experimental(path=None):
             raise ValueError('Experimental identities no longer match '+label)
     if not isinstance(value.get('cards'),dict) or not isinstance(value.get('blockedCards'),dict):
         raise ValueError('Invalid experimental card inventory')
+    if value.get('sandboxCustomRules') or any(c.get('sandboxCustom') for c in value['cards'].values()):
+        raise ValueError('Invented custom cards are disabled; use real Magic cards only')
     verified=set(json.loads(SUPPORT_POLICY.read_text())['verifiedNames'])
     if verified & value['cards'].keys():raise ValueError('Experimental inventory cannot overwrite verified cards')
     for name,card in value['cards'].items():

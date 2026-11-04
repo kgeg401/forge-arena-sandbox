@@ -1,3 +1,8 @@
+> Historical pool audit: the counts below describe the 30 October 2026 Moxfield
+> snapshot and its Alpha 10 admission. Beta 1 has since grown to 370 baseline
+> names plus 1,590 experimental names. Later explicit real paper-card extensions
+> do not retroactively expand this Arena-only audit. See [current verification](VERIFICATION.md).
+
 # Moxfield Commander pool: 30 October 2026
 
 This checkpoint sampled the 50 public Commander decks ranked by descending total

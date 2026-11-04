@@ -1,0 +1,44 @@
+name: Private internet Commander problem
+description: Two-player Host/Join, compatibility, disconnect, turn ownership or opposing views.
+title: "[Multiplayer] "
+labels: [bug, needs-triage, "area:multiplayer"]
+body:
+  - type: markdown
+    attributes:
+      value: Both players need the same custom-client release. Never post the invitation URL, its secret fragment, credentials or raw connection logs. Human pods and public matchmaking are not included.
+  - type: textarea
+    id: versions
+    attributes:
+      label: Both players' sandbox and Arena versions
+      description: Identify host and guest, Steam or standalone, and Windows versions if known.
+    validations:
+      required: true
+  - type: dropdown
+    id: environment
+    attributes:
+      label: Test environment
+      options:
+        - Two PCs on different household networks
+        - Two PCs on the same network
+        - Two clients on one PC
+        - Other or unknown
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps and both visible prompts
+      description: State who hosted, whether both boards opened, the last action and whether a connection recovered. Include the error text without any invitation.
+    validations:
+      required: true
+  - type: textarea
+    id: result
+    attributes:
+      label: Expected result and actual result
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Reviewed screenshots or short excerpts
+      description: Crop or redact invitations, private hands and other information you do not intend to share.

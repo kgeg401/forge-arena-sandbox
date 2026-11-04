@@ -1,0 +1,41 @@
+name: Slow stack, animation or frame-rate problem
+description: Measure a slow resolution, large board, choppy pod or unusual animation speed.
+title: "[Performance] "
+labels: [bug, needs-triage, "area:performance"]
+body:
+  - type: input
+    id: version
+    attributes:
+      label: Exact sandbox version
+      placeholder: "Beta 1 / 0.2.0-beta.1"
+    validations:
+      required: true
+  - type: input
+    id: mode
+    attributes:
+      label: Mode, living-player count and relevant cards
+    validations:
+      required: true
+  - type: textarea
+    id: measurement
+    attributes:
+      label: What is slow, and how did you measure it?
+      description: Give approximate stack/token counts, elapsed time or FPS, and whether a choice/response is waiting. Distinguish slow rules, low FPS and fast animations.
+    validations:
+      required: true
+  - type: textarea
+    id: hardware
+    attributes:
+      label: PC and display details
+      description: CPU, GPU, RAM, resolution/window mode and whether other heavy apps were running. Unknown values are fine.
+  - type: textarea
+    id: steps
+    attributes:
+      label: Reproduction steps and expected result
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Screenshot, short clip or reviewed error excerpt
+      description: Do not attach game assets, invitations, credentials or unreviewed full match exports.

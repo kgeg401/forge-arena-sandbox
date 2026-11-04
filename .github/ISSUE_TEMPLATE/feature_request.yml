@@ -13,4 +13,4 @@ body:
     id: scenario
     attributes:
       label: Example deck or scenario
-      description: For card support, include an Arena card name and the specific interaction that needs testing.
+      description: For card support, include the real Magic card name, printing if known, and the specific interaction. A request does not enable or verify a card automatically.

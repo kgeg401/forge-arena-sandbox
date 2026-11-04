@@ -1,5 +1,7 @@
 # Development sources and catalogue tools
 
+Current package: **Beta 1 (`0.2.0-beta.1`)**. See [beta scope](../docs/BETA.md).
+
 `workspace/` mirrors the authored local development workspace. The snapshot
 manifest records the original commit and SHA-256 for every included source file.
 The player-facing packaged source remains under `../client/`; download the
@@ -18,7 +20,7 @@ supported list for release status. Review paths and supply explicit runtime
 configuration before running any research tool on another PC.
 
 The verified policy is the 370-name `ForgeBackend/bridge_support.json`.
-The release separately enables 1,421 experimental names, including paper Darien,
+The release separately enables 1,590 experimental names, including paper Darien,
 Zombie Horde, coin-flip and creature-combo/copy decks. Paper illustrations are
 downloaded and cached locally; no original assets are included here.
 The generated experimental overlay

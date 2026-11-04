@@ -1,12 +1,13 @@
-name: Sandbox problem
-description: Report an installation, update, menu or gameplay problem.
-title: "[Bug] "
+name: Setup, launcher or interface problem
+description: Installation, compatibility, updates, menus, artwork or saved data.
+title: "[Client] "
+labels: [bug, needs-triage, "area:client"]
 body:
   - type: input
     id: version
     attributes:
       label: Sandbox version
-      placeholder: 0.01 alpha / 0.2.0-alpha.1
+      placeholder: "Beta 1 / 0.2.0-beta.1 (or your exact older version)"
     validations:
       required: true
   - type: dropdown
@@ -19,15 +20,16 @@ body:
         - Home or Options
         - Decks or search
         - Packs
-        - Practice bot match
-        - Brawl bot match
+        - Artwork or card preview
+        - Saved deck or collection data
+        - A game prompt or controls
     validations:
       required: true
   - type: input
     id: arena
     attributes:
       label: Arena build and Windows version
-      description: The alpha requires the exact compatible Arena files listed in the player guide.
+      description: Include Steam or standalone, the Check Arena build/error, and Windows version. Unknown if unavailable.
     validations:
       required: true
   - type: textarea
@@ -47,4 +49,4 @@ body:
     id: evidence
     attributes:
       label: Screenshot or relevant log excerpt
-      description: Attach a screenshot or a short relevant excerpt. Do not upload game files or credentials.
+      description: Attach a screenshot or reviewed short excerpt. Do not post credentials, room invitations, game files, full installations or unreviewed match exports.

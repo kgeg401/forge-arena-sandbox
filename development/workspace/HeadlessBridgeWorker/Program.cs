@@ -57,6 +57,7 @@ internal static class Program
         string worker=Guid.NewGuid().ToString("N");var timer=Stopwatch.StartNew();
         using var gre=new GreInterface(NullCardDatabaseAdapter.Default,null,null,true,null);
         var local=new LocalGreConnection();local.MessageReceived+=gre.OnMessageReceived;local.Connect(null!);local.ConnectToGRE(LocalGreConnection.LocalUri,local.MatchId);
+        long pollTicks=0,drainTicks=0,validationTicks=0,statusTicks=0;
         uint? presented=null;BaseUserRequest? interaction=null;MtgGameState? latest=null;long updateOrdinal=0;bool dirty=false;
         using var journal=new StreamWriter(Path.Combine(work,"native-model.jsonl"),false){AutoFlush=true};
         void Record(string kind,JToken value)=>journal.WriteLine(new JObject{["kind"]=kind,["ordinal"]=updateOrdinal,["value"]=value}.ToString(Formatting.None));
@@ -95,8 +96,35 @@ internal static class Program
         bool autoOrderTriggers=(bool?)scenario["autoOrderTriggers"]??true;
         if(scenario["autoChooseReplacementEffects"]!=null && scenario["autoChooseReplacementEffects"]!.Type!=JTokenType.Boolean)throw new InvalidDataException("Research replacement preference must be boolean");
         bool autoChooseReplacementEffects=(bool?)scenario["autoChooseReplacementEffects"]??false;
-        var bridge=new ForgeLandBridge(root,local,message=>Record("bridge-log",new JValue(message)),()=>presented,()=>false,ipc,autoOrderTriggers:()=>autoOrderTriggers,autoChooseReplacementEffects:()=>autoChooseReplacementEffects);
-        JObject Status()=>new JObject{["schema"]=1,["worker"]=worker,["session"]=bridge.Session,["nativeStateId"]=presented,["nativeMessageId"]=interaction?.OriginalMessage.MsgId,["updateOrdinal"]=updateOrdinal,["interaction"]=interaction?.GetType().Name,["gap"]=bridge.Gap,["state"]=bridge.ResearchState,["podDetails"]=bridge.IsCommanderPod?bridge.PodDetails():null};
+        bool automaticStack=false;
+        bool AutoPass()
+        {
+            if(!automaticStack || interaction is not ActionsAvailableRequest actions || interaction.OriginalMessage.GameStateId!=presented)return false;
+            actions.SubmitPass();var outgoing=gre.DequeueOutgoingMessage()??throw new InvalidOperationException("Native automatic pass emitted no message");local.SendMessage(outgoing);Record("automatic-native-command",JObject.Parse(outgoing.ToString()));return true;
+        }
+        var bridge=new ForgeLandBridge(root,local,message=>Record("bridge-log",new JValue(message)),()=>presented,AutoPass,ipc,autoOrderTriggers:()=>autoOrderTriggers,autoChooseReplacementEffects:()=>autoChooseReplacementEffects);
+        NativeCastAvailability.AuthoritativeCast=bridge.CanHighlightCast;
+        bridge.ConfigureLoopSubmission(recorded=>{
+            if(interaction?.OnSubmit==null || interaction.OriginalMessage.GameStateId!=presented)return false;
+            NativeLoopSubmission.Submit(interaction,recorded);
+            var outgoing=gre.DequeueOutgoingMessage()??throw new InvalidOperationException("Native loop request emitted no message");
+            local.SendMessage(outgoing);Record("loop-native-command",JObject.Parse(outgoing.ToString()));return true;
+        });
+        JArray CastAvailability()
+        {
+            var result=new JArray();
+            if(interaction is not ActionsAvailableRequest actions)return result;
+            foreach(var action in actions.Actions.Where(a=>a.ActionType==ActionType.Cast))
+            {
+                var foreign=action.Clone();foreign.InstanceId=uint.MaxValue;
+                var wrongPrinting=action.Clone();wrongPrinting.GrpId=uint.MaxValue;
+                var activation=action.Clone();activation.ActionType=ActionType.Activate;
+                bool native=global::ActionExtensions.CanAffordToCast(action);
+                result.Add(new JObject{["instanceId"]=action.InstanceId,["grpId"]=action.GrpId,["nativeAffordable"]=native,["forgeAffordable"]=bridge.CanHighlightCast(action),["effectiveAffordable"]=NativeCastAvailability.Evaluate(action,native),["foreignInstanceOverride"]=NativeCastAvailability.Evaluate(foreign,false),["wrongPrintingOverride"]=NativeCastAvailability.Evaluate(wrongPrinting,false),["activationOverride"]=NativeCastAvailability.Evaluate(activation,false)});
+            }
+            return result;
+        }
+        JObject Status()=>new JObject{["schema"]=1,["worker"]=worker,["session"]=bridge.Session,["nativeStateId"]=presented,["nativeMessageId"]=interaction?.OriginalMessage.MsgId,["updateOrdinal"]=updateOrdinal,["interaction"]=interaction?.GetType().Name,["gap"]=bridge.Gap,["state"]=bridge.ResearchState,["loop"]=bridge.LoopStatus,["timingTicks"]=new JObject{["frequency"]=Stopwatch.Frequency,["poll"]=pollTicks,["drain"]=drainTicks,["validation"]=validationTicks,["status"]=statusTicks},["castAvailability"]=CastAvailability(),["podDetails"]=bridge.IsCommanderPod?bridge.PodDetails():null};
         var observedCopyIds=new Dictionary<int,uint>();
         void ValidateModel()
         {
@@ -207,15 +235,17 @@ internal static class Program
                 if(native.Count!=expected.Count || expected.Any(p=>!native.TryGetValue(p.Key,out int count) || count!=p.Value))throw new InvalidOperationException("Native player counters differ from Forge");
             }
         }
-        var seen=new Dictionary<string,(JObject Body,JObject Reply)>();string? commandId=null,forgeRequest=null;long commandStart=0;DateTime commandDeadline=default;
+        var seen=new Dictionary<string,(JObject Body,JObject Reply)>();string? commandId=null,forgeRequest=null;long commandStart=0;DateTime commandDeadline=default;string lastLoop="";
         try
         {
             bridge.Start();Drain();ValidateModel();Write(Path.Combine(work,"ready.json"),Status());Write(Path.Combine(work,"status.json"),Status());dirty=false;
             while(!File.Exists(Path.Combine(work,"stop.request")) && !File.Exists(Path.Combine(ipc,"stop.request")))
             {
                 if(timer.Elapsed>TotalLifetime)throw new TimeoutException("Bounded headless worker lifetime expired");
-                bridge.Poll();Drain();
-                if(dirty){ValidateModel();Write(Path.Combine(work,"status.json"),Status());dirty=false;}
+                long measured=Stopwatch.GetTimestamp();bridge.Poll();pollTicks+=Stopwatch.GetTimestamp()-measured;
+                measured=Stopwatch.GetTimestamp();Drain();drainTicks+=Stopwatch.GetTimestamp()-measured;
+                string loopStamp=bridge.LoopStatus.ToString(Formatting.None);
+                if(dirty || loopStamp!=lastLoop){measured=Stopwatch.GetTimestamp();ValidateModel();validationTicks+=Stopwatch.GetTimestamp()-measured;measured=Stopwatch.GetTimestamp();Write(Path.Combine(work,"status.json"),Status());statusTicks+=Stopwatch.GetTimestamp()-measured;dirty=false;lastLoop=loopStamp;}
                 if(commandId!=null)
                 {
                     bool boundary=bridge.PendingResearchRequestId==null && (updateOrdinal>commandStart || !string.IsNullOrEmpty(bridge.Gap));
@@ -241,10 +271,34 @@ internal static class Program
                     seen.Add(id,((JObject)request.DeepClone(),new JObject()));File.Delete(path);
                     try
                     {
-                        Integer(request["nativeStateId"],"nativeStateId");Integer(request["nativeMessageId"],"nativeMessageId");Integer(request["forgeId"],"forgeId");
-                        if((string?)request["worker"]!=worker || (string?)request["session"]!=bridge.Session || (uint?)request["nativeStateId"]!=presented || (uint?)request["nativeMessageId"]!=interaction?.OriginalMessage.MsgId)throw new InvalidOperationException("Stale or foreign native worker request");
+                        string op=(string)request["op"]!;bool loopControl=op is "loop_stop" or "loop_status" or "fast_stack_cancel" or "fast_stack_status";
+                        Integer(request["nativeStateId"],"nativeStateId");Integer(request["forgeId"],"forgeId");
+                        if(!loopControl)Integer(request["nativeMessageId"],"nativeMessageId");
+                        if((string?)request["worker"]!=worker || (string?)request["session"]!=bridge.Session || !loopControl && ((uint?)request["nativeStateId"]!=presented || (uint?)request["nativeMessageId"]!=interaction?.OriginalMessage.MsgId))throw new InvalidOperationException("Stale or foreign native worker request");
+                        if(op=="loop_stop" && (string?)request["loopRunId"]!=(string?)bridge.LoopStatus["runId"])throw new InvalidOperationException("Repeat batch changed; inspect before cancelling.");
                         if(request["seat"]!=null && (request["seat"]!.Type!=JTokenType.Integer || (int)request["seat"]! != 1))throw new InvalidOperationException("Native worker controls only local seat one");
-                        string op=(string)request["op"]!;var state=bridge.ResearchState;var decision=state["decision"] as JObject;
+                        var state=bridge.ResearchState;var decision=state["decision"] as JObject;
+                        if(op is "fast_stack_start" or "fast_stack_cancel" or "fast_stack_status")
+                        {
+                            if(op=="fast_stack_start")
+                            {
+                                if(decision!=null || (bool?)state["canPass"]!=true || state["stackOrder"] is not JArray stack || stack.Count==0)throw new InvalidOperationException("Fast resolve requires real stack priority");
+                                string policy=(string?)request["policy"]??"all";if(policy!="all" && policy!="own")throw new InvalidDataException("Unknown stack-yield policy");
+                                automaticStack=true;var settings=new SettingsMessage{StackAutoPassOption=policy=="all"?AutoPassOption.ResolveAll:AutoPassOption.ResolveMyStackEffects};if(policy=="own")settings.AutoPassOption=AutoPassOption.ResolveMyStackEffects;
+                                local.SendMessage(new ClientToGREMessage{Type=ClientMessageType.SetSettingsReq,SetSettingsReq=new SetSettingsReq{Settings=settings}});
+                            }
+                            else if(op=="fast_stack_cancel")
+                            {
+                                if((bool?)bridge.LoopStatus["fastResolving"]!=true || (string?)request["fastRunId"]!=(string?)bridge.LoopStatus["fastRunId"])throw new InvalidOperationException("Fast resolve batch changed; inspect before cancelling");
+                                automaticStack=false;bridge.StopLoop();
+                            }
+                            var reply=Status();reply["id"]=id;reply["accepted"]=true;seen[id]=(request,reply);Write(Path.Combine(work,"responses",id+".json"),reply);continue;
+                        }
+                        if(op is "loop_start" or "loop_stop" or "loop_status")
+                        {
+                            if(op=="loop_start")bridge.StartLoop(Integer(request["count"],"count"));else if(op=="loop_stop")bridge.StopLoop();
+                            var reply=Status();reply["id"]=id;reply["accepted"]=true;seen[id]=(request,reply);Write(Path.Combine(work,"responses",id+".json"),reply);continue;
+                        }
                         if(decision!=null && (op.StartsWith("submit_",StringComparison.Ordinal) || op.StartsWith("select_",StringComparison.Ordinal) || op=="cancel_targets") && (string?)request["decisionToken"]!=(string?)decision["token"])throw new InvalidOperationException("Native decision token does not match Forge");
                         if(op is "select_targets" or "submit_targets" or "cancel_targets")
                             if(decision==null || (string?)request["decisionToken"]!=(string?)decision["token"])throw new InvalidOperationException("Native target token does not match Forge");

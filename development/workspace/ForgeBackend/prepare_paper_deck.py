@@ -7,6 +7,11 @@ import argparse,copy,hashlib,json,re,sqlite3
 from pathlib import Path
 
 
+def native_mana_text(symbols):
+    # Native sorting and icon lookup expect parenthesized hybrid/Phyrexian costs.
+    return ''.join('o'+('('+v+')' if '/' in v else v) for v in symbols)
+
+
 def prepare(a):
     a.output.mkdir(parents=True,exist_ok=False)
     projection=json.loads(a.projection.read_text());base=json.loads(a.manifest.read_text())
@@ -30,7 +35,7 @@ def prepare(a):
             row=db.execute('SELECT TitleId,AbilityIds FROM Cards WHERE GrpId=?',(card['grpId'],)).fetchone()
             assert row and row['TitleId']==card['titleId'] and row['AbilityIds']==','.join(map(str,card['abilityIds'])),'Parent paper card differs: '+name
     loc_id=max([1000000000]+[int(v) for v in locs]);ability_id=max([2100000]+[v['id'] for v in abilities])
-    grp_id=max([2000000]+[c['grpId'] for c in old['cards'].values() if c.get('paperOnly')])
+    grp_id=max([2000000]+[c['grpId'] for c in base['cards'].values() if c.get('paperOnly')])
     def loc(text):
         nonlocal loc_id
         loc_id+=1;assert not db.execute('SELECT 1 FROM Localizations WHERE LocId=?',(loc_id,)).fetchone()
@@ -43,6 +48,11 @@ def prepare(a):
         row=dict(db.execute('SELECT * FROM Abilities WHERE Id=1001').fetchone())
         row.update(Id=ability_id,BaseId=base_id or ability_id,TextId=loc(text),Category=category,SubCategory=sub,OldSchoolManaText='',HiddenAbilityIds='',EmbeddedActiveAbilityIds='',ReferencedAbilityIds='',ModalChildIds='',ModalParentIds='',HiddenByAbilityIds='',EmbeddedIntoAbilityIds='')
         insert('Abilities',row);abilities.append(dict(id=ability_id,baseId=row['BaseId'],textId=row['TextId'],category=category,subCategory=sub));return ability_id
+    def link(identity,**fields):
+        names={'hiddenAbilityIds':'HiddenAbilityIds','modalChildIds':'ModalChildIds','modalParentIds':'ModalParentIds'}
+        row=next(a for a in abilities if a['id']==identity)
+        for key,ids in fields.items():
+            db.execute('UPDATE Abilities SET '+names[key]+'=? WHERE Id=?',(','.join(map(str,ids)),identity));row[key]=ids
     result=copy.deepcopy(old)
     for name,card in added['cards'].items():
         if name not in result['cards'] and name not in base['cards']:result['cards'][name]=card;base['cards'][name]=copy.deepcopy(card)
@@ -55,16 +65,24 @@ def prepare(a):
         root=ability(raw);hidden=[]
         for v in s['abilities']+s.get('latentAbilities',[]):
             if v.get('activated'):hidden.append(ability(v['description'],1,int(v['mana'])))
-        for v in s['triggers']+s.get('latentTriggers',[]):
-            if v.get('Static')!='True' and v.get('TriggerDescription'):hidden.append(ability(v['TriggerDescription'],2))
+        # One printed rule can have separate engine triggers (enters/damage,
+        # attacks/blocks). Both resolve through the same printed ability.
+        triggers=dict.fromkeys(v['TriggerDescription'] for v in s['triggers']+s.get('latentTriggers',[]) if v.get('Static')!='True' and v.get('TriggerDescription'))
+        for text in triggers:hidden.append(ability(text,2))
+        modes=[v for v in s['abilities'] if v.get('spell') and v.get('modes')]
+        if modes:
+            if len(modes)!=1:raise ValueError('Paper card needs an unambiguous modal spell parent: '+name)
+            children=[ability(v['description']) for v in modes[0]['modes']]
+            link(root,modalChildIds=children)
+            for child in children:link(child,modalParentIds=[root])
         printed_keywords=[]
         for v in s['keywords']:
             word=v.split(':',1)[0];native=base['keywordAbilityIds'].get(word.lower())
             identity=ability(word,3,base_id=native)
             if native:printed_keywords.append(identity)
             else:hidden.append(identity)
-        root_row=dict(db.execute('SELECT * FROM Abilities WHERE Id=?',(root,)).fetchone());db.execute('UPDATE Abilities SET HiddenAbilityIds=? WHERE Id=?',(','.join(map(str,hidden)),root))
-        symbols=re.findall(r'\{([^}]+)\}',s['manaCost']);mana=''.join('o'+v for v in symbols)
+        link(root,hiddenAbilityIds=hidden)
+        symbols=re.findall(r'\{([^}]+)\}',s['manaCost']);mana=native_mana_text(symbols)
         colors=[n for bit,n in ((1,'White'),(2,'Blue'),(4,'Black'),(8,'Red'),(16,'Green')) if s['colorMask']&bit]
         identity=[n for bit,n in ((1,'White'),(2,'Blue'),(4,'Black'),(8,'Red'),(16,'Green')) if s['colorIdentityMask']&bit]
         ci=[{'White':'W','Blue':'U','Black':'B','Red':'R','Green':'G'}[n] for n in identity]

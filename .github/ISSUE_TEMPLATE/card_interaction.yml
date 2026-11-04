@@ -1,0 +1,55 @@
+name: Card, combat or rules interaction
+description: A reproducible wrong result, missing action, stalled choice or repeat-combo problem.
+title: "[Rules] "
+labels: [bug, needs-triage, "area:rules"]
+body:
+  - type: markdown
+    attributes:
+      value: Check known issues first. Do not attach an invitation or unreviewed full match export. Card admission is experimental unless separately verified.
+  - type: input
+    id: version
+    attributes:
+      label: Exact sandbox version
+      placeholder: "Beta 1 / 0.2.0-beta.1"
+    validations:
+      required: true
+  - type: dropdown
+    id: mode
+    attributes:
+      label: Game mode
+      options:
+        - Practice Bot
+        - Brawl Bot
+        - Commander Bot
+        - Commander Pod - 4 players
+        - Commander Pod - 10 players
+        - Zombie Horde - Solo
+        - Zombie Horde - Commander Deck
+        - Private Commander - Internet
+    validations:
+      required: true
+  - type: textarea
+    id: cards
+    attributes:
+      label: Relevant cards and position
+      description: Exact names, who controls them, relevant resources, turn/phase and the visible prompt.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Actions to reproduce
+      description: Give the shortest known sequence. Include targets, costs and choices. Say if it repeats.
+    validations:
+      required: true
+  - type: textarea
+    id: result
+    attributes:
+      label: Expected result and actual result
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Screenshot, clip or short reviewed error excerpt
+      description: Only disclose deck/hand information that you intend to make public.

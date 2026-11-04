@@ -34,7 +34,7 @@ def run(case,args):
   def act(*args,**kwargs):return execute(engine,trace,*args,_choice_policy=observe_choice,**kwargs)
   initial=engine.state;engine.check('Survivor starts with 40 life',initial['life']==40 and initial['startingLifeTotal']==40)
   if case=='opening':
-   engine.check('Actual Horde library contains 200 cards',initial['horde']['initialCards']==200 and initial['horde']['remainingCards']==200)
+   engine.check('Actual Horde library contains 500 cards',initial['horde']['initialCards']==500 and initial['horde']['remainingCards']==500)
    return dict(case=case,passed=True,checks=engine.checks,initial=initial,evidence=str(engine.ipc))
   deadline=time.monotonic()+130;face_burns=0;success=False;observed_cast=False
   def transitions():return engine.state['researchTrace']

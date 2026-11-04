@@ -1,6 +1,6 @@
 # Experimental card catalogue
 
-This build enables 1421 additional experimental card names. The verified catalogue remains 370 names. See docs/VERIFICATION.md and docs/MOXFIELD-COVERAGE.md for tested scenarios and per-card coverage. Permission to start a match is not exhaustive proof of its effects or combos. Actual unmapped mechanics still report a gap.
+This build enables 1590 additional experimental card names. The verified catalogue remains 370 names. See docs/VERIFICATION.md and docs/MOXFIELD-COVERAGE.md for tested scenarios and per-card coverage. Permission to start a match is not exhaustive proof of its effects or combos. Actual unmapped mechanics still report a gap.
 
 Use Manage-Updates.ps1 rollback to return to the previous build. Saved decks and profiles are retained.
 
@@ -10,7 +10,6 @@ Use Manage-Updates.ps1 rollback to return to the previous build. Saved decks and
 - Aura of Silence: No installed Arena primary printing/presentation; rules-only Forge availability is insufficient
 - Autumn's Veil: No installed Arena primary printing/presentation; rules-only Forge availability is insufficient
 - Back to Basics: No installed Arena primary printing/presentation; rules-only Forge availability is insufficient
-- Cabal Ritual: No installed Arena primary printing/presentation; rules-only Forge availability is insufficient
 - Collector Ouphe: No installed Arena primary printing/presentation; rules-only Forge availability is insufficient
 - Demonic Consultation: No installed Arena primary printing/presentation; rules-only Forge availability is insufficient
 - Druids' Repository: No installed Arena primary printing/presentation; rules-only Forge availability is insufficient
@@ -24,13 +23,10 @@ Use Manage-Updates.ps1 rollback to return to the previous build. Saved decks and
 - Horizon Canopy: No installed Arena primary printing/presentation; rules-only Forge availability is insufficient
 - Imperial Seal: No installed Arena primary printing/presentation; rules-only Forge availability is insufficient
 - Intuition: No installed Arena primary printing/presentation; rules-only Forge availability is insufficient
-- Luxury Suite: No installed Arena primary printing/presentation; rules-only Forge availability is insufficient
 - Mental Misstep: No installed Arena primary printing/presentation; rules-only Forge availability is insufficient
-- Phyrexian Altar: No installed Arena primary printing/presentation; rules-only Forge availability is insufficient
 - Preston, the Vanisher: No installed Arena primary printing/presentation; rules-only Forge availability is insufficient
 - Reconnaissance: No installed Arena primary printing/presentation; rules-only Forge availability is insufficient
 - Sadistic Glee: No installed Arena primary printing/presentation; rules-only Forge availability is insufficient
-- Sea of Clouds: No installed Arena primary printing/presentation; rules-only Forge availability is insufficient
 - Serra's Sanctum: No installed Arena primary printing/presentation; rules-only Forge availability is insufficient
 - Spellseeker: No installed Arena primary printing/presentation; rules-only Forge availability is insufficient
 - Sphere of Resistance: No installed Arena primary printing/presentation; rules-only Forge availability is insufficient
@@ -38,7 +34,6 @@ Use Manage-Updates.ps1 rollback to return to the previous build. Saved decks and
 - Stasis: No installed Arena primary printing/presentation; rules-only Forge availability is insufficient
 - Static Orb: No installed Arena primary printing/presentation; rules-only Forge availability is insufficient
 - Teferi, Temporal Archmage: No installed Arena primary printing/presentation; rules-only Forge availability is insufficient
-- Tezzeret the Seeker: No installed Arena primary printing/presentation; rules-only Forge availability is insufficient
 - The Tabernacle at Pendrell Vale: No installed Arena primary printing/presentation; rules-only Forge availability is insufficient
 - Trinisphere: No installed Arena primary printing/presentation; rules-only Forge availability is insufficient
 - Village Bell-Ringer: No installed Arena primary printing/presentation; rules-only Forge availability is insufficient

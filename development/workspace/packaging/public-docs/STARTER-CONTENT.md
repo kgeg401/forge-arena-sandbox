@@ -1,7 +1,7 @@
 # Shared starter library
 
-Alpha 15.3 includes the current project library as defaults: **26 saved decks**
-and **521 collection printing entries, totaling 928 copies**. Every new client
+Beta 1 includes **32 shared starter decks**
+and **907 collection printing entries, totaling 1,338 copies**. Every new client
 installation receives the same starter content, including Emry, Jace Superfriends,
 Darien, Gamba Gamba, Miirym Mass Arrival and Zaxara Copy Army. Cosmetic name/avatar
 profiles share this library and do not repeat starter grants.
@@ -24,8 +24,11 @@ plus collection counts. Account details, sign-in data, original profile/deck IDs
 favorites, play timestamps and pack-opening history are not distributed. This is
 content for the custom client; it does not modify an official Arena account.
 
-Validation: exact 26-deck snapshot comparison, actual native storage classes,
+Validation includes the original 26-deck snapshot comparison and later
+starter extensions, actual native storage classes,
 all deck-admission checks, once-only native pack rewards, existing-profile merge,
 idempotence, malformed-input preservation, partial-I/O retry and update/rollback.
-The rules/native gameplay binaries are unchanged from Alpha 15.2. This is not a
-new complete-match test of every deck or a two-household network test.
+The beta's runtime and catalogue are checked against the tested source
+checkpoint. These merge checks are not a complete-match test of every deck or
+a two-household network test. The original 26-deck/521-printing/928-copy figures
+describe the Alpha 15.3 snapshot, not the current package.

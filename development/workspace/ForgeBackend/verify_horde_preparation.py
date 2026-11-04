@@ -23,7 +23,11 @@ def run(case,a):
                 if d['kind']=='mulligan':execute(e,trace,'submit_mulligan',decisionToken=d['token'],assignments=[dict(keep=True)])
                 else:raise AssertionError('Unexpected opening decision: '+str(d))
             elif s['legalLands']:
-                execute(e,trace,'play_land',s['legalLands'][0]);land_plays+=1
+                offered={c['forgeId']:c['name'] for c in s['hand']}
+                played={c['name'] for c in s['battlefield'] if c['controller']==1}
+                missing={'Forest','Swamp'}-played if name=='The Gitrog Monster' else set()
+                chosen=next((i for i in s['legalLands'] if offered[i] in missing),s['legalLands'][0])
+                execute(e,trace,'play_land',chosen);land_plays+=1
             elif not cast and any(c['name']==name and c['zone']=='Command' and c['forgeId'] in s['legalCasts'] for c in s['command']):
                 c=next(c for c in s['command'] if c['name']==name)
                 execute(e,trace,'cast_spell',c['forgeId']);cast=True
@@ -42,5 +46,5 @@ if __name__=='__main__':
     for key in ('worker','managed','fixture','out'):p.add_argument('--'+key,type=Path,required=True)
     a=p.parse_args();a.out.mkdir(parents=True,exist_ok=False);rows=[]
     for i,c in enumerate(CASES):
-        r=run(c,a);(a.out/(str(i)+'.json')).write_text(json.dumps(r,indent=2));rows.append(r);print(json.dumps({k:r.get(k) for k in ('commander','passed','error')}),flush=True)
+        r=run(c,a);(a.out/(str(i)+'.json')).write_text(json.dumps(r,indent=2));rows.append(r);print(json.dumps(dict(commander=r['commander'],passed=r['passed'],error=(r.get('error') or '')[:200])),flush=True)
     (a.out/'report.json').write_text(json.dumps(rows,indent=2));raise SystemExit(0 if all(r['passed'] for r in rows) else 1)

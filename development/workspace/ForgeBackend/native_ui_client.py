@@ -51,6 +51,7 @@ def action(*args,observed=None,wait_for_change=True):
    # Keep observing; never resubmit the already accepted interaction.
    continue
   if (n['state'],n['workflow'],n['buttons'],n['uiButtons'],n.get('damageAssignments'),n.get('damageControls'),n.get('distributionControls'),[(v['id'],v['holder']) for v in n['clickable']])!=(p['state'],p['workflow'],p['buttons'],p['uiButtons'],p.get('damageAssignments'),p.get('damageControls'),p.get('distributionControls'),[(v['id'],v['holder']) for v in p['clickable']]):return n
+  if args[0] in ('loop-open','loop-close') and n.get('repeat')!=p.get('repeat'):return n
   time.sleep(.15)
  raise RuntimeError('No native state/workflow change; no retry sent')
 def card(forge_id,wait_for_change=True):

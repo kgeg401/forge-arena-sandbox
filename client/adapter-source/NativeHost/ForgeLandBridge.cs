@@ -12,7 +12,7 @@ namespace ForgeArenaSandbox;
 /// <summary>Native Arena adapter for the admitted local practice cards. Forge owns game rules.</summary>
 internal sealed class ForgeLandBridge
 {
-    public void Detach(){_connection.LocalCommand-=Handle;_responseFile.Forget();}
+    public void Detach(){_fastStack=false;_loops.Stop("Match closed.");_submitLoop=null;_connection.LocalCommand-=Handle;_responseFile.Forget();}
     // Forge replaces/retire files atomically while the Unity thread polls. A
     // read handle must permit deletion or Windows can stop the rules owner.
     private static string ReadShared(string path)
@@ -35,6 +35,23 @@ internal sealed class ForgeLandBridge
     private readonly JObject _keywordBindings;
     private readonly JObject _typeBindings;
     private readonly Dictionary<int,int> _ids = new Dictionary<int,int>();
+    private readonly Dictionary<uint,uint> _offeredNativeCasts=new Dictionary<uint,uint>();
+    private readonly RecordedLoop _loops;
+    private readonly HashSet<string> _offeredLoopActions=new HashSet<string>();
+    private Func<ClientToGREMessage,bool>? _submitLoop;
+    internal void ConfigureLoopSubmission(Func<ClientToGREMessage,bool> submit)=>_submitLoop=submit;
+    private static string LoopActionKey(ActionType type,uint instance,uint grp,uint ability)=>type+":"+instance+":"+grp+":"+ability;
+    private bool LoopReady=>_pending==null && !NetworkWaiting && Decision==null && !GameOver && string.IsNullOrEmpty(Gap) && _presentedState()==_stateId;
+    internal JObject LoopStatus
+    {
+        get{var status=_loops.Snapshot(_state);var action=_loops.FirstCommand?.PerformActionResp?.Actions.SingleOrDefault();status["available"]=(bool)status["available"]! && LoopReady && action!=null && _offeredLoopActions.Contains(LoopActionKey(action.ActionType,action.InstanceId,action.GrpId,action.AbilityGrpId));status["fastResolving"]=_fastStack;status["fastRunId"]=_fastStackRun;status["remainingStack"]=((JArray?)_state["stackOrder"])?.Count??0;return status;}
+    }
+    internal void StartLoop(int count)
+    {
+        if(!(bool)LoopStatus["available"]!)throw new InvalidOperationException("Finish the current action; the first repeated ability must still be available and affordable.");
+        _loops.Start(count,_state,_seconds());
+    }
+    internal void StopLoop(){if(_fastStack){_fastStack=false;_automaticSuspended=true;return;}_loops.Stop("Stopped by player. Completed actions remain applied.");}
     private Dictionary<int,JToken> _sentObjects=new Dictionary<int,JToken>();
     private readonly bool SparseObjectLab;
     private readonly Dictionary<(int Source,int Seat,int NativeSource),List<int>> _coinReveals=new Dictionary<(int,int,int),List<int>>();
@@ -63,6 +80,12 @@ internal sealed class ForgeLandBridge
     private readonly Func<bool> _autoChooseReplacementEffects;
     private bool _automaticSuspended;
     private bool _quietAdvance;
+    private bool _fastStack;
+    internal bool FastStackResolving=>_fastStack;
+    private int _fastQueued;
+    private double _adoptMilliseconds;
+    internal JObject StackTiming=>new JObject{["responseReadMs"]=_responseFile.ReadMilliseconds,["adoptMs"]=_adoptMilliseconds,["queuedStates"]=_fastQueued};
+    private string _fastStackRun="";
     private int _yieldTurn=-1;
     private bool _yieldAcrossPod;
     private readonly Func<double> _seconds;
@@ -75,6 +98,11 @@ internal sealed class ForgeLandBridge
     public string? Gap { get; private set; }
     internal string? PendingResearchRequestId => _pending;
     internal int ResearchInstanceId(int forgeId)=>_ids[forgeId];
+    internal bool CanHighlightCast(Wotc.Mtgo.Gre.External.Messaging.Action action)
+        => action.ActionType==ActionType.Cast && _pending==null && Decision==null && !GameOver && !NetworkWaiting
+        && (bool?)_state["actionOffersDeferred"]!=true
+        && string.IsNullOrEmpty(Gap) && _presentedState()==_stateId
+        && _offeredNativeCasts.TryGetValue(action.InstanceId,out uint grp) && grp==action.GrpId;
     internal int ResearchPrintingId(string name)=>Identity(name).Grp;
     internal int[] ResearchKeywordIds(string keyword)=>SharedKeywordProtocol.Abilities(keyword,_keywordBindings);
     internal int ResearchTypeId(string kind,string name)=>SharedCharacteristicsProtocol.TypeId(_typeBindings,kind,name);
@@ -146,8 +174,12 @@ internal sealed class ForgeLandBridge
         _keywordBindings=(JObject?)manifest["keywordAbilityIds"]??new JObject();
         _typeBindings=(JObject?)manifest["typeEnumIds"]??new JObject();
         _session=(string)_state["session"]!;
-        if(LandsPlayed!=0)throw new InvalidOperationException("Start a fresh Forge land scenario before opening this native test.");
+        if(LandsPlayed!=0 && !RecoveryStartGuard.Allows(root,_ipc,_session,_state))throw new InvalidOperationException("Start a fresh Forge land scenario before opening this native test.");
         _template=(JObject)JObject.Parse(File.ReadAllText(Path.Combine(root,"board-fixture.json")))["messages"]![0]!["gameStateMessage"]!;
+        _loops=new RecordedLoop(command=>{
+            var action=command.PerformActionResp.Actions.Single();var card=Cards(_state).SingleOrDefault(c=>Id(c)==action.InstanceId);
+            return (string?)card?["name"]??"ability";
+        });
         ExtendPodTemplate();
         foreach(var c in Cards(_state))_ids[(int)c["forgeId"]!]=(int)c["arenaId"]!;
         _connection.LocalCommand+=Handle;
@@ -217,6 +249,23 @@ internal sealed class ForgeLandBridge
     private IEnumerable<int> PresentedAbilities(JToken card)=>((JArray)Definition(PresentationKey(card))["abilityIds"]!).Select(v=>(int)v).Concat((card["currentAbilityIds"] as JArray ?? new JArray()).Select(v=>(int)v)).Concat(new[]{Identity(PresentationKey(card)).Ability}).Where(id=>id!=0).Distinct();
     private readonly Dictionary<(int Card,int Ability),int> _dynamicAbilityIds=new();
     private int _nextDynamicAbilityId=1000000000;
+    private Dictionary<int,(JToken Source,JObject Object)> _cardObjects=new();
+    private int _cardObjectVersion=-1;
+    private JArray CardObjects(IEnumerable<JToken> cards)
+    {
+        // Retain complete native updates. Reuse only the deterministic projection
+        // of identical input, with unchanged instance mappings and no live chooser.
+        bool reuse=Decision==null && _cardObjectVersion==_nextArenaId;
+        var next=new Dictionary<int,(JToken Source,JObject Object)>();var objects=new JArray();
+        foreach(var card in cards)
+        {
+            int id=(int)card["forgeId"]!;
+            var value=reuse && _cardObjects.TryGetValue(id,out var before) && JToken.DeepEquals(before.Source,card)?before.Object:CardObject(card);
+            // Cached projections stay detached; a parent would retain old views.
+            objects.Add(value.DeepClone());next[id]=(card,value);
+        }
+        _cardObjects=next;_cardObjectVersion=Decision==null?_nextArenaId:-1;return objects;
+    }
     private int UniqueAbility(JToken card,int ability){
         var definition=Definition(PresentationKey(card));var ids=((JArray)definition["abilityIds"]!).Select(v=>(int)v).Concat(new[]{(int)definition["abilityId"]!}).Where(id=>id!=0).Distinct().ToArray();
         int index=Array.IndexOf(ids,ability),forge=(int)card["forgeId"]!;
@@ -334,6 +383,8 @@ internal sealed class ForgeLandBridge
 
     private JArray Offers()
     {
+        _offeredNativeCasts.Clear();
+        _offeredLoopActions.Clear();
         if(Decision!=null || GameOver)return new JArray();
         var legal=((JArray)_state["legalLands"]!).Select(v=>(int)v).ToHashSet();
         var offers=new JArray();
@@ -359,11 +410,17 @@ internal sealed class ForgeLandBridge
                 var identity=Identity(PresentationKey(card));
                 var cast=((JArray)_state["castOffers"]!).Single(a=>(int)a["forgeId"]! == (int)card["forgeId"]!);
                 var cost=NativeCost(cast["manaCost"]!);
+                _offeredNativeCasts[(uint)Id(card)]=(uint)identity.Grp;
                 offers.Add(new JObject{["actionType"]="ActionType_Cast",["grpId"]=identity.Grp,["instanceId"]=Id(card),["facetId"]=Id(card),["shouldStop"]=true,["manaCost"]=cost});
             }
         foreach(var activation in (JArray)_state["legalActivations"]!){var card=VisibleCards(_state).Single(c=>(int)c["forgeId"]! == (int)activation["forgeId"]!);int ability=(int)activation["abilityId"]!;
             offers.Add(new JObject{["actionType"]="ActionType_Activate",["grpId"]=Identity(PresentationKey(card)).Grp,["instanceId"]=Id(card),["facetId"]=Id(card),["abilityGrpId"]=ability,["uniqueAbilityId"]=UniqueAbility(card,ability),["manaCost"]=NativeCost(activation["manaCost"]!),["shouldStop"]=true});}
         if((bool?)_state["canPass"] ?? false)offers.Add(new JObject{["actionType"]="ActionType_Pass",["shouldStop"]=true});
+        foreach(var offer in offers)
+        {
+            ActionType? type=(string?)offer["actionType"] switch{"ActionType_Activate"=>ActionType.Activate,"ActionType_Activate_Mana"=>ActionType.ActivateMana,"ActionType_Pass"=>ActionType.Pass,_=>null};
+            if(type.HasValue)_offeredLoopActions.Add(LoopActionKey(type.Value,(uint?)offer["instanceId"]??0,(uint?)offer["grpId"]??0,(uint?)offer["abilityGrpId"]??0));
+        }
         return offers;
     }
 
@@ -557,7 +614,7 @@ internal sealed class ForgeLandBridge
         var state=(JObject)_template.DeepClone();
         state["type"]="GameStateType_Full";state["gameStateId"]=_stateId;state["pendingMessageCount"]=NetworkWaiting?0:1;
         state["gameInfo"]=GameInfo();
-        state["zones"]=Zones();state["gameObjects"]=new JArray(VisibleCards(_state).Select(CardObject));
+        state["zones"]=Zones();state["gameObjects"]=CardObjects(VisibleCards(_state));
         if(SparseObjectLab && ((JArray)state["gameObjects"]!).Select(c=>(int)c["instanceId"]!).Distinct().Count()==((JArray)state["gameObjects"]!).Count)_sentObjects=((JArray)state["gameObjects"]!).ToDictionary(c=>(int)c["instanceId"]!);
         int turnAnnotationId=(int)_stateId*100;state["annotations"]=NativeTurnProtocol.Changes(null,_state,ref turnAnnotationId);state["persistentAnnotations"]=new JArray(TargetAnnotations().Concat(SharedCounterProtocol.Persistent(_state,id=>_ids[id])).Concat(SharedAttachmentProtocol.Persistent(_state,id=>_ids[id])).Concat(SharedKeywordProtocol.Persistent(_state,id=>_ids[id],_keywordBindings,_cardManifest)));state.Remove("diffDeletedInstanceIds");
         state["players"]=Players();state["turnInfo"]=TurnInfo();
@@ -574,6 +631,7 @@ internal sealed class ForgeLandBridge
         File.AppendAllText(_wire,new JObject{["direction"]="outgoing",["session"]=_session,["utc"]=DateTime.UtcNow,["message"]=JObject.Parse(command.ToString())}.ToString(Formatting.None)+Environment.NewLine);
         if(command.Type==ClientMessageType.SetSettingsReq)
         {
+            if(command.SetSettingsReq.Settings.StackAutoPassOption is AutoPassOption.ResolveAll or AutoPassOption.ResolveMyStackEffects || command.SetSettingsReq.Settings.AutoPassOption is AutoPassOption.Turn or AutoPassOption.UnlessOpponentAction){_loops.ReleasePriority();_automaticSuspended=false;}
             NativePhaseStops.Merge(_settings,command.SetSettingsReq.Settings);
             _hasSettings=true;
             if(command.SetSettingsReq.Settings.AutoPassOption is AutoPassOption.Turn or AutoPassOption.UnlessOpponentAction){_yieldTurn=Turn;_yieldAcrossPod=IsCommanderPod && ActiveSeat!=1;}
@@ -701,8 +759,10 @@ internal sealed class ForgeLandBridge
             }
         }
         _automaticSuspended=false;_pending="arena_"+Guid.NewGuid().ToString("N");BeginRulesWait();
+        _loops.Begin(command,_state,_seconds());
         var request=new JObject{["id"]=_pending,["session"]=_session,["op"]=_pendingOp,["seat"]=1,["forgeId"]=_pendingForgeId,["nativeStateId"]=_stateId,["nativeResponseId"]=_requestId,["nativeArenaId"]=nativeId};
         request.Merge(fields);request["autoOrderTriggers"]=_autoOrderTriggers();request["autoChooseReplacementEffects"]=_autoChooseReplacementEffects();var path=Path.Combine(_ipc,"requests",_pending+".json");File.WriteAllText(path+".tmp",request.ToString());File.Move(path+".tmp",path);
+        _responseFile.Begin(Path.Combine(_ipc,"responses",_pending+".json"));
         _log("Sent native "+_pendingOp+" choice to Forge: "+_pendingForgeId);
     }
 
@@ -728,6 +788,15 @@ internal sealed class ForgeLandBridge
         }
         if(_pending==null)
         {
+            if((bool?)_state["actionOffersDeferred"]==true && (!_fastStack || !ShouldAutoPass(false) || ExplicitStackYield()==null))
+            {
+                // Cancel/Full Control restores actual offers at this same
+                // priority boundary. A snapshot never passes another trigger.
+                if(_presentedState()==_stateId)SubmitQuietPass("snapshot");
+                return;
+            }
+            if(_loops.Running && (Gap!=null || GameOver))_loops.Stop(Gap??"Match ended.");
+            if(_submitLoop!=null && _loops.Tick(_state,_presentedState()==_stateId,NetworkWaiting,_seconds(),_submitLoop))return;
             if(_combatPriorityRefresh)
             {
                 // The owned ActionsAvailableWorkflow refuses the frame carrying
@@ -755,7 +824,11 @@ internal sealed class ForgeLandBridge
                     // being presented. Offer the current decision instead.
                     _quietAdvance=false;Queue(Parse(ActionRequest()));return;
                 }
-                if(_presentedState()==_stateId)SubmitQuietPass();
+                if(_presentedState()==_stateId){_fastQueued=0;SubmitQuietPass();}
+                // Bounded lookahead only after explicit local yield. Every state
+                // and animation remains queued in order; choices/cancel stop
+                // new passes, and input waits for presentation to catch up.
+                else if(_fastStack && _fastQueued<4 && ExplicitStackYield()!=null)SubmitQuietPass();
                 return;
             }
             if(ShouldAutoPass())
@@ -774,7 +847,7 @@ internal sealed class ForgeLandBridge
             catch(FileNotFoundException){}
             if(progress!=null && (string?)progress["session"]==_session && (string?)progress["parentRequestId"]==_pending && (string?)progress["token"]!=_lastDecisionToken)
             {
-                _responseFile.Forget();_lastDecisionToken=(string)progress["token"]!;_pending=null;AdoptState((JObject)progress["state"]!);return;
+                _responseFile.Forget();_lastDecisionToken=(string)progress["token"]!;_pending=null;_loops.Complete((JObject)progress["state"]!,true,_seconds());AdoptState((JObject)progress["state"]!);return;
             }
         }
         var path=Path.Combine(_ipc,"responses",_pending+".json");
@@ -794,6 +867,7 @@ internal sealed class ForgeLandBridge
         _responseFile.Forget();
         if((string)response["id"]! != _pending || (string)response["session"]! != _session)throw new InvalidOperationException("Mismatched Forge response.");
         _pending=null;
+        _loops.Complete((JObject)response["state"]!,(bool)response["accepted"]!,_seconds());
         if(!(bool)response["accepted"]!){
             _automaticSuspended=true;
             // Mana abilities can already have resolved when a human payment is
@@ -806,6 +880,7 @@ internal sealed class ForgeLandBridge
     }
     private void AdoptState(JObject nextState)
     {
+        var adoption=System.Diagnostics.Stopwatch.StartNew();
         if(NetworkMatch)
         {
             if((string?)nextState["session"]!=_session || (long?)nextState["networkRevision"]<_networkRevision)throw new InvalidDataException("Stale network view");
@@ -824,6 +899,11 @@ internal sealed class ForgeLandBridge
             if(!(bool)tapped["tapped"]! || ManaTotal!=previousMana+1)throw new InvalidOperationException("Forge did not confirm basic-land mana production.");
         }
         var previous=_stateId++;
+        if(GameOver || Decision!=null || NetworkMatch || !ShouldAutoPass(false) || ExplicitStackYield()==null)_fastStack=false;
+        if(_fastStack)_fastQueued++;
+        // Overlap the next explicitly yielded rules step with projection of this
+        // one. The same four-state window still bounds unpresented work.
+        if(_fastStack && _fastQueued<4 && _pending==null && _pendingOp=="pass_priority" && ExplicitStackYield()!=null)SubmitQuietPass();
         var retired=new List<int>();int annotationId=(int)_stateId*100;var annotations=NativeTurnProtocol.Changes(prior,_state,ref annotationId);
         var countered=((JArray?)_state["events"] ?? new JArray()).Where(e=>(long)e["id"]!>_lastEventId && (string?)e["kind"]=="countered").ToDictionary(e=>(int)e["targetForgeId"]!,e=>(int)e["sourceForgeId"]!);
         var sacrificed=((JArray?)_state["events"] ?? new JArray()).Where(e=>(long)e["id"]!>_lastEventId && (string?)e["kind"]=="sacrificed").Select(e=>(int)e["sourceForgeId"]!).ToHashSet();
@@ -954,12 +1034,12 @@ internal sealed class ForgeLandBridge
         var retiredKeywords=SharedKeywordProtocol.Persistent(prior,id=>oldIds[id],_keywordBindings,_cardManifest).Where(c=>!keywordIds.Contains((uint)c["id"]!)).Select(c=>(uint)c["id"]!);
         var concealed=priorVisible.Where(c=>(bool?)c["privateChoice"]==true && !visibleIds.Contains((int)c["forgeId"]!)).Select(c=>Cards(_state).Single(n=>(int)n["forgeId"]! == (int)c["forgeId"]!)).Select(c=>new JObject
             {["instanceId"]=Id(c),["grpId"]=0,["overlayGrpId"]=0,["name"]=0,["type"]="GameObjectType_Card",["zoneId"]=ZoneId(c),["ownerSeatId"]=(int)c["owner"]!,["controllerSeatId"]=(int)c["controller"]!,["visibility"]="Visibility_Hidden"});
-        bool quiet=!GameOver && ShouldAutoPass(false);
+        bool quiet=!GameOver && (ShouldAutoPass(false) || (bool?)_state["actionOffersDeferred"]==true);
         bool combatPriority=_renderedCombatPresentation && !quiet && !GameOver && !LocalPodEliminated && Decision==null && ((bool?)_state["canPass"]??false)
             && ((JArray?)_state["events"]??new JArray()).Any(e=>(long)e["id"]!>previousEventId && (string?)e["kind"]=="damage" && (bool?)e["combat"]==true);
-        var allObjects=new JArray(nowVisible.Select(CardObject).Concat(concealed));
-        bool sparseObjects=SparseObjectLab,uniqueObjects=!sparseObjects || allObjects.Select(c=>(int)c["instanceId"]!).Distinct().Count()==allObjects.Count;
-        // Private experiment: omit only exactly unchanged objects, never states/events.
+        var allObjects=CardObjects(nowVisible);foreach(var card in concealed)allObjects.Add(card);
+        bool sparseObjects=SparseObjectLab || _fastStack,uniqueObjects=!sparseObjects || allObjects.Select(c=>(int)c["instanceId"]!).Distinct().Count()==allObjects.Count;
+        // A native diff omits only exactly unchanged objects, never states/events.
         var changedObjects=sparseObjects && uniqueObjects?new JArray(allObjects.Where(c=>!_sentObjects.TryGetValue((int)c["instanceId"]!,out var before) || !JToken.DeepEquals(before,c))):allObjects;
         var delta=new JObject { ["type"]="GameStateType_Diff",["gameStateId"]=_stateId,["prevGameStateId"]=previous,["pendingMessageCount"]=quiet || LocalPodEliminated || combatPriority || NetworkWaiting?0:1,
             ["zones"]=Zones(retired),["players"]=Players(),["turnInfo"]=TurnInfo(),["gameObjects"]=changedObjects,["annotations"]=annotations,
@@ -996,6 +1076,7 @@ internal sealed class ForgeLandBridge
             ["intermissionPrompt"]=new JObject{["promptId"]=27,["parameters"]=new JArray(new JObject{["parameterName"]="WinningTeamId",["type"]="ParameterType_Number",["numberValue"]=(int)_state["winnerSeat"]!})}
         },"intermissionReq")));
         _log("Forge accepted "+_pendingOp+"; native update queued; mana="+ManaTotal);
+        _adoptMilliseconds=adoption.Elapsed.TotalMilliseconds;
         Gap=(string?)_state["fidelityGap"];if(string.IsNullOrEmpty(Gap))Gap=null;
     }
     private void SubmitQuietPass(string operation="pass_priority")
@@ -1005,10 +1086,15 @@ internal sealed class ForgeLandBridge
         // briefly opening a Pass/Next workflow for every rules sub-step.
         _quietAdvance=false;_pendingOp=operation;_pendingForgeId=0;
         _pending="rules_"+Guid.NewGuid().ToString("N");BeginRulesWait();
+        if(operation=="pass_priority")_loops.RecordQuietPass(_state,_seconds());
         var request=new JObject{["id"]=_pending,["session"]=_session,["op"]=_pendingOp,["seat"]=1,["forgeId"]=0,["nativeStateId"]=_stateId,["nativeResponseId"]=0,["automaticRulesStep"]=true};
+        string? policy=ExplicitStackYield();
+        if(operation=="pass_priority" && !NetworkMatch && ShouldAutoPass(false) && policy!=null && (_fastStack || ((JArray?)_state["stackOrder"])?.Count>=64))
+        {if(!_fastStack)_fastStackRun=Guid.NewGuid().ToString("N");_fastStack=true;request["deferActionOffers"]=policy;}
         request["autoOrderTriggers"]=_autoOrderTriggers();
         request["autoChooseReplacementEffects"]=_autoChooseReplacementEffects();
         var path=Path.Combine(_ipc,"requests",_pending+".json");File.WriteAllText(path+".tmp",request.ToString());File.Move(path+".tmp",path);
+        _responseFile.Begin(Path.Combine(_ipc,"responses",_pending+".json"));
         File.AppendAllText(_wire,new JObject{["direction"]="internal-rules",["session"]=_session,["utc"]=DateTime.UtcNow,["request"]=request}.ToString(Formatting.None)+Environment.NewLine);
         _log("Forge automatic progression without an unnecessary native action prompt");
     }
@@ -1033,8 +1119,10 @@ internal sealed class ForgeLandBridge
     }
     private bool ShouldAutoPass(bool requirePresentation=true)
     {
+        if(_loops.Running || _loops.HoldPriority)return false;
         if(PodSpectating)return !_automaticSuspended && !GameOver && Gap==null && Decision==null && (bool?)_state["canPass"]==true && (!requirePresentation || _presentedState()==_stateId);
         if(_automaticSuspended || !_hasSettings || _fullControl || _settings.FullControlEnabled() || NativePhaseStops.Holds(_settings,Phase,ActiveSeat) || (requirePresentation && _presentedState()!=_stateId) || GameOver || LocalPodEliminated || Gap!=null || Decision!=null || !((bool?)_state["canPass"] ?? false))return false;
+        if((bool?)_state["actionOffersDeferred"]==true && ExplicitStackYield()==null)return false;
         // Local bridge automation policy, not a reconstruction of Arena's
         // server-side smart-stop engine. Legal offers remain Forge-owned.
         var mode=_settings.TurnAutoPassOption();
@@ -1046,6 +1134,14 @@ internal sealed class ForgeLandBridge
         var stack=(JArray)_state["stack"]!;
         if(stack.Count>0)return noActions || _settings.StackAutoPassOption==AutoPassOption.ResolveAll || (mode==AutoPassOption.ResolveMyStackEffects && (int)stack.Last!["owner"]! == 1);
         return noActions;
+    }
+    private string? ExplicitStackYield()
+    {
+        var order=(JArray?)_state["stackOrder"];if(order==null || order.Count==0)return null;
+        var turn=_settings.TurnAutoPassOption();
+        if(_settings.StackAutoPassOption==AutoPassOption.ResolveAll || turn is AutoPassOption.Turn or AutoPassOption.UnlessOpponentAction)return "all";
+        if((_settings.StackAutoPassOption==AutoPassOption.ResolveMyStackEffects || turn==AutoPassOption.ResolveMyStackEffects) && (int?)Cards(_state).FirstOrDefault(c=>(int)c["forgeId"]! == (int)order[0])?["controller"]==1)return "own";
+        return null;
     }
     private JObject AttackAssignment(int attacker,DamageRecipient? recipient)
     {

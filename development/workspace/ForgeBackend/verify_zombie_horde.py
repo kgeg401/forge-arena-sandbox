@@ -1,7 +1,7 @@
 """Bounded Horde games through the original Arena parser and input handlers.
 
 Only starting decks and seed are supplied. The small-pool cases are labelled
-mechanic fixtures; the ordinary 200-card loss case has no Horde pool override.
+mechanic fixtures; the ordinary 500-card loss case has no Horde pool override.
 """
 import argparse
 import json
@@ -18,7 +18,7 @@ def run(case, args):
     trace = []
     try:
         settings = dict(randomSeed=7274)
-        if case == 'ordinary-win':
+        if case in ('ordinary-win','ordinary-playthrough'):
             deck = [('Plains', 16), ('Impassioned Orator', 12), ('Hare Apparent', 12)]
         elif case == 'ordinary-loss':
             deck = [('Forest', 40)]
@@ -44,7 +44,7 @@ def run(case, args):
         engine = NativeEngine('zombie-horde', worker=args.worker,
                               managed=args.managed, fixture=args.fixture, **settings)
         def blocks(spec, state):
-            if case != 'ordinary-win':
+            if case not in ('ordinary-win','ordinary-playthrough'):
                 return []
             used = set()
             result = []
@@ -55,7 +55,7 @@ def run(case, args):
                     result.append(dict(forgeId=option['forgeId'], attackerIds=[attacker]))
             return result
         def attacks(spec, state):
-            if case != 'ordinary-win' or state['horde']['wave'] == 0:
+            if case not in ('ordinary-win','ordinary-playthrough') or state['horde']['wave'] == 0:
                 return [dict(forgeId=o['forgeId'], targetSeat=2) for o in spec['options']]
             # Preserve defenders rather than suicidally tapping the entire team.
             cards={c['forgeId']:c for c in state['battlefield']}
@@ -67,9 +67,11 @@ def run(case, args):
         rows = []
         observed_empty_alive = False
         seen_graveyard = set()
-        deadline = time.monotonic() + 180
-        for step in range(500):
+        seen_local_creatures = set()
+        deadline = time.monotonic() + (300 if case=='ordinary-playthrough' else 180)
+        for step in range(1400 if case=='ordinary-playthrough' else 500):
             s = engine.state
+            seen_local_creatures.update(c['forgeId'] for z in ('hand','battlefield','graveyard','exile','stack') for c in s[z] if c['owner']==1 and 'Creature' in c['currentTypes'])
             seen_graveyard.update(c['forgeId'] for c in s['graveyard'] if c['owner'] == 2)
             rows.append({k: s.get(k) for k in ('turn', 'activeSeat', 'phase', 'life',
                                               'opponentLife', 'horde', 'gameOver')})
@@ -101,7 +103,7 @@ def run(case, args):
                     enemies = {c['forgeId'] for c in state['stack' if case.startswith('counter-') else 'battlefield'] if c['controller'] == 2}
                     return [next(o for o in spec['options'] if o['forgeId'] in enemies)]
                 candidates=s['legalCasts']
-                if case == 'ordinary-win':
+                if case in ('ordinary-win','ordinary-playthrough'):
                     names={c['forgeId']:c['name'] for c in s['hand']}
                     candidates=sorted(candidates,key=lambda i:0 if names.get(i)=='Impassioned Orator' else 1)
                 act('cast_spell', candidates[0], _target_policy=target)
@@ -116,12 +118,17 @@ def run(case, args):
         s = engine.state
         events = s['events']
         engine.check('Horde initialized from real deck', s['horde']['initialized'])
-        if case == 'ordinary-win':
-            engine.check('Unmodified 200-card Horde pool', s['horde']['initialCards'] == 200)
+        if case == 'ordinary-playthrough':
+            engine.check('Unmodified 500-card Horde pool',s['horde']['initialCards']==500)
+            engine.check('Actual non-pass-only game reaches a rules-owned outcome',s['gameOver'] and s['winnerSeat'] in (1,2))
+            engine.check('Survivor cast real creatures before terminal player cleanup',any(v['kind']=='zone-change' and v['ownerSeat']==1 and v['forgeId'] in seen_local_creatures and v['from']=='Hand' and v['to']=='Stack' for v in s['researchTrace']))
+            engine.check('Real blocker choices used',any(t['kind']=='blocker-assignments' and t['assignments'] for t in trace))
+        elif case == 'ordinary-win':
+            engine.check('Unmodified 500-card Horde pool', s['horde']['initialCards'] == 500)
             engine.check('Full ordinary Horde game records survivor victory', s['gameOver'] and s['winnerSeat'] == 1)
             engine.check('Real blocker choices used', any(t['kind'] == 'blocker-assignments' and t['assignments'] for t in trace))
         elif case == 'ordinary-loss':
-            engine.check('Normal pool has exactly 200 cards', s['horde']['initialCards'] == 200)
+            engine.check('Normal pool has exactly 500 cards', s['horde']['initialCards'] == 500)
             engine.check('Three preparation turns precede first wave',
                          next(e for e in events if e['kind'] == 'horde-wave')['turn'] == 4)
             engine.check('Horde actually wins against pass-only survivor', s['gameOver'] and s['winnerSeat'] == 2)
@@ -166,7 +173,7 @@ def run(case, args):
         return dict(case=case, passed=True, checks=engine.checks, final=s,
                     trace=trace, rows=rows, evidence=str(engine.ipc),
                     scope='Normal opening, native-handler inputs, real Forge effects; ' +
-                    ('ordinary 200-card game' if case in ('ordinary-loss', 'ordinary-win') else 'initial small-pool mechanic fixture'))
+                    ('ordinary 500-card game' if case in ('ordinary-loss', 'ordinary-win','ordinary-playthrough') else 'initial small-pool mechanic fixture'))
     except Exception as error:
         return dict(case=case, passed=False, error=repr(error), traceback=traceback.format_exc(),
                     evidence=str(engine.ipc) if engine else None, trace=trace)

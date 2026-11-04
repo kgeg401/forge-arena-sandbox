@@ -2,6 +2,30 @@
   "schema": 1,
   "decks": [
     {
+      "file": "Commander-Worst-Gift-Ever.txt",
+      "name": "Worst Gift Ever (Beamtown Bullies)"
+    },
+    {
+      "file": "Commander-Definitely-Not-Rigged.txt",
+      "name": "Definitely Not Rigged (Tivit Elections)"
+    },
+    {
+      "file": "Commander-Snake-Oil-Factory.txt",
+      "name": "Snake Oil Factory (Hapatra Counters)"
+    },
+    {
+      "file": "Commander-One-Damage-Is-Enough.txt",
+      "name": "One Damage Is Enough (Ob Nixilis)"
+    },
+    {
+      "file": "Commander-Rebel-Printer.txt",
+      "name": "Rebel Printer Go Brrr (Otharri Army)"
+    },
+    {
+      "file": "Commander-Grand-Theft-Library.txt",
+      "name": "Grand Theft Library (Zaxara Wealth)"
+    },
+    {
       "file": "Commander-Everybody-Get-In.txt",
       "name": "Everybody Get In (Miirym Mass Arrival)"
     },

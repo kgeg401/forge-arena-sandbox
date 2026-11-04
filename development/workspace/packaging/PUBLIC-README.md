@@ -6,18 +6,18 @@
 
 <p align="center">
   A personal Magic sandbox with <strong>Arena's original presentation</strong> and <strong>Forge's rules engine</strong>.<br>
-  Solo matches, private Commander, and a few unusual ways to play.
+  Solo matches, Commander pods, Zombie Horde, and private two-player Commander.
 </p>
 
 <p align="center">
-  <a href="https://github.com/kgeg401/forge-arena-sandbox/releases/tag/v0.2.0-alpha.15.mp.8"><img src="docs/images/download-windows.svg" alt="Download the Windows alpha" width="296" height="60"></a>
+  <a href="https://github.com/kgeg401/forge-arena-sandbox/releases/tag/v0.2.0-beta.1"><img src="docs/images/download-windows.svg" alt="Download Beta 1 for Windows" width="296" height="60"></a>
 </p>
 
 <p align="center">
-  <a href="#quick-start">Quick start</a> · <a href="#play-with-a-friend">Play with a friend</a> · <a href="docs/SCREENS.md">Screenshots</a> · <a href="docs/FAQ.md">Help</a>
+  <a href="#quick-start">Quick start</a> · <a href="#play-with-a-friend">Play with a friend</a> · <a href="docs/BETA.md">Beta notes</a> · <a href="docs/KNOWN-ISSUES.md">Known issues</a> · <a href="docs/REPORTING-BUGS.md">Report a bug</a>
 </p>
 
-<p align="center"><sub>Windows x64 · Experimental alpha · MTG Arena installed separately</sub></p>
+<p align="center"><sub>Beta 1 · Windows x64 · Public testing prerelease · MTG Arena installed separately</sub></p>
 
 ![An actual sandbox match with Emry on the battlefield](docs/images/emry-match.png)
 
@@ -31,17 +31,17 @@
 | **Commander duel** | Play a bot with 40 life, commander tax, and commander damage. |
 | **Private Commander** | Invite one friend over the internet. Two humans, your own decks, 40 life. |
 | **Commander pods** | Play with three or nine bots. The experimental ten-player mode attacks left until four players remain. |
-| **Zombie Horde** | Bring a commander deck against 200 Zombie/Horror cards. Start at 40 life, with preparation turns based on your commander's mana value. Solo for now. |
+| **Zombie Horde** | Bring a commander deck against a 500-card Zombie Legion with revival, copy engines and death triggers. Start at 40 life, with preparation turns based on your commander's mana value. Solo for now. |
 
 [See every mode, its rules, and where to find it →](docs/GAME-MODES.md)
 
-**A library to start with.** Every profile receives **26 saved decks** and a shared starter collection. Import Arena deck text, edit your list, or try one of the included builds. Decks, packs, collection progress, and preferences stay on your PC. [Starter content](docs/STARTER-CONTENT.md)
+**A library to start with.** Installations receive **32 shared starter decks** and a local starter collection. Cosmetic profiles share decks and collection, while keeping their own name and avatar. Import Arena deck text, edit your list, or try an included build. Saved content stays on your PC. [Starter content](docs/STARTER-CONTENT.md)
 
 ## Quick start
 
 **Before you begin:** a Windows x64 PC, a fully downloaded installation of MTG Arena, and at least 20 GiB free. Setup checks compatibility and the space needed for its separate game copy.
 
-1. **Get the client.** Open the [Windows release](https://github.com/kgeg401/forge-arena-sandbox/releases/tag/v0.2.0-alpha.15.mp.8) and download **ForgeArenaSandbox-Windows.zip**.
+1. **Get the client.** Open the [Beta 1 Windows release](https://github.com/kgeg401/forge-arena-sandbox/releases/tag/v0.2.0-beta.1) and download **ForgeArenaSandbox-Windows.zip**. GitHub's **Source code** archives are for developers.
 2. **Install once.** Extract the entire ZIP, open **Setup.exe**, and choose your Arena folder plus a separate sandbox destination. Select **Check Arena**, then **Install sandbox**. Setup handles Forge, Python if needed, and the private runtimes. The first download and game-file copy can take several minutes.
 3. **Play.** Open **Forge Arena Sandbox** from the installed folder. For a first match, choose **Play → Practice Bot → White-Lifegain**.
 
@@ -62,19 +62,26 @@ Both players need the same current client build. **You can use different decks.*
 
 Home, Decks, Packs, and Options use the installed game's presentation. Pack contents follow custom sandbox collation; retail wildcard rewards and duplicate protection are not reconstructed. [More screenshots](docs/SCREENS.md)
 
-## Know the alpha
+## What is in Beta 1?
 
-**370 card names are in the verified baseline; another 1,421 are enabled experimentally.** Verification covers recorded scenarios, not every possible interaction. Experimental cards can still encounter an explicit unsupported-action gap. [Card coverage](docs/MOXFIELD-COVERAGE.md) · [Verification record](docs/VERIFICATION.md)
+The beta brings together the existing modes with the **500-card Zombie Legion**, real-card combo decks and artwork, native castable-card outlines, and the original X selector for supported repeatable combos. Large local stacks retain the backend processing improvements while using the **normal game animation clock**. [Beta release notes](docs/BETA.md) · [All guides](docs/README.md)
+
+**370 card names remain in the verified baseline; another 1,590 are enabled experimentally, for 1,960 primary names.** Verification covers recorded scenarios, not every possible interaction. Experimental cards can still encounter an explicit unsupported-action gap. [Card coverage](docs/MOXFIELD-COVERAGE.md) · [Verification record](docs/VERIFICATION.md)
 
 - Private rooms support **two humans**. Four- and ten-player pods use bots; Horde is solo.
 - Closing the client or returning Home **ends the match**. Durable match saves are unfinished; your decks, collection, packs, and settings persist separately.
 - Official Arena accounts, collections, rewards, and online matchmaking are not connected to this sandbox.
+- Beta is a public testing milestone. Full card coverage, exact retail parity, a universal 30-second stack limit and general two-household multiplayer reliability are not certified. [Known issues and testing priorities](docs/KNOWN-ISSUES.md)
 
 ## Updates are in the launcher
 
 Close all sandbox windows, then reopen **ForgeArenaSandbox.exe** or your desktop shortcut. The launcher checks for updates and backs up your saved profile before applying one. Use the launcher for future updates after the first setup.
 
 [Release notes](CHANGELOG.md) · [Troubleshooting](docs/FAQ.md) · [Report a problem](https://github.com/kgeg401/forge-arena-sandbox/issues/new/choose)
+
+## Help test the beta
+
+Start with **Practice Bot → White-Lifegain**. Then try a saved Commander deck, a Horde opening or a private match with a friend. Report the exact version, mode, card/action, steps and expected versus actual result. Screenshots help; please keep invitations and private diagnostics out of public issues. [How to report](docs/REPORTING-BUGS.md)
 
 <details>
 <summary><strong>Connection, credits, and project source</strong></summary>

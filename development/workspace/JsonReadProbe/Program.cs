@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics;
+using System.IO;
 using System.Threading;
 using Newtonsoft.Json.Linq;
 using ForgeArenaSandbox;
@@ -52,6 +53,20 @@ internal static class Program
         var invalid=new AsyncJsonRead(_=>JObject.Parse("not JSON"));bool propagated=false;
         Until(()=>{try{invalid.TryRead("bad",out _);return false;}catch(Newtonsoft.Json.JsonReaderException){propagated=true;return true;}});
         Check(propagated,"A current malformed response fails on the polling owner instead of disappearing");invalid.Forget();
+        string directory=Path.Combine(Path.GetTempPath(),"forge-response-"+Guid.NewGuid().ToString("N"));Directory.CreateDirectory(directory);
+        string published=Path.Combine(directory,"response.json"),retired=Path.Combine(directory,"retired.json");int prepared=0;
+        var armed=new AsyncJsonRead(path=>{Interlocked.Increment(ref prepared);return JObject.Parse(File.ReadAllText(path));});
+        try
+        {
+            armed.Begin(retired);Thread.Sleep(30);Check(prepared==0,"An armed read never opens an unpublished response");
+            armed.Begin(published);File.WriteAllText(retired,"{\"id\":\"stale\"}");Thread.Sleep(30);
+            Check(prepared==0,"Retiring an unpublished response stops its waiter");
+            File.WriteAllText(published,"{\"id\":\"prepared\"}");Until(()=>Volatile.Read(ref prepared)==1);Thread.Sleep(30);
+            Check(armed.TryRead(published,out result) && (string?)result["id"]=="prepared","A prearmed response is parsed before its first UI poll");
+            armed.Forget();armed.Begin(Path.Combine(directory,"never.json"));armed.Forget();
+            Check(prepared==1,"Closing a pending request does not load or replay anything");
+        }
+        finally{armed.Forget();Directory.Delete(directory,true);}
         Console.WriteLine($"{checks} asynchronous response ownership checks passed");
     }
 }

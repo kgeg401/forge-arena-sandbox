@@ -1,11 +1,15 @@
 # Forge Arena Sandbox
 
 An unofficial local Magic sandbox with Arena's installed presentation and Forge
-running the rules. **Windows x64. Experimental. Local bots and private two-player Commander.**
+running the rules. **Beta 1. Windows x64. Public testing prerelease.**
 
-Each installation starts with the shared **26 saved decks** and **521 collection
-entries / 928 copies**. Updates add missing starters once and preserve your own
+Each installation starts with **32 shared starter decks** and **907 collection
+printing entries / 1,338 copies**. Updates add missing starters once and preserve your own
 decks and progress. See [starter content](docs/STARTER-CONTENT.md).
+
+Start with [Beta 1 notes](docs/BETA.md), [known issues](docs/KNOWN-ISSUES.md)
+and [bug reporting](docs/REPORTING-BUGS.md). The package enables 370 baseline
+verified names plus 1,590 experimental names; this is not all-card certification.
 
 Arena compatibility: this release supports **0.1.14589.1332174** and the older
 **0.1.14517.1329972** asset copies. [Supported builds and limits](docs/ARENA-COMPATIBILITY.md).
@@ -39,7 +43,7 @@ standalone assets. Unknown or mixed files are rejected without changing Arena.
   25 life, a free first mulligan, command-zone returns and commander tax.
 - **Commander:** on the Brawl tab, choose **Commander Bot (40 Life)** or **Commander Pod (4 Players)**. The pod is one human and three easy Forge bots on this PC, with 40 life, commander tax and 21 commander combat damage. Its shared table and public-zone controls are experimental.
 - **Ten-player Commander:** under Brawl choose **Commander Pod (10 Players - Experimental)** for you and nine Forge bots, 40 life, attacks to the nearest living opponent on your left until four remain, then normal legal opponents.
-- **Zombie Horde:** under Brawl choose **Zombie Horde (Commander Deck)** for a saved commander deck, or under Play choose **Zombie Horde (Solo)** for a practice deck. You start at 40 life against 200 Zombie/Horror cards with extensive revival. Commander preparation equals mana value (minimum one); practice gets three turns. See [all modes and controls](docs/GAME-MODES.md).
+- **Zombie Horde:** under Brawl choose **Zombie Horde (Commander Deck)** for a saved commander deck, or under Play choose **Zombie Horde (Solo)** for a practice deck. You start at 40 life against 500 Zombie/Horror cards with extensive revival. Commander preparation equals mana value (minimum one); practice gets three turns. See [all modes and controls](docs/GAME-MODES.md).
 - **Decks:** create, import Arena deck text, edit, duplicate, export or delete
   local decks. Fresh installations receive recommended starters. Choose Practice or Brawl when creating a deck. Click the deck
   header to change its local format. Brawl uses the native commander slot.

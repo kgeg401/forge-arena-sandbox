@@ -1,4 +1,31 @@
-# Private internet Commander: alpha 15.mp.2
+# Beta 1 — verification scope
+
+This page separates the current package from historical alpha records. Beta 1
+contains 370 baseline verified names and 1,590 experimental primary names
+(1,960 total). No card is promoted merely because it has an Arena presentation,
+a matching Forge script or a passing smoke case.
+
+| Area | Evidence and boundary |
+| --- | --- |
+| Normal-speed stack processing | A paid original-handler 304-trigger seeded reproduction completed in native Unity at 1280×720 with Unity time scale 1 in all 322 recorded samples. Every final rules field matched the prior demo except session identity. The 40.31-second board-ready observation began with 294 triggers remaining; it is not total 304-trigger or retail timing. |
+| 500-card Zombie Legion | 47 bounded original-parser/input-handler cases, including two scripted complete games won by the Horde. Small-pool cases cover revival, copies, lords, death triggers, physical-token distinctions and legal removal. Broad balance and a survivor win remain unverified. |
+| Repeat controls and cast outlines | Original native UI/handler tests cover supported deterministic repeats, cancellation, opponent interruption and current legal cast offers. General arbitrary loops and every card combination remain outside coverage. |
+| Real-card decks and artwork | Named seeded mechanic cases and cached-art/native-model checks. Complete shuffled wins for every starter deck are not certified. Invented custom-rule cards are disabled. |
+| Private internet Commander | Separate original clients on one PC through public HTTPS, correct private views, casts/combat, bounded results/reconnect cases and native acknowledgements. Two-household reliability and every deck interaction remain open. |
+| Packaging | Source/binary identity, supported prerequisite fingerprints, package integrity, update/rollback and saved-profile preservation are separate checks. CI fixtures cannot establish native gameplay or a recipient-PC installation. |
+
+The gameplay source is the locally tested Alpha 15.11 normal-clock checkpoint
+plus beta documentation; no new animation multiplier or rules engine is introduced.
+See [Beta 1](BETA.md), [known issues](KNOWN-ISSUES.md),
+[stack resolution](STACK-RESOLUTION.md), and [Horde details](ZOMBIE-HORDE.md).
+
+## Historical verification records
+
+The following dated counts, placeholder-art statements and limits apply to their
+original alpha checkpoints. They are retained for provenance; they do not describe
+the current beta inventory or override the table above.
+
+## Private internet Commander: alpha 15.mp.2
 
 Two original native client processes, independent saved decks and public HTTPS
 transport have completed bounded real games through commander casts, combat
@@ -15,7 +42,7 @@ acknowledgements. Solo Horde preparation, token combat and ten-player bot
 spectating have separate regression checks. Historical results below retain
 their original scopes and do not establish later features by themselves.
 
-# Local updates after alpha 13
+## Local updates after alpha 13
 
 The artwork update has rendered evidence for all 31 paper-card illustrations,
 including Darien's visible zoomed native card view. The pod-opponent update
@@ -23,7 +50,7 @@ replaces the three duplicated training lists with complete distinct decks; see
 [opponent deck contents and limits](POD-OPPONENTS.md). Rules-engine development
 checks are separate from a complete rendered multiplayer match.
 
-# Published gameplay alpha: 0.2.0-alpha.13
+## Published gameplay alpha: 0.2.0-alpha.13
 
 Alpha 13 adds commander-mana-value Horde preparation and the exact original
 100-card FREAK-OFF Darien paper list. Four original-handler openings cast
@@ -49,7 +76,7 @@ the original Play menu, and opened the actual Horde match at 40 life, 200 Horde
 cards and a six-turn prep budget. An original land-play handler worked with no
 reported client gap. All 31 new artworks remain declared missing-art placeholders.
 
-## Alpha 12: temporary card reveals
+### Alpha 12: temporary card reveals
 
 Alpha 12 fixes a Ghoulraiser reveal that could stop the native client with
 "No generated native mapping for Zombie Token". Temporary source-authorized
@@ -64,7 +91,7 @@ new 40-life/200-card Horde opening also pass bounded original-handler cases.
 **Horde survivor starting life is 40**; current life can decrease during play.
 Existing matches need the client reopened to load the new rules bridge.
 
-## Alpha 11 catalogue and gameplay evidence
+### Alpha 11 catalogue and gameplay evidence
 
 The verified baseline remains **370 names**. **1,296 additional names** are
 enabled experimentally, for **1,666 admitted primary names**. Alpha 11 adds
@@ -72,7 +99,7 @@ enabled experimentally, for **1,666 admitted primary names**. Alpha 11 adds
 card identities and presentation objects. The pinned Forge dependency and
 Arena requirements are unchanged.
 
-## Alpha 11: solo Horde and combat progression
+### Alpha 11: solo Horde and combat progression
 
 - Solo Horde supports practice decks and saved 99-card-plus-commander decks.
   The survivor starts at 40 life, with three preparation turns against a
@@ -96,7 +123,7 @@ Arena requirements are unchanged.
   admission does not promote any name to the verified baseline. Existing
   catalogue, network-play and durable-match-save limitations remain.
 
-## Earlier alpha 10 evidence
+### Earlier alpha 10 evidence
 
 The verified baseline remains **370 names**. **1,285 additional names are enabled
 experimentally**, for 1,655 admitted primary names. This release adds 942 names
@@ -112,7 +139,7 @@ and 15 require dedicated scenarios. Of 284 first-activation attempts, 215 comple
 and 69 need particular fixtures. Those are bounded smoke tests, not exhaustive
 effect verification, and none promotes an experimental card to verified.
 
-## Changes and direct evidence
+### Changes and direct evidence
 
 - Mandatory triggers use the native Auto Order Triggers preference. Default
   ordering avoids a needless prompt; manual ordering remains available. Forced
@@ -194,7 +221,7 @@ Package/update acceptance is recorded separately in the release notes.
 
 ---
 
-# Historical gameplay alpha: 0.2.0-alpha.9
+## Historical gameplay alpha: 0.2.0-alpha.9
 
 The verified baseline remains 370 names; 343 other names are enabled experimentally. The current dependency is the pinned official Forge 2.0.16 snapshot from 25 October. Earlier sections below describe historical releases and their original scope.
 
@@ -214,7 +241,7 @@ Whole-catalogue support, exhaustive card combinations, network multiplayer, comp
 
 ---
 
-# Validation and limits
+## Validation and limits
 
 The current release's enabled names are generated into
 [SUPPORTED-CARDS.md](SUPPORTED-CARDS.md). Its exact update version is recorded in
@@ -226,7 +253,7 @@ on 22 October 2026, on one Windows PC. Later catalogue batches add evidence for
 specific mechanics; they do not turn these historical checks into an exhaustive
 validation of every interaction.
 
-## 370-card catalogue checkpoint
+### 370-card catalogue checkpoint
 
 The 22 October 2026 delivery checkpoint expanded the locally installed policy
 from 278 to 370 verified Arena card names. The earlier public release had 252.
@@ -256,7 +283,7 @@ complete games do not establish every possible Magic interaction, complete
 animation parity or a successful installation on another PC. Release shipping
 checks are recorded separately in the release notes.
 
-## Native client checks
+### Native client checks
 
 These checks ran the installed sandbox's actual Arena process, in its
 zero-network-capability AppContainer. They are separate from headless fixtures.
@@ -282,7 +309,7 @@ Native callbacks used for automated gameplay go through the installed game's
 original controls. They do not write a desired result or intermediate Forge
 state into the match. Some checks use physical Windows mouse/keyboard input.
 
-## Headless checks
+### Headless checks
 
 - **70** compiled deck-profile checks: parsing, counts, printings, Brawl
   construction, save failures, persistence and one-time friendly starter seeds.
@@ -310,7 +337,7 @@ The UI release does not expand that admission policy.
 Public CI can run the authored Python checks without game files. It cannot
 establish rendered gameplay, pixel parity or installation on another person's PC.
 
-## Pinned compatibility
+### Pinned compatibility
 
 Arena: **Client0.1.14517.1329972 / Unity 6000.3.14f1**.
 Forge: **2.0.15**. The installer verifies the exact files in `requirements.json`
@@ -321,7 +348,7 @@ The packaged support index must identify the exact SHA-256 of that release's
 admission policy and its pinned Forge scripts. The running client's generated
 manifest and deck builder must agree with it.
 
-## Remaining gaps
+### Remaining gaps
 
 Only names in the current supported list, plus the separately verified Brawl
 commanders and token, are admitted. Unverified cards can be browsed, opened and stored but
@@ -337,7 +364,7 @@ An actual release ZIP must additionally pass package-content scanning,
 activation/rollback and public-download verification. Release notes record those
 shipping checks separately once performed. No recipient-PC install is claimed.
 
-## Jace Brawl alpha.7
+### Jace Brawl alpha.7
 
 Adds the exact 100-card Jace Superfriends Brawl starter, using Jace, Multiverse
 Architect as the WUBR planeswalker commander. The separately pinned official
@@ -370,7 +397,7 @@ and Jace in the command zone. The owned Arena compatibility pin is unchanged.
 The dependency archive is about 285 MiB and is only needed once per engine
 upgrade; the small Windows adapter download remains separate.
 
-## Mana Drain alpha.8 hotfix
+### Mana Drain alpha.8 hotfix
 
 Alpha.7's play/cast smoke check resolved Mana Drain's counterspell, but did not
 reach the delayed mana trigger. A live game then stopped at the following main
@@ -389,7 +416,7 @@ the following local turn. It includes mana values 0, 2, 3 and an uncounterable
 4-mana spell. This hotfix requires reopening an already running match client
 because each match loads its integration bindings at startup.
 
-## Client reliability checks
+### Client reliability checks
 
 Startup checks include nullable release checksums and preservation of a healthy
 installed client. Diagnostic checks cover count/byte limits, legacy evidence,
@@ -399,7 +426,7 @@ small projections from large boards. Separate rendered checks exercise the
 original Continue and Return Home dialogs. These maintenance checks do not
 certify every card or complete retail UI parity.
 
-## Interaction-tested token projection
+### Interaction-tested token projection
 
 The optimized adapter reuses chooser-visible cards within one state adoption.
 Fresh Forge/original Arena-handler runs pass 37 bounded scenarios and 308 checks,
