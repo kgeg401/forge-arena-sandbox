@@ -24,6 +24,7 @@ readme=(R/'README.md').read_text(encoding='utf8')
 check('Pinned beta download',readme.count('/releases/tag/v0.2.0-beta.1')==2 and '/releases/tag/v0.2.0-alpha.' not in readme)
 check('Documented lifetime/coverage limits','durable match saves' in (D/'KNOWN-ISSUES.md').read_text().lower() or 'not durable' in (D/'KNOWN-ISSUES.md').read_text().lower())
 for f in (D/'images').glob('*.svg'):ET.parse(f);check('Well-formed SVG: '+f.name,True)
+check('Hero and download image identify the beta',all('ALPHA' not in (D/'images'/name).read_text().upper() for name in ['hero.svg','download-windows.svg']))
 # YAML parsing is exercised locally with the installed parser; CI also checks
 # every form's required fields without adding a package dependency.
 forms=list((R/'.github/ISSUE_TEMPLATE').glob('*.yml'))

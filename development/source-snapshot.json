@@ -1,7 +1,7 @@
 {
   "schema": 1,
-  "localSourceCommit": "796d427745fd3c4e804f3152d4e007b666e8b778",
-  "packageSourceCommit": "796d427745fd3c4e804f3152d4e007b666e8b778",
+  "localSourceCommit": "0b8a5b239cc5140dbf8d3418910a22b4bcac7dbb",
+  "packageSourceCommit": "0b8a5b239cc5140dbf8d3418910a22b4bcac7dbb",
   "productionPolicySha256": "5752392f087eede8e69c546fe2fc31dfc1b2243235c5c61bfcb34a86207d67b5",
   "productionCards": 370,
   "files": {
@@ -580,7 +580,7 @@
     "packaging/public-docs/VERIFICATION.md": "5d77a24d137f51cae5b7d2d8ba640bc0effc4e94535fb0d6eb5132c9936e0db8",
     "packaging/public-docs/ZOMBIE-HORDE.md": "2e5e88ec48fa5b8f45496fe4131929c8e23584616b03bf50fcb8a7d56f3c5c79",
     "packaging/public-docs/images/download-windows.svg": "ddfe60ea6f455ff44a0be56f856f66ef446fedaa02a4ebd462f6e2426d73fc5e",
-    "packaging/public-docs/images/hero.svg": "eea3f5be4b7c89ed122def5920ec267a86467bfd10bcae2be89879af93590f34",
+    "packaging/public-docs/images/hero.svg": "ff42ffe33e00e0d1b9d5dced861a37120d2eae6d44fa6180d02ee06476efa989",
     "packaging/rules_runtime.py": "f85a9e74e2f77ec00a63ab6d8488c47f3da35c55c4885d4be87ebe3a2b370665",
     "packaging/setup_client.py": "db66efd4fa25b51c9f481fbf6051a64adee82ce84e658f0e79e1ef6422ca4b2f",
     "packaging/starter-content.json": "f21d7619f588303d2a144e018f5547c6d898b489ae49dde92cb51e27932d4a48",
