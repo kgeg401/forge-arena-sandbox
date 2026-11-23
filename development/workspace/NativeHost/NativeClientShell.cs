@@ -40,6 +40,11 @@ internal sealed class NativeClientShell
     private readonly Func<IEnumerator> _endMatch;
     private readonly Action _spectatePod;
     private readonly Func<JObject?> _matchNotice;
+    private readonly Func<bool> _canSuspend;
+    private bool _suspended;
+    private readonly List<(TMP_Text text,string original,Localize[] localization)> _resumeLabels=new();
+    private bool _awaitingSuspend;
+    private string? _resumeAttempt;
     private (string session,string message,bool recoverable)? _pendingBridgeFailure;
     private string? _pendingFailureReport;
     private string? _manualReport;
@@ -79,7 +84,7 @@ internal sealed class NativeClientShell
         var pages=sections.Length>1?sections.Skip(1).Select(s=>sections[0]+"\n\n"+s).ToArray():new[]{message};
         _dialogs.ShowPages("Commander damage",pages);
     }
-    public NativeClientShell(string root,PAPA papa,Action<string> log,MonoBehaviour runner,Action startMatch,Func<IEnumerator> endMatch,Action spectatePod,Func<JObject?> matchNotice){_root=root;_papa=papa;_log=log;_runner=runner;_startMatch=startMatch;_endMatch=endMatch;_spectatePod=spectatePod;_matchNotice=matchNotice;}
+    public NativeClientShell(string root,PAPA papa,Action<string> log,MonoBehaviour runner,Action startMatch,Func<IEnumerator> endMatch,Action spectatePod,Func<JObject?> matchNotice,Func<bool> canSuspend){_root=root;_papa=papa;_log=log;_runner=runner;_startMatch=startMatch;_endMatch=endMatch;_spectatePod=spectatePod;_matchNotice=matchNotice;_canSuspend=canSuspend;}
     public void ReportBridgeFailure(string? session,string message,bool recoverable=false)
     {
         session??=_rulesSession; // Constructor failures precede bridge assignment.
@@ -96,7 +101,7 @@ internal sealed class NativeClientShell
         else
         {
             _pendingFailureReport=JsonConvert.SerializeObject(new{schema=1,session=_session,requestId=_matchRequest,code="NATIVE_DISPLAY_FAILED"});
-            _dialogs.Show("Local match display stopped",failure.message+"\n\nYour decks and collection are preserved.","Return Home",()=>{if(_matchActive)RequestReturn();else CancelQueue();});
+            _dialogs.Show("Local match display stopped",failure.message+"\n\nYour decks and collection are preserved.","Return Home",()=>{if(_matchActive)RequestReturn(_canSuspend());else CancelQueue();});
         }
     }
     private static bool Owned(Component obj)=>_active!=null && (_active._constructing || (_active.Surface!=null && obj.transform.IsChildOf(_active.Surface.Root)));
@@ -159,10 +164,43 @@ internal sealed class NativeClientShell
     private static void Stretch(Transform value){if(value is RectTransform rect){rect.anchorMin=Vector2.zero;rect.anchorMax=Vector2.one;rect.offsetMin=Vector2.zero;rect.offsetMax=Vector2.zero;}}
     private void RequireMenu(){if(_matchActive || _matchRequest!=null || _returning || _awaitingReturn)throw new InvalidOperationException("Finish or cancel the current match before changing screens.");if(_warmingPacks)throw new InvalidOperationException("The original Packs screen is still loading.");}
     public void FlushProfile(){_decks?.FlushProfile();_display?.Flush();}
-    public void Home(){if(_matchRequest!=null && !_matchActive && !_returning && !_awaitingReturn){CancelQueue();return;}RequireMenu();_packs?.Hide();_play?.Hide();_decks?.Hide();_home!.gameObject.SetActive(true);_screen="home";Select(_nav?.HomeButton);WriteStatus();}
+    public void Home(){if(!_suspended){if(_matchRequest!=null && !_matchActive && !_returning && !_awaitingReturn){CancelQueue();return;}RequireMenu();}_packs?.Hide();_play?.Hide();_decks?.Hide();_home!.gameObject.SetActive(true);_screen="home";Select(_nav?.HomeButton);WriteStatus();}
     private void Decks(){RequireMenu();_packs?.Hide();_play?.Hide();_home!.gameObject.SetActive(false);if(_decks==null)_decks=new NativeDeckScreen(_root,_papa,_log,Surface,_dialogs);_decks.Open();_screen="decks";Select(_nav!.DecksButton);}
     private void Packs(){RequireMenu();_play?.Hide();_decks?.Hide();if(_packs==null)_packs=new NativePackChamber(_root,_papa,_log,Surface);_packs.Open();_home!.gameObject.SetActive(false);_screen="packs";Select(_nav!.PacksButton);if(!_packs.Ready){_warmingPacks=true;_packsDeadline=Time.realtimeSinceStartup+60;_screen="loading-packs";Surface.Camera.enabled=false;_nav!.gameObject.SetActive(false);_dialogs!.ShowLoading("Preparing packs…");}}
-    private void Play(){RequireMenu();_packs?.Hide();if(_decks==null){_decks=new NativeDeckScreen(_root,_papa,_log,Surface,_dialogs);_decks.Open();}_decks.Hide();_home!.gameObject.SetActive(true);if(_play==null)_play=new NativePlayMenu(_root,_papa,Surface,_decks,_runner,(q,id)=>Act(()=>Join(q,id)),id=>Act(()=>{_play?.Hide();Decks();_decks.EditDeck(id);}));_play.Open();_screen="play";}
+    private void Play()
+    {
+        if(_suspended)
+        {
+            _resumeAttempt=Send("resume-live",new JObject{["matchRequestId"]=_matchRequest});
+            SetSuspended(false);_cancelRequested=false;_reportedBridgeFailures.Clear();_queuedAt=DateTime.UtcNow;
+            ShowQueue("Reopening your match…");_screen="queue";return;
+        }
+        RequireMenu();_packs?.Hide();if(_decks==null){_decks=new NativeDeckScreen(_root,_papa,_log,Surface,_dialogs);_decks.Open();}_decks.Hide();_home!.gameObject.SetActive(true);if(_play==null)_play=new NativePlayMenu(_root,_papa,Surface,_decks,_runner,(q,id)=>Act(()=>Join(q,id)),id=>Act(()=>{_play?.Hide();Decks();_decks.EditDeck(id);}));_play.Open();_screen="play";
+    }
+    private void SetSuspended(bool value)
+    {
+        _suspended=value;
+        if(value)
+        {
+            foreach(var text in _home!.MainButton.GetComponentsInChildren<TMP_Text>(true))
+            {
+                if(string.IsNullOrWhiteSpace(text.text))continue;
+                var localization=text.GetComponents<Localize>().Where(item=>item.enabled).ToArray();
+                foreach(var item in localization)item.enabled=false;
+                _resumeLabels.Add((text,text.text,localization));
+                text.text="Resume Match";
+            }
+        }
+        else
+        {
+            foreach(var (text,original,localization) in _resumeLabels)
+            {
+                text.text=original;
+                foreach(var item in localization)item.enabled=true;
+            }
+            _resumeLabels.Clear();
+        }
+    }
     private void Profiles()
     {
         RequireMenu();_packs?.Hide();_play?.Hide();
@@ -170,12 +208,13 @@ internal sealed class NativeClientShell
         _profiles=_profiles??new NativeProfileMenu(_root,_papa,_dialogs!,_decks.NameInputTemplate,DeferMenu,Home);
         _home!.gameObject.SetActive(true);_screen="profiles";Select(_nav?.ProfileButton);_profiles.Open();
     }
-    private void Send(string action,JObject? extra=null)
+    private string Send(string action,JObject? extra=null)
     {
         var value=extra??new JObject();value["schema"]=1;value["session"]=_session;value["id"]=Guid.NewGuid().ToString();value["action"]=action;
         string target=Path.Combine(_root,"client-service.request.json");
         if(File.Exists(target))throw new InvalidOperationException("A local client request is still being processed.");
         File.WriteAllText(target+".pending",value.ToString(Formatting.Indented));File.Move(target+".pending",target);
+        return (string)value["id"]!;
     }
     private void Join(string queue,Guid id)
     {
@@ -254,12 +293,14 @@ internal sealed class NativeClientShell
     }
     private void CancelQueue(){if(_matchRequest==null || _cancelRequested)return;Send("cancel",new JObject{["matchRequestId"]=_matchRequest});_cancelRequested=true;_queueMessage="Cancelling the local match…";if(_progress!=null)_progress.text=_queueMessage;}
     private static bool ExitLocalMatch(MatchSceneManager __instance){if(_active==null || !_active._matchActive)return true;_active.RequestReturn();return false;}
-    public void RequestReturn(){if(!_matchActive || _returning)return;_returning=true;_screen="returning-home";_runner.StartCoroutine(ReturnHome());}
-    private IEnumerator ReturnHome()
+    public void RequestReturn()=>RequestReturn(false);
+    private void RequestReturn(bool suspend){if(!_matchActive || _returning)return;_returning=true;_screen="returning-home";_runner.StartCoroutine(ReturnHome(suspend));}
+    private IEnumerator ReturnHome(bool suspend)
     {
         yield return _endMatch();
         _matchActive=false;_returning=false;_awaitingReturn=true;_returnDeadline=Time.realtimeSinceStartup+25;Surface.SetVisible(true);_nav!.gameObject.SetActive(true);
-        Send("match-ended",new JObject{["matchRequestId"]=_matchRequest});_screen="queue";ShowQueue("Returning Home…");
+        _awaitingSuspend=suspend;
+        Send(suspend?"suspend-live":"match-ended",new JObject{["matchRequestId"]=_matchRequest});_screen="queue";ShowQueue("Returning Home…");
     }
     private void PollService()
     {
@@ -280,17 +321,30 @@ internal sealed class NativeClientShell
         string? phase=(string?)service["phase"];
         if(_awaitingReturn)
         {
+            if(_awaitingSuspend && phase=="suspended")
+            {
+                _awaitingReturn=false;_awaitingSuspend=false;_error=null;HideQueue();SetSuspended(true);Home();return;
+            }
             // A failed engine may still report its old error in the frame that
             // Return Home sends match-ended. Wait for that operation's outcome.
-            if(phase=="idle")
+            if(phase=="idle" || _awaitingSuspend && phase=="error")
             {
-                _awaitingReturn=false;_error=null;_matchRequest=null;HideQueue();Home();
+                _awaitingReturn=false;_awaitingSuspend=false;_error=null;_matchRequest=null;HideQueue();Home();
+                if(phase=="error")_dialogs!.Show("Match could not be suspended",(string?)service["message"]??"The rules engine exited.");
             }
             else if(Time.realtimeSinceStartup>_returnDeadline && _reportedServiceError!="return-timeout")
             {
                 _reportedServiceError="return-timeout";
                 _dialogs!.Show("Local match did not close","The local match service did not finish closing. Reopen the client to recover; your saved decks and collection are preserved.","Close client",()=>Application.Quit());
             }
+            return;
+        }
+        if(_suspended && phase=="suspended")return;
+        if(_suspended)SetSuspended(false);
+        if(_resumeAttempt!=null && phase=="suspended" && (string?)service["resumeAttempt"]==_resumeAttempt && !_cancelRequested)
+        {
+            _resumeAttempt=null;HideQueue();SetSuspended(true);Home();
+            _dialogs!.Confirm("Match could not resume",(string?)service["message"]??"Forge is still running.","End Match",()=>DeferMenu(CancelQueue));
             return;
         }
         if(_matchActive)
@@ -305,17 +359,20 @@ internal sealed class NativeClientShell
         }
         if(phase=="ready" && !_cancelRequested)
         {
+            _resumeAttempt=null;
             var engine=JObject.Parse(File.ReadAllText(Path.Combine(_root,"forge-ipc","state.json")));
             if((string?)engine["session"]!=(string?)service["engineSession"])throw new InvalidDataException("The local match session changed before the board opened.");
+            if(service["liveResumeSha256"]!=null && !RecoveryStartGuard.Allows(_root,Path.Combine(_root,"forge-ipc"),(string)engine["session"]!,engine))
+                throw new InvalidDataException("The suspended match position could not be verified before reopening the board.");
             _rulesSession=(string?)engine["session"];
             HideQueue();Surface.SetVisible(false);_matchActive=true;_screen="match";
-            try{_startMatch();if((bool?)service["recovered"]==true){_pendingBridgeFailure=null;_dialogs?.DismissMatchFailure();}Send("match-started",new JObject{["matchRequestId"]=_matchRequest});}
+            try{_startMatch();if((bool?)service["recovered"]==true || service["liveResumeSha256"]!=null){_pendingBridgeFailure=null;_dialogs?.DismissMatchFailure();}Send("match-started",new JObject{["matchRequestId"]=_matchRequest});}
             catch{_matchActive=false;Surface.SetVisible(true);throw;}
             if(_queuedDeckId is Guid played){try{_decks!.RecordPlayed(played);}catch(Exception error){_log("Could not record last-played time; match continues: "+error.Message);}_queuedDeckId=null;}
         }
         else if(new[]{"idle","cancelled","error"}.Contains(phase))
         {
-            _error=phase=="error"?(string?)service["message"]:null;_matchRequest=null;HideQueue();Home();
+            _resumeAttempt=null;_error=phase=="error"?(string?)service["message"]:null;_matchRequest=null;HideQueue();Home();
             if(_error!=null)_dialogs!.Show("Match could not start",_error);
         }
         else if(_internetQueue && !_cancelRequested && PollNetworkLobby()){}

@@ -22,5 +22,9 @@ Check("changed snapshot",()=>File.AppendAllText(Path.Combine(ipc,"state.json"),"
 Check("not recovered",()=>status["recovered"]=false,false);
 Check("already playing",()=>status["phase"]="playing",false);
 Check("request path escape",()=>status["requestId"]="../escape",false);
+void LiveResume(){status.Remove("recovered");status["liveResumeSha256"]=receipt["stateSha256"];File.WriteAllText(Path.Combine(root,"client-session.json"),new JObject{["session"]=client}.ToString());}
+Check("live resume verifies the active client and position",LiveResume,true);
+Check("live resume rejects changed position",()=>{LiveResume();File.AppendAllText(Path.Combine(ipc,"state.json")," ");},false);
+Check("live resume rejects a different client",()=>{LiveResume();status["session"]=Guid.NewGuid().ToString();},false);
 Console.WriteLine(new JObject{["passed"]=true,["checks"]=checks});
 }finally{Directory.Delete(root,true);}

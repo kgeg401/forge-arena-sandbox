@@ -109,7 +109,7 @@ public sealed class Plugin : BaseUnityPlugin
             {
                 File.Delete(clientRequest);
                 if(papa?.CardDatabase==null)throw new InvalidOperationException("Prepare native assets before opening the client.");
-                if(_shell==null)_shell=new NativeClientShell(_root,papa,value=>{_events.Add(value);if(_events.Count>20)_events.RemoveAt(0);},this,()=>StartBoard(papa),()=>EndClientMatch(papa),()=>_forge!.ContinuePodSpectating(),()=>_forge?.ClientNotice);
+                if(_shell==null)_shell=new NativeClientShell(_root,papa,value=>{_events.Add(value);if(_events.Count>20)_events.RemoveAt(0);},this,()=>StartBoard(papa),()=>EndClientMatch(papa),()=>_forge!.ContinuePodSpectating(),()=>_forge?.ClientNotice,()=>_forge?.CanSuspend==true);
                 _shell.Open();_phase="native-local-client";
             }
             if(!_cardAssetProbeRunning && papa?.CardDatabase!=null && File.Exists(Path.Combine(_root,"card-assets.request.json")))
