@@ -26,6 +26,9 @@ internal sealed class ForgeLandBridge
     private long _networkRevision;
     private bool _networkAwaitPresentation;
     internal bool NetworkMatch=>(bool?)_state["networkMatch"]==true;
+    internal bool CanSuspend => !NetworkMatch && !GameOver && Decision==null && _pending==null
+        && !_fastStack && !_loops.Running && string.IsNullOrEmpty((string?)_state["fidelityGap"])
+        && (bool?)_state["canPass"]==true && (int?)_state["prioritySeat"]==1;
     private bool NetworkWaiting=>NetworkMatch && (int?)_state["inputSeat"]!=1;
     private readonly AsyncJsonRead _responseFile=new AsyncJsonRead(path=>JObject.Parse(ReadShared(path)));
     private readonly LocalGreConnection _connection;

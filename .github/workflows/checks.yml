@@ -12,11 +12,27 @@ jobs:
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
       - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
         with:
           python-version: '3.13'
       - name: Verify matching source and production policy
-        run: python -X utf8 -B development/check_snapshot.py
+        shell: pwsh
+        run: |
+          $version = (Get-Content client/release-info.json -Raw | ConvertFrom-Json).version
+          $tag = "refs/tags/v$version"
+          git diff --quiet $tag -- client development/source-snapshot.json
+          if ($LASTEXITCODE -eq 0) {
+            # The download and its source receipt still belong to this release tag.
+            $released = Join-Path $env:RUNNER_TEMP 'released-source-snapshot'
+            git worktree add --detach $released $tag
+            if ($LASTEXITCODE -ne 0) { throw 'Could not check out the released source' }
+            python -X utf8 -B (Join-Path $released 'development/check_snapshot.py')
+          } else {
+            python -X utf8 -B development/check_snapshot.py
+          }
+          if ($LASTEXITCODE -ne 0) { throw 'Release snapshot validation failed' }
       - name: Check current player docs and issue forms
         run: python -X utf8 -B development/check_docs.py
       - name: Run authored headless checks

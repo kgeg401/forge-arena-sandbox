@@ -6,7 +6,7 @@ decks are revalidated independently before Forge sees them.
 """
 import sys
 sys.dont_write_bytecode=True
-import argparse,ctypes,json,os,subprocess,time,uuid
+import argparse,ctypes,hashlib,json,os,subprocess,time,uuid
 from ctypes import wintypes
 from datetime import datetime,timezone
 from pathlib import Path
@@ -131,6 +131,7 @@ class Coordinator:
         self.process=None;self.log=None;self.request_id=None;self.phase='idle';self.deadline=0.;self.after_stop='idle';self.seen=set();self.error=None
         self.last_snapshot=None;self.heartbeat_at=0.
         self.internet=False
+        self.suspended_state=None
         self.ipc=self.lab/'forge-ipc';self.state_path=self.lab/'client-service-status.json'
         self.catalog={str(c['grpId']):c for c in read(self.lab/'deck-catalog.json')['cards']}
         self.reporter=None;self.last_failures=set()
@@ -159,7 +160,7 @@ class Coordinator:
     def publish(self,phase,message,**extra):
         self.phase=phase
         value=dict(schema=1,session=self.session,nativePid=self.pid,utc=datetime.now(timezone.utc).isoformat(),requestId=self.request_id,phase=phase,message=message,enginePid=self.process.pid if self.process else None,**extra)
-        if phase in ('playing','error') and self.last_snapshot and self.last_snapshot.get('requestId')==self.request_id and self.last_snapshot.get('engineSession'):
+        if phase in ('playing','suspended','error') and self.last_snapshot and self.last_snapshot.get('requestId')==self.request_id and self.last_snapshot.get('engineSession'):
             value.setdefault('engineSession',self.last_snapshot['engineSession'])
         self.last_snapshot=value;self.heartbeat_at=time.monotonic()+3
         atomic(self.state_path,value)
@@ -258,12 +259,37 @@ class Coordinator:
         elif action=='match-started':
             if request.get('matchRequestId')!=self.request_id or self.phase!='ready':raise RequestRejected('Stale match acknowledgment rejected')
             self.publish('playing','Private Commander match in progress' if self.internet else 'Local Forge bot match in progress')
+        elif action in ('suspend-live','resume-live'):
+            expected='playing' if action=='suspend-live' else 'suspended'
+            if request.get('matchRequestId')!=self.request_id or self.phase!=expected or self.internet or not self.process or self.process.poll() is not None:
+                raise RequestRejected('No matching live solo match')
+            if action=='suspend-live':self.suspended_state=None
+            engine_session=self.last_snapshot['engineSession']
+            try:
+                raw=(self.ipc/'state.json').read_bytes()
+                state=json.loads(raw)
+            except (OSError,ValueError):
+                self.publish('suspended','Forge state is temporarily unavailable.',resumeAttempt=request_id)
+                return
+            if (state.get('session')!=engine_session or state.get('gameOver') or state.get('fidelityGap')
+                or state.get('decision') or state.get('canPass') is not True or state.get('prioritySeat')!=1
+                or any((self.ipc/'requests').glob('*.json'))):
+                self.publish('suspended','Forge is still waiting for a stable position.',resumeAttempt=request_id)
+                return
+            digest=hashlib.sha256(raw).hexdigest()
+            if action=='suspend-live':
+                self.suspended_state=digest
+                self.publish('suspended','Match ready to resume')
+            elif self.suspended_state is not None and digest!=self.suspended_state:
+                self.publish('suspended','The suspended position changed and could not be verified.',resumeAttempt=request_id)
+            else:
+                self.publish('ready','Reopening the Arena board',engineSession=engine_session,
+                             scenario=state['scenario'],liveResumeSha256=digest)
         elif action=='resume':
             if self.process and self.process.poll() is None:raise RequestRejected('A rules owner is already active')
             receipt=read(self.lab/'match-recovery.json');state=read(self.ipc/'state.json')
             if receipt.get('schema')!=1 or receipt.get('clientSession')!=self.session or time.time()>receipt.get('expires',0):raise RequestRejected('Recovery receipt expired or belongs to another client')
             if Path(receipt['ipc']).resolve()!=self.ipc.resolve() or state.get('session')!=receipt['engineSession'] or state.get('gameOver') or not (state.get('decision') or state.get('canPass') is True and state.get('prioritySeat')==1) or state.get('fidelityGap'):raise RequestRejected('The recovered match changed or is not ready')
-            import hashlib
             if hashlib.sha256((self.ipc/'state.json').read_bytes()).hexdigest()!=receipt['stateSha256']:raise RequestRejected('Recovered state differs from the verified handoff')
             owner=RecoveredRulesProcess(receipt,self.ipc)
             self.process=owner;self.request_id=request_id;self.error=None
@@ -322,7 +348,7 @@ class Coordinator:
                             finally:owner.close()
                         except RuntimeError:pass
                 self.process.terminate();self.process.wait(timeout=10);self.stopped()
-        elif self.phase in ('ready','playing') and self.process and self.process.poll() is not None:
+        elif self.phase in ('ready','playing','suspended') and self.process and self.process.poll() is not None:
             self.report_engine_failure();self.publish('error',self.engine_failure());self.stopped_log()
         self.poll_native_failure()
     def stopped_log(self):
